@@ -12,6 +12,7 @@ namespace Bam.Net
     /// </summary>
     public static class BamHome // TODO: refactor this into BamHome.[home paths] and BamProfile.[profile paths]
     {
+        public static string SystemRoot => OSInfo.IsWindows ? "/c": "/";
         public static string Path => System.IO.Path.Combine(PathSegments);
 
         /// <summary>
@@ -30,7 +31,7 @@ namespace Bam.Net
         {
             get
             {
-                return new string[] {"/", "opt", "bam"};
+                return new string[] {SystemRoot, "opt", "bam"};
             }
         }
 
