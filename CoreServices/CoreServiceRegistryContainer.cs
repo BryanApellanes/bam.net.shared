@@ -24,10 +24,10 @@ namespace Bam.Net.CoreServices
     public static class CoreServiceRegistryContainer
     {
         public const string RegistryName = "CoreServiceRegistry";
-        static object _coreIncubatorLock = new object();
+        static readonly object _coreIncubatorLock = new object();
         static ServiceRegistry _coreServiceRegistry;
 
-        static Dictionary<ProcessModes, Func<ServiceRegistry>> _factories;
+        static readonly Dictionary<ProcessModes, Func<ServiceRegistry>> _factories;
         static CoreServiceRegistryContainer()
         {
             ConfigureDev = (sr) => sr;
@@ -48,7 +48,7 @@ namespace Bam.Net.CoreServices
         }
 
         static ServiceRegistry _instance;
-        static object _instanceLock = new object();
+        static readonly object _instanceLock = new object();
         public static ServiceRegistry Instance
         {
             get

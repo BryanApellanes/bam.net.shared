@@ -174,8 +174,8 @@ namespace Bam.Net.ServiceProxy
         }
 
 		/// <summary>
-		/// Get the MethodInfos for the specified type that will
-		/// be proxied if the specified type is registered as 
+		/// Get the MethodInfos for the specified type that are
+		/// proxied if the specified type is registered as 
 		/// a service proxy.
 		/// </summary>
 		/// <param name="type"></param>
@@ -196,7 +196,7 @@ namespace Bam.Net.ServiceProxy
         }
 
         static Incubator incubator;
-        static object incubatorLock = new object();
+        static readonly object incubatorLock = new object();
         /// <summary>
         /// Gets or sets the default Incubator instance used by the ServiceProxy system.
         /// </summary>
@@ -233,9 +233,9 @@ namespace Bam.Net.ServiceProxy
 
         public static string GetBaseAddress(Uri uri)
         {
-            string port = uri.IsDefaultPort ? "/" : string.Format(":{0}/", uri.Port);
+            string port = uri.IsDefaultPort ? "/" : $":{uri.Port}/";
 
-            string defaultBaseAddress = string.Format("{0}://{1}{2}", uri.Scheme, uri.Host, port);
+            string defaultBaseAddress = $"{uri.Scheme}://{uri.Host}{port}";
             return defaultBaseAddress;
         }
 
@@ -402,8 +402,8 @@ namespace {0}
                     });
 
                     string returnOrBlank = isVoidReturn ? "" : "return ";
-                    string genericTypeOrBlank = isVoidReturn ? "" : string.Format("<{0}>", returnType);
-                    string invoke = string.Format("{0}Invoke{1}", returnOrBlank, genericTypeOrBlank);
+                    string genericTypeOrBlank = isVoidReturn ? "" : $"<{returnType}>";
+                    string invoke = $"{returnOrBlank}Invoke{genericTypeOrBlank}";
 
                     string methodParams = methodGenInfo.MethodSignature;
                     string wrapped = parameters.ToDelimited(p => p.Name.CamelCase()); // wrapped as object array
@@ -636,7 +636,7 @@ namespace {0}
             }
         }
 
-        private static StringBuilder BuildPartialView(Type type)
+        public static StringBuilder BuildPartialView(Type type)
         {
             StringBuilder source = new StringBuilder();
             string typeName = type.Name.DropTrailingNonLetters();
