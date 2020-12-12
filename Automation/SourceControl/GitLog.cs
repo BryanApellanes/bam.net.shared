@@ -75,8 +75,8 @@ namespace Bam.Net.Automation.SourceControl
             LineReader = (num, line) => Logging.Log.AddEntry("GitLog: {0}. {1}", Logging.LogEventType.Information, num.ToString(), line);
         }
 
-        static Dictionary<string, HashSet<GitLog>> _logCache = new Dictionary<string, HashSet<GitLog>>();
-        static object _logCacheLock = new object();
+        static readonly Dictionary<string, HashSet<GitLog>> _logCache = new Dictionary<string, HashSet<GitLog>>();
+        static readonly object _logCacheLock = new object();
 
         public static HashSet<GitLog> SinceLatestRelease(string gitRepoPath, bool useCache = true)
         {

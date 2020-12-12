@@ -328,6 +328,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Automation\Sftp.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Automation\SourceControl\Extensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Automation\SourceControl\Git.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Automation\SourceControl\GitChangeLog.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Automation\SourceControl\GitChangeLogSection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Automation\SourceControl\GitConfigStack.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Automation\SourceControl\GitLog.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Automation\SourceControl\GitOption.cs" />

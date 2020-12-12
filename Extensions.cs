@@ -3812,7 +3812,7 @@ namespace Bam.Net
         }
 
         /// <summary>
-        /// Replace a specified string with another string where that string occurs
+        /// Replace a specified string with another string where the string to replace occurs
         /// between the startDelimiter and endDelimiter.
         /// </summary>
         /// <param name="input"></param>

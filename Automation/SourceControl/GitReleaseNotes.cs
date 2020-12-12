@@ -51,6 +51,14 @@ namespace Bam.Net.Automation.SourceControl
             return SinceLatestRelease(packageId, gitRepoPath, out string ignore);
         }
 
+        /// <summary>
+        /// Get release notes for the specified package since the latest release.
+        /// </summary>
+        /// <param name="packageId">The package to compile release notes for.  Commits starting
+        /// with "{packageId}:" are included in the release notes.</param>
+        /// <param name="gitRepoPath">The local path to the git repository to get release notes for.</param>
+        /// <param name="latestRelease">The latest release (tag).</param>
+        /// <returns></returns>
         public static GitReleaseNotes SinceLatestRelease(string packageId, string gitRepoPath, out string latestRelease)
         {
             latestRelease = Git.LatestRelease(gitRepoPath);
