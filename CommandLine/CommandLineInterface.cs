@@ -1397,6 +1397,11 @@ File Version: {1}
 
                 if (methodToInvoke != null)
                 {
+                    if (Arguments.Contains("debug"))
+                    {
+                        Console.WriteLine($"Attach Debugger: ProcessId={Process.GetCurrentProcess().Id}");
+                        Console.ReadLine();
+                    }
                     if (IsolateMethodCalls)
                     {
                         methodToInvoke.InvokeInSeparateAppDomain();

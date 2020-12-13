@@ -12,7 +12,7 @@ namespace Bam.Net
     /// </summary>
     public static class BamHome // TODO: refactor this into BamHome.[home paths] and BamProfile.[profile paths]
     {
-        public static string SystemRoot => OSInfo.IsWindows ? "/c": "/";
+        public static string SystemRoot => OSInfo.IsWindows ? "c:/": "/";
         public static string Path => System.IO.Path.Combine(PathSegments);
 
         /// <summary>
@@ -25,7 +25,7 @@ namespace Bam.Net
         public static string Local => System.IO.Path.Combine(Path, "local");
         
         /// <summary>
-        /// The path segments for BamHome, on Windows /c/bam, otherwise /opt/bam
+        /// The path segments for BamHome, on Windows c:/opt/bam, otherwise /opt/bam
         /// </summary>
         public static string[] PathSegments
         {

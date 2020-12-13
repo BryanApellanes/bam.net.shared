@@ -3,6 +3,7 @@
 */
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 
@@ -62,7 +63,9 @@ namespace Bam.Net.CommandLine
 
                 if (!arg.StartsWith(argPrefix) || !(arg.Length > 1))
                 {
-                    Message = "Unrecognized argument format: " + arg;
+                    Console.WriteLine($"attach debugger: {Process.GetCurrentProcess().Id}");
+                    Console.ReadLine();
+                    Message = $"Unrecognized argument format: {arg}\r\n\r\nAll Args:\r\n{string.Join("\r\n", args)}";
                     Status = ArgumentParseStatus.Error;
                 }
                 else

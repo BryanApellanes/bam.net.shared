@@ -66,7 +66,7 @@ namespace Bam.Net
 
         public static string DefaultToolPath(string fileName)
         {
-            return $"/opt/bam/tools/{fileName}";
+            return Current == OSNames.Windows ? $"/c/opt/bam/tools/{fileName}" : $"/opt/bam/tools/{fileName}";
         }
         
         public static bool TryGetPath(string fileName, out string path)
@@ -99,13 +99,9 @@ namespace Bam.Net
         private static string ResolvePath(string fileName, string output)
         {
             string[] lines = output.DelimitSplit("\r", "\n");
-            if (lines.Length == 2)
+            if (lines.Length > 1)
             {
-                return lines[1];
-            }
-            if (lines.Length == 0 || lines.Length > 2)
-            {
-                Args.Throw<ArgumentException>("Unable to resolve path for {0}: \r\n\t{1}", fileName, output);
+                return lines[0];
             }
             return lines[0];
         }

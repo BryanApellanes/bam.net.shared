@@ -23,6 +23,7 @@ namespace Bam.Net
         public string ArgumentPrefix { get; set; }
         public AppKind AppKind { get; set; }
         public StandardEnvironments Environment { get; set; }
+        public string BashPath { get; set; }
         public string GitPath { get; set; }
         public string DotNetPath { get; set; }
         public string NpxPath { get; set; }
@@ -103,6 +104,7 @@ namespace Bam.Net
             {
                 BamSettings settings = new BamSettings
                 {
+                    BashPath = GetPath("bash"),
                     GitPath = GetPath("git"),
                     DotNetPath = GetPath("dotnet"),
                     NpxPath = GetPath("npx"),
