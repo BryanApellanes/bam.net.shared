@@ -3147,10 +3147,10 @@
     <Content Include="$(MSBuildThisFileDirectory)Data\Qi\Dao.js" />
     <Content Include="$(MSBuildThisFileDirectory)Data\Qi\Qi.js" />
     <Content Include="$(MSBuildThisFileDirectory)Encryption\regen_db_js.sh" />
+    <Content Include="$(MSBuildThisFileDirectory)Logging\Http\Data\DaoRepoGenerationConfig.yaml" />
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Data\Schema\Handlebars\Templates\ForeignKeyColumnsProperty.hbs" />
     <Content Include="$(MSBuildThisFileDirectory)Data\Schema\Templates\README.md" />
     <Content Include="$(MSBuildThisFileDirectory)Documentation\README.md" />
-    <Content Include="$(MSBuildThisFileDirectory)Logging\Http\GenerationConfig.yaml" />
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Javascript\json2.js" />
     <Content Include="$(MSBuildThisFileDirectory)Server\Renderers\dust-full-0.3.0.js" />
     <Content Include="$(MSBuildThisFileDirectory)Server\Renderers\dust.custom.js" />
