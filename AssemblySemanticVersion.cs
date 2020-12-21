@@ -5,6 +5,8 @@ namespace Bam.Net
 {
     public class AssemblySemanticVersion: FileSystemSemanticVersion
     {
+        public string Product { get; set; }
+        
         /// <summary>
         /// The same as Revision.
         /// </summary>
@@ -70,7 +72,14 @@ namespace Bam.Net
         
         public static string WriteProjectSemanticAssemblyInfo(FileInfo projectFile, SemanticVersion version)
         {
-            return From(version).WriteSemanticAssemblyInfo(projectFile.Directory.FullName);
+            return From(Path.GetFileNameWithoutExtension(projectFile.FullName), version).WriteSemanticAssemblyInfo(projectFile.Directory.FullName);
+        }
+
+        public static AssemblySemanticVersion From(string product, SemanticVersion version)
+        {
+            AssemblySemanticVersion result = From(version);
+            result.Product = product;
+            return result;
         }
         
         public static AssemblySemanticVersion From(SemanticVersion semanticVersion)
@@ -95,12 +104,21 @@ namespace Bam.Net
         
         public string ToSemanticAssemblyInfo()
         {
-            return $"using System.Reflection;\r\n" +
-                   $"using Bam.Net;\r\n\r\n" +
-                   $"[assembly: AssemblyVersion(\"{Major}.{Minor}.{Patch}.0\")]\r\n" +
-                   $"[assembly: AssemblyFileVersion(\"{Major}.{Minor}.{Patch}.{Revision}\")]\r\n" +
-                   $"[assembly: AssemblyCommit(\"{Commit}\")]\r\n" +
-                   $"[assembly: AssemblySemanticVersion(\"{base.ToString()}\")]\r\n";
+            string semanticVersion = base.ToString();
+            string content = $"using System.Reflection;\r\n" +
+                             $"using Bam.Net;\r\n\r\n" +
+                             $"[assembly: AssemblyVersion(\"{Major}.{Minor}.{Patch}.0\")]\r\n" +
+                             $"[assembly: AssemblyFileVersion(\"{Major}.{Minor}.{Patch}.0\")]\r\n" +
+                             $"[assembly: AssemblyCommit(\"{Commit}\")]\r\n" +
+                             $"[assembly: AssemblySemanticVersion(\"{semanticVersion}\")]\r\n" +
+                             $"[assembly: AssemblyDescription(\"SemanticVersion={semanticVersion}, Revision={Major}.{Minor}.{Patch}.{Revision}\")]\r\n";
+
+            if (!string.IsNullOrEmpty(Product))
+            {
+                content += $"[assembly: AssemblyProduct(\"{Product}\")]\r\n";
+            }
+
+            return content;
         }
     }
 }

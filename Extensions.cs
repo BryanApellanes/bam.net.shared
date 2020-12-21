@@ -3161,7 +3161,7 @@ namespace Bam.Net
         static readonly Dictionary<string, object> fileAccessLocks = new Dictionary<string, object>();
 
         /// <summary>
-        /// Returns the content of the file referred to by the current
+        /// Returns the content of the file referenced by the current
         /// string instance.
         /// </summary>
         /// <param name="filePath"></param>

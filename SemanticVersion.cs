@@ -10,7 +10,7 @@ namespace Bam.Net
     /// {Major}.{Minor}.{Patch}-{PreReleasePrefix}
     ///
     /// If Build is specified without PreReleasePrefix
-    /// {Major}.{Minor{.{Patch}-{Build}
+    /// {Major}.{Minor}.{Patch}-{Build}
     /// If both PreReleasePrefix and Build are specified
     /// {Major}.{Minor}.{Patch}-{PreReleasePrefix}+{Build}
     ///

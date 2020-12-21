@@ -307,6 +307,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Automation\Nmap.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Automation\NodeScripts\Node.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Automation\NotificationWorker.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Automation\NuspecFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Automation\ProcessWorker.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Automation\Project.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Automation\ProjectInfo.cs" />
