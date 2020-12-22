@@ -60,19 +60,26 @@ namespace Bam.Net
             set => _build = value;
         }
 
+        private string _description;
+        public string Description
+        {
+            get => $"{_description}; {GetDescriptionSuffix()}".Replace("\r", "").Replace("\n", "");
+            set => _description = value;
+        }
+        
         public override string ToString()
         {
             return $"{Major}.{Minor}.{BuildNumber}.{Revision}";
         }
-
-        public static string WriteProjectSemanticAssemblyInfo(string projectFilePath, SemanticVersion version)
-        {
-            return WriteProjectSemanticAssemblyInfo(new FileInfo(projectFilePath), version);
-        }
         
-        public static string WriteProjectSemanticAssemblyInfo(FileInfo projectFile, SemanticVersion version)
+        public static string WriteProjectSemanticAssemblyInfo(FileInfo projectFile, SemanticVersion version, string description = null)
         {
-            return From(Path.GetFileNameWithoutExtension(projectFile.FullName), version).WriteSemanticAssemblyInfo(projectFile.Directory.FullName);
+            AssemblySemanticVersion file = From(Path.GetFileNameWithoutExtension(projectFile.FullName), version);
+            if (!string.IsNullOrEmpty(description))
+            {
+                file.Description = description;
+            }
+            return file.WriteSemanticAssemblyInfo(projectFile.Directory.FullName);
         }
 
         public static AssemblySemanticVersion From(string product, SemanticVersion version)
@@ -111,7 +118,7 @@ namespace Bam.Net
                              $"[assembly: AssemblyFileVersion(\"{Major}.{Minor}.{Patch}.0\")]\r\n" +
                              $"[assembly: AssemblyCommit(\"{Commit}\")]\r\n" +
                              $"[assembly: AssemblySemanticVersion(\"{semanticVersion}\")]\r\n" +
-                             $"[assembly: AssemblyDescription(\"SemanticVersion={semanticVersion}, Revision={Major}.{Minor}.{Patch}.{Revision}\")]\r\n";
+                             $"[assembly: AssemblyDescription(\"{Description}\")]\r\n";
 
             if (!string.IsNullOrEmpty(Product))
             {
@@ -119,6 +126,11 @@ namespace Bam.Net
             }
 
             return content;
+        }
+        
+        protected string GetDescriptionSuffix()
+        {
+            return $"SemanticVersion={base.ToString()}, Revision={Major}.{Minor}.{Patch}.{Revision}";
         }
     }
 }

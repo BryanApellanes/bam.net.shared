@@ -1397,7 +1397,7 @@ File Version: {1}
 
                 if (methodToInvoke != null)
                 {
-                    if (Arguments.Contains("debug"))
+                    if (Arguments.Contains("debug") || Environment.GetEnvironmentVariable("BAMDEBUG").Equals("true", StringComparison.InvariantCultureIgnoreCase))
                     {
                         Console.WriteLine($"Attach Debugger: ProcessId={Process.GetCurrentProcess().Id}");
                         Console.ReadLine();

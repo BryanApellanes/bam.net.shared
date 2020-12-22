@@ -21,6 +21,8 @@ namespace Bam.Net.Automation
         public string Description { get; set; }
         private string Path { get; set; }
 
+        public static string DefaultAuthors => "Bryan Apellanes";
+        
         public static XElement NoPackageAnalysisElement => new XElement("NoPackageAnalysis", true);
         public static XElement GetNuspecFileElement(string projectFile)
         {
@@ -41,15 +43,17 @@ namespace Bam.Net.Automation
                         new XElement("MSBuild", new XAttribute("Projects", "$(MSBuildProjectFullPath)"), new XAttribute("Targets", "Publish"), new XAttribute("Properties", "TargetFramework=%(_TargetFramework.Identity)" ))
                     ));
                 result.Add(new XAttribute("Name", "PublishAll"));
-                result.Add(new XAttribute("BeforeTarget", "GenerateNuspec"));
+                result.Add(new XAttribute("BeforeTargets", "GenerateNuspec"));
                 return result;
             }
         }
         
+        public static XNamespace Namespace => XNamespace.Get("http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd"); 
+        
         public FileInfo Write()
         {
             FileInfo result = new FileInfo(Path);
-            XNamespace ns = XNamespace.Get("http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd");
+            XNamespace ns = Namespace;
             XDocument nuspec = new XDocument
             (
                 new XElement(ns + "package",//, new XAttribute("xmlns", "http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd"),
