@@ -270,7 +270,7 @@ namespace Bam.Net
 
         protected static void Pass(string text)
         {
-            OutLineFormat("{0}:Passed", ConsoleColor.Green, text);
+            Message.PrintLine("{0}:Passed", ConsoleColor.Green, text);
         }
 
         public static void UnitTestMenu(Assembly assembly, ConsoleMenu[] otherMenus, string header)

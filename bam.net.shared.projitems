@@ -278,6 +278,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)Automation\BuildSettings.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Automation\BakeWorker.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Automation\CSharpScriptWorker.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Automation\EnvironmentVariable.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Automation\EnvironmentVariableAttribute.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Automation\EnvironmentVariableDirectory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Automation\EnvironmentVariableExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Automation\EnvironmentVariableTarget.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Automation\FullBuildWorker.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Automation\ConsoleOutputWorker.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Automation\CsFile.cs" />

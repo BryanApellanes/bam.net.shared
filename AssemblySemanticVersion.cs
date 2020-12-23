@@ -63,7 +63,16 @@ namespace Bam.Net
         private string _description;
         public string Description
         {
-            get => $"{_description}; {GetDescriptionSuffix()}".Replace("\r", "").Replace("\n", "");
+            get
+            {
+                string suffix = GetDescriptionSuffix().Replace("\r", "").Replace("\n", "");
+                if (string.IsNullOrEmpty(_description))
+                {
+                    return suffix;
+                }
+
+                return $"{_description}; {suffix}";
+            }
             set => _description = value;
         }
         

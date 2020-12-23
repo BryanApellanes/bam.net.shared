@@ -1,10 +1,17 @@
 using System;
+using Bam.Net.Analytics;
 using Bam.Net.Logging;
+using CsQuery.EquationParser.Implementation;
 
 namespace Bam.Net.CommandLine
 {
     public class Message
     {
+        static Message()
+        {
+            GetDiffReportFormatter = (diffReport) => new ConsoleDiffReportFormatter(diffReport);
+        }
+        
         public static void Log(params ConsoleMessage[] messages)
         {
             ConsoleMessage.Log(messages);
@@ -93,6 +100,19 @@ namespace Bam.Net.CommandLine
         public static void Print(string messageSignature, ConsoleColor textColor, params object[] messageSignatureArgs)
         {
             ConsoleMessage.Print(messageSignature, textColor, messageSignatureArgs);
+        }
+        
+        public static void PrintDiff(string first, string second)
+        {
+            DiffReport report = DiffReport.Create(first, second);
+            DiffReportFormatter formatter = GetDiffReportFormatter(report);
+            formatter.Format();
+        }
+
+        public static Func<DiffReport, DiffReportFormatter> GetDiffReportFormatter
+        {
+            get;
+            set;
         }
     }
 }

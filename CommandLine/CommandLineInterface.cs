@@ -14,6 +14,7 @@ using Bam.Net.Configuration;
 using System.Threading;
 using System.Threading.Tasks;
 using Bam.Net.Application;
+using Bam.Net.Automation;
 
 namespace Bam.Net.CommandLine
 {
@@ -1397,7 +1398,8 @@ File Version: {1}
 
                 if (methodToInvoke != null)
                 {
-                    if (Arguments.Contains("debug") || Environment.GetEnvironmentVariable("BAMDEBUG").Equals("true", StringComparison.InvariantCultureIgnoreCase))
+                    string bamDebug = Environment.GetEnvironmentVariable("BAMDEBUG") ?? string.Empty;
+                    if (Arguments.Contains("debug") || bamDebug.Equals("true", StringComparison.InvariantCultureIgnoreCase))
                     {
                         Console.WriteLine($"Attach Debugger: ProcessId={Process.GetCurrentProcess().Id}");
                         Console.ReadLine();
