@@ -34,7 +34,7 @@ namespace Bam.Net.Data.Repositories // shared
 			return Database.BeginTransaction();
 		}
 
-		public string ConnectionName
+		public new string ConnectionName
 		{
 			get
 			{
@@ -46,7 +46,7 @@ namespace Bam.Net.Data.Repositories // shared
 			}
 		}
 
-		public string ConnectionString
+		public override string ConnectionString
 		{
 			get
 			{
@@ -58,27 +58,27 @@ namespace Bam.Net.Data.Repositories // shared
 			}
 		}
 
-		public System.Data.Common.DbCommand CreateCommand()
+		public override System.Data.Common.DbCommand CreateCommand()
 		{
 			return Database.CreateCommand();
 		}
 
-		public System.Data.Common.DbConnectionStringBuilder CreateConnectionStringBuilder()
+		public override System.Data.Common.DbConnectionStringBuilder CreateConnectionStringBuilder()
 		{
 			return Database.CreateConnectionStringBuilder();
 		}
 
-		public void ExecuteSql(SqlStringBuilder builder)
+		public override void ExecuteSql(SqlStringBuilder builder)
 		{
 			Database.ExecuteSql(builder);
 		}
 
-		public void ExecuteSql(SqlStringBuilder builder, IParameterBuilder parameterBuilder)
+		public override void ExecuteSql(SqlStringBuilder builder, IParameterBuilder parameterBuilder)
 		{
 			Database.ExecuteSql(builder, parameterBuilder);
 		}
 
-		public void ExecuteSql(string sqlStatement, System.Data.CommandType commandType, params System.Data.Common.DbParameter[] dbParameters)
+		public override void ExecuteSql(string sqlStatement, System.Data.CommandType commandType, params System.Data.Common.DbParameter[] dbParameters)
 		{
 			Database.ExecuteSql(sqlStatement, commandType, dbParameters);
 		}

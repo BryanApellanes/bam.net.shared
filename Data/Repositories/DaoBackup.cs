@@ -46,12 +46,12 @@ namespace Bam.Net.Data.Repositories
 		public Database DatabaseToBackup { get; private set; }
 
 		/// <summary>
-		/// The repository where the database will be backed up to.
+		/// The repository where the database is backed up to.
 		/// </summary>
 		public IRepository BackupRepository { get; private set; }
 
 		/// <summary>
-		/// The database that the backup will be restored to
+		/// The database that the backup is restored to
 		/// </summary>
 		public Database DatabaseToRestoreTo { get; set; }
 
