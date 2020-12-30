@@ -70,21 +70,11 @@ namespace Bam.Net.CoreServices
         /// </summary>
         public bool MungeHostNames
         {
-            get
-            {
-                return _mungeHostName;
-            }
+            get => _mungeHostName;
             set
             {
                 _mungeHostName = value;
-                if (_mungeHostName)
-                {
-                    HostNameMunger = SubdomainPrefixMunger;
-                }
-                else
-                {
-                    HostNameMunger = NoMungeMunger;
-                }
+                HostNameMunger = _mungeHostName ? SubdomainPrefixMunger : NoMungeMunger;
             }
         }
 
@@ -288,17 +278,14 @@ namespace Bam.Net.CoreServices
 
         private static T ConstructProxy<T>(Assembly assembly, Incubator serviceProvider = null)
         {
-            string proxyTypeName = "{0}Proxy"._Format(typeof(T).Name);
+            string proxyTypeName = $"{typeof(T).Name}Proxy";
             Type proxyType = assembly.GetTypes().FirstOrDefault(t => t.Name.Equals(proxyTypeName));
             if (proxyType == null)
             {
                 Args.Throw<ArgumentException>("The proxy {0} for type {1} was not found in the specified assembly: {2}", proxyTypeName, typeof(T).Name, assembly.FullName);
             }
             T result = proxyType.Construct<T>();
-            if(serviceProvider != null)
-            {
-                serviceProvider.SetProperties(result);
-            }
+            serviceProvider?.SetProperties(result);
             return result;
         }
 

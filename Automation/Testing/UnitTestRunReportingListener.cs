@@ -16,10 +16,10 @@ namespace Bam.Net.Automation.Testing
 {
     public class UnitTestRunReportingListener : TestRunListener<UnitTestMethod>
     {
-        ConcurrentDictionary<string, TestSuiteExecutionSummary> _testSuiteExecutionLookupByTitle;
-        ConcurrentDictionary<string, TestSuiteDefinition> _testSuiteDefinitionLookupByTitle;
-        ConcurrentDictionary<string, TestDefinition> _testDefinitionLookupByTitle;
-        ConcurrentDictionary<MethodInfo, TestExecution> _testExecutionLookupByMethodInfo;
+        readonly ConcurrentDictionary<string, TestSuiteExecutionSummary> _testSuiteExecutionLookupByTitle;
+        readonly ConcurrentDictionary<string, TestSuiteDefinition> _testSuiteDefinitionLookupByTitle;
+        readonly ConcurrentDictionary<string, TestDefinition> _testDefinitionLookupByTitle;
+        readonly ConcurrentDictionary<MethodInfo, TestExecution> _testExecutionLookupByMethodInfo;
 
         public UnitTestRunReportingListener(string testReportHost, int port = 80, ILogger logger = null)
         {
@@ -28,12 +28,34 @@ namespace Bam.Net.Automation.Testing
             HashSet<Assembly> reference = new HashSet<Assembly>() { typeof(TestMethod).Assembly, typeof(ConsoleMethod).Assembly };
             TestReportService = proxyFactory.GetProxy<TestReportService>(testReportHost, port, reference);
             TestReportHost = testReportHost;
+            TestReportHostPort = port;
             _testSuiteExecutionLookupByTitle = new ConcurrentDictionary<string, TestSuiteExecutionSummary>();
             _testSuiteDefinitionLookupByTitle = new ConcurrentDictionary<string, TestSuiteDefinition>();
             _testDefinitionLookupByTitle = new ConcurrentDictionary<string, TestDefinition>();
             _testExecutionLookupByMethodInfo = new ConcurrentDictionary<MethodInfo, TestExecution>();
         }
-        
+
+        public override bool Equals(object? obj)
+        {
+            if (obj is UnitTestRunReportingListener unitTestRunReportingListener)
+            {
+                return (bool) (unitTestRunReportingListener.TestReportHost?.Equals(TestReportHost)) &&
+                       unitTestRunReportingListener.TestReportHostPort == TestReportHostPort;
+            }
+
+            return false;
+        }
+
+        public override int GetHashCode()
+        {
+            return ToString().GetHashCode();
+        }
+
+        public override string ToString()
+        {
+            return $"{nameof(UnitTestRunReportingListener)}::{TestReportHost}::{TestReportHostPort}";
+        }
+
         public override void TestsStarting(object sender, TestEventArgs<UnitTestMethod> args)
         {
             TestSuiteDefinition suite = GetTestSuiteDefinition<UnitTestMethod>(args);
@@ -90,6 +112,7 @@ namespace Bam.Net.Automation.Testing
         }
 
         public string TestReportHost { get; set; }
+        public int TestReportHostPort { get; set; }
         protected ITestRunner<UnitTestMethod> TestRunner { get; set; }        
         protected ITestReportService TestReportService { get; set; }
         protected ILogger Logger { get; set; }
@@ -150,7 +173,7 @@ namespace Bam.Net.Automation.Testing
             return SetTestSuiteExecutionSummary(suite);
         }
 
-        object _testSuiteExecutionSummaryLock = new object();
+        readonly object _testSuiteExecutionSummaryLock = new object();
         /// <summary>
         /// Set a TestSuiteExecutionSummary for the specified test creating it if necessary
         /// and populating the internal cache

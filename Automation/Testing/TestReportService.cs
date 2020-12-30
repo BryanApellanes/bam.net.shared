@@ -189,8 +189,6 @@ namespace Bam.Net.Automation.Testing
             }
         }
 
-        
-
         public virtual SearchTestExecutionResponse SearchTestExecutionsByDate(DateTime from, DateTime to)
         {
             try

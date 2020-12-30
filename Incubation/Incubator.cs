@@ -221,7 +221,7 @@ namespace Bam.Net.Incubation
         }
 
         /// <summary>
-        /// Sets writable properties addorned with the Inject attribute of the specified instance to
+        /// Sets writable properties adorned with the Inject attribute of the specified instance to
         /// values in the current Incubator.
         /// </summary>
         /// <param name="instance">The instance.</param>

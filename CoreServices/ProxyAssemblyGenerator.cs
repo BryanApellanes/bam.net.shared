@@ -30,17 +30,11 @@ namespace Bam.Net.CoreServices
         /// The logger used to log events for the current ProxyAssemblyGenerator
         /// </summary>
         public ILogger Logger { get; set; }
-        public ProxySettings ServiceSettings { get; set; }
+        public ProxySettings ServiceSettings { get; set; } // TODO: rename this to ProxySettings 
         public StringBuilder Code { get; set; }
         public string WorkspaceDirectory { get; set; }
         public Type ServiceType { get; set; }
-        public string AssemblyFilePath
-        {
-            get
-            {
-                return Path.Combine(WorkspaceDirectory, $"{ServiceType.Name}_{ServiceSettings.ToString()}_Proxy.dll");
-            }
-        }
+        public string AssemblyFilePath => Path.Combine(WorkspaceDirectory, $"{ServiceType.Name}_{ServiceSettings.ToString()}_Proxy.dll");
 
         public string GetSource()
         {
