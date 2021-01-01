@@ -29,6 +29,16 @@ namespace Bam.Net.Web
             return (s) => s.FromXml<T>();
         }
 
+        public static Func<string, T> YamlParser<T>()
+        {
+            return (s) => s.FromYaml<T>();
+        }
+
+        public static T GetYaml<T>(string url, Dictionary<string, string> headers = null)
+        {
+            return Get(url, YamlParser<T>(), headers);
+        }
+        
         /// <summary>
         /// Gets the specified url and parses the result as Json into the specified
         /// generic type T

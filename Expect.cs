@@ -479,6 +479,94 @@ namespace Bam.Net
                 throw new ExpectationFailedException($"{objectToCheck.GetType().Name} doesn't extend {typeof(T).Name}", ShouldHtmlEncodeExceptions);
         }
 
+        public static void ShouldBeGreaterThan(this int valueToCheck, int valueToCompareTo, string message = null)
+        {
+            if (!(valueToCheck > valueToCompareTo))
+            {
+                if (!string.IsNullOrEmpty(message))
+                {
+                    throw new ExpectationFailedException(message);
+                }
+                else
+                {
+                    throw new ExpectationFailedException($"value ({valueToCheck}) is not greater than ({valueToCompareTo})");
+                }
+            }
+            
+        }
+        
+        public static void ShouldBeGreaterThan(this uint valueToCheck, uint valueToCompareTo, string message = null)
+        {
+            if (!(valueToCheck > valueToCompareTo))
+            {
+                if (!string.IsNullOrEmpty(message))
+                {
+                    throw new ExpectationFailedException(message);
+                }
+                else
+                {
+                    throw new ExpectationFailedException($"value ({valueToCheck}) is not greater than ({valueToCompareTo})");
+                }
+            }
+        }
+        public static void ShouldBeGreaterThanOrEqualTo(this long valueToCheck, long valueToCompareTo, string message = null)
+        {
+            if (!(valueToCheck >= valueToCompareTo))
+            {
+                if (!string.IsNullOrEmpty(message))
+                {
+                    throw new ExpectationFailedException(message);
+                }
+                else
+                {
+                    throw new ExpectationFailedException($"value ({valueToCheck}) is not greater than ({valueToCompareTo})");
+                }
+            }
+        }
+        public static void ShouldBeGreaterThanOrEqualTo(this int valueToCheck, int valueToCompareTo, string message = null)
+        {
+            if (!(valueToCheck >= valueToCompareTo))
+            {
+                if (!string.IsNullOrEmpty(message))
+                {
+                    throw new ExpectationFailedException(message);
+                }
+                else
+                {
+                    throw new ExpectationFailedException($"value ({valueToCheck}) is not greater than ({valueToCompareTo})");
+                }
+            }
+        }
+        public static void ShouldBeGreaterThanOrEqualTo(this uint valueToCheck, uint valueToCompareTo, string message = null)
+        {
+            if (!(valueToCheck >= valueToCompareTo))
+            {
+                if (!string.IsNullOrEmpty(message))
+                {
+                    throw new ExpectationFailedException(message);
+                }
+                else
+                {
+                    throw new ExpectationFailedException($"value ({valueToCheck}) is not greater than ({valueToCompareTo})");
+                }
+            }
+        }
+        
+        public static void ShouldBeGreaterThan(this long valueToCheck, long valueToCompareTo, string message = null)
+        {
+            if (!(valueToCheck > valueToCompareTo))
+            {
+                if (!string.IsNullOrEmpty(message))
+                {
+                    throw new ExpectationFailedException(message);
+                }
+                else
+                {
+                    throw new ExpectationFailedException($"value ({valueToCheck}) is not greater than ({valueToCompareTo})");
+                }
+            }
+        }
+        
         public static void ShouldBeNull(this object objectToCheck, string failureMessage = null)
         {
             IsNull(objectToCheck, failureMessage);
@@ -516,7 +604,7 @@ namespace Bam.Net
             IsNotNull(objectToCheck, string.Empty);
         }
 
-        public static void IsNotNull(object objectToCheck, string failureMessage) 
+        public static void IsNotNull(this object objectToCheck, string failureMessage) 
         {
             if (objectToCheck == null)
             {
