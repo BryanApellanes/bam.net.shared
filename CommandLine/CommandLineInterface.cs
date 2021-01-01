@@ -1398,12 +1398,7 @@ File Version: {1}
 
                 if (methodToInvoke != null)
                 {
-                    string bamDebug = Environment.GetEnvironmentVariable("BAMDEBUG") ?? string.Empty;
-                    if (Arguments.Contains("debug") || bamDebug.Equals("true", StringComparison.InvariantCultureIgnoreCase))
-                    {
-                        Console.WriteLine($"Attach Debugger: ProcessId={Process.GetCurrentProcess().Id}");
-                        Console.ReadLine();
-                    }
+                    CheckBamDebugSetting();
                     if (IsolateMethodCalls)
                     {
                         methodToInvoke.InvokeInSeparateAppDomain();
@@ -1424,6 +1419,18 @@ File Version: {1}
                 }
             }
             return executed;
+        }
+
+        /// <summary>
+        /// Pauses at the console if the environment variable "BamDebug" is set to "true".
+        /// </summary>
+        protected static void CheckBamDebugSetting()
+        {
+            if (Arguments.Contains("debug") || BamSettings.BamDebug)
+            {
+                Console.WriteLine($"Attach Debugger: ProcessId={Process.GetCurrentProcess().Id}");
+                Console.ReadLine();
+            }
         }
 
         /// <summary>

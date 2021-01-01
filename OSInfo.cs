@@ -69,6 +69,12 @@ namespace Bam.Net
             return Current == OSNames.Windows ? $"/c/opt/bam/tools/{fileName}" : $"/opt/bam/tools/{fileName}";
         }
         
+        /// <summary>
+        /// Resolves the path to the specified executable file using 'which' or 'where' depending on the operating system
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <param name="path"></param>
+        /// <returns></returns>
         public static bool TryGetPath(string fileName, out string path)
         {
             try

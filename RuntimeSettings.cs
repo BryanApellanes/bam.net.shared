@@ -60,15 +60,31 @@ namespace Bam.Net
 
         public static string GetMsCoreLibPath()
         {
-            return Path.Combine(GetConfig().ReferenceAssembliesDir, "mscorlib.dll");
+            string fileName = "mscorlib.dll";
+            string result = Path.Combine(GetConfig().ReferenceAssembliesDir, fileName);
+            if (!File.Exists(result))
+            {
+                result = GetEntryDirectoryFilePathFor(fileName);
+            }
+
+            return result;
         }
-        
+
         public static string GetSystemRuntimePath()
         {
-            return Path.Combine(GetConfig().ReferenceAssembliesDir, SystemRuntime);
+            string result = Path.Combine(GetConfig().ReferenceAssembliesDir, SystemRuntime);
+            if (!File.Exists(result))
+            {
+                result = GetEntryDirectoryFilePathFor(SystemRuntime);
+            }
+
+            return result;
         }
-        
-        public static string ReferenceAssembliesDir => Path.Combine(BinDir, OSInfo.Current.ToString(), "ReferenceAssemblies");
+
+        public static FileInfo EntryExecutable => Assembly.GetEntryAssembly().GetFileInfo();
+        public static DirectoryInfo EntryDirectory => EntryExecutable.Directory;
+
+        public static string ReferenceAssembliesDir => EntryDirectory.FullName;
 
         public static string GenDir => Path.Combine(BinDir, "gen");
 
@@ -111,5 +127,16 @@ namespace Bam.Net
         /// Gets a value indicating if the current runtime environment is a mac, same as IsMac
         /// </summary>
         public static bool IsOSX => RuntimeInformation.IsOSPlatform(OSPlatform.OSX);
+        
+        public static string GetEntryDirectoryFilePathFor(string fileName)
+        {
+            string result;
+            Assembly entry = Assembly.GetEntryAssembly();
+            FileInfo file = entry.GetFileInfo();
+            DirectoryInfo directoryInfo = file.Directory;
+            string directory = directoryInfo == null ? "." : directoryInfo.FullName;
+            result = Path.Combine(directory, fileName);
+            return result;
+        }
     }
 }

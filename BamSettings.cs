@@ -18,6 +18,7 @@ namespace Bam.Net
         {
             ArgumentPrefix = ParsedArguments.DefaultArgPrefix;
             Environment = StandardEnvironments.Development;
+            Debug = BamDebug;
         }
 
         public string ArgumentPrefix { get; set; }
@@ -32,6 +33,12 @@ namespace Bam.Net
         public string DockerPath { get; set; }
         public string NugetPath { get; set; }
 
+        public bool Debug
+        {
+            get;
+            set;
+        }
+        
         public bool IsValid(Action<string> notValid)
         {
             if (string.IsNullOrEmpty(GitPath))
@@ -97,6 +104,28 @@ namespace Bam.Net
             return true;
         }
 
+        /// <summary>
+        /// Indicates if the environment variable BAMDEBUG equals "true".
+        /// </summary>
+        public static bool BamDebug
+        {
+            get => (System.Environment.GetEnvironmentVariable("BAMDEBUG") ?? string.Empty).Equals("true");
+        }
+        
+        private static BamSettings _default;
+        public static BamSettings Default
+        {
+            get
+            {
+                if (_default == null)
+                {
+                    _default = Load();
+                }
+
+                return _default;
+            }
+        }
+        
         public static BamSettings Load(string path = null)
         {
             path = path ?? Path.Combine(Config.GetDirectory(ProcessApplicationNameProvider.Current).FullName, $"BamSettings-{OSInfo.Current.ToString()}.yaml");
