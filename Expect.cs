@@ -566,6 +566,36 @@ namespace Bam.Net
                 }
             }
         }
+
+        public static void ShouldBeEqualTo(this object objectToCheck, object compareTo, string failureMessage = null)
+        {
+            if (objectToCheck.Equals(compareTo))
+            {
+                if (!string.IsNullOrEmpty(failureMessage))
+                {
+                    throw new ExpectationFailedException(failureMessage);
+                }
+                else
+                {
+                    throw new ExpectationFailedException($"Expected {objectToCheck?.ToString()} == {compareTo?.ToString()}");
+                }
+            }
+        }
+        
+        public static void ShouldEqual(this object objectToCheck, object compareTo, string failureMessage = null)
+        {
+            if (objectToCheck != compareTo)
+            {
+                if (!string.IsNullOrEmpty(failureMessage))
+                {
+                    throw new ExpectationFailedException(failureMessage);
+                }
+                else
+                {
+                    throw new ExpectationFailedException($"Expected {objectToCheck?.ToString()} == {compareTo?.ToString()}");
+                }
+            }
+        }
         
         public static void ShouldBeNull(this object objectToCheck, string failureMessage = null)
         {
@@ -588,9 +618,14 @@ namespace Bam.Net
             if (objectToCheck != null)
             {
                 if (!string.IsNullOrEmpty(failureMessage))
+                {
                     throw new ExpectationFailedException(failureMessage);
+                }
                 else
-                    throw new ExpectationFailedException("null", objectToCheck.GetType().Name, ShouldHtmlEncodeExceptions);
+                {
+                    throw new ExpectationFailedException("null", objectToCheck.GetType().Name,
+                        ShouldHtmlEncodeExceptions);
+                }
             }
         }
 

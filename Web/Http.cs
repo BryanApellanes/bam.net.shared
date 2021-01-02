@@ -36,7 +36,17 @@ namespace Bam.Net.Web
 
         public static T GetYaml<T>(string url, Dictionary<string, string> headers = null)
         {
-            return Get(url, YamlParser<T>(), headers);
+            return GetYaml<T>(url, null, headers);
+        }
+        
+        public static T GetYaml<T>(string url, string userAgent, Dictionary<string, string> headers = null)
+        {
+            return Get(url, YamlParser<T>(), userAgent, headers);
+        }
+
+        public static T GetJson<T>(string url, Dictionary<string, string> headers = null)
+        {
+            return GetJson<T>(url, null, headers);
         }
         
         /// <summary>
@@ -47,24 +57,39 @@ namespace Bam.Net.Web
         /// <param name="url"></param>
         /// <param name="headers"></param>
         /// <returns></returns>
-        public static T GetJson<T>(string url, Dictionary<string, string> headers = null)
+        public static T GetJson<T>(string url, string userAgent, Dictionary<string, string> headers = null)
         {
-            return Get(url, JsonParser<T>(), headers);
+            return Get(url, JsonParser<T>(), userAgent, headers);
         }
 
-		public static T GetXml<T>(string url, Dictionary<string, string> headers = null)
+        public static T GetXml<T>(string url, Dictionary<string, string> headers = null)
+        {
+            return GetXml<T>(url, null, headers);
+        }
+        
+		public static T GetXml<T>(string url, string userAgent, Dictionary<string, string> headers = null)
 		{
-			return Get(url, XmlParser<T>(), headers);
+			return Get(url, XmlParser<T>(), userAgent, headers);
 		}
 
         public static T Get<T>(string url, Func<string, T> parser, Dictionary<string, string> headers = null)
         {
-            return Get<T>(new Uri(url), parser);
+            return Get<T>(url, parser, null, headers);
+        }
+        
+        public static T Get<T>(string url, Func<string, T> parser, string userAgent, Dictionary<string, string> headers = null)
+        {
+            return Get<T>(new Uri(url), parser, userAgent, headers);
         }
 
         public static T Get<T>(Uri url, Func<string, T> parser, Dictionary<string, string> headers = null)
         {
-            return parser(GetString(url.ToString(), headers));
+            return Get<T>(url, parser, null, headers);
+        }
+        
+        public static T Get<T>(Uri url, Func<string, T> parser, string userAgent, Dictionary<string, string> headers = null)
+        {
+            return parser(GetString(url.ToString(), userAgent, headers));
         }
         public static string Get(Uri url, Dictionary<string, string> headers = null)
         {
@@ -97,7 +122,12 @@ namespace Bam.Net.Web
 
         public static string GetString(string url, Dictionary<string, string> headers = null)
         {
-            WebClient client = GetClient();
+            return GetString(url, null, headers);
+        }
+        
+        public static string GetString(string url, string userAgent = null, Dictionary<string, string> headers = null)
+        {
+            WebClient client = GetClient(userAgent);
             SetHeaders(headers, client);
             return client.DownloadString(url);
         }        

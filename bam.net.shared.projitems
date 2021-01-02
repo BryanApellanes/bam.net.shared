@@ -451,6 +451,13 @@
     <Compile Include="$(MSBuildThisFileDirectory)CodeAnalysis\NamespaceComment.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CodeAnalysis\PropertyComment.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CodeDomCompiler.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CoreServices\AccessControl\AuthorizationHeader.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CoreServices\AccessControl\AuthorizationHeaderProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CoreServices\AccessControl\BearerTokenAuthorizationHeader.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CoreServices\AccessControl\VaultAuthorizationHeaderProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CoreServices\AccessControl\IAuthorizationHeaderProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CoreServices\AccessControl\TokenAuthorizationHeader.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CoreServices\AccessControl\TokenTypes.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DefaultConsoleMessageHandler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DeployableCommandLineTool.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CommandLine\ArgumentInfo.cs" />
