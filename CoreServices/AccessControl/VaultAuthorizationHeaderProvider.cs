@@ -30,14 +30,22 @@ namespace Bam.Net.CoreServices.AccessControl
             Value = value;
         }
         
-        protected Vault Vault { get; }
+        protected Vault Vault { get; init; }
         
-        public string ConfigKey { get; set; }
+        public override string ConfigKey { get; set; }
 
         private string _value;
         public override string Value
         {
-            get => _value;
+            get
+            {
+                if (string.IsNullOrEmpty(_value))
+                {
+                    _value = Vault[ConfigKey];
+                }
+
+                return _value;
+            } 
             set
             {
                 _value = value;

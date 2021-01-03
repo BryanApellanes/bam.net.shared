@@ -18,7 +18,7 @@ namespace Bam.Net.CoreServices.AccessControl
             };
         }
         
-        public TokenTypes TokenType { get; set; }
+        public virtual TokenTypes TokenType { get; set; }
         
         public abstract string Value { get; set; }
 
@@ -27,7 +27,9 @@ namespace Bam.Net.CoreServices.AccessControl
             TokenType = tokenType;
             return GetAuthorizationHeader(value);
         }
-        
+
+        public abstract string ConfigKey { get; set; }
+
         public AuthorizationHeader GetAuthorizationHeader(string value)
         {
             Value = value;

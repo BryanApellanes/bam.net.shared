@@ -644,11 +644,35 @@ namespace Bam.Net
             if (objectToCheck == null)
             {
                 if (!string.IsNullOrEmpty(failureMessage))
+                {
                     throw new ExpectationFailedException(failureMessage);
+                }
                 else
+                {
                     throw new ExpectationFailedException("object", "null", ShouldHtmlEncodeExceptions);
+                }
             }
-        }   
+        }
+
+        public static void ShouldNotBeBlank(this string value, string failureMessage = null)
+        {
+            IsNotBlank(value, failureMessage);
+        }
+        
+        public static void IsNotBlank(this string value, string failureMessage = null)
+        {
+            if (string.IsNullOrEmpty(value))
+            {
+                if (!string.IsNullOrEmpty(failureMessage))
+                {
+                    throw new ExpectationFailedException(failureMessage);
+                }
+                else
+                {
+                    throw new ExpectationFailedException("any value", "[blank]");
+                }
+            }
+        }
         
         /// <summary>
         /// Throw an ExpectFailedException with the specified failureMessage
