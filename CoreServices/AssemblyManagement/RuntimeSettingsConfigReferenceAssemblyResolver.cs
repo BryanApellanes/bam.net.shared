@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Reflection;
 
 namespace Bam.Net.CoreServices.AssemblyManagement
 {
@@ -14,15 +15,27 @@ namespace Bam.Net.CoreServices.AssemblyManagement
         {
             string referenceAssembliesDir = RuntimeSettings.GetConfig().ReferenceAssembliesDir;
 
-            string filePath = Path.Combine(referenceAssembliesDir, $"{typeNamespace}.dll");
+            string filePath = FindAssembly(typeNamespace, typeName, referenceAssembliesDir);
+
             if (!File.Exists(filePath))
             {
-                filePath = Path.Combine(referenceAssembliesDir, $"{typeNamespace}.{typeName}.dll");
+                filePath = FindAssembly(typeNamespace, typeName, Assembly.GetEntryAssembly().GetFileInfo().Directory.FullName);
             }
 
             if (!File.Exists(filePath))
             {
                 throw new ReferenceAssemblyNotFoundException($"{typeNamespace}.{typeName}");
+            }
+
+            return filePath;
+        }
+
+        private static string FindAssembly(string typeNamespace, string typeName, string referenceAssembliesDir)
+        {
+            string filePath = Path.Combine(referenceAssembliesDir, $"{typeNamespace}.dll");
+            if (!File.Exists(filePath))
+            {
+                filePath = Path.Combine(referenceAssembliesDir, $"{typeNamespace}.{typeName}.dll");
             }
 
             return filePath;
