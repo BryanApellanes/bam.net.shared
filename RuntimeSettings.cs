@@ -84,7 +84,7 @@ namespace Bam.Net
         public static FileInfo EntryExecutable => Assembly.GetEntryAssembly().GetFileInfo();
         public static DirectoryInfo EntryDirectory => EntryExecutable.Directory;
 
-        public static string ReferenceAssembliesDir => EntryDirectory.FullName;
+        public static string ReferenceAssembliesDir => BamHome.ReferenceAssembliesPath;
 
         public static string GenDir => Path.Combine(BinDir, "gen");
 
@@ -130,12 +130,11 @@ namespace Bam.Net
         
         public static string GetEntryDirectoryFilePathFor(string fileName)
         {
-            string result;
             Assembly entry = Assembly.GetEntryAssembly();
             FileInfo file = entry.GetFileInfo();
             DirectoryInfo directoryInfo = file.Directory;
             string directory = directoryInfo == null ? "." : directoryInfo.FullName;
-            result = Path.Combine(directory, fileName);
+            string result = Path.Combine(directory, fileName);
             return result;
         }
     }

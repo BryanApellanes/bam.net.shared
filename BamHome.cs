@@ -10,7 +10,7 @@ namespace Bam.Net
     /// <summary>
     /// Paths rooted in the root of the bam installation. (/opt/bam on *nix, /c/bam on windows)
     /// </summary>
-    public static class BamHome // TODO: refactor this into BamHome.[home paths] and BamProfile.[profile paths]
+    public static class BamHome
     {
         public static string SystemRoot => OSInfo.IsWindows ? "c:/": "/";
         public static string Path => System.IO.Path.Combine(PathSegments);
@@ -54,6 +54,8 @@ namespace Bam.Net
 
         public static string PublicPath => System.IO.Path.Combine(Path, "public");
 
+        public static string ReferenceAssembliesPath => System.IO.Path.Combine(Path, "referenceassemblies");
+        
         /// <summary>
         /// The default path where the bam toolkit should be found.  Same as BamProfile.ToolkitPath.
         /// </summary>

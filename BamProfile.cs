@@ -34,6 +34,8 @@ namespace Bam.Net
             }
         }
         
+        public static string ReferenceAssembliesPath => System.IO.Path.Combine(Path, "referenceassemblies");
+        
         public static string ToolkitPath => System.IO.Path.Combine(ToolkitSegments);
         public static string[] ToolkitSegments => new List<string>() {Path, "toolkit"}.ToArray();
         public static string NugetOutputPath => System.IO.Path.Combine(NugetOutputSegments);

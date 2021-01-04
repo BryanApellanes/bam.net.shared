@@ -9,8 +9,8 @@ namespace Bam.Net
 {
     public class OSInfo
     {
-        public const string DefaultCoreVersion = "2.2.8";
-        public const string DefaultLibSubfolder = "netcoreapp2.2";
+        public const string DefaultCoreVersion = "5.0.100";
+        public const string DefaultLibSubfolder = "net5.0";
         
         static OSNames _current;
         public static OSNames Current
