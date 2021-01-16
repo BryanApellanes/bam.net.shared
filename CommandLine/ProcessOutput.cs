@@ -50,10 +50,7 @@ namespace Bam.Net.CommandLine
                 }
                 return _standardOutput;
             }
-            set
-            {
-                _standardOutput = value;
-            }
+            set => _standardOutput = value;
         }
         string _standardError;
         public string StandardError
@@ -66,10 +63,7 @@ namespace Bam.Net.CommandLine
                 }
                 return _standardError;
             }
-            set
-            {
-                _standardError = value;
-            }
+            set => _standardError = value;
         }
     }
 }

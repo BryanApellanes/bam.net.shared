@@ -39,7 +39,7 @@ namespace Bam.Net.Automation
         DirectoryInfo _builds;
         public DirectoryInfo Builds
         {
-            get { return _builds; }
+            get => _builds;
             set
             {
                 _builds = value;

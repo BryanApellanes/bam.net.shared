@@ -105,30 +105,16 @@ namespace Bam.Net
         }
 
         /// <summary>
-        /// Indicates if the environment variable BAMDEBUG equals "true".
+        /// Gets a value indicating whether the environment variable BAMDEBUG equals "true".
         /// </summary>
-        public static bool BamDebug
-        {
-            get => (System.Environment.GetEnvironmentVariable("BAMDEBUG") ?? string.Empty).Equals("true");
-        }
-        
-        private static BamSettings _default;
-        public static BamSettings Default
-        {
-            get
-            {
-                if (_default == null)
-                {
-                    _default = Load();
-                }
+        public static bool BamDebug => (System.Environment.GetEnvironmentVariable("BAMDEBUG") ?? string.Empty).Equals("true");
 
-                return _default;
-            }
-        }
+        private static BamSettings _default;
+        public static BamSettings Default => _default ??= Load();
         
         public static BamSettings Load(string path = null)
         {
-            path = path ?? Path.Combine(Config.GetDirectory(ProcessApplicationNameProvider.Current).FullName, $"BamSettings-{OSInfo.Current.ToString()}.yaml");
+            path ??= Path.Combine(Config.GetDirectory(ProcessApplicationNameProvider.Current).FullName, $"BamSettings-{OSInfo.Current.ToString()}.yaml");
             if (!File.Exists(path))
             {
                 BamSettings settings = new BamSettings
@@ -154,7 +140,7 @@ namespace Bam.Net
 
         public string Save(string path = null, Action<string> moved = null)
         {
-            path = path ?? Path.Combine(".", $"bam-{OSInfo.Current.ToString()}.yaml");
+            path ??= Path.Combine(".", $"bam-{OSInfo.Current.ToString()}.yaml");
             if (File.Exists(path))
             {
                 string backUp = path.GetNextFileName();

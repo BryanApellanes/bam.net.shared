@@ -28,17 +28,14 @@ namespace Bam.Net.Automation
         }
 
         JobManagerService _jobManagerService;
-        object _jobManagerLock = new object();
+        readonly object _jobManagerLock = new object();
         public JobManagerService JobManagerService
         {
             get
             {
                 return _jobManagerLock.DoubleCheckLock(ref _jobManagerService, () => new JobManagerService());
             }
-            set
-            {
-                _jobManagerService = value;
-            }
+            set => _jobManagerService = value;
         }
 
         public Job Job { get; set; }
@@ -89,7 +86,7 @@ namespace Bam.Net.Automation
             return (WorkState<T>)_state;
         }
 
-        object _doLock = new object();
+        readonly object _doLock = new object();
         public WorkState Do(Job job)
         {
             lock (_doLock)

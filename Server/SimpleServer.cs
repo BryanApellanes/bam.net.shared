@@ -50,7 +50,7 @@ namespace Bam.Net.Server
         public string[] MonitorDirectories { get; set; }
 
         /// <summary>
-        /// The delegate that will be subscribed to the Create
+        /// The delegate that is subscribed to the Create
         /// and Changed handler of the underlying FileSystemWatcher(s)
         /// </summary>
         public FileSystemEventHandler CreatedOrChangedHandler { get; set; }
