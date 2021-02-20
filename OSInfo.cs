@@ -96,13 +96,13 @@ namespace Bam.Net
             if (Current == OSNames.Windows)
             {
                 ProcessOutput whereOutput = $"where {fileName}".Run();
-                return ResolvePath(fileName, whereOutput.StandardOutput);
+                return ReadLastLine(whereOutput.StandardOutput);
             }
             ProcessOutput whichOutput = $"which {fileName}".Run();
-            return ResolvePath(fileName, whichOutput.StandardOutput);
+            return ReadLastLine(whichOutput.StandardOutput);
         }
 
-        private static string ResolvePath(string fileName, string output)
+        private static string ReadLastLine(string output)
         {
             string[] lines = output.DelimitSplit("\r", "\n");
             if (lines.Length > 1)

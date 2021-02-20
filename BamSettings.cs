@@ -20,7 +20,7 @@ namespace Bam.Net
             Environment = StandardEnvironments.Development;
             Debug = BamDebug;
         }
-
+        
         public string ArgumentPrefix { get; set; }
         public AppKind AppKind { get; set; }
         public StandardEnvironments Environment { get; set; }
@@ -43,23 +43,23 @@ namespace Bam.Net
         {
             if (string.IsNullOrEmpty(GitPath))
             {
-                GitPath = GetPath("git");
+                GitPath = TryGetPath("git");
             }
             if (string.IsNullOrEmpty(DotNetPath))
             {
-                DotNetPath = GetPath("dotnet");
+                DotNetPath = TryGetPath("dotnet");
             }
             if (string.IsNullOrEmpty(NpxPath))
             {
-                NpxPath = GetPath("npx");
+                NpxPath = TryGetPath("npx");
             }
             if (string.IsNullOrEmpty(NodePath))
             {
-                NodePath = GetPath("node");
+                NodePath = TryGetPath("node");
             }
             if (string.IsNullOrEmpty(NpmPath))
             {
-                NpmPath = GetPath("npm");
+                NpmPath = TryGetPath("npm");
             }
             if (string.IsNullOrEmpty(DockerPath))
             {
@@ -119,12 +119,12 @@ namespace Bam.Net
             {
                 BamSettings settings = new BamSettings
                 {
-                    BashPath = GetPath("bash"),
-                    GitPath = GetPath("git"),
-                    DotNetPath = GetPath("dotnet"),
-                    NpxPath = GetPath("npx"),
-                    NodePath = GetPath("node"),
-                    NpmPath = GetPath("npm"),
+                    BashPath = TryGetPath("bash"),
+                    GitPath = TryGetPath("git"),
+                    DotNetPath = TryGetPath("dotnet"),
+                    NpxPath = TryGetPath("npx"),
+                    NodePath = TryGetPath("node"),
+                    NpmPath = TryGetPath("npm"),
                     DockerPath = TryGetPath("docker"),
                     NugetPath = TryGetPath("nuget")
                 };
