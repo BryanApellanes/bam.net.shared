@@ -12,7 +12,7 @@
         public override string Value
         {
             get => _value;
-            set => _value = value.StartsWith(ValuePrefix) ? value : $"{ValuePrefix} {value}";
+            set => _value = value == null ? value : value.StartsWith(ValuePrefix) ? value : $"{ValuePrefix} {value}";
         }
     }
 }

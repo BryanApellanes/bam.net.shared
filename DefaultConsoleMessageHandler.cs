@@ -25,7 +25,7 @@ namespace Bam.Net
         {
             Console.ForegroundColor = foregroundColor;
             Console.BackgroundColor = backgroundColor;
-            Console.WriteLine(message);
+            Console.Write(message);
             Console.ResetColor();
         }
         

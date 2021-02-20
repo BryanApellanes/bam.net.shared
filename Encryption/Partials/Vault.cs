@@ -114,13 +114,13 @@ namespace Bam.Net.Encryption
 
         internal static Database InitializeSystemVaultDatabase()
         {            
-            string path = Path.Combine(Paths.Data, $"System.vault.sqlite");
+            string path = Path.Combine(BamHome.DataPath, $"System.vault.sqlite");
             return InitializeVaultDatabase(path, Log.Default);
         }
         
         internal static Database InitializeProfileVaultDatabase()
         {            
-            string path = Path.Combine(BamProfile.Data, $"System.vault.sqlite");
+            string path = Path.Combine(BamProfile.DataPath, $"Profile.vault.sqlite");
             return InitializeVaultDatabase(path, Log.Default);
         }
 

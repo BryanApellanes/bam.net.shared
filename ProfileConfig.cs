@@ -74,7 +74,7 @@ namespace Bam.Net
         {
             string assemblyFile = Assembly.GetEntryAssembly().GetFileInfo().FullName;
             string assemblyName = Path.GetFileNameWithoutExtension(assemblyFile);
-            string path = Path.Combine(BamProfile.Config, assemblyName,
+            string path = Path.Combine(BamProfile.ConfigPath, assemblyName,
                 $"{assemblyName}.{typeof(T).Namespace}.{typeof(T).Name}_{configName}.yaml");
             return path;
         }
@@ -91,7 +91,7 @@ namespace Bam.Net
         
         private static string GetPath(Type t, string fileExtension = "json")
         {
-            return Path.Combine(BamProfile.Config, $"{t.Name}.{fileExtension}");
+            return Path.Combine(BamProfile.ConfigPath, $"{t.Name}.{fileExtension}");
         }
     }
 }

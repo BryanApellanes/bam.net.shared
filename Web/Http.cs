@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Net;
 using System.IO;
+using System.Net.Http;
 
 namespace Bam.Net.Web
 {
@@ -153,6 +154,19 @@ namespace Bam.Net.Web
             }
         }
 
+        private static HttpClient client = new HttpClient();
+        public static HttpResponseMessage Delete(string url, Dictionary<string, string> headers = null)
+        {
+            return DeleteAsync(url, headers).Result;
+        }
+
+        public static async Task<HttpResponseMessage> DeleteAsync(string url, Dictionary<string, string> headers = null)
+        {
+            HttpRequestMessage requestMessage = new HttpRequestMessage();
+            headers?.Keys.Each(key => requestMessage.Headers.Add(key, headers[key]));
+            return await client.SendAsync(requestMessage);
+        }
+        
         public static void Post(string url, string postData, string saveTo, Dictionary<string, string> headers = null)
         {
             Post(url, postData, new FileInfo(saveTo), headers);
