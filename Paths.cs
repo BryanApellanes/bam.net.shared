@@ -20,7 +20,7 @@ namespace Bam.Net
         }
 
         static string _root;
-        [Obsolete("Use BamPaths.BamHome instead")]
+        [Obsolete("Use BamHome.Root instead")]
         public static string Root
         {
             get => _root;
@@ -33,7 +33,7 @@ namespace Bam.Net
 
         static string _pubRoot = @"//opt/bam/public";
         
-        [Obsolete("Use BamPaths.Public instead")]
+        [Obsolete("Use BamHome.Public instead")]
         public static string PubRoot
         {
             get => Net.BamHome.Public;

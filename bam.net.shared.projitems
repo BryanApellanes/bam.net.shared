@@ -633,6 +633,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Data\Schema\ReverseDaoSchemaExtractor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\UniversalDeterministicIdResolver.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\UniversalIdResolver.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Encryption\ManagedVault.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Encryption\ManagedVaults.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\Partials\Vault.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\Partials\VaultItem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\Partials\VaultKey.cs" />

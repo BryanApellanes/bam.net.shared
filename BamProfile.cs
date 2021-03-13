@@ -19,6 +19,8 @@ namespace Bam.Net
             EnsureDirectoryExists(AppsPath);
             EnsureDirectoryExists(SvcScriptsSrcPath);
             EnsureDirectoryExists(DataPath);
+            EnsureDirectoryExists(FilesPath);
+            EnsureDirectoryExists(VaultsPath);
             EnsureDirectoryExists(RecipesPath);
         }
 
@@ -57,35 +59,44 @@ namespace Bam.Net
         public static string ReferenceAssembliesPath => System.IO.Path.Combine(Path, "referenceassemblies");
         
         public static string ToolkitPath => System.IO.Path.Combine(ToolkitSegments);
-        public static string[] ToolkitSegments => new List<string>() {Path, "toolkit"}.ToArray();
+        public static string[] ToolkitSegments => new string[] {Path, "toolkit"};
         public static string NugetOutputPath => System.IO.Path.Combine(NugetOutputSegments);
         
-        public static string[] NugetOutputSegments => new List<string>() {Path, "nupkg"}.ToArray();
+        public static string[] NugetOutputSegments => new string[] {Path, "nupkg"};
         
         /// <summary>
         /// ~/.bam/config
         /// </summary>
         public static string ConfigPath => System.IO.Path.Combine(ConfigSegments);
-        public static string[] ConfigSegments => new List<string>() {Path, "config"}.ToArray();
+        public static string[] ConfigSegments => new string[] {Path, "config"};
 
         public static string TestsPath => System.IO.Path.Combine(TestsSegments);
-        public static string[] TestsSegments => new List<string>() {Path, "tests"}.ToArray();
+        public static string[] TestsSegments => new string[] {Path, "tests"};
         public static string ContentPath => System.IO.Path.Combine(ContentSegments);
-        public static string[] ContentSegments => new List<string>() {Path, "content"}.ToArray();
+        public static string[] ContentSegments => new string[] {Path, "content"};
 
         public static string AppsPath => System.IO.Path.Combine(AppsSegments);
         public static string[] AppsSegments => new List<string>(ContentSegments) {"apps"}.ToArray();
         
         public static string SvcScriptsSrcPath => System.IO.Path.Combine(SvcScriptsSrcSegments);
-        public static string[] SvcScriptsSrcSegments => new List<string>() {Path, "svc", "scripts"}.ToArray();
+        public static string[] SvcScriptsSrcSegments => new string[] {Path, "svc", "scripts"};
 
         public static string DataPath => System.IO.Path.Combine(DataSegments);
 
-        public static string[] DataSegments => new List<string>() {Path, "data"}.ToArray();
-        
-        public static string RecipesPath => System.IO.Path.Combine(RecipeSegments);
-        public static string[] RecipeSegments => new List<string>() {Path, "recipes"}.ToArray();
+        public static string[] DataSegments => new string[] {Path, "data"};
 
+        public static string FilesPath => System.IO.Path.Combine(FilesSegments);
+        public static string[] FilesSegments => new string[] {Path, "files"};
+
+        public static string VaultsPath => System.IO.Path.Combine(VaultsSegments);
+        public static string[] VaultsSegments => new string[] {Path, "vaults"};
+        
+        public static string RecipesPath => System.IO.Path.Combine(RecipesSegments);
+        public static string[] RecipesSegments => new string[] {Path, "recipes"};
+
+        public static string ScreenshotsPath => System.IO.Path.Combine(ScreenshotsSegments);
+        public static string[] ScreenshotsSegments => new string[] {Path, "screenshots"};
+        
         public static string ReadDataFile(string relativeFilePath)
         {
             FileInfo file = new FileInfo(System.IO.Path.Combine(DataPath, relativeFilePath));

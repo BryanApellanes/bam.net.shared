@@ -950,19 +950,13 @@ namespace Bam.Net.Data
 			{
 				if (_columnNameProvider == null)
 				{
-					_columnNameProvider = (c) =>
-					{
-						return string.Format("[{0}]", c.Name);
-					};
+					_columnNameProvider = (c) => $"[{c.Name}]";
 				}
 
 				return _columnNameProvider;
 			}
-			set
-			{
-				_columnNameProvider = value;
-			}
-		}
+			set => _columnNameProvider = value;
+        }
 
         protected List<DbConnection> Connections
         {

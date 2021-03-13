@@ -16,7 +16,7 @@ namespace Bam.Net
         public static string Path => System.IO.Path.Combine(PathSegments);
 
         /// <summary>
-        /// The root of the bam installation, the same as BamHome
+        /// The root of the bam installation, the same as BamHome.Path.
         /// </summary>
         public static string Root => Path;
 

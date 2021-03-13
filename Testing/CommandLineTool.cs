@@ -36,7 +36,7 @@ namespace Bam.Net
         protected static MethodInfo DefaultMethod { get; set; }
 
         /// <summary>
-        /// Executes command line switches or starts interactive mode if no command line switches were specified.
+        /// Executes command line switches or starts interactive mode if no command line switches are specified.
         /// </summary>
         /// <param name="args"></param>
         /// <param name="parseErrorHandler"></param>

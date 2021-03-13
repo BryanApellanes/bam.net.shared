@@ -14,15 +14,49 @@ using System.Data;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Runtime.Serialization;
 using Bam.Net;
+using Bam.Net.Automation;
 using Bam.Net.Logging;
 
 namespace Bam.Net
 {
 	/// <summary>
-	/// Container for serialization related extensioni methods
+	/// Container for serialization related extension methods.
 	/// </summary>
     public static class SerializationExtensions
     {
+        /// <summary>
+        /// Sets the environment variables using values from this instance.
+        /// </summary>
+        public static EnvironmentVariable[] WriteEnvironmentVariables<T>(this T instance)
+        {
+            List<EnvironmentVariable> results = new List<EnvironmentVariable>();
+            foreach (PropertyInfo propertyInfo in typeof(T).GetProperties())
+            {
+                if (propertyInfo.HasCustomAttributeOfType<EnvironmentVariableAttribute>(out EnvironmentVariableAttribute attr))
+                {
+                    string value = (string) propertyInfo.GetValue(instance);
+                    attr.SetEnvironmentVariable(value);
+                    results.Add(new EnvironmentVariable{Name = attr.Name, Value = value});
+                }
+            }
+
+            return results.ToArray();
+        }
+        
+        public static T ReadEnvironmentVariables<T>(this T instance) where T: class, new()
+        {
+            Type type = typeof(T);
+            foreach (PropertyInfo propertyInfo in type.GetProperties())
+            {
+                if(propertyInfo.HasCustomAttributeOfType<EnvironmentVariableAttribute>(out EnvironmentVariableAttribute attribute))
+                {
+                    propertyInfo.SetValue(instance, attribute.Value); // attribute.Value is read from environment
+                }
+            }
+
+            return instance;
+        }
+        
         /// <summary>
         /// Serialize the object to the specified filePath.  The same as
         /// ToXmlFile().
@@ -139,7 +173,7 @@ namespace Bam.Net
         }
 
 		/// <summary>
-		/// Get the ammount of memory occupied by the 
+		/// Get the amount of memory occupied by the 
 		/// specified target (current target if used as extension method)
 		/// </summary>
 		/// <param name="target"></param>

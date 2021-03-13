@@ -1485,7 +1485,25 @@ namespace Bam.Net
                 action(context, item);
             }
         }
-
+        
+        public static void ForEachPublicStaticField<FieldType>(this Type type, Action<FieldType> forEach)
+        {
+            FieldInfo[] fields = type.GetFields(BindingFlags.Public | BindingFlags.Static);
+            foreach (FieldInfo field in fields)
+            {
+                forEach((FieldType)field.GetRawConstantValue());
+            }
+        }
+        
+        public static void ForEachPublicStaticField(this Type type, Action<object> forEach)
+        {
+            FieldInfo[] fields = type.GetFields(BindingFlags.Public | BindingFlags.Static);
+            foreach (FieldInfo field in fields)
+            {
+                forEach(field.GetRawConstantValue());
+            }
+        }
+        
         /// <summary>
         /// Iterate over the current IEnumerable 
         /// from the specified index passing

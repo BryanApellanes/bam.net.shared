@@ -127,7 +127,7 @@ namespace Bam.Net.Encryption
         internal static Database InitializeApplicationVaultDatabase()
         {
             string appName = DefaultConfigurationApplicationNameProvider.Instance.GetApplicationName();
-            string path = Path.Combine(Paths.Data, $"Application_{appName}.vault.sqlite");
+            string path = Path.Combine(BamHome.DataPath, $"Application_{appName}.vault.sqlite");
             return InitializeVaultDatabase(path, Log.Default);
         }
 
