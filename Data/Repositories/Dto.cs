@@ -69,7 +69,7 @@ namespace Bam.Net.Data.Repositories
             return instance.CopyAs(TypeFor(instance));
         }
 
-        static object _genLock = new object();
+        static readonly object _genLock = new object();
         /// <summary>
         /// Generates an assembly containing Dto's that represent all the 
         /// Dao's found in the specified daoAssembly.  A Dto or (DTO) is

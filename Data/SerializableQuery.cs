@@ -35,10 +35,7 @@ namespace Bam.Net.Data
                 }
                 return _parameters;
             }
-            set
-            {
-                _parameters = value;
-            }
+            set => _parameters = value;
         }
 
         public IEnumerable<T> Execute<T>(Database db = null) where T : class, new()

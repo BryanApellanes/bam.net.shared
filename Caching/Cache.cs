@@ -26,6 +26,11 @@ namespace Bam.Net.Caching
         /// </summary>
         public Cache() : base() { }
 
+        public Cache(string name, uint maxBytes, bool groomInBackground, EventHandler evictionListener = null)
+			: base(name, maxBytes, groomInBackground, evictionListener)
+        {
+        }
+        
         /// <summary>
         /// Adds the specified values.
         /// </summary>
@@ -36,13 +41,13 @@ namespace Bam.Net.Caching
             return (CacheItem<T>)Add<T>(values);
         }
 
-        public new IEnumerable<CacheItem<CacheItemType>> Add<CacheItemType>(params CacheItemType[] values) where CacheItemType: IMemorySize, new()
+        public new IEnumerable<CacheItem<TCacheItem>> Add<TCacheItem>(params TCacheItem[] values) where TCacheItem: IMemorySize, new()
         {
             List<CacheItem> results = new List<CacheItem>();
             HashSet<CacheItem> itemsCopy = new HashSet<CacheItem>(Items);
-            foreach (CacheItemType value in values)
+            foreach (TCacheItem value in values)
             {
-                CacheItem<CacheItemType> item = new CacheItem<CacheItemType>(value, MetaProvider);
+                CacheItem<TCacheItem> item = new CacheItem<TCacheItem>(value, MetaProvider);
                 if (itemsCopy.Add(item))
                 {
                     yield return item;
@@ -51,6 +56,11 @@ namespace Bam.Net.Caching
             Items = itemsCopy;
             Organize();
             GroomerSignal.Set();
+        }
+
+        public static Cache<T> Get()
+        {
+	        return CacheManager.Default.CacheFor<T>(CacheManager.Default.GetDefaultCacheProvider<T>());
         }
     }
 
@@ -120,6 +130,11 @@ namespace Bam.Net.Caching
 			}
 		}
 
+        public static Cache<T> For<T>() where T: IMemorySize, new()
+        {
+	        return Cache<T>.Get();
+        }
+        
         /// <summary>
         /// Gets or sets the meta provider.
         /// </summary>

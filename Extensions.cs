@@ -110,7 +110,7 @@ namespace Bam.Net
         }
 
         static Dictionary<ExistingFileAction, Action<Stream, FileInfo>> _writeResourceActions;
-        static object _writeResourceActionsLock = new object();
+        static readonly object _writeResourceActionsLock = new object();
 
         public static Dictionary<ExistingFileAction, Action<Stream, FileInfo>> WriteResourceActions
         {

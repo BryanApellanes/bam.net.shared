@@ -77,11 +77,11 @@ namespace Bam.Net.Caching
         public event EventHandler CacheRemoved;
         [Verbosity(LogEventType.Information, SenderMessageFormat = "Set Cache for type {TypeName}")]
         public event EventHandler CacheSet;
-
-        public Cache<CacheType> CacheFor<CacheType>(Func<Cache<CacheType>> cacheProvider) where CacheType : IMemorySize, new()
+        
+        public Cache<TCached> CacheFor<TCached>(Func<Cache<TCached>> cacheProvider) where TCached : IMemorySize, new()
         {
-            Cache<CacheType> cache = cacheProvider();
-            CacheFor(typeof(CacheType), cache);
+            Cache<TCached> cache = cacheProvider();
+            CacheFor(typeof(TCached), cache);
             return cache;
         }
 
@@ -114,6 +114,11 @@ namespace Bam.Net.Caching
 			{
 				return _defaultCacheManagerLock.DoubleCheckLock(ref _defaultCacheManager, () => new CacheManager());
 			}
+		}
+		
+		public Func<Cache<T>> GetDefaultCacheProvider<T>() where T : IMemorySize, new()
+		{
+			return () => new Cache<T>(typeof(T).Name, MaxCacheSizeBytes, true, OnEvicted);
 		}
 	}
 }
