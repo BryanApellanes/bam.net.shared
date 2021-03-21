@@ -494,7 +494,7 @@ namespace Bam.Net.Caching
 			}
 		}
 
-		object _queueLock = new object();
+		readonly object _queueLock = new object();
 		public void QueueEviction(long id)
 		{
 			lock(_queueLock)

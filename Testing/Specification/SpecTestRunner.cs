@@ -10,7 +10,7 @@ namespace Bam.Net.Testing.Specification
 {
     public class SpecTestRunner : TestRunner<SpecTestMethod>
     {
-        Dictionary<Type, SpecTestContainer> _specContainers;
+        readonly Dictionary<Type, SpecTestContainer> _specContainers;
         public SpecTestRunner(Assembly assembly, ILogger logger = null) : base(assembly, new SpecTestMethodProvider { Assembly = assembly }, logger)
         {
             SetupMethodProvider = new SpecTestSetupMethodProvider();

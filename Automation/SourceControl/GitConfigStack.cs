@@ -32,7 +32,7 @@ namespace Bam.Net.Automation.SourceControl
         public ProcessOutput LastOutput { get; set; }
 
         static GitConfigStack _default;
-        static object _defaultLock = new object();
+        static readonly object _defaultLock = new object();
         public static GitConfigStack Default
         {
             get

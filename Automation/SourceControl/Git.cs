@@ -15,7 +15,7 @@ namespace Bam.Net.Automation.SourceControl
 {
     public class Git
     {
-        GitConfigStack _configStack;
+        readonly GitConfigStack _configStack;
         internal Git()
         {
             _configStack = new GitConfigStack();
@@ -34,6 +34,22 @@ namespace Bam.Net.Automation.SourceControl
         public static Git RemoteRepository(string remoteRepository)
         {
             return new Git(remoteRepository);
+        }
+
+        public static Git CurrentRoot()
+        {
+            DirectoryInfo curDir = new DirectoryInfo("./");
+            while (!Directory.Exists(Path.Combine(curDir.FullName, ".git")))
+            {
+                curDir = curDir.Parent;
+                if (curDir == null)
+                {
+                    break;
+                }
+            }
+
+            Args.ThrowIfNull(curDir, $"No git repository found in current directory hierarchy: {Environment.CurrentDirectory}", ".git");
+            return new Git(null, curDir.FullName);
         }
         
         public static string LatestTag(string localRepository)
@@ -168,7 +184,7 @@ namespace Bam.Net.Automation.SourceControl
             _configStack.LocalRepository = localRepository;
             return this;
         }
-
+        
         public static string LatestRelease(string localRepository)
         {
             Git git = new Git();
@@ -313,13 +329,7 @@ namespace Bam.Net.Automation.SourceControl
             return output.StandardOutput.Trim();
         }
 
-        private DirectoryInfo GitBin
-        {
-            get
-            {
-                return new DirectoryInfo(_configStack.GitPath);
-            }
-        }
+        private DirectoryInfo GitBin => new DirectoryInfo(_configStack.GitPath);
 
         internal bool ConfigGit()
         {

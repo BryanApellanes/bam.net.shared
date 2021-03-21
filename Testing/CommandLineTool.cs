@@ -328,8 +328,8 @@ namespace Bam.Net
 
         public static void RunAllUnitTests(Assembly assembly, ILogger logger = null, EventHandler passedHandler = null, EventHandler failedHandler = null)
         {
-            passedHandler = passedHandler ?? DefaultPassedHandler;
-            failedHandler = failedHandler ?? DefaultFailedHandler;
+            passedHandler ??= DefaultPassedHandler;
+            failedHandler ??= DefaultFailedHandler;
             ITestRunner<UnitTestMethod> runner = GetUnitTestRunner(assembly, logger);
             AttachHandlers<UnitTestMethod>(passedHandler, failedHandler, runner);
             AttachUnitTestRunListeners(runner);
@@ -375,7 +375,7 @@ namespace Bam.Net
             {
                 runner.Tag = Arguments["tag"];
             }
-            runner.NoTestsDiscovered += (o, e) => OutLineFormat("No tests were found in {0}", ConsoleColor.Yellow, assembly.FullName);
+            runner.NoTestsDiscovered += (o, e) => Message.PrintLine("No tests were found in {0}", ConsoleColor.Yellow, assembly.FullName);
             runner.TestsDiscovered += (o, e) =>
             {
                 TestsDiscoveredEventArgs<TTestMethod> args = (TestsDiscoveredEventArgs<TTestMethod>)e;

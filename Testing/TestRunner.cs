@@ -20,22 +20,22 @@ namespace Bam.Net.Testing
         {
             _factory = new Dictionary<Type, Func<Assembly, ILogger, ITestRunner<TTestMethod>>>
             {
-                { typeof(UnitTestMethod), (a, l) => (ITestRunner<TTestMethod>)new UnitTestRunner(a, l) },
-                { typeof(SpecTestMethod), (a, l )=> (ITestRunner<TTestMethod>)new SpecTestRunner(a, l) }
+                { typeof(UnitTestMethod), (assembly, logger) => (ITestRunner<TTestMethod>)new UnitTestRunner(assembly, logger) },
+                { typeof(SpecTestMethod), (assembly, logger )=> (ITestRunner<TTestMethod>)new SpecTestRunner(assembly, logger) }
                 // TODO: 
                 // refactor Integration test handling to match established convention for Unit and Spec then 
                 // add IntegrationTest here
             };
         }
 
-        Lazy<List<TTestMethod>> _tests;
+        readonly Lazy<List<TTestMethod>> _tests;
         public TestRunner(Assembly assembly, TestMethodProvider<TTestMethod> testMethodProvider, ILogger logger = null)
         {
             Assembly = assembly;
             TestMethodProvider = testMethodProvider;
             TestSummary = new TestRunnerSummary();
             IsolateMethodCalls = true;
-            logger = logger ?? Log.Default;
+            logger ??= Log.Default;
 
             _tests = new Lazy<List<TTestMethod>>(() => TestMethodProvider.GetTests());
             
@@ -265,7 +265,7 @@ namespace Bam.Net.Testing
                     ExceptionHelper.ThrowInvalidOperation("The declaring type {0} of method {1} does not have a parameterless constructor, test cannot be run.", typeName, consoleMethod.Method.Name);
 
                 object instance = ctor.Invoke(null);
-                Expect.IsNotNull(instance, string.Format("Unable to instantiate declaring type {0} of method {1}", typeName, consoleMethod.Method.Name));
+                instance.IsNotNull($"Unable to instantiate declaring type {typeName} of method {consoleMethod.Method.Name}");
 
                 consoleMethod.Provider = instance;
                 if (isolateMethodCalls)
@@ -279,7 +279,7 @@ namespace Bam.Net.Testing
             }
         }
 
-        object _attachBeforeHandlersLock = new object();
+        readonly object _attachBeforeHandlersLock = new object();
         bool _beforeHandlersAreAttached;
         protected void AttachBeforeHandlers()
         {
@@ -324,7 +324,7 @@ namespace Bam.Net.Testing
             return new List<ConsoleMethod>();
         }
 
-        object _attachAfterHandlersLock = new object();
+        readonly object _attachAfterHandlersLock = new object();
         bool _afterHandlersAreAttached;
         protected void AttachAfterHandlers()
         {

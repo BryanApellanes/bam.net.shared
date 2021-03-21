@@ -32,7 +32,7 @@ namespace Bam.Net.Logging
             _allInstances.Add(this);
         }
 
-        public static void SetVerbosity(VerbosityLevel level)
+        public static void SetGlobalVerbosity(VerbosityLevel level)
         {
             _allInstances.Each(l=> l.LogVerbosity = level);
         }
@@ -41,8 +41,7 @@ namespace Bam.Net.Logging
 
         /// <summary>
         /// A value from 0 - 5, represented by the LogEventType enum.
-        /// The higher the value the more log entries will 
-        /// be logged.
+        /// The higher the value the more log entries are logged.
         /// </summary>
         public VerbosityLevel LogVerbosity { get; set; }
 
