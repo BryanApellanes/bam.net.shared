@@ -16,19 +16,19 @@ namespace Bam.Net.Testing
     /// <typeparam name="T"></typeparam>
     public class TestContext<T>
     {
-        SetupContext setupContext;
-        Because because;
-        Action<T> testMethod;
-        Action<T, SetupContext> altTestMethod;
-        Func<T, object> outputAction;
+        readonly SetupContext _setupContext;
+        readonly Because _because;
+        readonly Action<T> _testMethod;
+        readonly Action<T, SetupContext> _altTestMethod;
+        readonly Func<T, object> _outputAction;
 
         internal TestContext(SetupContext setupContext, string testDescription)
         {
-            this.setupContext = setupContext;
-            this.because = new Because(testDescription, setupContext);
-            this.testMethod = (o) => { };
-            this.altTestMethod = (o, c) => { };
-            this.outputAction = (o) => o;
+            this._setupContext = setupContext;
+            this._because = new Because(testDescription, setupContext);
+            this._testMethod = (o) => { };
+            this._altTestMethod = (o, c) => { };
+            this._outputAction = (o) => o;
         }
 
         /// <summary>
@@ -42,13 +42,13 @@ namespace Bam.Net.Testing
         public TestContext(SetupContext setupContext, string testDescription, Action<T> testMethod)
             : this(setupContext, testDescription)
         {
-            this.testMethod = testMethod;
+            this._testMethod = testMethod;
         }
 
         public TestContext(SetupContext setupContext, string testDescription, Action<T, SetupContext> altTestMethod)
             : this(setupContext, testDescription)
         {
-            this.altTestMethod = altTestMethod;
+            this._altTestMethod = altTestMethod;
         }
 
         /// <summary>
@@ -63,19 +63,13 @@ namespace Bam.Net.Testing
         public TestContext(SetupContext setupContext, string testDescription, Func<T, object> outputAction)
             : this(setupContext, testDescription)
         {
-            this.outputAction = outputAction;
+            this._outputAction = outputAction;
         }
 
         /// <summary>
         /// Causes the test to run, same as It.
         /// </summary>
-        public TestContext<T> TheTest
-        {
-            get
-            {
-                return It;
-            }
-        }
+        public TestContext<T> TheTest => It;
 
         bool run;
         /// <summary>
@@ -90,15 +84,15 @@ namespace Bam.Net.Testing
                     run = true;
                     try
                     {
-                        T objectUnderTest = setupContext.Get<T>();
-                        testMethod(objectUnderTest);
-                        altTestMethod(objectUnderTest, setupContext);
-                        because.Result = outputAction(objectUnderTest);
-                        setupContext.ObjectUnderTest = objectUnderTest;
+                        T objectUnderTest = _setupContext.Get<T>();
+                        _testMethod(objectUnderTest);
+                        _altTestMethod(objectUnderTest, _setupContext);
+                        _because.Result = _outputAction(objectUnderTest);
+                        _setupContext.ObjectUnderTest = objectUnderTest;
                     }
                     catch (Exception ex)
                     {
-                        because.ExceptionWasThrown(ex);
+                        _because.ExceptionWasThrown(ex);
                     }
                 }
                 return this;
@@ -114,7 +108,7 @@ namespace Bam.Net.Testing
         /// <returns></returns>
         public TestContext<T> ShouldPass(Action<Because> actionToAssertResults)
         {
-            actionToAssertResults(because);
+            actionToAssertResults(_because);
             return this;
         }
 
@@ -125,28 +119,28 @@ namespace Bam.Net.Testing
         /// </summary>
         /// <param name="actionToAssertResults"></param>
         /// <returns></returns>
-        public TestContext<T> ShouldPass(Action<Because, T> actionToAssertResults)
+        public TestContext<T> ShouldPass(Action<Because, AssertionProvider<T>> actionToAssertResults)
         {
             try
             {
-                actionToAssertResults(because, (T)setupContext.ObjectUnderTest);
+                actionToAssertResults(_because, new AssertionProvider<T>(_because, (T)_setupContext.ObjectUnderTest, "Object Under Test"));
             }
             catch (Exception ex)
             {
-                because.ExceptionWasThrown(ex);
+                _because.ExceptionWasThrown(ex);
             }
             return this;
         }
-
-        public TestContext<T> ShouldPass(Action<Because, AssertionWrapper> actionToAssertResults)
+        
+        public TestContext<T> ShouldPass<TResult>(Action<Because, AssertionProvider<T>, TResult> actionToAssertResults)
         {
             try
             {
-                actionToAssertResults(because, new AssertionWrapper(because, setupContext.ObjectUnderTest, "Object Under Test"));
+                actionToAssertResults(_because, new AssertionProvider<T>(_because, (T)_setupContext.ObjectUnderTest, "Object Under Test"), _because.ResultAs<TResult>());
             }
             catch (Exception ex)
             {
-                because.ExceptionWasThrown(ex);
+                _because.ExceptionWasThrown(ex);
             }
             return this;
         }
@@ -158,7 +152,7 @@ namespace Bam.Net.Testing
         /// <returns></returns>
         public Because SoBeHappy()
         {
-            return because.TestIsDone;
+            return _because.TestIsDone;
         }
 
         /// <summary>
@@ -182,7 +176,7 @@ namespace Bam.Net.Testing
         /// <returns></returns>
         public Because Cleanup(Action<SetupContext> cleanup)
         {
-            return because.TestIsDone.CleanUp(cleanup);
+            return _because.TestIsDone.CleanUp(cleanup);
         }
     }
 }

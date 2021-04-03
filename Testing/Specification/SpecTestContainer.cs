@@ -15,7 +15,8 @@ namespace Bam.Net.Testing.Specification
 	public abstract class SpecTestContainer: CommandLineTool
 	{
         Dictionary<string, object> _features;
-        public SpecTestContainer()
+
+        protected SpecTestContainer()
         {
             FeatureContext = new FeatureContext();
             ScenarioContext = new ScenarioContext();

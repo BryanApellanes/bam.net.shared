@@ -7,7 +7,7 @@ namespace Bam.Net.Testing.Specification
 {
     public class SpecTestReporter
     {
-        Queue<LogMessage> _logMessages;
+        readonly Queue<LogMessage> _logMessages;
         public SpecTestReporter()
         {
             _logMessages = new Queue<LogMessage>();

@@ -51,7 +51,7 @@ namespace Bam.Net.Testing.Integration
 				throw new InvalidOperationException("The specified type ({0}) is not a valid IntegrationTestcontainer, it is missing the IntegrationTestContainer attribute"._Format(containerType.Name));
 			}
 			string containerDescription = string.IsNullOrEmpty(containerAttr.Description) ? containerType.Name.PascalSplit(" ") : containerAttr.Description;
-			OutLineFormat("Running ({0})", ConsoleColor.DarkGreen, containerDescription);
+			Message.PrintLine("Running ({0})", ConsoleColor.DarkGreen, containerDescription);
 			object testContainer = containerType.Construct();
 			// get the IntegrationTestSetup and run them
 			MethodInfo setup = containerType.GetMethods().FirstOrDefault(methodInfo => methodInfo.HasCustomAttributeOfType<IntegrationTestSetupAttribute>());
@@ -61,14 +61,14 @@ namespace Bam.Net.Testing.Integration
 			}
 			// get all the IntegrationTests and run them
 			IEnumerable<MethodInfo> testMethods = containerType.GetMethods().Where(methodInfo => methodInfo.HasCustomAttributeOfType<IntegrationTestAttribute>());
-			OutLineFormat("Found {0} Integration Tests", ConsoleColor.Cyan, testMethods.Count());
+			Message.PrintLine("Found {0} Integration Tests", ConsoleColor.Cyan, testMethods.Count());
 			testMethods.Each(testMethod =>
 			{
 				try
 				{
 					IntegrationTestAttribute attr = testMethod.GetCustomAttribute<IntegrationTestAttribute>();
 					string description = string.IsNullOrEmpty(attr.Description) ? testMethod.Name.PascalSplit(" ") : attr.Description;
-					OutLineFormat("Starting: {0}", ConsoleColor.Green, description);
+					Message.PrintLine("Starting: {0}", ConsoleColor.Green, description);
 					testMethod.Invoke(testContainer, null);
 					Pass(description);
                     try

@@ -2492,7 +2492,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Testing\AfterEachUnitTest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Testing\AfterUnitTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Testing\Assertion.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Testing\AssertionWrapper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Testing\AssertionProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Testing\Because.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Testing\BeforeEachUnitTest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Testing\BeforeUnitTests.cs" />

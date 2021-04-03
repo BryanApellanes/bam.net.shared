@@ -67,7 +67,7 @@ namespace Bam.Net.Testing
                 
         internal static string GetActionDescription<T>(string actionDescription)
         {
-            return string.Format("Testing when a {0} {1}", typeof(T).Name, actionDescription);
+            return $"Testing when a {typeof(T).Name} {actionDescription}";
         }
     }
 }

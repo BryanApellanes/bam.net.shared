@@ -16,7 +16,7 @@ namespace Bam.Net.Testing
         /// <summary>
         /// Gets or sets the partial message to display if the assertion passes.
         /// </summary>
-        public string SuccessMessage { get; set; }
+        public string SuccessMessage { get; init; }
 
         /// <summary>
         /// Gets or sets a boolean value indicating whether the assertion
@@ -24,7 +24,7 @@ namespace Bam.Net.Testing
         /// </summary>
         public bool Passed { get; set; }
         
-        string failureMessage;
+        string _failureMessage;
         /// <summary>
         /// Gets or sets the partial failure message to display if the assertion fails.
         /// </summary>
@@ -32,17 +32,14 @@ namespace Bam.Net.Testing
         {
             get
             {
-                if(string.IsNullOrWhiteSpace(failureMessage))
+                if(string.IsNullOrWhiteSpace(_failureMessage))
                 {
-                    return string.Format("{0} failed", SuccessMessage);
+                    return $"{SuccessMessage} failed";
                 }
 
-                return failureMessage;
+                return _failureMessage;
             }
-            set
-            {
-                failureMessage = value;
-            }
+            set => _failureMessage = value;
         }
     }
 }

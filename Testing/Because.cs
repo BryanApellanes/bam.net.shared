@@ -14,17 +14,17 @@ namespace Bam.Net.Testing
     /// </summary>
     public class Because
     {
-        SetupContext setupContext;
-        List<Assertion> assertions;
+        readonly SetupContext _setupContext;
+        readonly List<Assertion> _assertions;
         internal Because(string testDescription, SetupContext setupContext)
         {
             this.TestDescription = testDescription;
-            this.assertions = new List<Assertion>();
-            this.setupContext = setupContext;
+            this._assertions = new List<Assertion>();
+            this._setupContext = setupContext;
         }
 
         /// <summary>
-        /// Gets the desciption of the current test being run
+        /// Gets the description of the current test being run
         /// </summary>
         public string TestDescription
         {
@@ -35,13 +35,7 @@ namespace Bam.Net.Testing
         /// <summary>
         /// Gets the SetupContext instance for the current test.
         /// </summary>
-        public SetupContext SetupContext
-        {
-            get
-            {
-                return this.setupContext;
-            }
-        }
+        public SetupContext SetupContext => this._setupContext;
 
         /// <summary>
         /// Gets the object under test from the underlying SetupContext.
@@ -50,21 +44,16 @@ namespace Bam.Net.Testing
         /// <returns></returns>
         public T ObjectUnderTest<T>()
         {
-            return (T)this.setupContext.ObjectUnderTest;
+            return (T)this._setupContext.ObjectUnderTest;
         }
 
         /// <summary>
         /// Gets a value indicating whether the current test has passed.
         /// </summary>
-        public bool Passed
-        {
-            get
-            {
-                return (from item in assertions
-                        where item.Passed == false
-                        select item).FirstOrDefault() == null;
-            }
-        }
+        public bool Passed =>
+            (from item in _assertions
+                where item.Passed == false
+                select item).FirstOrDefault() == null;
 
         /// <summary>
         /// Asserts that the specified value is true
@@ -74,7 +63,7 @@ namespace Bam.Net.Testing
         /// <param name="failureMessage"></param>
         public void ItsTrue(string descriptionOfTrueAssertion, bool shouldBeTrue, string failureMessage = "")
         {
-            assertions.Add(
+            _assertions.Add(
                 new Assertion 
                 { 
                     Passed = shouldBeTrue == true, 
@@ -85,7 +74,7 @@ namespace Bam.Net.Testing
 
         public void ItsTrue(string descriptionOfTrueAssertion, Action doesntThrow, string failureMessage = "")
         {
-            assertions.Add(
+            _assertions.Add(
                 new Assertion
                 {
                     Passed = doesntThrow.Try(),
@@ -97,12 +86,12 @@ namespace Bam.Net.Testing
         /// <summary>
         /// Asserts that the specified value is false
         /// </summary>
-        /// <param name="descriptionOfFalseAssertion">A descriptioni of the false value.  Read as: ItsFalse "John Stockton was the " </param>
-        /// <param name="shouldBeFalse"></param>
-        /// <param name="failureMessage"></param>
+        /// <param name="descriptionOfFalseAssertion">A description of the false value.  Read as: ItsFalse "John Stockton was the number one point guard of all time (Magic Johnson was, John Stockton was second)" </param>
+        /// <param name="shouldBeFalse">A value that should evaluate to false.</param>
+        /// <param name="failureMessage">The message to display if the `shouldBeFalse` value is actually `true`.</param>
         public void ItsFalse(string descriptionOfFalseAssertion, bool shouldBeFalse, string failureMessage = "")
         {
-            assertions.Add(
+            _assertions.Add(
                 new Assertion 
                 { 
                     Passed = shouldBeFalse == false, 
@@ -120,12 +109,12 @@ namespace Bam.Net.Testing
         public void ResultIs<T>()
         {
             Type type = typeof(T);
-            assertions.Add(
+            _assertions.Add(
                 new Assertion
                 {
-                    Passed = Result == null ? false: Result.GetType() == typeof(T),
-                    SuccessMessage = string.Format("result is of type {0}", type.Name),
-                    FailureMessage = string.Format("result is NOT of type {0}", type.Name)
+                    Passed = Result != null && Result.GetType() == typeof(T),
+                    SuccessMessage = $"result is of type {type.Name}",
+                    FailureMessage = $"result is NOT of type {type.Name}"
                 });
         }
 
@@ -137,12 +126,12 @@ namespace Bam.Net.Testing
         /// <param name="obj"></param>
         public void ResultEquals(object obj)
         {
-            assertions.Add(
+            _assertions.Add(
                 new Assertion
                 {
                     Passed = Result.Equals(obj),
-                    SuccessMessage = string.Format("result equals the specified value ({0})", obj.ToString()),
-                    FailureMessage = string.Format("result does NOT equal the specified value ({0})", obj.ToString())
+                    SuccessMessage = $"result equals the specified value ({obj.ToString()})",
+                    FailureMessage = $"result does NOT equal the specified value ({obj.ToString()})"
                 });
         }
 
@@ -154,12 +143,12 @@ namespace Bam.Net.Testing
         /// <param name="obj"></param>
         public void ResultIsSameAs(object obj)
         {
-            assertions.Add(
+            _assertions.Add(
                 new Assertion
                 {
                     Passed = Result == obj,
-                    SuccessMessage = string.Format("result is same as the specified value ({0})", obj.ToString()),
-                    FailureMessage = string.Format("result is NOT same as the specified value ({0})", obj.ToString())
+                    SuccessMessage = $"result is same as the specified value ({obj.ToString()})",
+                    FailureMessage = $"result is NOT same as the specified value ({obj.ToString()})"
                 });
         }
 
@@ -170,11 +159,11 @@ namespace Bam.Net.Testing
         /// <param name="obj"></param>
         public void IllLookAtIt(object obj)
         {
-            assertions.Add(
+            _assertions.Add(
                 new Assertion
                 {
                     Passed = true,
-                    SuccessMessage = string.Format("I'll inspect the value ({0})", obj.ToString())
+                    SuccessMessage = $"I'll inspect the value ({obj.ToString()})"
                 });
         }
 
@@ -194,11 +183,11 @@ namespace Bam.Net.Testing
         /// <param name="obj"></param>
         public void IllLookAtItsProperties<T>(T obj)
         {
-            assertions.Add(
+            _assertions.Add(
                 new Assertion
                 {
                     Passed = true,
-                    SuccessMessage = string.Format("I'll inspect the properties:\r\n{0}", obj.PropertiesToString())
+                    SuccessMessage = $"I'll inspect the properties:\r\n{obj.PropertiesToString()}"
                 });
         }
         
@@ -210,33 +199,27 @@ namespace Bam.Net.Testing
         public void ResultDerivesFrom<T>()
         {
             Type type = typeof(T);
-            assertions.Add(
+            _assertions.Add(
                 new Assertion
                 {
                     Passed = Result.GetType().IsSubclassOf(type),
-                    SuccessMessage = string.Format("result is a subclass of type {0}", type.Name),
-                    FailureMessage = string.Format("result is NOT of type {0}", type.Name)
+                    SuccessMessage = $"result is a subclass of type {type.Name}",
+                    FailureMessage = $"result is NOT of type {type.Name}"
                 });
         }
 
         internal void ExceptionWasThrown(Exception ex)
         {
-            assertions.Add(new Assertion
+            _assertions.Add(new Assertion
             {
                 Passed = false,
                 FailureMessage =
-                    string.Format("an exception was thrown ({0}):\r\n{1}", ex.Message, ex.StackTrace)
+                    $"an exception was thrown ({ex.Message}):\r\n{ex.StackTrace}"
             }); 
         }
 
-        internal Assertion[] Assertions
-        {
-            get
-            {
-                return this.assertions.ToArray();
-            }
-        }
-
+        internal Assertion[] Assertions => this._assertions.ToArray();
+        
         public T ResultAs<T>()
         {
             return (T)Result;
@@ -247,15 +230,15 @@ namespace Bam.Net.Testing
         /// </summary>        
         public object Result { get; set; }
 
-        bool testIsDone;
+        bool _testIsDone;
         internal Because TestIsDone
         {
             get
             {
-                if (!testIsDone)
+                if (!_testIsDone)
                 {
-                    testIsDone = true;
-                    setupContext.Get<IBecauseWriter>().Write(this);                    
+                    _testIsDone = true;
+                    _setupContext.Get<IBecauseWriter>().Write(this);                    
                 }
                 return this;
             }
@@ -263,7 +246,7 @@ namespace Bam.Net.Testing
 
         internal Because CleanUp(Action<SetupContext> cleanup)
         {
-            cleanup(setupContext);
+            cleanup(_setupContext);
             return this;
         }
 
@@ -271,7 +254,7 @@ namespace Bam.Net.Testing
         /// Throws an exception if the test failed.  Same as ThrowExceptionIfTheTestFailed. 
         /// </summary>
         /// <param name="message"></param>
-        public void OrNot(string message = "TestFailed")
+        public void OrNot(string message = "The test failed, please see test output for more information.")
         {
             ThrowExceptionIfTheTestFailed(message);
         }
@@ -280,7 +263,7 @@ namespace Bam.Net.Testing
         /// Throws an exception if the test failed.  Same as OrNot.
         /// </summary>
         /// <param name="message"></param>
-        public void ThrowExceptionIfTheTestFailed(string message = "Test Failed")
+        public void ThrowExceptionIfTheTestFailed(string message = "The test failed, please see test output for more information.")
         {
             if (!Passed)
             {
@@ -291,7 +274,7 @@ namespace Bam.Net.Testing
         /// <summary>
         /// Throws an exception if the test failed.  Same as ThrowExceptionIfTheTestFailed.
         /// </summary>
-        public void UnlessItFailed(string message = "The test failed, please see above for more information.")
+        public void UnlessItFailed(string message = "The test failed, please see test output for more information.")
         {
             ThrowExceptionIfTheTestFailed(message);
         }
