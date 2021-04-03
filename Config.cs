@@ -90,7 +90,7 @@ namespace Bam.Net
         public static Config Current
         {
             get { return _currentLock.DoubleCheckLock(ref _current, () => new Config()); }
-            set => _current = value;
+            private set => _current = value;
         }
         
         public static Config For(string applicationName)

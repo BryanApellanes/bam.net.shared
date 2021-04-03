@@ -122,16 +122,16 @@ namespace Bam.Net.Server
         /// </summary>
         public Incubator CommonServiceProvider => _commonServiceProvider;
 
-        SecureChannel _commonSecureChannel;
+        readonly SecureChannel _commonSecureChannel;
         public SecureChannel CommonSecureChannel => _commonSecureChannel;
 
-        Dictionary<string, Incubator> _appServiceProviders;
+        readonly Dictionary<string, Incubator> _appServiceProviders;
         /// <summary>
         /// Incubators keyed by application name
         /// </summary>
         public Dictionary<string, Incubator> AppServiceProviders => _appServiceProviders;
 
-        Dictionary<string, SecureChannel> _appSecureChannels;
+        readonly Dictionary<string, SecureChannel> _appSecureChannels;
         public Dictionary<string, SecureChannel> AppSecureChannels => _appSecureChannels;
 
         public void SetCommonWebServices(WebServiceRegistry webServiceRegistry)

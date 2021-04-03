@@ -26,6 +26,11 @@ namespace Bam.Net
             return directoryInfo;
         }
         
+        /// <summary>
+        /// Create a file for the specified path relative to the workspace.
+        /// </summary>
+        /// <param name="pathSegments"></param>
+        /// <returns></returns>
         public FileInfo CreateFile(params string[] pathSegments)
         {
             FileInfo file = new FileInfo(Path(pathSegments));
@@ -47,11 +52,21 @@ namespace Bam.Net
             return new DirectoryInfo(Path(pathSegments));
         }
         
+        /// <summary>
+        /// Get a file for the specified path segments relative to workspace.
+        /// </summary>
+        /// <param name="pathSegments"></param>
+        /// <returns></returns>
         public FileInfo File(params string[] pathSegments)
         {
             return new FileInfo(Path(pathSegments));
         }
         
+        /// <summary>
+        /// Get a path for the specified path segments relative to workspace.
+        /// </summary>
+        /// <param name="pathSegments"></param>
+        /// <returns></returns>
         public string Path(params string[] pathSegments)
         {
             List<string> fileSegments = new List<string> {Root.FullName};

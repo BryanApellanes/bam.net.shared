@@ -921,11 +921,6 @@ File Version: {1}
             Out(string.Format(message, formatArgs), colors);
         }
 
-        public static void Out(string message)
-        {
-            Out(message, ConsoleColor.Gray);
-        }
-
         static Action<string, ConsoleColor> _coloredMessageProvider;
         static object _coloredMessageProviderLock = new object();
         static BackgroundThreadQueue<ConsoleMessage> _messageQueue;
@@ -964,7 +959,7 @@ File Version: {1}
             });
         }
 
-        public static void Out(string message, ConsoleColor color)
+        public static void Out(string message, ConsoleColor color = ConsoleColor.Gray)
         {
             ColoredMessageProvider(message, color);
         }
@@ -992,12 +987,7 @@ File Version: {1}
             ColoredBackgroundMessageProvider(message, colors);
         }
 
-        public static void OutLine(string message)
-        {
-            OutLine(message, ConsoleColor.Gray);
-        }
-        
-        public static void OutLine(string message, ConsoleColor color)
+        public static void OutLine(string message, ConsoleColor color = ConsoleColor.Gray)
         {
             Out($"{message}\r\n", color);
         }
@@ -1006,6 +996,7 @@ File Version: {1}
         {
             Out($"{message}\r\n", new ConsoleColorCombo(foreground, background));
         }
+        
         public static void OutLine(string message, ConsoleColorCombo colors)
         {
             Out($"{message}\r\n", colors);

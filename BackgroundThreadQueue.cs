@@ -11,7 +11,7 @@ namespace Bam.Net
 {
     /// <summary>
     /// A queue processing facility that processes
-    /// enqueued items in a background thread
+    /// enqueued items in a background thread.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public class BackgroundThreadQueue<T>: Loggable
