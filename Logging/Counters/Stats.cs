@@ -65,7 +65,7 @@ namespace Bam.Net.Logging.Counters
             return counter;
         }
         
-        public static Counter Count(string name, Func<long> countReader)
+        public static Counter Count(string name, Func<ulong> countReader)
         {
             Counter counter = GetCounter(name);
             counter.CountReader = countReader;

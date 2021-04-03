@@ -14,7 +14,7 @@ namespace Bam.Net.Logging.Counters
             CountReader = DefaultCountReader;
         }
 
-        protected Func<long> DefaultCountReader { get; }
+        protected Func<ulong> DefaultCountReader { get; }
 
         public override object Value
         {
@@ -24,12 +24,12 @@ namespace Bam.Net.Logging.Counters
             }
             set
             {
-                Count = (long)value;
+                Count = (ulong)value;
             }
         }
 
-        long _count;
-        public long Count
+        ulong _count;
+        public ulong Count
         {
             get
             {
@@ -41,7 +41,7 @@ namespace Bam.Net.Logging.Counters
             }
         }
 
-        public Func<long> CountReader { get; set; }
+        public Func<ulong> CountReader { get; set; }
 
         public Counter Increment()
         {
