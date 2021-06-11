@@ -2496,7 +2496,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Testing\Because.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Testing\BeforeEachUnitTest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Testing\BeforeUnitTests.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Testing\CommandLineTool.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CommandLineTool.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Testing\ConsoleBecauseWriter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Testing\Data\TestResult.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Testing\FailedTest.cs" />

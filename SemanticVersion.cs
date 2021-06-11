@@ -71,6 +71,7 @@ namespace Bam.Net
                         break;
                     case SemanticLifecycle.Release:
                         PreReleasePrefix = string.Empty;
+                        Build = string.Empty;
                         break;
                 }
             }
