@@ -35,10 +35,10 @@ namespace Bam.Net.Encryption
             return new PasswordDecrypted(cipher, password);            
         }
 
-        public static AsymmetricCipherKeyPair RsaKeyPair(this RsaKeyLength size)
+        public static AsymmetricCipherKeyPair RsaKeyPair(this RsaKeyLength size, string secureRandomAlgorithm = "SHA1PRNG")
         {
             RsaKeyPairGenerator gen = new RsaKeyPairGenerator();
-            RsaKeyGenerationParameters parameters = new RsaKeyGenerationParameters(new BigInteger("10001", 16), SecureRandom.GetInstance("SHA1PRNG"), (int)size, 80);
+            RsaKeyGenerationParameters parameters = new RsaKeyGenerationParameters(new BigInteger("10001", 16), SecureRandom.GetInstance(secureRandomAlgorithm), (int)size, 80);
             gen.Init(parameters);
             return gen.GenerateKeyPair();
         }

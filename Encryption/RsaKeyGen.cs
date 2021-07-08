@@ -23,7 +23,7 @@ namespace Bam.Net.Encryption
     {
         public static AsymmetricCipherKeyPair GenerateKeyPair(RsaKeyLength size)
         {
-            return size.RsaKeyPair();
+            return size.RsaKeyPair("SHA256PRNG");
         }
     }
 }
