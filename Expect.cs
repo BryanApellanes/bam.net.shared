@@ -569,7 +569,7 @@ namespace Bam.Net
 
         public static void ShouldBeEqualTo(this object objectToCheck, object compareTo, string failureMessage = null)
         {
-            if (objectToCheck.Equals(compareTo))
+            if (!objectToCheck.Equals(compareTo))
             {
                 if (!string.IsNullOrEmpty(failureMessage))
                 {

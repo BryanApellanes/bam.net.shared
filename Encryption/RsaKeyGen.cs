@@ -25,5 +25,10 @@ namespace Bam.Net.Encryption
         {
             return size.RsaKeyPair();
         }
+
+        public static AsymmetricCipherKeyPair GenerateKeyPair(int size)
+        {
+            return size.RsaKeyPair();
+        }
     }
 }

@@ -13,7 +13,9 @@ namespace Bam.Net.Encryption
         {
             get
             {
-               return All.ToDictionary<ManagedVault>(mv => mv.Name, mv => (ManagedVault)mv);
+                Dictionary<string, ManagedVault> result = new Dictionary<string, ManagedVault>();
+                All.Each(mv => result.Add(mv.Name, mv));
+                return result;
             }
         }
 

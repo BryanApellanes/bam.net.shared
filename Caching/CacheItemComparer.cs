@@ -78,7 +78,7 @@ namespace Bam.Net.Caching
                 {
                     return x.Misses.CompareTo(y.Misses);
                 }
-                return x.Misses.CompareTo(y.Misses);
+                return y.Misses.CompareTo(x.Misses);
             }
         }
     }
