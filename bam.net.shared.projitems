@@ -248,6 +248,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)AssemblyResolve.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AssemblySemanticVersion.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Automation\AssemblyReference.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Automation\AutomationExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Automation\AutomationServiceRegistryContainer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Automation\Automation_Generated\AutomationContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Automation\Automation_Generated\DeferredJobData.cs" />
