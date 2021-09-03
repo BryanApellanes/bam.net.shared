@@ -20,6 +20,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Xml;
+using Bam.Net.Automation;
 using Bam.Net.Configuration;
 using Bam.Net.Data;
 using Bam.Net.Data.Repositories;
@@ -1800,7 +1801,7 @@ namespace Bam.Net
         /// <summary>
         /// Construct an instance of the type using a dynamically defined and
         /// compiled lambda.  This "should" replace existing Construct&lt;T&gt;
-        /// implementation after benchmarks prove this one is faster
+        /// implementation after benchmarks prove this one is faster.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="type"></param>

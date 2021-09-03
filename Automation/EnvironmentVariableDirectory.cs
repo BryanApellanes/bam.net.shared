@@ -19,7 +19,12 @@ namespace Bam.Net.Automation
         {
             this.DirectoryPath = directoryPath;
         }
-        
+
+        public static EnvironmentVariableDirectory Default
+        {
+            get => new EnvironmentVariableDirectory(DefaultName);
+        }
+
         private string _directoryPath;
         public string DirectoryPath
         {

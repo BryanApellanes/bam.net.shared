@@ -8,7 +8,9 @@ namespace Bam.Net.Automation
 {
     public class EnvironmentVariable
     {
-        public const string DefaultVarFile = "./.bam/BAMVARS.yaml";
+        public const string DefaultVarYamlFile = "./.bam/BAMVARS.yaml";
+        public const string DefaultFile = "./.bam/_BAMVARS";
+
         public string Name { get; set; }
         public string Value { get; set; }
 
@@ -32,6 +34,43 @@ namespace Bam.Net.Automation
                     yield return new EnvironmentVariable {Name = attr.Name, Value = (string) propertyInfo.GetValue(instance)};
                 }
             }
+        }
+
+        public static EnvironmentVariable[] BamVarsYaml
+        {
+            get => FromYamlFile(DefaultVarYamlFile);
+        }
+
+        public static EnvironmentVariable[] BamVars
+        {
+            get => FromFile(DefaultFile);
+        }
+
+        public static EnvironmentVariable[] FromFile(FileInfo file)
+        {
+            return FromFile(file.FullName);
+        }
+
+        public static EnvironmentVariable[] FromFile(string filePath)
+        {
+            string fileContent = File.ReadAllText(filePath);
+            List<EnvironmentVariable> results = new List<EnvironmentVariable>();
+            foreach (string line in fileContent.Split(new string[] { "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries))
+            {
+                string name = line.ReadUntil("=", out string value);
+                results.Add(new EnvironmentVariable { Name = name, Value = value });
+            }
+            return results.ToArray();
+        }
+
+        public static EnvironmentVariable[] FromYamlFile(FileInfo file)
+        {
+            return FromYamlFile(file.FullName);
+        }
+
+        public static EnvironmentVariable[] FromYamlFile(string filePath)
+        {
+            return filePath.FromYamlFile<EnvironmentVariable[]>();
         }
 
         public static EnvironmentVariable[] FromDirectory(DirectoryInfo directoryInfo)
