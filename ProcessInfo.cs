@@ -51,7 +51,7 @@ namespace Bam.Net
         
         public ProcessStartInfo ToStartInfo(params string[] commandLineArgs)
         {
-            commandLineArgs ??= CommandLineArgs;
+            commandLineArgs = commandLineArgs ?? CommandLineArgs;
             ProcessStartInfo startInfo = _currentProcess.GetStartInfo(commandLineArgs);
             startInfo.FileName = FilePath;
             startInfo.Arguments = string.Join(" ", commandLineArgs);

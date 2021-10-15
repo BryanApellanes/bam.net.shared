@@ -51,7 +51,7 @@ namespace Bam.Net.ServiceProxy.Secure
 
         /// <summary>
         /// The name of the cookie used to hold the 
-        /// session identifier.  Returns ServiceProxySystem.SessionName
+        /// session identifier. 
         /// </summary>
         public static string CookieName => "SPSSESS"; // TODO: rename this to bam-sps-sess
 

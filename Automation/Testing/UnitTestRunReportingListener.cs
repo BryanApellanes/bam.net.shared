@@ -35,7 +35,7 @@ namespace Bam.Net.Automation.Testing
             _testExecutionLookupByMethodInfo = new ConcurrentDictionary<MethodInfo, TestExecution>();
         }
 
-        public override bool Equals(object? obj)
+        public override bool Equals(object obj)
         {
             if (obj is UnitTestRunReportingListener unitTestRunReportingListener)
             {

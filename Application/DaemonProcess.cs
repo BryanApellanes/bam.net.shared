@@ -157,7 +157,7 @@ namespace Bam.Net.Application
             set
             {
                 _argumentsArray = value;
-                string argsTemp = string.Join(' ',_argumentsArray.Select(arg => arg.Contains(" ") ? $"\"{arg}\"" : arg).ToArray());
+                string argsTemp = string.Join(" ",_argumentsArray.Select(arg => arg.Contains(" ") ? $"\"{arg}\"" : arg).ToArray());
                 if (!_arguments.Equals(argsTemp))
                 {
                     _arguments = argsTemp;

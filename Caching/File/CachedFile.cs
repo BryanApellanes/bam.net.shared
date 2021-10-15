@@ -105,7 +105,7 @@ namespace Bam.Net.Caching.File
                 }
                 catch (Exception ex)
                 {
-                    logger ??= Log.Default;
+                    logger = logger ?? Log.Default;
                     logger.AddEntry("Error loading file {0}: {1}", ex, File?.FullName ?? "<null>", ex.Message);
                     return false;
                 }

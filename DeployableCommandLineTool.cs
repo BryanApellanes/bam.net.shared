@@ -60,7 +60,7 @@ namespace Bam.Net
         string toolName = null;
         protected virtual string GetToolName()
         {
-            return toolName ??= GetArgument("toolName", "Enter the name of the tool to install");
+            return toolName = toolName ?? GetArgument("toolName", "Enter the name of the tool to install");
         }
 
         protected virtual string GetCurrentToolName()

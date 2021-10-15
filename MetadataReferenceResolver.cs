@@ -23,7 +23,7 @@ namespace Bam.Net
 
         public IEnumerable<MetadataReference> GetMetaDataReferences(params Type[] types)
         {
-            HashSet<Assembly> assemblies = types.Select(t => t.Assembly).ToHashSet(); 
+			HashSet<Assembly> assemblies = new HashSet<Assembly>(types.Select(t => t.Assembly));
             foreach (Assembly ass in assemblies)
             {
                 if (ass != null)

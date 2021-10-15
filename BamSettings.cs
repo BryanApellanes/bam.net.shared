@@ -110,11 +110,11 @@ namespace Bam.Net
         public static bool BamDebug => (System.Environment.GetEnvironmentVariable("BAMDEBUG") ?? string.Empty).Equals("true");
 
         private static BamSettings _default;
-        public static BamSettings Default => _default ??= Load();
+        public static BamSettings Default => _default = _default ?? Load();
         
         public static BamSettings Load(string path = null)
         {
-            path ??= Path.Combine(Config.GetDirectory(ProcessApplicationNameProvider.Current).FullName, $"BamSettings-{OSInfo.Current.ToString()}.yaml");
+            path = path ?? Path.Combine(Config.GetDirectory(ProcessApplicationNameProvider.Current).FullName, $"BamSettings-{OSInfo.Current.ToString()}.yaml");
             if (!File.Exists(path))
             {
                 BamSettings settings = new BamSettings
@@ -140,7 +140,7 @@ namespace Bam.Net
 
         public string Save(string path = null, Action<string> moved = null)
         {
-            path ??= Path.Combine(".", $"bam-{OSInfo.Current.ToString()}.yaml");
+            path = path ?? Path.Combine(".", $"bam-{OSInfo.Current.ToString()}.yaml");
             if (File.Exists(path))
             {
                 string backUp = path.GetNextFileName();

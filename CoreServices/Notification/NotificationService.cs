@@ -147,8 +147,8 @@ namespace Bam.Net.CoreServices
         {
             try
             {    
-                @from ??= DataProviderSmtpSettingsProvider.DefaultSender ?? $"no-reply@{ApplicationName}.{Tld}";
-                fromDisplayName ??= @from;
+                @from = @from ?? DataProviderSmtpSettingsProvider.DefaultSender ?? $"no-reply@{ApplicationName}.{Tld}";
+                fromDisplayName = fromDisplayName ?? @from;
                 Email email = SmtpSettingsProvider
                     .CreateEmail(from, fromDisplayName)
                     .To(toEmail)

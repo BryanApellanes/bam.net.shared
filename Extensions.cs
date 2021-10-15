@@ -2148,6 +2148,21 @@ namespace Bam.Net
             }
         }
 
+		public static bool TryFromJson<T>(this string json, out T result)
+		{
+			try
+			{
+				result = FromJson<T>(json);
+				return true;
+			}
+			catch (Exception ex)
+			{
+				result = default(T);
+				Log.Trace("TryFromJson failed: {0}", ex, ex.Message);
+				return false;
+			}
+		}
+
         /// <summary>
         /// Deserialize the current string as the specified
         /// generic type T.
@@ -4126,8 +4141,6 @@ namespace Bam.Net
             {
                 return sourceType.GetProperties().FirstOrDefault(p => p.DeclaringType == sourceType && p.Name == propertyName);
             }
-
-            return null;
         }
         
         /// <summary>
