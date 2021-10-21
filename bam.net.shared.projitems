@@ -1732,22 +1732,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Data\WhereDelegate.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\WhereFormat.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\XrefDaoCollection.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Data\InterSystems\ConcurrencyStrategy.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Data\InterSystems\IntersystemsConnectionStringResolver.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Data\InterSystems\InterSystemsCredentials.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Data\InterSystems\InterSystemsDatabase.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Data\InterSystems\InterSystemsDatabaseInitializer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Data\InterSystems\InterSystemsDataTypeTranslator.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Data\InterSystems\InterSystemsFieldDescriptor.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Data\InterSystems\InterSystemsFormatProvder.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Data\InterSystems\InterSystemsJavascriptSqlProvider.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Data\InterSystems\InterSystemsParameterBuilder.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Data\InterSystems\InterSystemsQuerySet.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Data\InterSystems\InterSystemsRegistrar.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Data\InterSystems\InterSystemsRegistrarCaller.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Data\InterSystems\InterSystemsSchemaExtractor.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Data\InterSystems\InterSystemsSchemaExtractorConfig.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Data\InterSystems\InterSystemsSqlStringBuilder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Date.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Documentation\ClassMemberType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Documentation\CodeInfo.cs" />
@@ -2774,9 +2758,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)UserAccounts\UserNameNotFoundException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UserUtil.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Validate.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Web\CookieEnabledWebClient.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Web\CookieEnabledWebClient.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Web\FormParameterExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Web\Headers.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Web\Http.cs" />
