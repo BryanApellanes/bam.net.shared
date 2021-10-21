@@ -100,7 +100,7 @@ namespace Bam.Net.CommandLine
 
         /// <summary>
         /// Start a new process for the specified startInfo.  This 
-        /// operation will block if a timeout greater than 0 is specified
+        /// operation blocks if a timeout greater than 0 is specified
         /// </summary>
         /// <param name="startInfo"></param>
         /// <param name="timeout"></param>

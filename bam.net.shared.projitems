@@ -456,6 +456,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)CoreServices\AccessControl\AuthorizationHeader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CoreServices\AccessControl\AuthorizationHeaderProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CoreServices\AccessControl\BearerTokenAuthorizationHeader.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CoreServices\AccessControl\EnvironmentVariableAuthorizationHeaderProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CoreServices\AccessControl\VaultAuthorizationHeaderProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CoreServices\AccessControl\IAuthorizationHeaderProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CoreServices\AccessControl\TokenAuthorizationHeader.cs" />

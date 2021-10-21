@@ -12,7 +12,7 @@ namespace Bam.Net.CoreServices.AccessControl
 
             Implementations = new Dictionary<TokenTypes, Func<AuthorizationHeader>>()
             {
-                {TokenTypes.Invalid, () => new AuthorizationHeader {Value = Value}},
+                {TokenTypes.Raw, () => new AuthorizationHeader {Value = Value}},
                 {TokenTypes.Bearer, () => new BearerTokenAuthorizationHeader {Value = Value}},
                 {TokenTypes.Token, () => new TokenAuthorizationHeader {Value = Value}}
             };
@@ -21,6 +21,11 @@ namespace Bam.Net.CoreServices.AccessControl
         public virtual TokenTypes TokenType { get; set; }
         
         public abstract string Value { get; set; }
+
+        public virtual string GetRawValue()
+        {
+            return this.Value;
+        }
 
         public AuthorizationHeader GetAuthorizationHeader(TokenTypes tokenType, string value)
         {

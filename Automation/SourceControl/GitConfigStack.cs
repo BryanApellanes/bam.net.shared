@@ -3,6 +3,7 @@
 */
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,7 +18,14 @@ namespace Bam.Net.Automation.SourceControl
         public GitConfigStack()
         {
             this.CredentialHelper = "winstore";
-            this.GitPath = DefaultConfiguration.GetAppSetting("GitPath",  "C:\\Program Files\\Git\\bin");
+            string defaultPath = "C:\\Program Files\\Git\\bin";            
+            if (OSInfo.Current != OSNames.Windows)
+            {
+                string filePath = "which git".RunAndWait().StandardOutput.Trim();
+                defaultPath = filePath.Truncate(4); // remove "/git" from the end
+            }
+
+            this.GitPath = DefaultConfiguration.GetAppSetting("GitPath", defaultPath);
         }
 
         public string RemoteRepository { get; set; }

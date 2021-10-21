@@ -10,6 +10,7 @@ using System.IO;
 using System.Reflection;
 using Bam.Net;
 using Bam.Net.CommandLine;
+using System.Diagnostics;
 
 namespace Bam.Net.Automation.SourceControl
 {
@@ -31,9 +32,14 @@ namespace Bam.Net.Automation.SourceControl
             _configStack.LocalRepository = localRepository;
         }
 
-        public static Git RemoteRepository(string remoteRepository)
+        public static Git Remote(string remoteRepository)
         {
             return new Git(remoteRepository);
+        }
+
+        public static Git Local(string localRepository)
+        {
+            return new Git(null, localRepository);
         }
 
         public static Git CurrentRoot()
@@ -320,7 +326,14 @@ namespace Bam.Net.Automation.SourceControl
         {
             string startDir = Environment.CurrentDirectory;
             Environment.CurrentDirectory = _configStack.LocalRepository ?? ".";
-            ProcessOutput output = Path.Combine(_configStack.GitPath, "git.exe").ToStartInfo(args).Run();
+            string fileName = "git.exe";
+            if (OSInfo.Current != OSNames.Windows)
+            {
+                fileName = "git";
+            }
+            string gitPath = Path.Combine(_configStack.GitPath, fileName);            
+            ProcessStartInfo startInfo = gitPath.ToStartInfo(args);            
+            ProcessOutput output = startInfo.Run();
             Environment.CurrentDirectory = startDir;
             if (output.ExitCode != 0)
             {
