@@ -63,7 +63,7 @@ namespace Bam.Net.Encryption
         /// <returns></returns>
         public VaultKeyInfo ExportKey(Database db = null)
         {
-            db ??= Database;
+            db = db ?? Database;
             VaultKey key = VaultKeysByVaultId.FirstOrDefault();
             _vaultKey = null;
             _items = null;
@@ -444,7 +444,7 @@ namespace Bam.Net.Encryption
         }
 
         private VaultKey _vaultKey;
-        public VaultKey VaultKey => _vaultKey ??= VaultKeysByVaultId.FirstOrDefault();
+		public VaultKey VaultKey => _vaultKey = _vaultKey ?? VaultKeysByVaultId.FirstOrDefault();
 
         public string[] Keys
         {

@@ -67,14 +67,13 @@ namespace Bam.Net.Application.Network
         {
             get
             {
-                string osDetail = GetScanReportLines().FirstOrDefault(line =>
-                    line.StartsWith("OS details", StringComparison.InvariantCultureIgnoreCase));
-                if (osDetail.Contains("Windows", StringComparison.InvariantCultureIgnoreCase))
+				string osDetail = GetScanReportLines().FirstOrDefault(line => (bool)line?.ToLowerInvariant().StartsWith("os details"));
+                if (osDetail.ToLowerInvariant().Contains("windows"))
                 {
                     return OSNames.Windows;
                 }
 
-                if (osDetail.Contains("Linux", StringComparison.InvariantCultureIgnoreCase))
+                if (osDetail.ToLowerInvariant().Contains("linux"))
                 {
                     return OSNames.Linux;
                 }

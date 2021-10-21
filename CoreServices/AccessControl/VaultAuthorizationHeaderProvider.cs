@@ -33,7 +33,7 @@ namespace Bam.Net.CoreServices.AccessControl
             Value = value;
         }
         
-        protected Vault Vault { get; init; }
+        protected Vault Vault { get; private set; }
         
         public override string ConfigKey { get; set; }
 

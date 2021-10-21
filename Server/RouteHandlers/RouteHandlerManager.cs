@@ -149,7 +149,7 @@ namespace Bam.Net.Server
         protected virtual string GetHandlerName(string url)
         {
             Uri uri = new Uri(url);
-            return uri.PathAndQuery.Split("/", StringSplitOptions.RemoveEmptyEntries).First();
+            return uri.PathAndQuery.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries).First();
         }
 
         protected Dictionary<string, object> ConvertArgumentTypes(IRequest request, MethodInfo methodInfo, Dictionary<string, ParameterInfo> parameterInfos, Dictionary<string, string> routeArgs)

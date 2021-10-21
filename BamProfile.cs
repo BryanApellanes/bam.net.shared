@@ -115,7 +115,12 @@ namespace Bam.Net
             {
                 File.Create(file.FullName).Dispose();
             }
-            return file.FromJsonFile<T>() ?? new T();
+			T instance = file.FromJsonFile<T>();
+			if (instance == null)
+			{
+				return default(T);
+			}
+			return instance;
         }
         
         public static T LoadYamlData<T>(string relativeFilePath) where T : new()
@@ -125,7 +130,12 @@ namespace Bam.Net
             {
                 File.Create(file.FullName).Dispose();
             }
-            return file.FromYamlFile<T>() ?? new T();
+			T instance = file.FromYamlFile<T>();
+			if (instance == null)
+			{
+				return default(T);
+			}
+			return instance;
         }
 
         public static string SaveJsonData(object instance, string relativeFilePath)

@@ -180,7 +180,7 @@ namespace Bam.Net
         static IApplicationNameProvider _applicationNameProvider;
         public static IApplicationNameProvider ApplicationNameProvider
         {
-            get => _applicationNameProvider ??= ProcessApplicationNameProvider.Current;
+            get => _applicationNameProvider = _applicationNameProvider ?? ProcessApplicationNameProvider.Current;
 
             set => _applicationNameProvider = value;
         }
@@ -303,7 +303,7 @@ namespace Bam.Net
         public static DirectoryInfo GetDirectory(IApplicationNameProvider applicationNameProvider = null)
         {
             DirectoryInfo configDir = GetBamHomeConfigFile().Directory;
-            applicationNameProvider ??= ProcessApplicationNameProvider.Current;
+			applicationNameProvider = applicationNameProvider ?? ProcessApplicationNameProvider.Current;
             string typeConfigsFolderName = applicationNameProvider.GetApplicationName();
             if (string.IsNullOrEmpty(typeConfigsFolderName))
             {
@@ -315,7 +315,7 @@ namespace Bam.Net
         
         public static FileInfo GetBamHomeConfigFile(IApplicationNameProvider applicationNameProvider = null)
         {
-            applicationNameProvider ??= ProcessApplicationNameProvider.Current;
+            applicationNameProvider = applicationNameProvider ?? ProcessApplicationNameProvider.Current;
             Log.Trace("Config using applicationNameProvider of type ({0})", applicationNameProvider?.GetType().Name);
             string providedAppName = applicationNameProvider.GetApplicationName();
             return GetBamHomeConfigFile(providedAppName);
@@ -329,7 +329,7 @@ namespace Bam.Net
         /// <returns></returns>
         public static FileInfo GetBamProfileConfigFile(IApplicationNameProvider applicationNameProvider = null)
         {
-            applicationNameProvider ??= ProcessApplicationNameProvider.Current;
+			applicationNameProvider = applicationNameProvider ?? ProcessApplicationNameProvider.Current;
             Log.Trace("Config using applicationNameProvider of type ({0})", applicationNameProvider?.GetType().Name);
             string providedAppName = applicationNameProvider.GetApplicationName();
             return GetBamProfileConfigFile(providedAppName);

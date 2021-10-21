@@ -4155,8 +4155,6 @@ namespace Bam.Net
             {
                 return sourceType.GetProperties().FirstOrDefault(p => p.DeclaringType == sourceType && p.Name == propertyName);
             }
-
-            return null;
         }
         
         /// <summary>

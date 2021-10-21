@@ -53,7 +53,7 @@ namespace Bam.Net.CommandLine
 
         public static string PasswordPrompt(ConsoleColorCombo colors, string promptMessage = null)
         {
-            promptMessage ??= "Please enter your password ";
+            promptMessage = promptMessage ?? "Please enter your password ";
             string pass = string.Empty;
             Out($"{promptMessage} >>", colors);
             ConsoleKeyInfo keyInfo;
@@ -139,7 +139,7 @@ namespace Bam.Net.CommandLine
         /// <returns></returns>
         public static string GetArgument(string name, string promptMessage = null, Func<string, string> prompter = null)
         {
-            prompter ??= ((p) => Prompt(p ?? $"Please enter a value for {name}"));
+            prompter = prompter ??  ((p) => Prompt(p ?? $"Please enter a value for {name}"));
             string acronym = name.CaseAcronym().ToLowerInvariant();
             string fromConfig = DefaultConfiguration.GetAppSetting(name, "").Or(DefaultConfiguration.GetAppSetting(acronym, ""));
             return Arguments.Contains(name) ? Arguments[name] :

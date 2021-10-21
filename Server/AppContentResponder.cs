@@ -191,11 +191,11 @@ namespace Bam.Net.Server
                 {
                     ClientInfo clientInfo = parser.Parse(request.UserAgent);
                
-                    if (clientInfo.OS.Family.Contains("Mac", StringComparison.InvariantCultureIgnoreCase))
+                    if (clientInfo.OS.Family.ToLowerInvariant().Contains("mac"))//, StringComparison.InvariantCultureIgnoreCase))
                     {
                         runtime = "osx-x64";
                     }
-                    else if (clientInfo.OS.Family.Contains("Linux", StringComparison.InvariantCultureIgnoreCase))
+                    else if (clientInfo.OS.Family.ToLowerInvariant().Contains("linux"))//, StringComparison.InvariantCultureIgnoreCase))
                     {
                         runtime = "linux-x64";
                     }
