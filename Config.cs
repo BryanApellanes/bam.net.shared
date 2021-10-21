@@ -78,7 +78,37 @@ namespace Bam.Net
                 });
             }
         }
-        
+
+        public Config(string applicationName, string configFilePath) : this(applicationName, configFilePath, true)
+        { 
+        }
+
+        private Config(string applicationName, string configFilePath, bool subscribeToChanges)
+        {
+            ApplicationName = applicationName;
+            File = new FileInfo(configFilePath);
+            AppSettings = Read(File);
+
+            if (subscribeToChanges)
+            {
+                ConfigChangeWatcher = File.OnChange((o, a) =>
+                {
+                    Config oldConfig = new Config(applicationName, configFilePath, false)
+                    {
+                        AppSettings = AppSettings
+                    };
+                    AppSettings = Read(File);
+                    Config newConfig = this;
+                    ConfigChangedEventArgs args = new ConfigChangedEventArgs()
+                    {
+                        OldConfig = oldConfig,
+                        NewConfig = newConfig
+                    };
+                    FireEvent(ConfigChanged, this, args);
+                });
+            }
+        }
+
         public string ApplicationName { get; private set; }
         
         static Config _current;
@@ -90,9 +120,19 @@ namespace Bam.Net
         public static Config Current
         {
             get { return _currentLock.DoubleCheckLock(ref _current, () => new Config()); }
-            private set => _current = value;
+            set => _current = value;
         }
         
+        public static Config Create(string configFilePath = null)
+        {
+            return For(ApplicationNameProvider.GetApplicationName(), configFilePath);
+        }
+
+        public static Config For(string applicationName, string configFilePath = null)
+        {
+            return new Config(applicationName, configFilePath);
+        }
+
         public static Config For(string applicationName)
         {
             return new Config(applicationName);
@@ -102,7 +142,7 @@ namespace Bam.Net
         public event EventHandler ConfigChanged;
         public FileInfo File { get; set; }
         
-        public Workspace Workspace => Workspace.Current;
+        public Workspace Workspace => Workspace.Current;        
 
         public Dictionary<string, string> AppSettings { get; set; }
         
@@ -176,6 +216,12 @@ namespace Bam.Net
         {
             configFile = GetBamHomeConfigFile(applicationName);
             return configFile.FromYamlFile<Dictionary<string, string>>() ?? new Dictionary<string, string>();
+        }
+
+        public static Dictionary<string, string> Read(FileInfo configFile)
+        {
+            configFile = EnsureFile(configFile.FullName);
+            return configFile.FromYamlFile<Dictionary<string, string>>() ?? new Dictionary<string, string>();            
         }
 
         public void Save()

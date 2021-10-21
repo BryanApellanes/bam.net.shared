@@ -66,7 +66,7 @@ namespace Bam.Net
 
         public static string DefaultToolPath(string fileName)
         {
-            return Current == OSNames.Windows ? $"/c/opt/bam/tools/{fileName}" : $"/opt/bam/tools/{fileName}";
+            return Current == OSNames.Windows ? $"c:/opt/bam/tools/{fileName}" : $"/opt/bam/tools/{fileName}";
         }
         
         /// <summary>

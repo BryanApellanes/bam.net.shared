@@ -2,6 +2,9 @@
 
 namespace Bam.Net.CoreServices.AccessControl
 {
+    /// <summary>
+    /// An AuthorizationHeaderProvider that retrieves the authorization header value from a Bam.Net.Encryption.Vault instance.
+    /// </summary>
     public class VaultAuthorizationHeaderProvider : AuthorizationHeaderProvider
     {
         public const string DefaultConfigKey = "AuthorizationHeader";

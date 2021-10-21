@@ -150,7 +150,10 @@ namespace Bam.Net
                             ExistingFileAction.Throw,
                             (zip, dest) => Args.Throw<InvalidOperationException>("File exists, can't extract {0}", dest)
                         },
-                        {ExistingFileAction.OverwriteSilently, (zip, dest) => zip.ExtractToFile(dest, true)},
+                        {
+                            ExistingFileAction.OverwriteSilently, 
+                            (zip, dest) => zip.ExtractToFile(dest, true)
+                        },
                         {
                             ExistingFileAction.DoNotOverwrite,
                             (zip, dest) => Logging.Log.Warn("File exists, can't extract {0}", dest)
@@ -2148,20 +2151,31 @@ namespace Bam.Net
             }
         }
 
-		public static bool TryFromJson<T>(this string json, out T result)
-		{
-			try
-			{
-				result = FromJson<T>(json);
-				return true;
-			}
-			catch (Exception ex)
-			{
-				result = default(T);
-				Log.Trace("TryFromJson failed: {0}", ex, ex.Message);
-				return false;
-			}
-		}
+        public static bool TryFromJson<T>(this string json)
+        {
+            return TryFromJson<T>(json, out T ignore);
+        }
+
+        public static bool TryFromJson<T>(this string json, out T instance)
+        {
+            return TryFromJson<T>(json, out instance, out Exception ignore);
+        }
+
+        public static bool TryFromJson<T>(this string json, out T instance, out Exception exception)
+        {
+            instance = default(T);
+            exception = null;
+            try
+            {
+                instance = FromJson<T>(json);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                exception = ex;
+                return false;
+            }
+        }
 
         /// <summary>
         /// Deserialize the current string as the specified

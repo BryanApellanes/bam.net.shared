@@ -208,7 +208,7 @@ namespace Bam.Net.Web
             }
             WebClient client = new CookieEnabledWebClient();
             client.Headers["User-Agent"] = agent;
-            client.UseDefaultCredentials = true;
+            client.UseDefaultCredentials = false;
 
             return client;
         }

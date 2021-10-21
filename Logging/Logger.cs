@@ -201,7 +201,7 @@ namespace Bam.Net.Logging
             {
                 if (string.IsNullOrEmpty(appName) || appName.Equals(DefaultConfiguration.DefaultApplicationName))
                 {
-                    appName = DefaultConfiguration.GetAppSetting("ApplicationName", DefaultConfiguration.DefaultApplicationName);
+                    appName = DefaultConfiguration.GetAppSetting("ApplicationName", ApplicationNameProvider.Default?.GetApplicationName() ?? DefaultConfiguration.DefaultApplicationName);
                 }
                 return appName;
             }

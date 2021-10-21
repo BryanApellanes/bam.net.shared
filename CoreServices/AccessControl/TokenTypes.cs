@@ -4,7 +4,7 @@ namespace Bam.Net.CoreServices.AccessControl
 {
     public enum TokenTypes
     {
-        Invalid,
+        Raw,
         Token,
         Bearer
     }
