@@ -35,7 +35,7 @@ namespace Bam.Net.Testing
             TestMethodProvider = testMethodProvider;
             TestSummary = new TestRunnerSummary();
             IsolateMethodCalls = true;
-            logger ??= Log.Default;
+            logger = logger ?? Log.Default;
 
             _tests = new Lazy<List<TTestMethod>>(() => TestMethodProvider.GetTests());
             

@@ -20,7 +20,7 @@ namespace Bam.Net.Encryption
         /// <param name="logger"></param>
         public ManagedVault(FileInfo plainTextFile, string password = null, ILogger logger = null)
         {
-            password ??= Secure.RandomString();
+            password = password ?? Secure.RandomString();
             Logger = logger ?? Log.Default;
             Name = Path.GetFileNameWithoutExtension(plainTextFile.FullName);
             PlainTextDirectory = Path.Combine(BamProfile.VaultsPath, "plaintext");

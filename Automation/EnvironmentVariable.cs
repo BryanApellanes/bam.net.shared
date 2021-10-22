@@ -9,7 +9,7 @@ namespace Bam.Net.Automation
     public class EnvironmentVariable
     {
         public const string DefaultVarYamlFile = "./.bam/BAMVARS.yaml";
-        public const string DefaultFile = "./.bam/_BAMVARS";
+        public const string DefaultVarFile = "./.bam/_BAMVARS";
 
         public string Name { get; set; }
         public string Value { get; set; }
@@ -43,7 +43,7 @@ namespace Bam.Net.Automation
 
         public static EnvironmentVariable[] BamVars
         {
-            get => FromFile(DefaultFile);
+            get => FromFile(DefaultVarFile);
         }
 
         public static EnvironmentVariable[] FromFile(FileInfo file)
