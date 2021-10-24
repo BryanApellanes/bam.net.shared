@@ -2186,9 +2186,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\Secure\SecureChannelMessage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\Secure\SecureClientSessionInfo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\Secure\SecureExecutionRequest.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\Secure\SecureServiceProxyClient.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\Secure\SecureServiceProxyClient.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\Secure\SecureServiceProxy_Generated\ApiKey.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\Secure\SecureServiceProxy_Generated\ApiKeyCollection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\Secure\SecureServiceProxy_Generated\ApiKeyColumns.cs" />
@@ -2219,12 +2217,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\Secure\SetSessionKeyRequest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\Secure\StaticApiKeyProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\ServiceGenerationInfo.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\ServiceProxyClient.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\ServiceProxyClient[T].cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\ServiceProxyClient.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\ServiceProxyClient[T].cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\ServiceProxyHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\ServiceProxyInfo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\ServiceProxyInvokeEventArgs.cs" />
