@@ -9,7 +9,7 @@ namespace Bam.Net
 {
     public class OSInfo
     {
-        public const string DefaultCoreVersion = "5.0.100";
+        public const string DefaultTargetFrameworkVersion = "5.0.100";
         public const string DefaultLibSubfolder = "net5.0";
         
         static OSNames _current;
@@ -40,7 +40,7 @@ namespace Bam.Net
         public static bool IsUnix => Current != OSNames.Windows;
         public static bool IsWindows => Current == OSNames.Windows;
 
-        public static string CoreVersion => Config.Current["CoreVersion"].Or(DefaultCoreVersion);
+        public static string TargetFrameworkVersion => Config.Current["TargetFramework"].Or(DefaultTargetFrameworkVersion);
 
         private static readonly Dictionary<OSNames, string> _referenceRuntimeNames = new Dictionary<OSNames, string>
         {

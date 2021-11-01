@@ -3356,6 +3356,10 @@ namespace Bam.Net
 
             lock (FileLock.Named(fileInfo.FullName))
             {
+                if(!fileInfo.Directory.Exists)
+                {
+                    fileInfo.Directory.Create();
+                }
                 using (StreamWriter sw = new StreamWriter(filePath, true))
                 {
                     sw.Write(textToAppend);
@@ -3843,7 +3847,7 @@ namespace Bam.Net
         }
 
         /// <summary>
-        /// Replace a specified string with another string where that string occurs
+        /// Replace a specified string with another string where the specified string occurs
         /// between the startDelimiter and endDelimiter.
         /// </summary>
         /// <param name="input"></param>

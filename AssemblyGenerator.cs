@@ -162,7 +162,7 @@ namespace Bam.Net
         
         private void SaveAssemblyFile(string sourceHash, byte[] bytes)
         {
-            RuntimeConfig config = RuntimeSettings.GetConfig();
+            RuntimeConfig config = RuntimeSettings.GetRuntimeConfig();
             if (!Directory.Exists(config.GenDir))
             {
                 Directory.CreateDirectory(config.GenDir);

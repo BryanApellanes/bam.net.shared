@@ -31,32 +31,6 @@ namespace Bam.Net.CoreServices.AssemblyManagement
         {
             return NugetReferenceAssemblyResolver.ResolveReferenceAssemblyPath(nameSpace, typeName);
         }
-
-        public string ResolveSystemRuntimePath()
-        {
-            string netCoreDir = new FileInfo(typeof(object).Assembly.GetFilePath()).Directory.FullName;
-            string systemRuntime = Path.Combine(netCoreDir, "System.Runtime.dll");
-            if (!File.Exists(systemRuntime))
-            {
-                try
-                {
-                    systemRuntime = RuntimeSettingsConfigReferenceAssemblyResolver.ResolveSystemRuntimePath();
-                }
-                catch (Exception ex)
-                {
-                    Log.Error("Error trying to resolve `System.Runtime.dll` path");
-                
-                    return NugetReferenceAssemblyResolver.ResolveSystemRuntimePath();
-                }
-            }
-
-            return systemRuntime;
-        }
-
-        public string ResolveNetStandardPath()
-        {
-            return ReferenceAssemblyResolver.ResolveNetStandardPath(ResolveSystemRuntimePath());
-        }
         
         public string ResolvePackageRootDirectory(string typeNamespace, string typeName)
         {
@@ -65,8 +39,7 @@ namespace Bam.Net.CoreServices.AssemblyManagement
         
         public string ResolveReferenceAssemblyPath(string assemblyName)
         {
-            FileInfo runtime = new FileInfo(ResolveSystemRuntimePath());
-            string path = Path.Combine(runtime.Directory.FullName, assemblyName);
+            string path = Path.Combine(RuntimeSettings.GetReferenceAssembliesDirectory(), assemblyName);
             if (!File.Exists(path) && !File.Exists(path.ToLowerInvariant()))
             {
                 path = NugetReferenceAssemblyResolver.ResolveReferenceAssemblyPath(assemblyName);

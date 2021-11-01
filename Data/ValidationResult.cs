@@ -139,7 +139,7 @@ namespace Bam.Net.Data
                 else
                 {
                     failures.Add(ServiceProxy.ValidationFailures.MethodNotProxied);
-                    messages.Add("The specified method has been explicitly excluded from being proxied: {0}"._Format(_toValidate.MethodName));
+                    messages.Add("The specified method is explicitly excluded from being proxied: {0}"._Format(_toValidate.MethodName));
                 }
             }
         }

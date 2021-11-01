@@ -1,7 +1,9 @@
 using Bam.Net.Data.Repositories;
+using System;
 
 namespace Bam.Net.Services.Catalog.Data
 {
+    [Serializable]
     public class ItemOption: KeyedAuditRepoData
     {
         public ulong CatalogItemId { get; set; }

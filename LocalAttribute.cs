@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 namespace Bam.Net
 {
     /// <summary>
-    /// Used to denote a method that will not be 
-    /// proxied and will execute locally.  Also
-    /// allows a method to be network invoked if
+    /// Used to denote a method that is not 
+    /// proxied and executes locally.  Also
+    /// allows network invocation of a method if
     /// the service is exposed to the local loopback
-    /// address 127.0.0.1
+    /// address 127.0.0.1.
     /// </summary>
     [AttributeUsage(AttributeTargets.Method | AttributeTargets.Property)]
     public class LocalAttribute: ExcludeAttribute

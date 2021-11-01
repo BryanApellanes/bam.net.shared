@@ -554,7 +554,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)CoreServices\AssemblyManagement\IReferenceAssemblyResolver.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CoreServices\AssemblyManagement\ITypeIdResolver.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CoreServices\AssemblyManagement\LinuxReferenceAssemblyResolver.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)CoreServices\AssemblyManagement\LocalReferenceAssemblyResolver.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CoreServices\AssemblyManagement\NetStandardVersionResolver.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CoreServices\AssemblyManagement\NugetReferenceAssemblyResolver.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CoreServices\AssemblyManagement\OsxReferenceAssemblyResolver.cs" />
@@ -565,7 +564,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)CoreServices\AssemblyManagement\ReferenceAssemblyResolver.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CoreServices\AssemblyManagement\RuntimeSettingsConfigReferenceAssemblyResolver.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CoreServices\AssemblyManagement\TypeIdResolver.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)CoreServices\AssemblyManagement\WindowsReferenceAssemblyResolver.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CoreServices\Auth\Data\AccessToken.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CoreServices\Auth\Data\Generated_Dao\AccessToken.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CoreServices\Auth\Data\Generated_Dao\AccessTokenCollection.cs" />

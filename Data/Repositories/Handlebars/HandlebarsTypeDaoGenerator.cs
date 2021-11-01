@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -59,7 +60,7 @@ namespace Bam.Net.Data.Repositories.Handlebars
                 Message = ex.Message;
                 if (!string.IsNullOrEmpty(ex.StackTrace))
                 {
-                    Message = "{0}:\r\nStackTrace: {1}"._Format(Message, ex.StackTrace);
+                    Message = $"{Message}:\r\nStackTrace: {ex.StackTrace}";
                 }
 
                 FireGenerateDaoAssemblyFailed(ex);
@@ -76,11 +77,9 @@ namespace Bam.Net.Data.Repositories.Handlebars
                 typeof(JsonConvert).Assembly.GetFilePath(),
                 typeof(MarshalByValueComponent).Assembly.GetFilePath(),
                 typeof(Enumerable).Assembly.GetFilePath(),
-                typeof(Object).Assembly.GetFilePath(),
-                referenceAssemblyResolver.ResolveReferenceAssemblyPath("System.Collections.dll"),
-                referenceAssemblyResolver.ResolveReferenceAssemblyPath("netstandard.dll"),
-                typeof(Attribute).Assembly.GetFilePath(),
-                referenceAssemblyResolver.ResolveSystemRuntimePath()
+                typeof(object).Assembly.GetFilePath(),
+                typeof(DataTable).Assembly.GetFilePath(),
+                referenceAssemblyResolver.ResolveReferenceAssemblyPath("netstandard.dll")
             };
             return result;
         }

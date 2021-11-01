@@ -13,7 +13,7 @@ namespace Bam.Net.CoreServices.AssemblyManagement
 
         public virtual string ResolveReferenceAssemblyPath(string typeNamespace, string typeName)
         {
-            string referenceAssembliesDir = RuntimeSettings.GetConfig().ReferenceAssembliesDir;
+            string referenceAssembliesDir = RuntimeSettings.GetRuntimeConfig().ReferenceAssemblies;
 
             string filePath = FindAssembly(typeNamespace, typeName, referenceAssembliesDir);
 
@@ -39,16 +39,6 @@ namespace Bam.Net.CoreServices.AssemblyManagement
             }
 
             return filePath;
-        }
-
-        /// <summary>
-        /// Resolves the specified package by reading the current RuntimeConfig
-        /// </summary>
-        /// <param name="packageName"></param>
-        /// <returns></returns>
-        public override string ResolveReferencePackage(string packageName)
-        {
-            return ResolveReferenceAssemblyPath(ResolveReferenceAssemblyPath(packageName, packageName));
         }
     }
 }

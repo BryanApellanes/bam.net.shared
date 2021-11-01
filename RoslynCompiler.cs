@@ -112,7 +112,6 @@ namespace Bam.Net
             SyntaxTree tree = SyntaxFactory.ParseSyntaxTree(sourceCode);
             HashSet<MetadataReference> metadataReferences = new HashSet<MetadataReference>();
             getMetaDataReferences().Each(mdr => metadataReferences.Add(mdr));
-            GetMetaDataReferences().Each(mdr => metadataReferences.Add(mdr));
             return Compile(assemblyName, () => metadataReferences.ToArray(), tree);
         }
 
@@ -132,7 +131,7 @@ namespace Bam.Net
             
             using(MemoryStream stream = new MemoryStream())
             {
-                EmitResult compileResult = compilation.Emit(stream);
+                EmitResult compileResult = compilation.Emit(stream); 
                 if (!compileResult.Success)
                 {
                     throw new RoslynCompilationException(compileResult.Diagnostics);
@@ -168,20 +167,30 @@ namespace Bam.Net
 
         private MetadataReference[] GetMetaDataReferences()
         {
-            List<MetadataReference> metadataReferences = new List<MetadataReference>();
-            IReferenceAssemblyResolver referenceAssemblyResolver = ReferenceAssemblyResolver ?? CoreServices.AssemblyManagement.ReferenceAssemblyResolver.Current;
-
-            if (OSInfo.Current == OSNames.Windows)
+            List<MetadataReference> references = new List<MetadataReference>
+            {   
+                // Here we get the path to the mscorlib and private mscorlib
+                // libraries that are required for compilation to succeed.
+                MetadataReference.CreateFromFile(RuntimeSettings.GetReferenceAssembliesDirectory() + Path.DirectorySeparatorChar + "mscorlib.dll"),
+                MetadataReference.CreateFromFile(typeof(object).GetTypeInfo().Assembly.Location),
+                MetadataReference.CreateFromFile(RuntimeSettings.GetReferenceAssembliesDirectory() + Path.DirectorySeparatorChar + "netstandard.dll")
+            };
+            AssemblyName[] referencedAssemblies = Assembly.GetEntryAssembly().GetReferencedAssemblies();
+            foreach (AssemblyName referencedAssembly in referencedAssemblies)
             {
-                metadataReferences.Add(MetadataReference.CreateFromFile(RuntimeSettings.GetMsCoreLibPath()));
-            }
+                Assembly loadedAssembly = Assembly.Load(referencedAssembly);
 
-            metadataReferences.Add(MetadataReference.CreateFromFile(referenceAssemblyResolver.ResolveSystemRuntimePath()));
-            metadataReferences.Add(MetadataReference.CreateFromFile(referenceAssemblyResolver.ResolveNetStandardPath()));
-            metadataReferences.Add(MetadataReference.CreateFromFile(RuntimeSettings.GetBamAssemblyPath()));
-            metadataReferences.AddRange(ReferenceAssemblyPaths.Select(p => MetadataReference.CreateFromFile(p)));
-            metadataReferences.AddRange(AssembliesToReference.Select(ass => MetadataReference.CreateFromFile(ass.Location)).ToArray());
-            return metadataReferences.ToArray();
+                references.Add(MetadataReference.CreateFromFile(loadedAssembly.Location));
+            }
+            if(_assembliesToReference.Count > 0)
+            {
+                _assembliesToReference.Each(assembly => references.Add(MetadataReference.CreateFromFile(assembly.Location)));
+            }
+            if(_referenceAssemblyPaths.Count > 0)
+            {
+                _referenceAssemblyPaths.Each(path => references.Add(MetadataReference.CreateFromFile(path)));
+            }
+            return references.ToArray();
         }
     }
 }

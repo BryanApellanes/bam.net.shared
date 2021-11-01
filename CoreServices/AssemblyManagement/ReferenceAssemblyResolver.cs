@@ -17,9 +17,9 @@ namespace Bam.Net.CoreServices.AssemblyManagement
             {
                 return _referenceAssemblyResolversLock.DoubleCheckLock<Dictionary<OSNames, IReferenceAssemblyResolver>>(ref _referenceAssemblyResolvers, ()=> new Dictionary<OSNames, IReferenceAssemblyResolver>()
                 {
-                    {OSNames.Windows, new RuntimeSettingsConfigReferenceAssemblyResolver()},
-                    {OSNames.OSX, new OsxReferenceAssemblyResolver()},
-                    {OSNames.Linux, new LinuxReferenceAssemblyResolver()}
+                    { OSNames.Windows, new RuntimeSettingsConfigReferenceAssemblyResolver()},
+                    { OSNames.OSX, new OsxReferenceAssemblyResolver()},
+                    { OSNames.Linux, new LinuxReferenceAssemblyResolver()}
                 });
             }
         }
@@ -41,38 +41,14 @@ namespace Bam.Net.CoreServices.AssemblyManagement
             return ReferenceAssemblyResolvers[OSInfo.Current].ResolveReferenceAssemblyPath(nameSpace, typeName);
         }
 
-        public virtual string ResolveSystemRuntimePath()
-        {
-            return RuntimeSettings.GetSystemRuntimePath();
-        }
-
         public static string GetReferenceAssemblyPath(Type type)
         {
             return ReferenceAssemblyResolvers[OSInfo.Current].ResolveReferenceAssemblyPath(type);
         }
 
-        public string ResolveNetStandardPath()
-        {
-            return ResolveNetStandardPath(ResolveSystemRuntimePath());
-        }
-
         public string ResolveReferenceAssemblyPath(string assemblyName)
         {
-            FileInfo runtime = new FileInfo(ResolveSystemRuntimePath());
-            return Path.Combine(runtime.Directory.FullName, assemblyName);
-        }
-
-        public abstract string ResolveReferencePackage(string packageName);
-
-        protected internal static string ResolveNetStandardPath(string systemRuntimePath = "")
-        {
-            if (string.IsNullOrEmpty(systemRuntimePath))
-            {
-                systemRuntimePath = ReferenceAssemblyResolvers[OSInfo.Current].ResolveSystemRuntimePath();
-            }
-
-            FileInfo systemRuntime = new FileInfo(systemRuntimePath);
-            return Path.Combine(systemRuntime.Directory.FullName, "netstandard.dll");
+            return Path.Combine(RuntimeSettings.GetReferenceAssembliesDirectory(), assemblyName);
         }
     }
 }

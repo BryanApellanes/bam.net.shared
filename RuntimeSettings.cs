@@ -13,32 +13,36 @@ namespace Bam.Net
 {
     public static partial class RuntimeSettings
     {
-        public const string SystemRuntime = "System.Runtime.dll";
-        
-        public static RuntimeConfig GetConfig()
+        static RuntimeConfig _runtimeConfig;
+        static object _runtimeConfigLock = new object();
+        public static RuntimeConfig GetRuntimeConfig()
         {
-            string fileName = "runtime-config.yaml";
-            FileInfo configFile = new FileInfo(Path.Combine(BamDir, fileName));
-            if (configFile.Exists)
+            return _runtimeConfigLock.DoubleCheckLock(ref _runtimeConfig, () =>
             {
-                return configFile.FromYamlFile<RuntimeConfig>();
-            }
+                FileInfo runtimeConfigFile = new FileInfo(Path.Combine(BamDir, GetOsAlias(), RuntimeConfig.File));
+                if (runtimeConfigFile.Exists)
+                {
+                    return runtimeConfigFile.FromYamlFile<RuntimeConfig>();
+                }
 
-            RuntimeConfig config = new RuntimeConfig
-            {
-                ReferenceAssembliesDir = ReferenceAssembliesDir,
-                GenDir = GenDir,
-                BamProfileDir = BamProfileDir,
-                BamDir = BamDir,
-                ProcessProfileDir = ProcessProfileDir
-            };
-            config.ToYamlFile(configFile);
-            return config;
+                RuntimeConfig config = new RuntimeConfig
+                {
+                    ReferenceAssemblies = GetReferenceAssembliesDirectory(),
+                    GenDir = GetGenDir(),
+                    BamProfileDir = BamProfileDir,
+                    BamDir = BamDir,
+                    ProcessProfileDir = ProcessProfileDir
+                };
+                config.ToYamlFile(runtimeConfigFile);
+                _runtimeConfig = config;
+
+                return _runtimeConfig;
+            }); 
         }
-        
+
         static string _appDataFolder;
         static readonly object _appDataFolderLock = new object();
-        
+
         public static Func<Type, bool> ClrTypeFilter
         {
             get
@@ -52,43 +56,57 @@ namespace Bam.Net
                                   );
             }
         }
-        
-        public static string GetBamAssemblyPath()
+
+        static Dictionary<OSNames, string> _osAliases = new Dictionary<OSNames, string>()
         {
-            return typeof(BamHome).Assembly.GetFilePath();
-        }
+            { OSNames.Windows, "win" },
+            { OSNames.Linux, "lin" },
+            { OSNames.OSX, "osx" },
+        };
 
-        public static string GetMsCoreLibPath()
+        public static string GetOsAlias()
         {
-            string fileName = "mscorlib.dll";
-            string result = Path.Combine(GetConfig().ReferenceAssembliesDir, fileName);
-            if (!File.Exists(result))
-            {
-                result = GetEntryDirectoryFilePathFor(fileName);
-            }
-
-            return result;
-        }
-
-        public static string GetSystemRuntimePath()
-        {
-            string result = Path.Combine(GetConfig().ReferenceAssembliesDir, SystemRuntime);
-            if (!File.Exists(result))
-            {
-                result = GetEntryDirectoryFilePathFor(SystemRuntime);
-            }
-
-            return result;
+            return _osAliases[OSInfo.Current];
         }
 
         public static FileInfo EntryExecutable => Assembly.GetEntryAssembly().GetFileInfo();
         public static DirectoryInfo EntryDirectory => EntryExecutable.Directory;
 
-        public static string ReferenceAssembliesDir => BamHome.ReferenceAssembliesPath;
+        static Dictionary<OSNames, string> _genDirs = new Dictionary<OSNames, string>()
+        {
+            { OSNames.Windows, WinGenDir },
+            { OSNames.Linux, LinGenDir },
+            { OSNames.OSX, OsxGenDir }
+        };
 
-        public static string GenDir => Path.Combine(BinDir, "gen");
+        public static string GetGenDir()
+        {
+            return _genDirs[OSInfo.Current];
+        }
 
-        public static string BinDir => Path.Combine(BamProfileDir, "bin");
+        public static string GenDir => Path.Combine(BamDir, "gen");
+
+        public static string WinGenDir => Path.Combine(GenDir, "win");
+        public static string LinGenDir => Path.Combine(GenDir, "lin");
+        public static string OsxGenDir => Path.Combine(GenDir, "osx");
+        
+        static Dictionary<OSNames, string> _referenceAssemblies = new Dictionary<OSNames, string>()
+        {
+            { OSNames.Windows, "C:\\Program Files\\dotnet\\packs\\Microsoft.NETCore.App.Ref\\5.0.0\\ref\\net5.0" },
+            { OSNames.Linux, "/usr/share/dotnet/packs/Microsoft.NETCore.App.Ref/5.0.0/ref/net5.0" },
+            { OSNames.OSX, "/usr/local/share/dotnet/packs/Microsoft.NETCore.App.Ref/5.0.0/ref/net5.0" }
+        };
+
+        public static string GetReferenceAssembliesDirectory()
+        {
+            return GetReferenceAssembliesDirectory(OSInfo.Current);
+        }
+
+        public static string GetReferenceAssembliesDirectory(OSNames osNames)
+        {
+            return _referenceAssemblies[osNames];
+        }
+
 
         /// <summary>
         /// The path to the '.bam' directory found in the home directory of the owner of the

@@ -41,21 +41,8 @@ namespace Bam.Net
         
         public static string UserHome => BamProfile.UserHome;
 
-        public static string SystemRuntime => System.IO.Path.Combine(System.IO.Path.Combine(ReferenceRuntimeSegments), "System.Runtime.dll");
-
-        public static string[] ReferenceRuntimeSegments =>
-            new List<string>
-            {
-                Path, "nuget", "global", $"runtime.{OSInfo.ReferenceRuntime}.microsoft.netcore.app",
-                OSInfo.CoreVersion, "runtimes", OSInfo.ReferenceRuntime, "lib", OSInfo.DefaultLibSubfolder,
-            }.ToArray();
-
-        public static string Build => System.IO.Path.Combine(Path, "build");
-
         public static string PublicPath => System.IO.Path.Combine(Path, "public");
 
-        public static string ReferenceAssembliesPath => System.IO.Path.Combine(Path, "referenceassemblies");
-        
         /// <summary>
         /// The default path where the bam toolkit should be found.  Same as BamProfile.ToolkitPath.
         /// </summary>

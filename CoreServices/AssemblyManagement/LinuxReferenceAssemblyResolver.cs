@@ -25,7 +25,7 @@ namespace Bam.Net.CoreServices.AssemblyManagement
 
         public string ResolveReferenceAssemblyPath(Type type)
         {
-            FileInfo assemblyFile = new FileInfo(Path.Combine(_dotnetAssemblyPath, OSInfo.CoreVersion, $"{type.Namespace}.{type.Name}.dll"));
+            FileInfo assemblyFile = new FileInfo(Path.Combine(_dotnetAssemblyPath, OSInfo.TargetFrameworkVersion, $"{type.Namespace}.{type.Name}.dll"));
             if (assemblyFile.Exists)
             {
                 return assemblyFile.FullName;
@@ -38,41 +38,9 @@ namespace Bam.Net.CoreServices.AssemblyManagement
             return NugetReferenceAssemblyResolver.ResolveReferenceAssemblyPath(nameSpace, typeName);
         }
 
-        public string ResolveSystemRuntimePath()
-        {
-            string netCoreDir = new FileInfo(typeof(object).Assembly.GetFilePath()).Directory.FullName;
-            string systemRuntime = Path.Combine(netCoreDir, "System.Runtime.dll");
-            if (!File.Exists(systemRuntime))
-            {
-                try
-                {
-                    systemRuntime = RuntimeSettingsConfigReferenceAssemblyResolver.ResolveSystemRuntimePath();
-                }
-                catch (Exception ex)
-                {
-                    Log.Error("Error trying to resolve `System.Runtime.dll` path");
-
-                    return NugetReferenceAssemblyResolver.ResolveSystemRuntimePath();
-                }
-            }
-
-            return systemRuntime;
-        }
-
-        public string ResolveNetStandardPath()
-        {
-            return ReferenceAssemblyResolver.ResolveNetStandardPath(ResolveSystemRuntimePath());
-        }
-
         public string ResolveReferenceAssemblyPath(string assemblyName)
         {
-            FileInfo runtime = new FileInfo(ResolveSystemRuntimePath());
-            return Path.Combine(runtime.Directory.FullName, assemblyName);
-        }
-
-        public string ResolveReferencePackage(string packageName)
-        {
-            return NugetReferenceAssemblyResolver.ResolveReferencePackage(packageName);
+            return Path.Combine(RuntimeSettings.GetReferenceAssembliesDirectory(), assemblyName);
         }
     }
 }

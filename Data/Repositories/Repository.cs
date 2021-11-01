@@ -119,7 +119,7 @@ namespace Bam.Net.Data.Repositories
         /// <param name="nameSpace"></param>
 		public void AddNamespace(Assembly assembly, string nameSpace)
 		{
-			AddTypes(assembly.GetTypes().Where(t => t.Namespace != null && t.Namespace.Equals(nameSpace) && !t.IsAbstract));
+			AddTypes(assembly.GetTypes().Where(t => t.Namespace != null && t.Namespace.Equals(nameSpace) && RuntimeSettings.ClrTypeFilter(t)));
 		}
 
         public void AddNamespace(Assembly assembly, string nameSpace, Func<Type, bool> predicate)
@@ -389,7 +389,7 @@ namespace Bam.Net.Data.Repositories
             catch (Exception ex)
             {
                 count = -1;
-                Logger.AddEntry("Error deleting values of type {0}: \r\nfilter={1}:: {2}", ex, type.Name, filter?.PropertiesToString(), ex.Message);
+                Logger.AddEntry("Error deleting values of type {0}: \r\nfilter={1}:: {2}", ex, type.Name, ((object)filter)?.PropertiesToString(), ex.Message);
                 return false;
             }
         }

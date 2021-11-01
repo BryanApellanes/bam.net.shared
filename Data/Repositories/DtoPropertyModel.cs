@@ -17,6 +17,7 @@ namespace Bam.Net.Data.Repositories
 
 		public DtoPropertyModel(PropertyInfo property)
 		{
+			this.PropertyInfo = property;
 			this.PropertyName = property.Name;
 			this.PropertyType = property.PropertyType.Name;
 		}
