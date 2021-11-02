@@ -189,10 +189,6 @@ namespace Bam.Net.Data.Repositories
 	        return repoData.SaveByKey<T>(this);
         }
 
-        public T Save<T>(CompositeKeyRepoData repoData) where T : RepoData, new()
-        {
-	        return repoData.Save<T>(this);
-        }
         /// <summary>
         /// Calls update for the specified object toSave if
         /// it has Id greater than 0 otherwise calls Create

@@ -6,7 +6,7 @@ using System.Text;
 namespace Bam.Net.Logging.Counters.Data
 {
     [Serializable]
-    public class TimerData: CompositeKeyRepoData
+    public class TimerData: CompositeKeyAuditRepoData
     {
         public TimerData() { }
         public string UserName { get; set; }

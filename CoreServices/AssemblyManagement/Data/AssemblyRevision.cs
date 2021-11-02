@@ -7,7 +7,7 @@ using Bam.Net.Data.Repositories;
 
 namespace Bam.Net.CoreServices.AssemblyManagement.Data
 {
-    public class AssemblyRevision: CompositeKeyRepoData
+    public class AssemblyRevision: CompositeKeyAuditRepoData
     {        
         public string FileName { get; set; }
 

@@ -189,7 +189,7 @@ namespace Bam.Net.Data.Repositories
 
         public override T Update<T>(T toUpdate)
         {
-            return (T)Update(toUpdate);
+            return (T)Update((object)toUpdate);
         }
 
         public override object Update(object toUpdate)

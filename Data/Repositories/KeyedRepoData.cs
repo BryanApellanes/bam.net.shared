@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace Bam.Net.Data.Repositories
 {
-    public class KeyedRepoData : CompositeKeyRepoData
+    public class KeyedRepoData : CompositeKeyAuditRepoData
     {
         public static implicit operator ulong(KeyedRepoData repoData)
         {

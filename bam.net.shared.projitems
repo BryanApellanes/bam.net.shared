@@ -1618,7 +1618,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Data\Repositories\KeyAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\Repositories\CompositeKeyAuditRepoData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\Repositories\CompositeKeyHashProvider.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Data\Repositories\CompositeKeyRepoData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\Repositories\Meta.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\Repositories\MetaId.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\Repositories\MetaProperty.cs" />

@@ -12,7 +12,7 @@ using Bam.Net.CoreServices.AssemblyManagement.Data;
 namespace Bam.Net.CoreServices.AssemblyManagement.Data
 {
     [Serializable]
-    public class AssemblyDescriptor: CompositeKeyRepoData
+    public class AssemblyDescriptor: CompositeKeyAuditRepoData
     {
         public AssemblyDescriptor()
         { }
@@ -43,6 +43,12 @@ namespace Bam.Net.CoreServices.AssemblyManagement.Data
                     repo.Save(rev);
                 }
             });
+            AssemblyDescriptor existing = QueryFirstOrDefault<AssemblyDescriptor>(repo, CompositeKeyProperties);
+            if(existing != null)
+            {
+                this.Id = existing.Id;
+                return repo.Update(this);
+            }
             return repo.Save(this);
         }
         
