@@ -26,40 +26,53 @@ using Newtonsoft.Json;
 namespace Bam.Net.ServiceProxy
 {
     /// <summary>
-    /// A class used to properly format parameters for service proxy calls. :( Sadness; this should be
-    /// called ApiArguments and all instances of jsonParams should be jsonArgs.
+    /// A class used to properly format parameters for service proxy calls.
     /// </summary>
-    public class ApiParameters
+    public class ApiArguments
     {
         public static string GetStringToHash(ExecutionRequest request)
         {
-            return GetStringToHash(request.ClassName, request.MethodName, request.JsonParams);
+            return GetStringToHash(request.ClassName, request.MethodName, request.JsonArgs);
         }
-        public static string GetStringToHash(string className, string methodName, string jsonParams)
+
+        public static string GetStringToHash(string className, string methodName, string jsonArgs)
         {
-            return string.Format("{0}.{1}.{2}", className, methodName, jsonParams);
+            return string.Format("{0}.{1}.{2}", className, methodName, jsonArgs);
         }
+
+        public static string ArgumentsToJsonArgumentsObjectString(params object[] arguments)
+        {
+            string[] jsonArguments = ArgumentsToJsonArgumentsArray(arguments);
+            string jsonArgumentsString = (new
+            {
+                jsonArgs = jsonArguments.ToJson()
+            }).ToJson();
+
+            return jsonArgumentsString;
+        }
+
         /// <summary>
         /// Turn the specified parameter array into a JSON object in the form {jsonParams: &lt;json string array&gt;}.
         /// Where &lt;json string array&gt; can be obtained by callig ParametersToJsonParamsArray(parameters)
         /// </summary>
         /// <param name="parameters"></param>
         /// <returns></returns>
+        [Obsolete("Use ArgumentsToJsonArgumentsObjectString instead.")]
         public static string ParametersToJsonParamsObjectString(params object[] parameters)
         {
-            string[] jsonParams = ParametersToJsonParamsArray(parameters);
+            string[] jsonArguments = ArgumentsToJsonArgumentsArray(parameters);
 
             // stringify the array
-            string jsonParamsString = (new { jsonParams = jsonParams.ToJson() }).ToJson();
+            string jsonParamsString = (new { jsonParams = jsonArguments.ToJson() }).ToJson();
             return jsonParamsString;
         }
 
         /// <summary>
-        /// Returns an array of json strings that represent each parameter
+        /// Returns an array of json strings that represent each parameter.
         /// </summary>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public static string[] ParametersToJsonParamsArray(params object[] parameters)
+        public static string[] ArgumentsToJsonArgumentsArray(params object[] parameters)
         {
             // create a string array
             string[] jsonParams = new string[parameters.Length];
@@ -71,24 +84,6 @@ namespace Bam.Net.ServiceProxy
                 jsonParams[i] = parameters[i].ToJson(settings);
             });
             return jsonParams;
-        }
-
-        public static Dictionary<string, object> NameParameters(MethodInfo method, params object[] parameters)
-        {
-            List<ParameterInfo> parameterInfos = new List<ParameterInfo>(method.GetParameters());
-            parameterInfos.Sort((l, r) => l.MetadataToken.CompareTo(r.MetadataToken));
-
-            if (parameters.Length != parameterInfos.Count)
-            {
-                throw new InvalidOperationException("Parameter count mismatch");
-            }
-
-            Dictionary<string, object> result = new Dictionary<string, object>();
-            parameterInfos.Each((pi, i) =>
-            {
-                result[pi.Name] = parameters[i];
-            });
-            return result;
         }
     }
 }

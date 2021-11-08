@@ -23,8 +23,7 @@ namespace Bam.Net.Services.Clients
 
         public FileInfo Save()
         {
-            SystemPaths paths = SystemPaths.Get(DataProvider.Current);
-            return Save(paths.Generated);
+            return Save(BamProfile.GeneratedPath);
         }
 
         public FileInfo Save(string path, string applicationName = "common")

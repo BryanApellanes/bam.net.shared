@@ -11,7 +11,7 @@ namespace Bam.Net.Data.Repositories
         }
         
         private ulong key = Convert.ToUInt64(0);
-        public ulong Key
+        public new ulong Key
         {
             get
             {

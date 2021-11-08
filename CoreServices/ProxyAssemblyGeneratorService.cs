@@ -19,6 +19,7 @@ namespace Bam.Net.CoreServices
     [ServiceSubdomain("proxyGen")]
     public class ProxyAssemblyGeneratorService : AsyncProxyableService
     {
+        public const string DefaultHost = "heart.bamapps.net";
         protected ProxyAssemblyGeneratorService() { }
 
         Dictionary<string, Assembly> _assemblies;
@@ -27,18 +28,18 @@ namespace Bam.Net.CoreServices
             DataDirectoryProvider = dataDirectoryProvider;
             Logger = logger;
             _assemblies = new Dictionary<string, Assembly>();
-            ProxyFactory = new ProxyFactory(SystemPaths.Current.Generated, logger, CoreServiceRegistryContainer.GetServiceRegistry());
-            ProxyAssemblyGenerator = new ProxyAssemblyGenerator(new ProxySettings { DownloadClient = false, Host = "heart.bamapps.net", Port = 80 }, ProxyFactory.WorkspaceDirectory, Logger);
+            ProxyFactory = new ProxyFactory(BamProfile.GeneratedPath, logger, CoreServiceRegistryContainer.GetServiceRegistry());
+            ProxyAssemblyGenerator = new ProxyAssemblyGenerator(new ProxySettings { ClientCodeSource = ClientCodeSource.Local, Host = DefaultHost, Port = 80 }, ProxyFactory.WorkspaceDirectory, Logger);
             LoadAssemblies();
         }
 
-        static object _defaultLock = new object();
-        static ProxyAssemblyGeneratorService _default;
-        public static ProxyAssemblyGeneratorService Default
+        static object _defaultProxyLock = new object();
+        static ProxyAssemblyGeneratorService _defaultProxy;
+        public static ProxyAssemblyGeneratorService DefaultProxy
         {
             get
             {
-                return _defaultLock.DoubleCheckLock(ref _default, () => new ProxyAssemblyGeneratorServiceProxy(ConfigurationResolverServiceUrlProvider.Instance.GetServiceUrl<ProxyAssemblyGeneratorService>()));
+                return _defaultProxyLock.DoubleCheckLock(ref _defaultProxy, () => new ProxyAssemblyGeneratorServiceProxy(ConfigurationResolverServiceUrlProvider.Instance.GetServiceUrl<ProxyAssemblyGeneratorService>()));
             }
         }
 

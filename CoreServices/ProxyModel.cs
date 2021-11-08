@@ -15,9 +15,9 @@ using Bam.Net.Messaging;
 namespace Bam.Net.CoreServices
 {
     /// <summary>
-    /// The data model passed to the razor template.  Note
+    /// The data model passed to the template.  Note
     /// that though there are properties that appear not to
-    /// be referenced they are used by the razor template
+    /// be referenced they are used by the template.
     /// </summary>
     public partial class ProxyModel
     {
@@ -29,6 +29,7 @@ namespace Bam.Net.CoreServices
             Protocol = protocol;
             Host = host;
             Port = port;
+            Bam.Net.Handlebars.HandlebarsEmbeddedResources = new Presentation.Handlebars.HandlebarsEmbeddedResources(Assembly.GetExecutingAssembly());
         }
 
         public HashSet<Assembly> AdditionalReferenceAssemblies { get; set; }

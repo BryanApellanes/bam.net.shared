@@ -12,6 +12,8 @@ using Bam.Net.Encryption;
 using Bam.Net.Logging;
 using Bam.Net.Web;
 using System.IO;
+using System.Net.Http;
+using System.Net.Http.Headers;
 
 namespace Bam.Net.ServiceProxy.Secure
 {
@@ -21,18 +23,32 @@ namespace Bam.Net.ServiceProxy.Secure
     /// </summary>
     internal class ApiEncryptionValidation
     {
-        public static void SetEncryptedValidationToken(HttpWebRequest request, string postString, string publicKey)
+        public static void SetEncryptedValidationToken(HttpRequestMessage request, string plainPostString, string publicKeyPem)
         {
-            SetEncryptedValidationToken(request.Headers, postString, publicKey);
+            SetEncryptedValidationToken(request.Headers, plainPostString, publicKeyPem);
         }
 
-        public static void SetEncryptedValidationToken(NameValueCollection headers, string postString, string publicKey)
+        [Obsolete("Use the overload that takes HttpRequestMessage instead.")]
+        public static void SetEncryptedValidationToken(HttpWebRequest request, string plainPostString, string publicKeyPem)
         {
-            EncryptedValidationToken token = CreateEncryptedValidationToken(postString, publicKey);
+            SetEncryptedValidationToken(request.Headers, plainPostString, publicKeyPem);
+        }
+
+        [Obsolete("Use overload that takes HttpRequestHeaders instead.")]
+        public static void SetEncryptedValidationToken(NameValueCollection headers, string plainPostString, string publicKeyPem)
+        {
+            EncryptedValidationToken token = CreateEncryptedValidationToken(plainPostString, publicKeyPem);
             headers[Headers.Nonce] = token.NonceCipher;
             headers[Headers.ValidationToken] = token.HashCipher;
         }
         
+        public static void SetEncryptedValidationToken(HttpRequestHeaders headers, string plainPostString, string publicKeyPem)
+        {
+            EncryptedValidationToken token = CreateEncryptedValidationToken(plainPostString, publicKeyPem);
+            headers.Add(Headers.Nonce, token.NonceCipher);
+            headers.Add(Headers.ValidationToken, token.HashCipher);
+        }
+
         public static EncryptedValidationToken ReadEncryptedValidationToken(NameValueCollection headers)
         {
             EncryptedValidationToken result = new EncryptedValidationToken
@@ -42,7 +58,7 @@ namespace Bam.Net.ServiceProxy.Secure
             };
             Args.ThrowIfNull(result.NonceCipher, Headers.Nonce);
             Args.ThrowIf<EncryptionValidationTokenNotFoundException>(
-                result.HashCipher == null || string.IsNullOrEmpty(result.HashCipher),  
+                string.IsNullOrEmpty(result.HashCipher),  
                 "Header was not found: {0}",
                 Headers.ValidationToken);
             return result;
@@ -59,12 +75,11 @@ namespace Bam.Net.ServiceProxy.Secure
             return CreateEncryptedValidationToken(instant, postString, publicKeyPem);
         }
 
-        public static EncryptedValidationToken CreateEncryptedValidationToken(Instant instant, string postString, string publicKeyPem)
+        public static EncryptedValidationToken CreateEncryptedValidationToken(Instant instant, string postString, string publicKeyPem, HashAlgorithms algorithm = HashAlgorithms.SHA256)
         {
-            string nonce = instant.ToString();
-            string kvpFormat = "{0}:{1}";
             //{Month}/{Day}/{Year};{Hour}.{Minute}.{Second}.{Millisecond}:{PostString}
-            string hash = kvpFormat._Format(nonce, postString).Sha256();
+            string nonce = instant.ToString();
+            string hash = $"{nonce}:{postString}".HashHexString(algorithm);
             string hashCipher = hash.EncryptWithPublicKey(publicKeyPem);
             string nonceCipher = nonce.EncryptWithPublicKey(publicKeyPem);
 
@@ -94,10 +109,10 @@ namespace Bam.Net.ServiceProxy.Secure
             Args.ThrowIfNull(session, "session");
             Args.ThrowIfNull(token, "token");
 
-            return ValidateEncrtypedToken(session, token.HashCipher, token.NonceCipher, plainPost, usePkcsPadding);
+            return ValidateEncryptedToken(session, token.HashCipher, token.NonceCipher, plainPost, usePkcsPadding);
         }
 
-        public static EncryptedTokenValidationStatus ValidateEncrtypedToken(SecureSession session, string hashCipher, string nonceCipher, string plainPost, bool usePkcsPadding = false)
+        public static EncryptedTokenValidationStatus ValidateEncryptedToken(SecureSession session, string hashCipher, string nonceCipher, string plainPost, bool usePkcsPadding = false)
         {
             string hash = session.DecryptWithPrivateKey(hashCipher, usePkcsPadding);
             string nonce = session.DecryptWithPrivateKey(nonceCipher, usePkcsPadding);

@@ -31,69 +31,69 @@ namespace Bam.Net.CoreServices
         public ApiKeyInfo[] ListApiKeys()
         {
             object[] parameters = new object[] {  };
-            return Invoke<ApiKeyInfo[]>("ListApiKeys", parameters);
+            return InvokeServiceMethod<ApiKeyInfo[]>("ListApiKeys", parameters);
         }
 		[ApiKeyRequired]
         public ApiKeyInfo AddApiKey()
         {
             object[] parameters = new object[] {  };
-            return Invoke<ApiKeyInfo>("AddApiKey", parameters);
+            return InvokeServiceMethod<ApiKeyInfo>("AddApiKey", parameters);
         }
 		[ApiKeyRequired]
         public ApiKeyInfo SetActiveApiKeyIndex(System.Int32 index)
         {
             object[] parameters = new object[] { index };
-            return Invoke<ApiKeyInfo>("SetActiveApiKeyIndex", parameters);
+            return InvokeServiceMethod<ApiKeyInfo>("SetActiveApiKeyIndex", parameters);
         }
         public String GetApplicationName()
         {
             object[] parameters = new object[] {  };
-            return Invoke<String>("GetApplicationName", parameters);
+            return InvokeServiceMethod<String>("GetApplicationName", parameters);
         }
         public ApiKeyInfo GetClientApiKeyInfo()
         {
             object[] parameters = new object[] {  };
-            return Invoke<ApiKeyInfo>("GetClientApiKeyInfo", parameters);
+            return InvokeServiceMethod<ApiKeyInfo>("GetClientApiKeyInfo", parameters);
         }
         public CoreServiceResponse RegisterApplication(System.String applicationName)
         {
             object[] parameters = new object[] { applicationName };
-            return Invoke<CoreServiceResponse>("RegisterApplication", parameters);
+            return InvokeServiceMethod<CoreServiceResponse>("RegisterApplication", parameters);
         }
         public CoreServiceResponse RegisterApplicationProcess(Bam.Net.CoreServices.ApplicationRegistration.Data.ProcessDescriptor descriptor)
         {
             object[] parameters = new object[] { descriptor };
-            return Invoke<CoreServiceResponse>("RegisterApplicationProcess", parameters);
+            return InvokeServiceMethod<CoreServiceResponse>("RegisterApplicationProcess", parameters);
         }
         public CoreServiceResponse RegisterClient(Bam.Net.CoreServices.ApplicationRegistration.Data.Client client)
         {
             object[] parameters = new object[] { client };
-            return Invoke<CoreServiceResponse>("RegisterClient", parameters);
+            return InvokeServiceMethod<CoreServiceResponse>("RegisterClient", parameters);
         }
         public Dictionary<System.String, System.String> GetSettings()
         {
             object[] parameters = new object[] {  };
-            return Invoke<Dictionary<System.String, System.String>>("GetSettings", parameters);
+            return InvokeServiceMethod<Dictionary<System.String, System.String>>("GetSettings", parameters);
         }
         public LoginResponse ConnectClient(Bam.Net.CoreServices.ApplicationRegistration.Data.Client client)
         {
             object[] parameters = new object[] { client };
-            return Invoke<LoginResponse>("ConnectClient", parameters);
+            return InvokeServiceMethod<LoginResponse>("ConnectClient", parameters);
         }
         public LoginResponse Login(System.String userName, System.String passHash)
         {
             object[] parameters = new object[] { userName, passHash };
-            return Invoke<LoginResponse>("Login", parameters);
+            return InvokeServiceMethod<LoginResponse>("Login", parameters);
         }
         public SignOutResponse EndSession()
         {
             object[] parameters = new object[] {  };
-            return Invoke<SignOutResponse>("EndSession", parameters);
+            return InvokeServiceMethod<SignOutResponse>("EndSession", parameters);
         }
         public String WhoAmI()
         {
             object[] parameters = new object[] {  };
-            return Invoke<String>("WhoAmI", parameters);
+            return InvokeServiceMethod<String>("WhoAmI", parameters);
         }
     }
 

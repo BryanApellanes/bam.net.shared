@@ -1,5 +1,7 @@
-﻿using System.Collections.Specialized;
+﻿using System;
+using System.Collections.Specialized;
 using System.Net;
+using System.Net.Http;
 
 namespace Bam.Net.ServiceProxy.Secure
 {
@@ -20,7 +22,13 @@ namespace Bam.Net.ServiceProxy.Secure
         string GetCurrentApiKey();
         bool IsValidRequest(ExecutionRequest request);
         bool IsValidKeyToken(string stringToHash, string token);
+
+        void SetKeyToken(HttpRequestMessage request, string stringToHash);
+
+        [Obsolete("Use SetKeyToken(HttpRequestMessage) instead.")]
         void SetKeyToken(NameValueCollection headers, string stringToHash);
+
+        [Obsolete("Use SetKeyToken(HttpRequestMessage) instead.")]
         void SetKeyToken(HttpWebRequest request, string stringToHash);
     }
 }

@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Bam.Net;
 using Bam.Net.Web;
 using Bam.Net.Configuration;
+using System.Net.Http;
 
 namespace Bam.Net.ServiceProxy.Secure
 {
@@ -102,6 +103,11 @@ namespace Bam.Net.ServiceProxy.Secure
 
         #endregion
         
+        public void SetKeyToken(HttpRequestMessage request, string stringToHash)
+        {
+            request.Headers.Add(Headers.KeyToken, CreateKeyToken(stringToHash));
+        }
+
         public void SetKeyToken(HttpWebRequest request, string stringToHash)
         {
             SetKeyToken(request.Headers, stringToHash);
@@ -114,13 +120,8 @@ namespace Bam.Net.ServiceProxy.Secure
 
         public string CreateKeyToken(string stringToHash)
         {
-            return CreateKeyTokenFx(stringToHash);
-        }
-
-        protected string CreateKeyTokenFx(string stringToHash)
-        {
             ApiKeyInfo apiKey = this.GetApiKeyInfo(this);
-            return "{0}:{1}"._Format(apiKey.ApiKey, stringToHash).HashHexString(HashAlgorithm);
+            return $"{apiKey.ApiKey}:{stringToHash}".HashHexString(HashAlgorithm);
         }
 
         public bool IsValidRequest(ExecutionRequest request)
@@ -129,7 +130,7 @@ namespace Bam.Net.ServiceProxy.Secure
 			
             string className = request.ClassName;
             string methodName = request.MethodName;
-            string stringToHash = ApiParameters.GetStringToHash(className, methodName, request.JsonParams);
+            string stringToHash = ApiArguments.GetStringToHash(className, methodName, request.JsonArgs);
 
             string token = request.Context.Request.Headers[Headers.KeyToken];
             bool result = false;

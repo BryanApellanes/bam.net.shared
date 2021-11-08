@@ -29,82 +29,82 @@ namespace Bam.Net.CoreServices
         public ConfirmResponse ConfirmAccount(System.String token)
         {
             object[] parameters = new object[] { token };
-            return Invoke<ConfirmResponse>("ConfirmAccount", parameters);
+            return InvokeServiceMethod<ConfirmResponse>("ConfirmAccount", parameters);
         }
         public ForgotPasswordResponse ForgotPassword(System.String emailAddress)
         {
             object[] parameters = new object[] { emailAddress };
-            return Invoke<ForgotPasswordResponse>("ForgotPassword", parameters);
+            return InvokeServiceMethod<ForgotPasswordResponse>("ForgotPassword", parameters);
         }
         public CheckEmailResponse IsEmailInUse(System.String emailAddress)
         {
             object[] parameters = new object[] { emailAddress };
-            return Invoke<CheckEmailResponse>("IsEmailInUse", parameters);
+            return InvokeServiceMethod<CheckEmailResponse>("IsEmailInUse", parameters);
         }
         public CheckUserNameResponse IsUserNameAvailable(System.String userName)
         {
             object[] parameters = new object[] { userName };
-            return Invoke<CheckUserNameResponse>("IsUserNameAvailable", parameters);
+            return InvokeServiceMethod<CheckUserNameResponse>("IsUserNameAvailable", parameters);
         }
         public SendEmailResponse RequestConfirmationEmail(System.String emailAddress, System.Int32 accountIndex)
         {
             object[] parameters = new object[] { emailAddress, accountIndex };
-            return Invoke<SendEmailResponse>("RequestConfirmationEmail", parameters);
+            return InvokeServiceMethod<SendEmailResponse>("RequestConfirmationEmail", parameters);
         }
         public PasswordResetResponse ResetPassword(System.String passHash, System.String resetToken)
         {
             object[] parameters = new object[] { passHash, resetToken };
-            return Invoke<PasswordResetResponse>("ResetPassword", parameters);
+            return InvokeServiceMethod<PasswordResetResponse>("ResetPassword", parameters);
         }
         public SignOutResponse SignOut()
         {
             object[] parameters = new object[] {  };
-            return Invoke<SignOutResponse>("SignOut", parameters);
+            return InvokeServiceMethod<SignOutResponse>("SignOut", parameters);
         }
         public SignUpResponse SignUp(System.String emailAddress, System.String userName, System.String passHash, System.Boolean sendConfirmationEmail)
         {
             object[] parameters = new object[] { emailAddress, userName, passHash, sendConfirmationEmail };
-            return Invoke<SignUpResponse>("SignUp", parameters);
+            return InvokeServiceMethod<SignUpResponse>("SignUp", parameters);
         }
         public String GetCurrentUser()
         {
             object[] parameters = new object[] {  };
-            return Invoke<String>("GetCurrentUser", parameters);
+            return InvokeServiceMethod<String>("GetCurrentUser", parameters);
         }
         public Boolean IsInRole(System.String roleName)
         {
             object[] parameters = new object[] { roleName };
-            return Invoke<Boolean>("IsInRole", parameters);
+            return InvokeServiceMethod<Boolean>("IsInRole", parameters);
         }
         public String[] GetRoles()
         {
             object[] parameters = new object[] {  };
-            return Invoke<String[]>("GetRoles", parameters);
+            return InvokeServiceMethod<String[]>("GetRoles", parameters);
         }
         public Dictionary<System.String, System.String> GetSettings()
         {
             object[] parameters = new object[] {  };
-            return Invoke<Dictionary<System.String, System.String>>("GetSettings", parameters);
+            return InvokeServiceMethod<Dictionary<System.String, System.String>>("GetSettings", parameters);
         }
         public LoginResponse ConnectClient(Bam.Net.CoreServices.ApplicationRegistration.Data.Client client)
         {
             object[] parameters = new object[] { client };
-            return Invoke<LoginResponse>("ConnectClient", parameters);
+            return InvokeServiceMethod<LoginResponse>("ConnectClient", parameters);
         }
         public LoginResponse Login(System.String userName, System.String passHash)
         {
             object[] parameters = new object[] { userName, passHash };
-            return Invoke<LoginResponse>("Login", parameters);
+            return InvokeServiceMethod<LoginResponse>("Login", parameters);
         }
         public SignOutResponse EndSession()
         {
             object[] parameters = new object[] {  };
-            return Invoke<SignOutResponse>("EndSession", parameters);
+            return InvokeServiceMethod<SignOutResponse>("EndSession", parameters);
         }
         public String WhoAmI()
         {
             object[] parameters = new object[] {  };
-            return Invoke<String>("WhoAmI", parameters);
+            return InvokeServiceMethod<String>("WhoAmI", parameters);
         }
     }
 

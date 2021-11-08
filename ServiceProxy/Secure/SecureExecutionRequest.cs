@@ -24,7 +24,7 @@ namespace Bam.Net.ServiceProxy.Secure
 
             this.ClassName = className;
             this.MethodName = methodName;
-            this.JsonParams = jsonParams;
+            this.JsonArgs = jsonParams;
             this.Ext = "json";
             this.Context = context;
             this.IsUnencrypted = true;
@@ -48,7 +48,7 @@ namespace Bam.Net.ServiceProxy.Secure
         }
         public static SecureExecutionRequest Create<T>(IHttpContext context, string methodName, Incubator serviceProvider, params object[] parameters)
         {
-            string jsonParams = ApiParameters.ParametersToJsonParamsArray(parameters).ToJson();
+            string jsonParams = ApiArguments.ArgumentsToJsonArgumentsArray(parameters).ToJson();
             SecureExecutionRequest request = new SecureExecutionRequest(context, typeof(T).Name, methodName, jsonParams)
             {
                 ServiceProvider = serviceProvider

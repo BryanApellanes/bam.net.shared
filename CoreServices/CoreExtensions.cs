@@ -16,7 +16,8 @@ namespace Bam.Net.CoreServices
             return new SecureClientSessionInfo
             {
                 ClientSessionInfo = client.SessionInfo,
-                SessionCookie = client.SessionCookie,
+                SecureSessionCookie = client.SecureSessionCookie,
+                SecureSessionId = client.SecureSessionId,
                 SessionKey = client.SessionKey,
                 SessionIV = client.SessionIV
             };

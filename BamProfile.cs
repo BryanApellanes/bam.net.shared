@@ -81,6 +81,8 @@ namespace Bam.Net
         public static string SvcScriptsSrcPath => System.IO.Path.Combine(SvcScriptsSrcSegments);
         public static string[] SvcScriptsSrcSegments => new string[] {Path, "svc", "scripts"};
 
+        public static string GeneratedPath => System.IO.Path.Combine(DataPath, "generated");
+
         public static string DataPath => System.IO.Path.Combine(DataSegments);
 
         public static string[] DataSegments => new string[] {Path, "data"};

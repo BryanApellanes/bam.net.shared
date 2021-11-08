@@ -39,7 +39,7 @@ namespace Bam.Net.ServiceProxy.Secure
         {
             SecureSessionDatabase = new SecureSessionDatabase();
             Db.For<SecureSession>(SecureSessionDatabase);
-            DefaultKeySize = RsaKeyLength._1024; // TODO: change this to 2048 without breaking clients
+            DefaultKeySize = RsaKeyLength._2048;
             _secureSessions = new ConcurrentDictionary<string, SecureSession>();
         }
 
@@ -53,7 +53,7 @@ namespace Bam.Net.ServiceProxy.Secure
         /// The name of the cookie used to hold the 
         /// session identifier. 
         /// </summary>
-        public static string CookieName => "SPSSESS"; // TODO: rename this to bam-sps-sess
+        public static string CookieName => "bam-sps-sess";
 
         AsymmetricKeyParameter _privateKeyParameter;
         object _privateKeyLock = new object();
@@ -113,7 +113,7 @@ namespace Bam.Net.ServiceProxy.Secure
             Cookie cookie = request.Cookies[CookieName];
             if (cookie == null)
             {
-                string secureSessionId = request.Headers[Headers.SecureSession];
+                string secureSessionId = request.Headers[Headers.SecureSessionId];
                 if (string.IsNullOrEmpty(secureSessionId))
                 {
                     secureSessionId = GenerateId();
@@ -146,8 +146,8 @@ namespace Bam.Net.ServiceProxy.Secure
 
         public static SecureSession Get(NameValueCollection headers, Instant instant = null)
         {
-            string sessionIdentifier = headers[Headers.SecureSession];
-            Log.WarnIf(string.IsNullOrEmpty(sessionIdentifier), "{0} header was not present, checking cookie {1}", Headers.SecureSession, CookieName);
+            string sessionIdentifier = headers[Headers.SecureSessionId];
+            Log.WarnIf(string.IsNullOrEmpty(sessionIdentifier), "{0} header was not present, checking cookie {1}", Headers.SecureSessionId, CookieName);
             sessionIdentifier = sessionIdentifier ?? headers[CookieName];
             Args.ThrowIfNull(sessionIdentifier, CookieName);
             return Get(sessionIdentifier, instant);
@@ -324,7 +324,7 @@ namespace Bam.Net.ServiceProxy.Secure
             }
         }
 
-        public static SetSessionKeyRequest CreateSetSessionKeyInfo(string publicKey, out AesKeyVectorPair kvp)
+        public static SetSessionKeyRequest CreateSetSessionKeyRequest(string publicKey, out AesKeyVectorPair kvp)
         {
             kvp = new AesKeyVectorPair();
             string keyCipher = kvp.Key.EncryptWithPublicKey(publicKey, Encoding.UTF8);

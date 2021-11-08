@@ -461,6 +461,14 @@
     <Compile Include="$(MSBuildThisFileDirectory)CoreServices\AccessControl\IAuthorizationHeaderProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CoreServices\AccessControl\TokenAuthorizationHeader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CoreServices\AccessControl\TokenTypes.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CoreServices\ClientCodeSource.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CoreServices\LocalOnlyProxyAssemblyGenerator.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CoreServices\LocalOnlyProxySettings.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\ApiArguments.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\DefaultApiArgumentProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\IApiArgumentProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\Secure\DefaultApiEncryptionProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\Secure\IApiEncryptionProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DefaultConsoleMessageHandler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DeployableCommandLineTool.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CommandLine\ArgumentInfo.cs" />
@@ -718,6 +726,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\IContextCloneable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\IApplicationServiceSourceResolver.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\ServiceCompilationExceptionReporter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\ServiceProxyArguments[TService].cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\ServiceProxyInvokeRequest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\ServiceProxyInvokeRequest[TService].cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\Catalog\CatalogRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\Catalog\CatalogService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\Catalog\Data\CatalogDefinition.cs" />
@@ -917,6 +928,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)VersionSpec.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)WebServiceAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Web\HttpVerbs.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Web\JsonHttp.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Web\YamlHttp.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Windows\WindowsFileExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Windows\WindowsRemoteFileHandler.cs" />
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Automation\CSharpScriptWorker.hbs" />
@@ -2121,7 +2134,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Server\Streaming\StreamingServer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Server\TemplateInitializer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Server\UriApplicationNameResolver.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\ApiParameters.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\ClientProxyGenerator.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\CsClientProxyGenerator.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\DefaultUserResolver.cs" />
@@ -2183,7 +2195,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\Secure\SecureChannelMessage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\Secure\SecureClientSessionInfo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\Secure\SecureExecutionRequest.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\Secure\SecureServiceProxyClient.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\Secure\SecureServiceProxyClient[TService].cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\Secure\SecureServiceProxy_Generated\ApiKey.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\Secure\SecureServiceProxy_Generated\ApiKeyCollection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\Secure\SecureServiceProxy_Generated\ApiKeyColumns.cs" />
@@ -2215,11 +2227,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\Secure\StaticApiKeyProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\ServiceGenerationInfo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\ServiceProxyClient.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\ServiceProxyClient[T].cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\ServiceProxyClient[TService].cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\ServiceProxyHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\ServiceProxyInfo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\ServiceProxyInvokeEventArgs.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\ServiceProxyParameters.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\ServiceProxyArguments.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\ServiceProxySystem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\ServiceProxyVerbs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\ServiceProxyResponse.cs" />
@@ -3066,6 +3078,8 @@
     <None Include="$(MSBuildThisFileDirectory)Automation\Testing\Data\regen_testing_dao.cmd" />
     <None Include="$(MSBuildThisFileDirectory)CoreServices\AccessControl\regen_accesscontrol_dao.cmd" />
     <None Include="$(MSBuildThisFileDirectory)CoreServices\AssemblyManagement\regen_assemblymanagement_dao.cmd" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)CoreServices\Handlebars\Templates\Proxy.hbs" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)CoreServices\Handlebars\Templates\ProxyMethod.hbs" />
     <None Include="$(MSBuildThisFileDirectory)CoreServices\README.md" />
     <None Include="$(MSBuildThisFileDirectory)CoreServices\regen.cmd" />
     <None Include="$(MSBuildThisFileDirectory)CoreServices\ServiceRegistration\regen_applicationserviceregistry_dao.cmd" />

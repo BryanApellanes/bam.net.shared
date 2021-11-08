@@ -167,7 +167,7 @@ namespace Bam.Net.CoreServices
         {
             ProxySettings settings = DefaultSettings.Clone();
             settings.ServiceType = type;
-            settings.DownloadClient = true;
+            settings.ClientCodeSource = ClientCodeSource.HostDownload;
             settings.Host = hostName;
             settings.Port = port;
             return GetProxySource(settings);
@@ -229,7 +229,7 @@ namespace Bam.Net.CoreServices
         {
             ProxySettings settings = DefaultSettings.Clone();
             settings.ServiceType = type;
-            settings.DownloadClient = false;
+            settings.ClientCodeSource = ClientCodeSource.Local;
             return GetAssembly(settings);
         }
 
@@ -250,7 +250,7 @@ namespace Bam.Net.CoreServices
         {
             ProxySettings settings = DefaultSettings.Clone();
             settings.ServiceType = type;
-            settings.DownloadClient = true;
+            settings.ClientCodeSource = ClientCodeSource.HostDownload;
             settings.Host = hostName;
             settings.Port = port;
             return GetAssembly(settings, addedReferenceAssemblies);
@@ -265,10 +265,10 @@ namespace Bam.Net.CoreServices
         /// <returns></returns>
         protected internal Assembly GetAssembly(ProxySettings settings, HashSet<Assembly> addedReferenceAssemblies = null)
         {
+            Args.ThrowIfNull(settings, "settings");
             Args.ThrowIfNull(settings.ServiceType, "ProxySettings.ServiceType");
             settings.ValidateTypeMethodsOrThrow();
 
-            settings = settings ?? DefaultSettings;
             ProxyAssemblyGenerator generator = new ProxyAssemblyGenerator(settings, WorkspaceDirectory, Logger, addedReferenceAssemblies);
             generator.AssemblyGenerating += (o, args) => OnAssemblyGenerating(args);
             generator.AssemblyGenerated += (o, args) => OnAssemblyGenerated(args);

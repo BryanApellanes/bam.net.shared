@@ -140,7 +140,7 @@ namespace Bam.Net.Services
                 Ssl = HostPrefix.Ssl,
                 ClassName = type.Name,
                 MethodName = methodName,
-                JsonParams = ApiParameters.ParametersToJsonParamsArray(arguments).ToJson()
+                JsonParams = ApiArguments.ArgumentsToJsonArgumentsArray(arguments).ToJson()
             };
         }
 

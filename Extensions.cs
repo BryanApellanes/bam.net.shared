@@ -585,9 +585,22 @@ namespace Bam.Net
             }
         }
 
+        public static T TryCopyAs<T>(this object source) where T: new()
+        {
+            try
+            {
+                return CopyAs<T>(source);
+            }
+            catch
+            {
+                // don't crash
+            }
+            return default;
+        }
+
         /// <summary>
         /// Copy the current source instance as the specified generic
-        /// type T copying all properties that match in name and type
+        /// type T copying all properties that match in name and type.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="source"></param>
@@ -2892,9 +2905,9 @@ namespace Bam.Net
             {
                 return obj.PropertiesToString(separator);
             }
-            catch //(Exception ex)
+            catch
             {
-
+                // don't crash
             }
 
             return string.Empty;

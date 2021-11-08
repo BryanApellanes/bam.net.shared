@@ -12,6 +12,7 @@ using System.IO;
 
 namespace Bam.Net.Web
 {
+    [Obsolete("Use HttpClient instead")]
     public class CookieEnabledWebClient: WebClient
     {
         public CookieEnabledWebClient()

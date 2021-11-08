@@ -11,7 +11,10 @@ namespace Bam.Net.ServiceProxy.Secure
     public class SecureClientSessionInfo
     {
         public ClientSessionInfo ClientSessionInfo { get; set; }
-        public Cookie SessionCookie { get; set; }
+
+        [Obsolete("Use SecureSessionId instead.")]
+        public Cookie SecureSessionCookie { get; set; }
+        public string SecureSessionId { get; set; }
         public string SessionKey { get; set; }
         public string SessionIV { get; set; }
 
@@ -20,13 +23,13 @@ namespace Bam.Net.ServiceProxy.Secure
             SecureClientSessionInfo info = obj as SecureClientSessionInfo;
             if(info != null)
             {
-                return info.ClientSessionInfo.Equals(ClientSessionInfo) && info.SessionCookie.Equals(SessionCookie) && info.SessionKey.Equals(SessionKey) && info.SessionIV.Equals(SessionIV);
+                return info.ClientSessionInfo.Equals(ClientSessionInfo) && info.SecureSessionCookie.Equals(SecureSessionCookie) && info.SessionKey.Equals(SessionKey) && info.SessionIV.Equals(SessionIV);
             }
             return base.Equals(obj);
         }
         public override string ToString()
         {
-            return $"{ClientSessionInfo.ToString()}::SessionCookie={SessionCookie.ToString()};SessionKey=XXX;SessionIV=XXX";
+            return $"{ClientSessionInfo.ToString()}::SessionCookie={SecureSessionCookie.ToString()};SessionKey=XXX;SessionIV=XXX";
         }
     }
 }

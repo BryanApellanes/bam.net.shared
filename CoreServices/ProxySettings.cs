@@ -14,6 +14,10 @@ namespace Bam.Net.CoreServices
     public class ProxySettings
     {
         public Protocols Protocol { get; set; }
+
+        /// <summary>
+        /// Gets or sets the host that hosts the service.
+        /// </summary>
         public string Host { get; set; }
         public int Port { get; set; }
         public Type ServiceType { get; set; }
@@ -32,10 +36,12 @@ namespace Bam.Net.CoreServices
         {
             return "{Protocol}_{Host}_{Port}".NamedFormat(this);
         }
+
         /// <summary>
-        /// Specifies whether client code should be downloaded
+        /// Gets or sets a value indicating where client code is retrieved from.
         /// </summary>
-        public bool DownloadClient { get; set; }
+        public virtual ClientCodeSource ClientCodeSource { get; set; }
+
         public Uri GetUri()
         {
             return new Uri("{0}://{1}:{2}/"._Format(Protocol.ToString().ToLowerInvariant(), Host, Port.ToString()));

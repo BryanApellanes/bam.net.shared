@@ -8,15 +8,26 @@ namespace Bam.Net.Web
 {
     public static class Headers
     {
-        public static string ProcessSrc => "X-Bam-Process-Src";
+        /// <summary>
+        /// Gets the header value that identifies the current process using Bam.Net.CoreServices.ApplicationRegistration.Data.ProcessDescriptor.LocalIdentifier.
+        /// </summary>
+        public static string ProcessLocalIdentifier => "X-Bam-Process-Local-Id";
 
+        /// <summary>
+        /// Gets the current process mode as reported by ProcessMode.Current.Mode.
+        /// </summary>
         public static string ProcessMode => "X-Bam-Process-Mode";
 
         public static string ApplicationName => "X-Bam-AppName";
-        public static string SecureSession => "X-Bam-Sps-Session";
+
+        public static string SecureSessionId => "X-Bam-Sps-Session-Id";
+
         public static string ValidationToken => "X-Bam-Validation-Token";
+
         public static string Signature => "X-Bam-Signature";
+
         public static string Nonce => "X-Bam-Timestamp";
+
         public static string Padding => "X-Bam-Padding";
 
         /// <summary>

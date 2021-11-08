@@ -20,6 +20,7 @@ using Bam.Net.CoreServices;
 using Bam.Net.CoreServices.ApplicationRegistration.Data.Dao.Repository;
 using Bam.Net.CoreServices.ApplicationRegistration.Data;
 using Bam.Net.CoreServices.Auth;
+using System.Net.Http;
 
 namespace Bam.Net.Services.Clients
 {
@@ -158,7 +159,7 @@ namespace Bam.Net.Services.Clients
         public bool IsValidRequest(ExecutionRequest request)
         {
             Args.ThrowIfNull(request, "request");
-            string stringToHash = ApiParameters.GetStringToHash(request);
+            string stringToHash = ApiArguments.GetStringToHash(request);
             string token = request.Context.Request.Headers[Headers.KeyToken];
             bool result = false;
             if (!string.IsNullOrEmpty(token))
@@ -174,6 +175,12 @@ namespace Bam.Net.Services.Clients
             return token.Equals(checkToken);
         }
 
+        public void SetKeyToken(HttpRequestMessage request, string stringToHash)
+        {
+            request.Headers.Add(Headers.KeyToken, CreateKeyToken(stringToHash));
+        }
+
+        [Obsolete("Use SetKeyToken(HttpRequestMessage) instead.")]
         public void SetKeyToken(HttpWebRequest request, string stringToHash)
         {
             SetKeyToken(request.Headers, stringToHash);
@@ -588,18 +595,18 @@ namespace Bam.Net.Services.Clients
             foreach(ProxyableService service in ServiceClients)
             {
                 ServiceProxyClient client = service.Property<ServiceProxyClient>("Client");
-                client.InvocationException += (o, a) => InvocationExceptionHandler(o, a);
-                client.InvokedMethod += (o, a) => InvocationHandler(o, a);
+                client.InvocationException += (o, a) => OnInvocationException(o, a);
+                client.InvokeMethodComplete += (o, a) => OnInvocation(o, a);
             }
         }
-        public event EventHandler InvocationException;
+        public event EventHandler InvocationExceptionThrown; 
         public event EventHandler MethodInvoked;
-        private void InvocationExceptionHandler(object sender, ServiceProxyInvokeEventArgs args)
+        protected virtual void OnInvocationException(object sender, ServiceProxyInvokeEventArgs args)
         {
-            FireEvent(InvocationException, sender, args);
+            FireEvent(InvocationExceptionThrown, sender, args);
         }
 
-        private void InvocationHandler(object sender, ServiceProxyInvokeEventArgs args)
+        protected virtual void OnInvocation(object sender, ServiceProxyInvokeEventArgs args)
         {
             FireEvent(MethodInvoked, sender, args);
         }

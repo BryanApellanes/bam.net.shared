@@ -1,23 +1,18 @@
 /*
 	Copyright © Bryan Apellanes 2015  
 */
+using Bam.Net.Data;
+using Bam.Net.Encryption;
+using Bam.Net.Incubation;
+using Bam.Net.Logging;
+using Bam.Net.ServiceProxy.Secure;
+using Bam.Net.Web;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Linq;
-using System.Text;
-using System.Reflection;
-using System.Web;
 using System.IO;
 using System.Net;
-using Bam.Net.Logging;
-using Bam.Net;
-using Bam.Net.Web;
-using Bam.Net.Data;
-using Bam.Net.Incubation;
-using Bam.Net.ServiceProxy.Secure;
-using Bam.Net.Encryption;
-using Newtonsoft.Json;
+using System.Reflection;
 
 namespace Bam.Net.ServiceProxy
 {
@@ -95,7 +90,7 @@ namespace Bam.Net.ServiceProxy
                 HttpArgs args = new HttpArgs();
                 args.ParseJson(execRequest.InputString);
                 
-                execRequest.JsonParams = args["jsonParams"];
+                execRequest.JsonArgs = args[ServiceProxyClient.JsonArgsKey];
                 execRequest.Instance.Property("Logger", execRequest.Logger);
             }
         }
@@ -330,7 +325,7 @@ namespace Bam.Net.ServiceProxy
         /// Should be set to an array of strings stringified twice.  Parsing as Json will return an array of strings,
         /// each string can be individually parsed into separate objects
         /// </summary>
-        public string JsonParams { get; set; }
+        public string JsonArgs { get; set; }
 
         Incubator _serviceProvider;
         readonly object _serviceProviderLock = new object();
@@ -447,10 +442,10 @@ namespace Bam.Net.ServiceProxy
                 string[] jsonStrings = jsonParams.FromJson<string[]>();
                 result = GetJsonArguments(jsonStrings);
             }
-            else if (!string.IsNullOrEmpty(JsonParams))
+            else if (!string.IsNullOrEmpty(JsonArgs))
             {
                 // POST: bam.invoke
-                string[] jsonStrings = JsonParams.FromJson<string[]>();
+                string[] jsonStrings = JsonArgs.FromJson<string[]>();
 
                 result = GetJsonArguments(jsonStrings);
             }

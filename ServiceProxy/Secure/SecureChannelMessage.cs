@@ -24,13 +24,13 @@ namespace Bam.Net.ServiceProxy.Secure
 
         public SecureChannelMessage(Exception ex):base(ex)
         {
-
         }
 
         public SecureChannelMessage(bool success)
         {
             this.Success = success;
         }
+
         public T Data
         {
             get;
@@ -41,10 +41,12 @@ namespace Bam.Net.ServiceProxy.Secure
     public class SecureChannelMessage
     {
         public SecureChannelMessage() { }
+
         public SecureChannelMessage(string message)
         {
             this.Message = message;
         }
+
         public SecureChannelMessage(string message, bool success)
         {
             this.Message = message;

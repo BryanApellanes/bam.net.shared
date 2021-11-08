@@ -88,7 +88,7 @@ namespace Bam.Net.Server.Streaming
 
         private void SetSessionKey()
         {
-            SetSessionKeyRequest sessionKeyInfo = SecureSession.CreateSetSessionKeyInfo(PublicKey, out AesKeyVectorPair aesKey);
+            SetSessionKeyRequest sessionKeyInfo = SecureSession.CreateSetSessionKeyRequest(PublicKey, out AesKeyVectorPair aesKey);
             AesKeyVectorPair = aesKey;
             SecureStreamingResponse<TResponse> setKeyResponse = SendSecureStreamingRequest((r) =>
             {

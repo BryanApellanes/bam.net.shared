@@ -21,15 +21,19 @@ using Org.BouncyCastle.Math;
 using Org.BouncyCastle.Security;
 using System.IO;
 using System.Reflection;
+using System.Net.Http;
 
 namespace Bam.Net.ServiceProxy.Secure
 {
     /// <summary>
     /// A secure service proxy client that uses application level encryption
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    public class SecureServiceProxyClient<T>: ServiceProxyClient<T>
+    /// <typeparam name="TService"></typeparam>
+    public class SecureServiceProxyClient<TService>: ServiceProxyClient<TService>
     {
+        public const string AsymetricCipherMediaType = "application/vnd.bam+cipher;algorithm=asymetric";
+        public const string SymetricCipherMediaType = "application/vnd.bam+cipher;algorithm=symetric";
+
         public SecureServiceProxyClient(string baseAddress)
             : base(baseAddress)
         {
@@ -56,13 +60,27 @@ namespace Bam.Net.ServiceProxy.Secure
             }
         }
 
+        IApiEncryptionProvider _apiEncryptionProvider;
+        object _apiEncryptionProviderLock = new object();
+        public IApiEncryptionProvider ApiEncryptionProvider
+        {
+            get
+            {
+                return _apiEncryptionProviderLock.DoubleCheckLock(ref _apiEncryptionProvider, () => new DefaultApiEncryptionProvider());
+            }
+            set
+            {
+                _apiEncryptionProvider = value;
+            }
+        }
+
         public Exception SessionStartException
         {
             get;
             private set;
         }
 
-        public bool SessionEstablished
+        public bool IsSessionEstablished
         {
             get
             {
@@ -70,7 +88,14 @@ namespace Bam.Net.ServiceProxy.Secure
             }            
         }
 
-        public Cookie SessionCookie
+        [Obsolete("Use SecureSessionId instead")]
+        public Cookie SecureSessionCookie
+        {
+            get;
+            protected internal set;
+        }
+
+        public string SecureSessionId
         {
             get;
             protected internal set;
@@ -109,15 +134,15 @@ namespace Bam.Net.ServiceProxy.Secure
         }
 
         /// <summary>
-        /// Return true if the current instance is
+        /// Gets a value indicating if the current instance is
         /// a SecureServiceProxyClient and not an
-        /// inheriting class instance
+        /// inheriting class instance.
         /// </summary>
         protected bool IsSecureServiceProxyClient
         {
             get
             {
-                if (Type.Name.Equals("SecureServiceProxyClient`1")) // Can this hackishness be avoided?
+                if (Type.Name.Equals("SecureServiceProxyClient`1")) 
                 {
                     return true;
                 }
@@ -161,13 +186,13 @@ namespace Bam.Net.ServiceProxy.Secure
             set;
         }
 
-        public event Action<SecureServiceProxyClient<T>> SessionStarting;
+        public event Action<SecureServiceProxyClient<TService>> SessionStarting;
         protected void OnSessionStarting()
         {
             SessionStarting?.Invoke(this);
         }
 
-        public event Action<SecureServiceProxyClient<T>> SessionStarted;
+        public event Action<SecureServiceProxyClient<TService>> SessionStarted;
         protected void OnSessionStarted()
         {
             SessionStarted?.Invoke(this);
@@ -177,7 +202,7 @@ namespace Bam.Net.ServiceProxy.Secure
         /// The event that is raised if an exception occurs starting the 
         /// secure session.
         /// </summary>
-        public event Action<SecureServiceProxyClient<T>, Exception> StartSessionException;
+        public event Action<SecureServiceProxyClient<TService>, Exception> StartSessionException;
         protected void OnStartSessionException(Exception ex)
         {
             StartSessionException?.Invoke(this, ex);
@@ -196,7 +221,12 @@ namespace Bam.Net.ServiceProxy.Secure
 
                         try
                         {
-                            HttpWebRequest request = GetServiceProxyRequest<SecureChannel>(ServiceProxyVerbs.GET, "InitSession", new Instant());
+                            ServiceProxyInvokeRequest<SecureChannel> invokeRequest = new ServiceProxyInvokeRequest<SecureChannel>()
+                            {
+                                MethodName = nameof(SecureChannel.InitSession)
+                            };
+                           
+                       /*     HttpWebRequest request = GetServiceProxyRequestMessage(ServiceProxyVerbs.GET, typeof(SecureChannel).Name, "InitSession", new Instant());
 
                             using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
                             {
@@ -216,8 +246,8 @@ namespace Bam.Net.ServiceProxy.Secure
                                     }
                                 }
 
-                                SetSessionKeyAndIv();
-                            }
+                                SetSessionKey();
+                            }*/
                         }
                         catch (Exception ex)
                         {
@@ -233,16 +263,11 @@ namespace Bam.Net.ServiceProxy.Secure
             }
         }
 
-        protected internal override string DoInvoke(ServiceProxyInvokeEventArgs args)
+        protected internal override async Task<string> ReceiveServiceMethodResponseAsync(ServiceProxyInvokeRequest<TService> request)
         {
-            string baseAddress = args.BaseAddress;
-            string className = args.ClassName;
-            string methodName = args.MethodName;
-            object[] parameters = args.PostParameters;
-            ServiceProxyInvokeEventArgs secureChannelArgs = new ServiceProxyInvokeEventArgs { Cuid = args.Cuid, BaseAddress = baseAddress, ClassName = typeof(SecureChannel).Name, MethodName = "Invoke", PostParameters = new object[] { className, methodName, ApiParameters.ParametersToJsonParamsObjectString(parameters) } };
             try
             {                   
-                SecureChannelMessage<string> result = Post(secureChannelArgs).FromJson<SecureChannelMessage<string>>();
+                SecureChannelMessage<string> result = (await ReceivePostResponseAsync(request)).FromJson<SecureChannelMessage<string>>();
                 if (result.Success)
                 {
                     Decrypted decrypted = new Decrypted(result.Data, SessionKey, SessionIV);
@@ -250,12 +275,13 @@ namespace Bam.Net.ServiceProxy.Secure
                 }
                 else
                 {
-                    string properties = result.PropertiesToString();                    
-                    throw new ServiceProxyInvocationFailedException("{0}"._Format(result.Message, properties));
+                    string properties = result.TryPropertiesToString();
+                    throw new ServiceProxyInvocationFailedException($"{result.Message}:\r\n\t{properties}");
                 }
             }
             catch (Exception ex)
             {
+                ServiceProxyInvokeEventArgs<TService> args = request.TryCopyAs<ServiceProxyInvokeEventArgs<TService>>();
                 args.Exception = ex;
                 args.Message = ex.Message;
                 OnInvocationException(args);
@@ -264,83 +290,63 @@ namespace Bam.Net.ServiceProxy.Secure
             return string.Empty;
         }
 
-        protected override string Post(ServiceProxyInvokeEventArgs invokeArgs, HttpWebRequest request)
+        public async Task<TResult> ReceivePostResponseAsync<TResult>(string className, string methodName, params object[] arguments)
         {
-            string baseAddress = invokeArgs.BaseAddress;
-            string className = invokeArgs.ClassName;
-            string methodName = invokeArgs.MethodName;
-            object[] parameters = invokeArgs.PostParameters;
-            if (className.Equals("securechannel", StringComparison.InvariantCultureIgnoreCase) && methodName.Equals("invoke", StringComparison.InvariantCultureIgnoreCase))
+            return (await ReceivePostResponseAsync(new ServiceProxyInvokeRequest { BaseAddress = BaseAddress, ClassName = className, MethodName = methodName, Arguments = arguments })).FromJson<TResult>();
+        }
+
+        protected override async Task<string> ReceivePostResponseAsync(ServiceProxyInvokeRequest invokeRequest, HttpRequestMessage request)
+        {
+            string className = invokeRequest.ClassName;
+            string methodName = invokeRequest.MethodName;
+            object[] arguments = invokeRequest.Arguments;
+            if(className.Equals(nameof(SecureChannel), StringComparison.InvariantCultureIgnoreCase) && methodName.Equals(nameof(SecureChannel.Invoke), StringComparison.InvariantCultureIgnoreCase))
             {
                 // the target is the SecureChannel.Invoke method but we
                 // need the actual className and method that is in the parameters 
                 // object
-                string actualClassName = (string)parameters[0];
-                string actualMethodName = (string)parameters[1];                
-                string jsonParams = (string)parameters[2];
+                string actualClassName = (string)arguments[0];
+                string actualMethodName = (string)arguments[1];
+                string jsonArgs = (string)arguments[2];
                 HttpArgs args = new HttpArgs();
-                args.ParseJson(jsonParams);
-
-                if (TypeRequiresApiKey || MethodRequiresApiKey(actualMethodName))
+                args.ParseJson(jsonArgs);
+                if(TypeRequiresApiKey || MethodRequiresApiKey(actualMethodName))
                 {
-                    ApiKeyResolver.SetKeyToken(request, ApiParameters.GetStringToHash(actualClassName, actualMethodName, args["jsonParams"]));
+                    ApiKeyResolver.SetKeyToken(request, ApiArgumentProvider.GetStringToHash(actualClassName, actualMethodName, args[JsonArgsKey]));
                 }
             }
-            return base.Post(invokeArgs, request);
+            return await base.ReceivePostResponseAsync(invokeRequest, request);
         }
 
-        protected internal override void WriteJsonParams(string jsonParamsString, HttpWebRequest request)
+        protected internal override void SetHttpArgsContent(string jsonArgumentsString, HttpRequestMessage request)
         {
             if (string.IsNullOrEmpty(SessionKey))
             {
-                base.WriteJsonParams(jsonParamsString, request);
+                base.SetHttpArgsContent(jsonArgumentsString, request);
             }
             else
             {
-                Encrypted cipher = new Encrypted(jsonParamsString, SessionKey, SessionIV);
-                string postData = cipher.Base64Cipher;
-                using (StreamWriter sw = new StreamWriter(request.GetRequestStream()))
-                {
-                    sw.Write(postData);
-                }
+                Encrypted cipher = new Encrypted(jsonArgumentsString, SessionKey, SessionIV);
+                string bodyCipher = cipher.Base64Cipher;
+                request.Content = new StringContent(bodyCipher, Encoding.UTF8, AsymetricCipherMediaType);
 
-                ApiEncryptionValidation.SetEncryptedValidationToken(request, jsonParamsString, SessionInfo.PublicKey);
-
-                request.ContentType = "text/plain; charset=utf-8";
+                ApiEncryptionProvider.SetEncryptedValidationToken(request, jsonArgumentsString, SessionInfo.PublicKey);
             }
         }
 
-        protected internal EncryptedValidationToken CreateValidationToken(string jsonParamsString)
+        protected internal override Task<HttpRequestMessage> CreateServiceProxyRequestMessageAsync(ServiceProxyVerbs verb, string className, string methodName, string queryStringParameters = "")
         {
-            string publicKeyPem = SessionInfo.PublicKey;
-
-            return CreateEncryptedValidationToken(jsonParamsString, publicKeyPem);
+            throw new NotImplementedException();
+            // create a secure execution request
+            // - execution target is SecureChannel
+            // - encrypt the actual request
         }
 
-        protected internal override HttpWebRequest GetServiceProxyRequest(ServiceProxyVerbs verb, string className, string methodName, string queryStringParameters = "")
+        protected async Task SetSessionKeyAsync()
         {
-            HttpWebRequest request = base.GetServiceProxyRequest(verb, className, methodName, queryStringParameters);           
+            CreateSetSessionKeyRequest(out AesKeyVectorPair kvp, out SetSessionKeyRequest request);           
 
-            if (SessionCookie == null)
-            {
-                Logger.AddEntry("Session Cookie ({0}) was missing, call StartSession() first", LogEventType.Warning, SecureSession.CookieName);
-            }
-            else
-            {
-                request.Headers.Add(Web.Headers.SecureSession, SessionCookie.Value);
-            }
-            if (ClientApplicationNameProvider != null)
-            {
-                request.Headers[Web.Headers.ApplicationName] = ClientApplicationNameProvider.GetApplicationName();
-            }
-            return request;
-        }
-
-        private void SetSessionKeyAndIv()
-        {
-            CreateSetSessionKeyRequest(out AesKeyVectorPair kvp, out SetSessionKeyRequest request);
-
-            SecureChannelMessage response = this.Post<SecureChannelMessage>(nameof(SecureChannel), "SetSessionKey", new object[] { request });
+            SecureChannelMessage response = await this.ReceivePostResponseAsync<SecureChannelMessage>(nameof(SecureChannel), "SetSessionKey", new object[] { request });
             if (!response.Success)
             {
                 throw new Exception(response.Message);
@@ -352,17 +358,12 @@ namespace Bam.Net.ServiceProxy.Secure
 
         protected internal void CreateSetSessionKeyRequest(out AesKeyVectorPair kvp, out SetSessionKeyRequest request)
         {
-            request = SecureSession.CreateSetSessionKeyInfo(SessionInfo.PublicKey, out kvp);
-        }
-
-        private static EncryptedValidationToken CreateEncryptedValidationToken(string jsonParamsString, string publicKeyPem)
-        {
-            return ApiEncryptionValidation.CreateEncryptedValidationToken(jsonParamsString, publicKeyPem);
+            request = SecureSession.CreateSetSessionKeyRequest(SessionInfo.PublicKey, out kvp);
         }
 
         private void Initialize()
         {
-            this.InvokingMethod += (s, a) => TryStartSession();
+            this.InvokeMethodStarted += (s, a) => TryStartSession();
         }
 
         private void TryStartSession()

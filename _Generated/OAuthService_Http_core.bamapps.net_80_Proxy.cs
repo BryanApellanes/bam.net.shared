@@ -29,32 +29,32 @@ namespace Bam.Net.CoreServices
         public void SetToken(System.String accessToken)
         {
             object[] parameters = new object[] { accessToken };
-            Invoke("SetToken", parameters);
+            InvokeServiceMethod("SetToken", parameters);
         }
         public Dictionary<System.String, System.String> GetSettings()
         {
             object[] parameters = new object[] {  };
-            return Invoke<Dictionary<System.String, System.String>>("GetSettings", parameters);
+            return InvokeServiceMethod<Dictionary<System.String, System.String>>("GetSettings", parameters);
         }
         public LoginResponse ConnectClient(Bam.Net.CoreServices.ApplicationRegistration.Data.Client client)
         {
             object[] parameters = new object[] { client };
-            return Invoke<LoginResponse>("ConnectClient", parameters);
+            return InvokeServiceMethod<LoginResponse>("ConnectClient", parameters);
         }
         public LoginResponse Login(System.String userName, System.String passHash)
         {
             object[] parameters = new object[] { userName, passHash };
-            return Invoke<LoginResponse>("Login", parameters);
+            return InvokeServiceMethod<LoginResponse>("Login", parameters);
         }
         public SignOutResponse EndSession()
         {
             object[] parameters = new object[] {  };
-            return Invoke<SignOutResponse>("EndSession", parameters);
+            return InvokeServiceMethod<SignOutResponse>("EndSession", parameters);
         }
         public String WhoAmI()
         {
             object[] parameters = new object[] {  };
-            return Invoke<String>("WhoAmI", parameters);
+            return InvokeServiceMethod<String>("WhoAmI", parameters);
         }
     }
 

@@ -175,8 +175,7 @@ namespace Bam.Net.ServiceProxy
 
 		/// <summary>
 		/// Get the MethodInfos for the specified type that are
-		/// proxied if the specified type is registered as 
-		/// a service proxy.
+		/// proxied.
 		/// </summary>
 		/// <param name="type"></param>
         /// <param name="includeLocalMethods"></param>
@@ -268,8 +267,8 @@ This file was generated from {0}serviceproxy/csharpproxies.  This file should no
                 return @"{0}
         public {1} {2}({3})
         {{
-            object[] parameters = new object[] {{ {4} }};
-            {5}(""{2}"", parameters);
+            object[] arguments = new object[] {{ {4} }};
+            {5}(""{2}"", arguments);
         }}";
             }
         }
@@ -403,7 +402,7 @@ namespace {0}
 
                     string returnOrBlank = isVoidReturn ? "" : "return ";
                     string genericTypeOrBlank = isVoidReturn ? "" : $"<{returnType}>";
-                    string invoke = $"{returnOrBlank}Invoke{genericTypeOrBlank}";
+                    string invoke = $"{returnOrBlank}InvokeServiceMethod{genericTypeOrBlank}";
 
                     string methodParams = methodGenInfo.MethodSignature;
                     string wrapped = parameters.ToDelimited(p => p.Name.CamelCase()); // wrapped as object array
@@ -486,7 +485,7 @@ namespace {0}
 
                 foreach (MethodInfo method in type.GetMethods())
                 {
-                    if (methodFilter(method))//method.WillProxy(includeLocal))
+                    if (methodFilter(method))
                     {
                         stringBuilder.AppendLine(GetJsMethodCall(type, method));
                     }
@@ -636,7 +635,7 @@ namespace {0}
             }
         }
 
-        public static StringBuilder BuildPartialView(Type type)
+        public static StringBuilder BuildPartialView(Type type) // TODO: move this to schema.org project
         {
             StringBuilder source = new StringBuilder();
             string typeName = type.Name.DropTrailingNonLetters();

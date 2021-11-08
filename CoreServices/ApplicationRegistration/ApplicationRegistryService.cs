@@ -2,6 +2,7 @@
 using System.Collections.Specialized;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using Bam.Net.Caching;
 using Bam.Net.Configuration;
 using Bam.Net.CoreServices.ApplicationRegistration.Data;
@@ -262,7 +263,7 @@ namespace Bam.Net.CoreServices
 
             string className = request.ClassName;
             string methodName = request.MethodName;
-            string stringToHash = ApiParameters.GetStringToHash(className, methodName, request.JsonParams);
+            string stringToHash = ApiArguments.GetStringToHash(className, methodName, request.JsonArgs);
 
             string token = request.Context.Request.Headers[Headers.KeyToken];
             bool result = false;
@@ -279,6 +280,12 @@ namespace Bam.Net.CoreServices
         {
             string checkToken = CreateKeyToken(stringToHash);
             return token.Equals(checkToken);
+        }
+
+        [Exclude]
+        public void SetKeyToken(HttpRequestMessage request, string stringToHash)
+        {
+            throw new InvalidOperationException($"It isn't appropriate for this service to be used for this purpose: {nameof(ApplicationRegistryService)}.{nameof(ApplicationRegistryService.SetKeyToken)}");
         }
 
         [Exclude]

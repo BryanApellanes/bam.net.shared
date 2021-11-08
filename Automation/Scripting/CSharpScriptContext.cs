@@ -54,7 +54,7 @@ namespace Bam.Net.Automation.Scripting
         {
             HandlebarsTemplateRenderer renderer = new HandlebarsTemplateRenderer();
             Model.Script = Script;
-            string code = renderer.Render("CSharpScriptContext", Model);
+            string code = renderer.Render(nameof(CSharpScriptContext), Model);
             RoslynCompiler compiler = new RoslynCompiler(ReferenceAssemblyResolver);
             foreach (string referencePath in referenceAssemblyPaths)
             {
