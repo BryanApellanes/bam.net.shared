@@ -79,7 +79,6 @@ namespace Bam.Net.Server
                 case OSNames.Linux:
                 case OSNames.OSX:
                     return "/opt/bam/content";
-                    break;
             }
 
             return "/opt/bam/content";

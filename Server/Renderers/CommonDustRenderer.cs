@@ -45,16 +45,10 @@ namespace Bam.Net.Server.Renderers
             }
         }
 
-        public string ContentRoot
-        {
-            get
-            {
-                return ContentResponder.Root;
-            }
-        }
+        public string ContentRoot => ContentResponder.Root;
 
-        string _compiledLayoutTemplates;
-        object _compiledLayoutTemplatesLock = new object();
+        private string _compiledLayoutTemplates;
+        private readonly object _compiledLayoutTemplatesLock = new object();
         /// <summary>
         /// Represents the compiled javascript result of doing dust.compile
         /// against all the files found in ~s:/common/views/layouts.
@@ -77,8 +71,8 @@ namespace Bam.Net.Server.Renderers
             }
         }
 
-        string _compiledDustTemplates;
-        object _compiledDustTemplatesLock = new object();
+        private string _compiledDustTemplates;
+        private readonly object _compiledDustTemplatesLock = new object();
         /// <summary>
         /// Represents the compiled javascript result of doing dust.compile
         /// against all the files found in ~s:/common/views.
@@ -102,8 +96,8 @@ namespace Bam.Net.Server.Renderers
             }
         }
 
-        List<ICompiledTemplate> _compiledTemplates;
-        object _compiledTemplatesLock = new object();
+        private List<ICompiledTemplate> _compiledTemplates;
+        private readonly object _compiledTemplatesLock = new object();
         public virtual IEnumerable<ICompiledTemplate> CompiledTemplates
         {
             get
@@ -122,7 +116,7 @@ namespace Bam.Net.Server.Renderers
             }
         }
 
-        object _renderLock = new object();
+        private object _renderLock = new object();
         public override void Render(object toRender, Stream output)
         {
             Render(toRender.GetType().Name, toRender, output);
@@ -148,11 +142,5 @@ namespace Bam.Net.Server.Renderers
             byte[] data = Encoding.UTF8.GetBytes(result);
             output.Write(data, 0, data.Length);
         }
-		
-        public string Render(string templateName, object data)
-        {
-            throw new NotImplementedException();
-        }
-
     }
 }

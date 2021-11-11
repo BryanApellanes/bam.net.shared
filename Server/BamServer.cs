@@ -48,7 +48,7 @@ namespace Bam.Net.Server
 
             SQLiteRegistrar.RegisterFallback();
             AppDomain.CurrentDomain.DomainUnload += (s, a) => Stop();
-            LoadApplicationServiceRegistry();
+            _ = LoadApplicationServiceRegistry();
         }
 
         private ApplicationServiceRegistry _appServiceRegistry;
@@ -77,82 +77,102 @@ namespace Bam.Net.Server
         /// The event that fires when server initialization begins
         /// </summary>
         public event Action<BamServer> Initializing;
+        
         /// <summary>
         /// The event that fires when server initialization is complete
         /// </summary>
         public event Action<BamServer> Initialized;
+        
         /// <summary>
         /// The event that fires when a schema is about to be initialized
         /// </summary>
         public event Action<BamServer, SchemaInitializer> SchemaInitializing;
+        
         /// <summary>
         /// The event that fires when a schema is done initializing
         /// </summary>
-        public event Action<BamServer, SchemaInitializer> SchemaInitialized;        
+        public event Action<BamServer, SchemaInitializer> SchemaInitialized; 
+        
         /// <summary>
         /// The event that fires before beginning any schema initialization
         /// </summary>
         public event Action<BamServer> SchemasInitializing;
+        
         /// <summary>
         /// The event that fires when all schemas have completed initialization
         /// </summary>
         public event Action<BamServer> SchemasInitialized;
+        
         /// <summary>
         /// The event that fires before loading the server configuration
         /// </summary>
         public event Action<BamServer, BamConf> LoadingConf;
+        
         /// <summary>
         /// the event that fires when loading the server configuration is complete
         /// </summary>
         public event Action<BamServer, BamConf> LoadedConf; 
+        
         /// <summary>
         /// The event that fires before creating an application
         /// </summary>
         public event Action<BamServer, AppConf> CreatingApp;
+        
         /// <summary>
         /// The event that fires when creating an application is complete
         /// </summary>
         public event Action<BamServer, AppConf> CreatedApp;
+        
         /// <summary>
         /// The event that fires when a response has been sent
         /// </summary>
         public event Action<BamServer, IResponder, IResponse> Responding;
+        
         /// <summary>
         /// The event that fires when a response has been sent
         /// </summary>
         public event Action<BamServer, IResponder, IRequest> Responded;
+        
         /// <summary>
         /// The event that fires when a response is not sent
         /// </summary>
         public event Action<BamServer, IRequest> NotResponded;
+        
         /// <summary>
         /// The event that fires when a responder is added
         /// </summary>
         public event Action<BamServer, IResponder> ResponderAdded;
+        
         /// <summary>
         /// The event that fires before setting the configuration
         /// </summary>
         public event Action<BamServer, BamConf> SettingConf;
+        
         /// <summary>
         /// The event that fires when setting the configuration is complete
         /// </summary>
-        public event Action<BamServer, BamConf> SettedConf;        
+        public event Action<BamServer, BamConf> SettedConf; 
+        
         /// <summary>
         /// The event that fires when the configuration is saved
         /// </summary>
         public event Action<BamServer, BamConf> SavedConf;
+        
         /// <summary>
         /// The event that fires before starting the server
         /// </summary>
         public event Action<BamServer> Starting;
+        
         /// <summary>
         /// The event that fires when the server has started
         /// </summary>
         public event Action<BamServer> Started;
+        
         /// <summary>
         /// The event that fires before the server is stopped
         /// </summary>
         public event Action<BamServer> Stopping;
+        
         /// <summary>
         /// The event that fires when the server has stopped
         /// </summary>
@@ -160,6 +180,7 @@ namespace Bam.Net.Server
 
         private readonly object _requestLogLock = new object();
         private RequestLog _requestLog;
+        
         public RequestLog RequestLog
         {
             get { return _requestLogLock.DoubleCheckLock(ref _requestLog, () => new RequestLog()); }
@@ -407,16 +428,13 @@ namespace Bam.Net.Server
             }
         }
 
-        HashSet<ILogger> _subscribers = new HashSet<ILogger>();
-        object _subscriberLock = new object();
-        public ILogger[] Subscribers
+        private HashSet<ILogger> _subscribers = new HashSet<ILogger>();
+        private readonly object _subscriberLock = new object();
+        public override ILogger[] Subscribers
         {
             get
             {
-                if (_subscribers == null)
-                {
-                    _subscribers = new HashSet<ILogger>();
-                }
+                _subscribers = _subscribers ?? new HashSet<ILogger>();
                 lock (_subscriberLock)
                 {
                     return _subscribers.ToArray();
@@ -424,7 +442,7 @@ namespace Bam.Net.Server
             }
         }
 
-        public bool IsSubscribed(ILogger logger)
+        public override bool IsSubscribed(ILogger logger)
         {
             lock (_subscriberLock)
             {
@@ -437,7 +455,7 @@ namespace Bam.Net.Server
         /// events of the current BamServer
         /// </summary>
         /// <param name="logger"></param>
-        public void Subscribe(ILogger logger)
+        public override void Subscribe(ILogger logger)
         {
             if (!IsSubscribed(logger))
             {
@@ -445,7 +463,7 @@ namespace Bam.Net.Server
                 {
                     _subscribers.Add(logger);
                 }
-                string className = typeof(BamServer).Name;
+                const string className = nameof(BamServer);
 
                 this.Initializing += (s) =>
                 {

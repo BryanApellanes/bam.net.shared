@@ -21,6 +21,12 @@ namespace Bam.Net.Analytics
 
         public bool NumberLines { get; set; }
 
+        public string Format(DiffReport diffReport)
+        {
+            DiffReport = diffReport;
+            return Format();
+        }
+        
         public string Format()
         {
             StringBuilder output = new StringBuilder();

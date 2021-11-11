@@ -25,11 +25,11 @@ namespace Bam.Net.Automation.Testing.Data.Wrappers
 
 		public TestSuiteDefinitionWrapper(DaoRepository repository) : this()
 		{
-			this.Repository = repository;
+			this.DaoRepository = repository;
 		}
 
 		[JsonIgnore]
-		public DaoRepository Repository { get; set; }
+		public DaoRepository DaoRepository { get; set; }
 
 		[JsonIgnore]
 		public Dictionary<string, PropertyInfo> UpdatedXrefCollectionProperties { get; set; }
@@ -53,7 +53,7 @@ Bam.Net.Automation.Testing.Data.TestDefinition[] _testDefinitions;
 			{
 				if (_testDefinitions == null)
 				{
-					_testDefinitions = Repository.ForeignKeyCollectionLoader<Bam.Net.Automation.Testing.Data.TestSuiteDefinition, Bam.Net.Automation.Testing.Data.TestDefinition>(this).ToArray();
+					_testDefinitions = DaoRepository.ForeignKeyCollectionLoader<Bam.Net.Automation.Testing.Data.TestSuiteDefinition, Bam.Net.Automation.Testing.Data.TestDefinition>(this).ToArray();
 				}
 				return _testDefinitions;
 			}

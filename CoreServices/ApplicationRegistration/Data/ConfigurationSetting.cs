@@ -15,7 +15,7 @@ namespace Bam.Net.CoreServices.ApplicationRegistration.Data
         public virtual Configuration Configuration { get; set; }
 
         [CompositeKey]
-        public string Key { get; set; }
+        public new string Key { get; set; }
         public string Value { get; set; }
 
         public override bool Equals(object obj)

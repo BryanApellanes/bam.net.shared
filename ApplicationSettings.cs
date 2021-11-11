@@ -10,7 +10,6 @@ namespace Bam.Net
     {
         public string OrganizationName { get; set; }
         public string ApplicationName { get; set; }
-        public SystemPaths Paths { get; set; }
         public Dictionary<string, string> Configuration { get; set; }        
     }
 }

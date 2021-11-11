@@ -25,7 +25,8 @@ namespace Bam.Net.Logging
     public abstract class Loggable: ILoggable
     {
         private static HashSet<Loggable> _allInstances = new HashSet<Loggable>();
-        public Loggable()
+
+        protected Loggable()
         {
             this._subscribers = new HashSet<ILogger>();
             this.LogVerbosity = VerbosityLevel.Custom;
@@ -45,7 +46,8 @@ namespace Bam.Net.Logging
         /// </summary>
         public VerbosityLevel LogVerbosity { get; set; }
 
-        HashSet<ILogger> _subscribers;
+        private HashSet<ILogger> _subscribers;
+        
         /// <summary>
         /// An array of all the ILoggers that have
         /// been subscribed to this Loggable
@@ -56,7 +58,7 @@ namespace Bam.Net.Logging
         [Exclude]
         public virtual ILogger[] Subscribers => _subscribers.ToArray();
 
-        object _subscriberLock = new object();
+        private object _subscriberLock = new object();
 
 		/// <summary>
 		/// Subscribe the current Loggables subscribers
@@ -164,7 +166,7 @@ namespace Bam.Net.Logging
             }
         }
 
-        public event EventHandler Message;
+        public event EventHandler MessageReceived;
 
         /// <summary>
         /// Fire the Message event with the specified information message
@@ -223,7 +225,7 @@ namespace Bam.Net.Logging
         [Exclude]
         public void EventMessage(LogEventType eventType, string format, params string[] args)
         {
-            FireEvent(Message, new MessageEventArgs() {LogEventType = eventType, LogMessage = new LogMessage(format, args)});
+            FireEvent(MessageReceived, new MessageEventArgs() {LogEventType = eventType, LogMessage = new LogMessage(format, args)});
         }
         
         /// <summary>

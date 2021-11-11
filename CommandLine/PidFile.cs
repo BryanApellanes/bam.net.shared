@@ -31,7 +31,7 @@ namespace Bam.Net.CommandLine
         public PidFile(int processId, string commandLineArgs)
         {
             ProcessId = processId;
-            commandLineArgs = commandLineArgs;
+            CommandLineArgs = commandLineArgs;
         }
 
         public void Save()
@@ -47,6 +47,7 @@ namespace Bam.Net.CommandLine
 
         public bool Kill(bool matchCommandLineArgs = true, ILogger logger = null)
         {
+            logger = logger ?? Log.Default;
             if (ProcessId != -1)
             {
                 try
@@ -55,7 +56,7 @@ namespace Bam.Net.CommandLine
                 }
                 catch (Exception ex)
                 {
-                    logger.Error("Failed to load process by id ({0}): ({1})", ProcessId, ex.Message);
+                    logger?.Error("Failed to load process by id ({0}): ({1})", ProcessId, ex.Message);
                 }
             }
             if (Process != null)
@@ -66,21 +67,20 @@ namespace Bam.Net.CommandLine
                     {
                         if(Process.StartInfo.Arguments.Equals(CommandLineArgs, StringComparison.InvariantCultureIgnoreCase))
                         {
-                            logger.Warning("CommandLineArgs match ({0}): killing old process", CommandLineArgs);
+                            logger?.Warning("CommandLineArgs match ({0}): killing old process", CommandLineArgs);
                             Process.Kill();
                         }
                     }
                     else
                     {
-                        logger.Warning("Killing old process ({0})", ProcessId);
+                        logger?.Warning("Killing old process ({0})", ProcessId);
                         Process.Kill();
                     }
                     return true;
                 }
                 catch (Exception ex)
                 {
-                    logger = logger ?? Log.Default;
-                    logger.Error("Exception killing process: ({0})", ex.Message);
+                    logger?.Error("Exception killing process: ({0})", ex.Message);
                     return false;
                 }
             }
@@ -89,7 +89,7 @@ namespace Bam.Net.CommandLine
         }
         
         private static PidFile _current;
-        static readonly object _pidFileLock = new object();
+        private static readonly object _pidFileLock = new object();
         public static PidFile Current
         {
             get { return _pidFileLock.DoubleCheckLock(ref _current, () => new PidFile()); }

@@ -25,11 +25,11 @@ namespace Bam.Net.Automation.Testing.Data.Wrappers
 
 		public TestExecutionWrapper(DaoRepository repository) : this()
 		{
-			this.Repository = repository;
+			this.DaoRepository = repository;
 		}
 
 		[JsonIgnore]
-		public DaoRepository Repository { get; set; }
+		public DaoRepository DaoRepository { get; set; }
 
 		[JsonIgnore]
 		public Dictionary<string, PropertyInfo> UpdatedXrefCollectionProperties { get; set; }
@@ -54,7 +54,7 @@ Bam.Net.Automation.Testing.Data.TestDefinition _testDefinition;
 			{
 				if (_testDefinition == null)
 				{
-					_testDefinition = (Bam.Net.Automation.Testing.Data.TestDefinition)Repository.GetParentPropertyOfChild(this, typeof(Bam.Net.Automation.Testing.Data.TestDefinition));
+					_testDefinition = (Bam.Net.Automation.Testing.Data.TestDefinition)DaoRepository.GetParentPropertyOfChild(this, typeof(Bam.Net.Automation.Testing.Data.TestDefinition));
 				}
 				return _testDefinition;
 			}
@@ -69,7 +69,7 @@ Bam.Net.Automation.Testing.Data.TestDefinition _testDefinition;
 			{
 				if (_testSuiteExecutionSummary == null)
 				{
-					_testSuiteExecutionSummary = (Bam.Net.Automation.Testing.Data.TestSuiteExecutionSummary)Repository.GetParentPropertyOfChild(this, typeof(Bam.Net.Automation.Testing.Data.TestSuiteExecutionSummary));
+					_testSuiteExecutionSummary = (Bam.Net.Automation.Testing.Data.TestSuiteExecutionSummary)DaoRepository.GetParentPropertyOfChild(this, typeof(Bam.Net.Automation.Testing.Data.TestSuiteExecutionSummary));
 				}
 				return _testSuiteExecutionSummary;
 			}

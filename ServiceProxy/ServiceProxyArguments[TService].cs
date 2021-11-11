@@ -12,12 +12,13 @@ namespace Bam.Net.ServiceProxy
             : this(request.MethodName, request.Arguments)
         {
             ServiceType = typeof(TService);
-            this.ApiArgumentProvider = request.Client.ApiArgumentProvider;
+            this.ApiArgumentProvider = request.ServiceProxyClient.ApiArgumentProvider;
         }
 
         public ServiceProxyArguments(string methodName, object[] arguments) 
             : base
             (
+                  typeof(TService),
                   typeof(TService).GetMethod(methodName, arguments.Select(arg => arg.GetType()).ToArray()), 
                   arguments
             )
@@ -26,9 +27,9 @@ namespace Bam.Net.ServiceProxy
             this.ApiArgumentProvider = DefaultApiArgumentProvider<TService>.Current;
         }
 
-        public ServiceProxyArguments(MethodInfo method, object[] arguments) : base(method, arguments)
+        public ServiceProxyArguments(MethodInfo method, object[] arguments) : base(typeof(TService), method, arguments)
         {
-            ServiceType = typeof(TService);
+            this.ServiceType = typeof(TService);
             this.ApiArgumentProvider = DefaultApiArgumentProvider<TService>.Current;
         }
 
@@ -38,13 +39,11 @@ namespace Bam.Net.ServiceProxy
             set;
         }
 
-        public Type ServiceType { get; set; }
-
         public Dictionary<string, object> NamedArguments
         {
             get
             {
-                return ApiArgumentProvider.GetNamedArguments(Method, Arguments);
+                return ApiArgumentProvider.GetNamedArguments(MethodInfo, Arguments);
             }
         }
 

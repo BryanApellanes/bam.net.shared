@@ -38,7 +38,7 @@ namespace Bam.Net.Encryption
             return dec.Value;
         }
 
-        public string Value
+        public override string Value
         {
             get
             {
@@ -53,7 +53,7 @@ namespace Bam.Net.Encryption
 
         protected string Decrypt()
         {
-            Plain = Decrypt(Cipher, Key, IV).Truncate(2);// truncate desalinates the value
+            Plain = Decrypt(Cipher, Key, IV).Truncate(2);// truncate desalinates the value // TODO: review this for validity, see also Encrypted.Salt
             return Plain;
         }
 

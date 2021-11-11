@@ -25,11 +25,11 @@ namespace Bam.Net.CoreServices.AccessControl.Data.Wrappers
 
 		public ResourceWrapper(DaoRepository repository) : this()
 		{
-			this.Repository = repository;
+			this.DaoRepository = repository;
 		}
 
 		[JsonIgnore]
-		public DaoRepository Repository { get; set; }
+		public DaoRepository DaoRepository { get; set; }
 
 		[JsonIgnore]
 		public Dictionary<string, PropertyInfo> UpdatedXrefCollectionProperties { get; set; }
@@ -53,7 +53,7 @@ System.Collections.Generic.List<Bam.Net.CoreServices.AccessControl.Data.Permissi
 			{
 				if (_permissions == null)
 				{
-					_permissions = Repository.ForeignKeyCollectionLoader<Bam.Net.CoreServices.AccessControl.Data.Resource, Bam.Net.CoreServices.AccessControl.Data.PermissionSpecification>(this).ToList();
+					_permissions = DaoRepository.ForeignKeyCollectionLoader<Bam.Net.CoreServices.AccessControl.Data.Resource, Bam.Net.CoreServices.AccessControl.Data.PermissionSpecification>(this).ToList();
 				}
 				return _permissions;
 			}

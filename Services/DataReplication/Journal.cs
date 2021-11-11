@@ -41,10 +41,7 @@ namespace Bam.Net.Services.DataReplication
         SystemPaths _paths;
         protected internal SystemPaths Paths
         {
-            get
-            {
-                return _paths;
-            }
+            get => _paths;
             set
             {
                 _journalDirectory = null;

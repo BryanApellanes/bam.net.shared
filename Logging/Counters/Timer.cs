@@ -106,7 +106,7 @@ namespace Bam.Net.Logging.Counters
             return timer.Duration;
         }
 
-        public static Timer Start(string name)
+        public new static Timer Start(string name)
         {
             return new Timer
             {

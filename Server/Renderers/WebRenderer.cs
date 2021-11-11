@@ -76,7 +76,10 @@ namespace Bam.Net.Server.Renderers
         
         public string Render(string templateName, object data)
         {
-            throw new NotImplementedException();
+            MemoryStream memoryStream = new MemoryStream();
+            Render(templateName, data, memoryStream);
+            memoryStream.Seek(0, SeekOrigin.Begin);
+            return memoryStream.ReadToEnd();
         }
 
     }

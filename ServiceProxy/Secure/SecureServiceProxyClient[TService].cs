@@ -222,9 +222,11 @@ namespace Bam.Net.ServiceProxy.Secure
                         try
                         {
                             ServiceProxyInvokeRequest<SecureChannel> invokeRequest = new ServiceProxyInvokeRequest<SecureChannel>()
-                            {
-                                MethodName = nameof(SecureChannel.InitSession)
-                            };
+                                {
+                                    MethodName = nameof(SecureChannel.InitSession)
+                                };
+
+
                            
                        /*     HttpWebRequest request = GetServiceProxyRequestMessage(ServiceProxyVerbs.GET, typeof(SecureChannel).Name, "InitSession", new Instant());
 
@@ -303,7 +305,7 @@ namespace Bam.Net.ServiceProxy.Secure
             if(className.Equals(nameof(SecureChannel), StringComparison.InvariantCultureIgnoreCase) && methodName.Equals(nameof(SecureChannel.Invoke), StringComparison.InvariantCultureIgnoreCase))
             {
                 // the target is the SecureChannel.Invoke method but we
-                // need the actual className and method that is in the parameters 
+                // need the actual className and method that is in the arguments 
                 // object
                 string actualClassName = (string)arguments[0];
                 string actualMethodName = (string)arguments[1];
@@ -312,7 +314,7 @@ namespace Bam.Net.ServiceProxy.Secure
                 args.ParseJson(jsonArgs);
                 if(TypeRequiresApiKey || MethodRequiresApiKey(actualMethodName))
                 {
-                    ApiKeyResolver.SetKeyToken(request, ApiArgumentProvider.GetStringToHash(actualClassName, actualMethodName, args[JsonArgsKey]));
+                    ApiKeyResolver.SetKeyToken(request, ApiArgumentProvider.GetStringToHash(actualClassName, actualMethodName, args[JsonArgsMemberName]));
                 }
             }
             return await base.ReceivePostResponseAsync(invokeRequest, request);

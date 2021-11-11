@@ -107,12 +107,18 @@ namespace Bam.Net.Data.Repositories
             {
                 return o.Uuid.Equals(Uuid) && o.Cuid.Equals(Cuid);
             }
-            return base.Equals(obj);
+
+            return false;
         }
 
         public override int GetHashCode()
         {
             return Uuid.GetHashCode() + Cuid.GetHashCode();
+        }
+
+        public override string ToString()
+        {
+            return this.ToJson(true);
         }
 
         public virtual RepoData Save(IRepository repo)
@@ -140,11 +146,8 @@ namespace Bam.Net.Data.Repositories
         /// <returns></returns>
         public T EnsurePersisted<T>(IRepository repo) where T: RepoData, new()
         {
-            T instance = repo.Retrieve<T>(Cuid);
-            if(instance == null)
-            {
-                instance = repo.Save((T)this);
-            }
+            T instance = repo.Retrieve<T>(Cuid) ?? repo.Save((T) this);
+
             return instance;
         }
         

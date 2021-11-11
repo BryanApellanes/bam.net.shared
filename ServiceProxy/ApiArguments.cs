@@ -40,7 +40,7 @@ namespace Bam.Net.ServiceProxy
             return string.Format("{0}.{1}.{2}", className, methodName, jsonArgs);
         }
 
-        public static string ArgumentsToJsonArgumentsObjectString(params object[] arguments)
+        public static string ArgumentsToJsonArgsMember(params object[] arguments)
         {
             string[] jsonArguments = ArgumentsToJsonArgumentsArray(arguments);
             string jsonArgumentsString = (new
@@ -70,20 +70,17 @@ namespace Bam.Net.ServiceProxy
         /// <summary>
         /// Returns an array of json strings that represent each parameter.
         /// </summary>
-        /// <param name="parameters"></param>
+        /// <param name="arguments"></param>
         /// <returns></returns>
-        public static string[] ArgumentsToJsonArgumentsArray(params object[] parameters)
+        public static string[] ArgumentsToJsonArgumentsArray(params object[] arguments)
         {
             // create a string array
-            string[] jsonParams = new string[parameters.Length];
+            string[] jsonArgs = new string[arguments.Length];
 
             JsonSerializerSettings settings = new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore };
             // for each parameter stringify it and shove it into the array
-            parameters.Each((o, i) =>
-            {
-                jsonParams[i] = parameters[i].ToJson(settings);
-            });
-            return jsonParams;
+            arguments.Each((o, i) => jsonArgs[i] = o.ToJson(settings));
+            return jsonArgs;
         }
     }
 }

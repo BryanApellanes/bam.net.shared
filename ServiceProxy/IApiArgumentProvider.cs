@@ -7,9 +7,6 @@ namespace Bam.Net.ServiceProxy
 {
     public interface IApiArgumentProvider<TService> : IApiArgumentProvider
     {
-        HashSet<string> Methods { get; }
-        Dictionary<string, object> GetNamedArguments(MethodInfo method, object[] arguments);
-        Dictionary<string, object> GetNamedArguments(string methodName, object[] arguments);
     }
 
     public interface IApiArgumentProvider
@@ -17,7 +14,15 @@ namespace Bam.Net.ServiceProxy
         string GetStringToHash(ExecutionRequest request);
         string GetStringToHash(string className, string methodName, string jsonArguments);
 
-        string ArgumentsToJsonArgumentsObjectString(params object[] arguments);
+        string ArgumentsToJsonArgsMember(params object[] arguments);
+
+        string[] ArgumentsToJsonArgumentsArray(params object[] arguments);
+
+        Type ServiceType { get; }
+
+        HashSet<string> Methods { get; }
+        Dictionary<string, object> GetNamedArguments(MethodInfo method, object[] arguments);
+        Dictionary<string, object> GetNamedArguments(string methodName, object[] arguments);
 
         /// <summary>
         /// Convert the specified type into a string or a json string if

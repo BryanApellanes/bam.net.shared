@@ -21,12 +21,14 @@ namespace Bam.Net.ServiceProxy
     public abstract class ServiceProxyClient
     {
         public const string JsonMediaType = "application/json; charset=utf-8";
-        public const string JsonArgsKey = "jsonArgs";
+        public const string JsonArgsMemberName = "jsonArgs";
+        public const string DefaultBaseAddress = "http://localhost:8080";
 
-        public ServiceProxyClient()
+        public ServiceProxyClient(Type serviceType, string baseAddress = DefaultBaseAddress)
             : base() 
         {
-            this.HttpClient = new HttpClient();
+            this.ServiceType = serviceType;
+            this.HttpClient = new HttpClient() { BaseAddress = new Uri(baseAddress) };
             this.Headers = new Dictionary<string, string>()
             {
                 { "User-Agent", UserAgents.ServiceProxyClient() }
@@ -39,14 +41,15 @@ namespace Bam.Net.ServiceProxy
             };
         }
 
-        public ServiceProxyClient(string baseAddress)
-            : this()
+        public ServiceProxyClient(HttpClient httpClient, Type serviceType): this(serviceType)
         {
-            this.BaseAddress = baseAddress;            
+            this.HttpClient = httpClient;
+            this.BaseAddress = httpClient.BaseAddress.ToString();
         }
 
         public event EventHandler<ServiceProxyInvokeEventArgs> PostStarted;
         public event EventHandler<ServiceProxyInvokeEventArgs> PostComplete;
+        public event EventHandler<ServiceProxyInvokeEventArgs> PostCanceled;
         public event EventHandler<ServiceProxyInvokeEventArgs> GetStarted;
         public event EventHandler<ServiceProxyInvokeEventArgs> GetComplete;
 
@@ -96,7 +99,6 @@ namespace Bam.Net.ServiceProxy
             }
         }
 
-        public event EventHandler<ServiceProxyInvokeEventArgs> PostCanceled;
         protected void OnPostCanceled(ServiceProxyInvokeEventArgs args)
         {
             if (PostCanceled != null)
@@ -125,6 +127,8 @@ namespace Bam.Net.ServiceProxy
             set;
         }
 
+        public Type ServiceType { get; internal set; }
+
         public string MethodUrlFormat
         {
             get;
@@ -142,6 +146,7 @@ namespace Bam.Net.ServiceProxy
             get;
             set;
         }
+
         IApiArgumentProvider _apiArgumentProvider;
         object _apiArgumentProviderLock = new object();
         public IApiArgumentProvider ApiArgumentProvider
@@ -188,11 +193,10 @@ namespace Bam.Net.ServiceProxy
             }
         }
 
-        protected HttpClient HttpClient { get; set; }
+        protected internal HttpClient HttpClient { get; set; }
 
         /// <summary>
-        /// The event that will occur if an exception occurs during
-        /// method invocation
+        /// The event that is raised when an exception occurs during method invocation.
         /// </summary>
         public event EventHandler<ServiceProxyInvokeEventArgs> InvocationException;
         protected void OnInvocationException(ServiceProxyInvokeEventArgs args)
@@ -218,20 +222,81 @@ namespace Bam.Net.ServiceProxy
             InvokeMethodCanceled?.Invoke(this, args);
         }
 
-        public async Task<TResult> ReceiveServiceMethodResponseAsync<TService, TResult>(string methodName, params object[] arguments)
+        public async Task<string> ReceivePostResponseAsync(string methodName, params object[] arguments)
         {
-            try
+            return await ReceivePostResponseAsync(new ServiceProxyInvokeRequest() { BaseAddress = BaseAddress, ServiceType = ServiceType, MethodName = methodName, Arguments = arguments });
+        }
+
+        public virtual async Task<string> ReceivePostResponseAsync(ServiceProxyInvokeRequest request)
+        {
+            HttpRequestMessage message = await CreateServiceProxyRequestMessageAsync(ServiceProxyVerbs.Post, request.ClassName, request.MethodName, "nocache=".RandomLetters(4));
+            return await ReceivePostResponseAsync(request, message);
+        }
+
+        protected virtual async Task<string> ReceivePostResponseAsync(ServiceProxyInvokeRequest invokeRequest, HttpRequestMessage request)
+        {
+            ServiceProxyInvokeEventArgs args = new ServiceProxyInvokeEventArgs(invokeRequest);
+            args.Client = this;
+
+            OnPosting(args);
+            string result = string.Empty;
+            if (args.CancelInvoke)
             {
-                ServiceProxyInvokeRequest<TService> request = new ServiceProxyInvokeRequest<TService>() { MethodName = methodName, Arguments = arguments };
-                return await request.ExecuteAsync<TService, TResult>(this);
+                OnPostCanceled(args);
             }
-            catch (Exception ex)
+            else
             {
-                ServiceProxyInvokeEventArgs<TService> args = new ServiceProxyInvokeEventArgs<TService>() { ClassName = typeof(TService).Name, MethodName = methodName, Arguments = arguments };
-                args.Exception = ex;
-                OnInvocationException(args);
+                string jsonArgsMember = ApiArgumentProvider.ArgumentsToJsonArgsMember(args.Arguments);
+                Uri uri = new Uri(args.BaseAddress);
+                if (HttpClient.BaseAddress == null || !HttpClient.BaseAddress.ToString().Equals(uri.ToString(), StringComparison.InvariantCultureIgnoreCase))
+                {
+                    HttpClient.BaseAddress = uri;
+                }
+                SetHttpArgsContent(jsonArgsMember, request);
+                HttpResponseMessage response = await HttpClient.SendAsync(request);
+                args.RequestMessage = request;
+                args.ResponseMessage = response;
+                result = await response.Content.ReadAsStringAsync();
+                response.EnsureSuccessStatusCode();
+                OnPosted(args);
             }
-            return default;
+            return result;
+        }
+
+        public async Task<string> ReceiveGetResponseAsync(string methodName, params object[] arguments)
+        {
+            MethodInfo methodInfo = ServiceType.GetMethod(methodName, arguments.Select(argument => argument.GetType()).ToArray());
+            return await ReceiveGetResponseAsync(new ServiceProxyInvokeRequest { BaseAddress = BaseAddress, ClassName = ServiceType.Name, MethodName = methodName, Arguments = arguments });
+        }
+
+        public virtual async Task<string> ReceiveGetResponseAsync(ServiceProxyInvokeRequest request)
+        {
+            ServiceProxyInvokeEventArgs args = request.CopyAs<ServiceProxyInvokeEventArgs>();
+            args.Client = this;
+
+            OnGetStarted(args);
+            string result = string.Empty;
+            if (args.CancelInvoke)
+            {
+                OnGetCanceled(args);
+            }
+            else
+            {
+                HttpRequestMessage requestMessage = await CreateServiceProxyRequestMessageAsync(ServiceProxyVerbs.Get, request.MethodName, request.Arguments);
+                HttpResponseMessage response = await HttpClient.SendAsync(requestMessage);
+                args.RequestMessage = requestMessage;
+                args.ResponseMessage = response;
+                result = await response.Content.ReadAsStringAsync();
+                response.EnsureSuccessStatusCode();
+            }
+            return result;
+        }
+
+        protected internal async Task<HttpRequestMessage> CreateServiceProxyRequestMessageAsync(ServiceProxyVerbs verb, string methodName, params object[] arguments)
+        {
+            Dictionary<string, object> namedArguments = ApiArgumentProvider.GetNamedArguments(methodName, arguments);
+            string queryString = ApiArgumentProvider.ArgumentsToQueryString(namedArguments);
+            return await CreateServiceProxyRequestMessageAsync(verb, ApiArgumentProvider.ServiceType.Name, methodName, queryString);
         }
 
         protected virtual internal Task<HttpRequestMessage> CreateServiceProxyRequestMessageAsync(ServiceProxyVerbs verb, string className, string methodName, string queryStringParameters = "")
@@ -246,6 +311,11 @@ namespace Bam.Net.ServiceProxy
                 request.Headers.Add(key, Headers[key]);
             });
             return Task.FromResult(request);
+        }
+
+        protected internal virtual void SetHttpArgsContent(string jsonArgsMemberString, HttpRequestMessage request)
+        {
+            request.Content = new StringContent(jsonArgsMemberString, Encoding.UTF8, JsonMediaType);
         }
 
         public abstract Task<string> InvokeServiceMethodAsync(string baseAddress, string className, string methodName, object[] arguments);

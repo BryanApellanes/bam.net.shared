@@ -41,7 +41,7 @@ namespace Bam.Net.Encryption
         /// <param name="value">The value.</param>
         /// <param name="base64EncodedKey">The base64 encoded key.</param>
         /// <param name="base64EncodedIV">The base64 encoded iv.</param>
-        /// <returns></returns>
+        /// <returns>Base64 encoded encrypted value</returns>
         public static string Encrypt(string value, string base64EncodedKey, string base64EncodedIV)
         {
             AesManaged aes = new AesManaged

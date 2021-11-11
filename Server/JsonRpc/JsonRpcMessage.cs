@@ -34,7 +34,7 @@ namespace Bam.Net.Server.JsonRpc
 
         /// <summary>
         /// Parse the Json as an RpcMessage the 
-        /// specific type of the message will depend
+        /// specific type of the message depends
         /// on the json itself as described here http://www.jsonrpc.org/specification
         /// </summary>
         /// <returns></returns>

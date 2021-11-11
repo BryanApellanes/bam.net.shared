@@ -15,11 +15,10 @@ namespace Bam.Net.Services
         public VaultService(VaultDatabase db)
         {
             Database = db;
-            
         }
 
         [Local]
-        public VaultDatabase Database { get; set; }
+        public new VaultDatabase Database { get; set; }
 
         public override object Clone()
         {

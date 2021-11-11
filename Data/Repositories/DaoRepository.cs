@@ -31,6 +31,7 @@ namespace Bam.Net.Data.Repositories
             Database = DataProvider.Current.GetSysDatabaseFor(this);
             Logger = Log.Default;
         }
+
         /// <summary>
         /// Create an instance of DaoRepository
         /// </summary>

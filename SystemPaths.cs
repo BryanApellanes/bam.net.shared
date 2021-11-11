@@ -11,24 +11,21 @@ namespace Bam.Net
     /// <summary>
     /// A class referencing all file system paths of importance to the bam system.
     /// </summary>
-    [Obsolete("SystemPaths is deprecated; use BamHome instead if possible.  Otherwise move the required path to BamHome or BamProfile.")]
     public class SystemPaths
     {
         public SystemPaths()
         {
             Root = BamHome.Path;
             Public = BamHome.PublicPath;
-            SystemDrive = Paths.SystemDrive;
-            WindowsBamDrive = Paths.WindowsDrive;
-            Apps = Paths.Apps;
-            Local = Paths.Local;
-            Content = Paths.Content;
-            Conf = Paths.Conf;
-            Sys = Paths.Sys;
-            Generated = Paths.Generated;
-            Proxies = Paths.Proxies;
-            Logs = Paths.Logs;
-            Tools = Paths.Tools;
+            SystemDrive = BamHome.SystemRoot;
+            Apps = BamHome.Apps;
+            Local = BamHome.Local;
+            Content = BamHome.Content;
+            Conf = BamHome.Config;
+            Generated = BamProfile.GeneratedPath;
+            Proxies = BamProfile.ProxiesPath;
+            Logs = BamProfile.LogsPath;
+            Tools = BamHome.Tools;
         }
 
         public static SystemPaths Get(IDataDirectoryProvider dataDirectoryProvider)
@@ -52,7 +49,6 @@ namespace Bam.Net
         public string Root { get; set; }
         public string Public { get; set; }
         public string SystemDrive { get; set; }
-        public string WindowsBamDrive { get; set; }
 
         public string Apps { get; set; }
         public string Local { get; set; }

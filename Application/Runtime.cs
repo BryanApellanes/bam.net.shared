@@ -16,6 +16,11 @@ namespace Bam.Net.Application
             return false;
         }
 
+        public override int GetHashCode()
+        {
+            return Name.GetHashCode();
+        }
+
         public override string ToString()
         {
             return Name;

@@ -100,37 +100,6 @@ namespace Bam.Net.ServiceProxy.Secure
                 _config.Save();
             }
         }
-              
-        public string TestDecrypt(string cipher, string b64Key, string b64IV)
-        {
-            string result = "";
-            try
-            {
-                result = Aes.Decrypt(cipher, b64Key, b64IV);
-            }
-            catch (Exception ex)
-            {
-                result = ex.Message;
-            }
-
-            return result;
-        }
-
-        public string TestSessionKey(string cipher)
-        {
-            string result = "";
-            try
-            {
-                SecureSession session = SecureSession.Get(HttpContext);
-                result = session.Decrypt(cipher);
-            }
-            catch (Exception ex)
-            {
-                result = ex.Message;
-            }
-
-            return result;
-        }
 
         /// <summary>
         /// Establish a secure session

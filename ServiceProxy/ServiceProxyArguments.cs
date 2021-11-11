@@ -16,15 +16,18 @@ namespace Bam.Net.ServiceProxy
     /// </summary>
     public class ServiceProxyArguments
     {
-        public ServiceProxyArguments(object[] arguments)
+        public ServiceProxyArguments(ServiceProxyInvokeRequest invokeRequest)
         {
-            this.Arguments = arguments;
-            this.ApiArgumentProvider = DefaultApiArgumentProvider.Current;
+            this.ServiceType = invokeRequest.ServiceType;
+            this.MethodName = invokeRequest.MethodName;
+            this.Arguments = invokeRequest.Arguments;
+            this.MethodInfo = GetMethodInfo();
         }
 
-        public ServiceProxyArguments(MethodInfo method, object[] arguments)
+        public ServiceProxyArguments(Type serviceType, MethodInfo method, object[] arguments)
         {
-            this.Method = method;
+            this.ServiceType = serviceType;
+            this.MethodInfo = method;
             this.Arguments = arguments;
             this.ApiArgumentProvider = DefaultApiArgumentProvider.Current;
         }
@@ -35,14 +38,16 @@ namespace Bam.Net.ServiceProxy
             set;
         }
 
+        public Type ServiceType { get; set; }
+
         string _methodName;
         public string MethodName
         {
             get
             {
-                if (string.IsNullOrEmpty(_methodName) && Method != null)
+                if (string.IsNullOrEmpty(_methodName) && MethodInfo != null)
                 {
-                    _methodName = Method.Name;
+                    _methodName = MethodInfo.Name;
                 }
                 return _methodName;
             }
@@ -52,8 +57,7 @@ namespace Bam.Net.ServiceProxy
             }
         }
 
-
-        public MethodInfo Method
+        public MethodInfo MethodInfo
         {
             get;
             set;
@@ -79,6 +83,21 @@ namespace Bam.Net.ServiceProxy
             {
                 return NumberedQueryStringParameters?.Length > 2048 ? ServiceProxyVerbs.Post : ServiceProxyVerbs.Get;
             }
+        }
+
+        public virtual MethodInfo GetMethodInfo()
+        {
+            return ServiceType.GetMethod(MethodName, Arguments.Select(argument => argument.GetType()).ToArray());
+        }
+
+        public string GetJsonArgsMember()
+        {
+            return this.ApiArgumentProvider.ArgumentsToJsonArgsMember(Arguments);
+        }
+
+        public string[] GetJsonArgumentsArray()
+        {
+            return this.ApiArgumentProvider.ArgumentsToJsonArgumentsArray(Arguments);
         }
     }
 }

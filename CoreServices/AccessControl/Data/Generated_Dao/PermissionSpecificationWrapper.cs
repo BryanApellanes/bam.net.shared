@@ -25,11 +25,11 @@ namespace Bam.Net.CoreServices.AccessControl.Data.Wrappers
 
 		public PermissionSpecificationWrapper(DaoRepository repository) : this()
 		{
-			this.Repository = repository;
+			this.DaoRepository = repository;
 		}
 
 		[JsonIgnore]
-		public DaoRepository Repository { get; set; }
+		public DaoRepository DaoRepository { get; set; }
 
 		[JsonIgnore]
 		public Dictionary<string, PropertyInfo> UpdatedXrefCollectionProperties { get; set; }
@@ -54,7 +54,7 @@ Bam.Net.CoreServices.AccessControl.Data.Resource _resource;
 			{
 				if (_resource == null)
 				{
-					_resource = (Bam.Net.CoreServices.AccessControl.Data.Resource)Repository.GetParentPropertyOfChild(this, typeof(Bam.Net.CoreServices.AccessControl.Data.Resource));
+					_resource = (Bam.Net.CoreServices.AccessControl.Data.Resource)DaoRepository.GetParentPropertyOfChild(this, typeof(Bam.Net.CoreServices.AccessControl.Data.Resource));
 				}
 				return _resource;
 			}

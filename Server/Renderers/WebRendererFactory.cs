@@ -95,17 +95,17 @@ namespace Bam.Net.Server.Renderers
         /// The event that fires before resolving the renderer for the current request
         /// </summary>
         public event Action<WebRendererFactory, IRequest> CreatingRenderer;
+        
         protected void OnCreatingRenderer(IRequest request)
         {
             CreatingRenderer?.Invoke(this, request);
         }
+        
         public event Action<WebRendererFactory, IRequest, IWebRenderer> CreatedRenderer;
+        
         protected void OnCreatedRenderer(IRequest request, IWebRenderer renderer)
         {
-            if (CreatedRenderer != null)
-            {
-                CreatedRenderer(this, request, renderer);
-            }
+            CreatedRenderer?.Invoke(this, request, renderer);
         }
 
         protected internal string GetContentType(IWebRenderer renderer, IRequest webRequest)

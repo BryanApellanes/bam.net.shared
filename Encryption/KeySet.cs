@@ -167,7 +167,7 @@ namespace Bam.Net.Encryption
 
         private static FileInfo GetFile(string name)
         {
-            return new FileInfo(Path.Combine(Paths.AppData, $"{name}.keyset"));
+            return new FileInfo(Path.Combine(BamHome.DataPath, $"{name}.keyset"));
         }
         
         private void Init()

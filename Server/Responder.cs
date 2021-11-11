@@ -108,16 +108,10 @@ namespace Bam.Net.Server
         }
 
         Fs _serverRoot;
-        public Fs ServerRoot
+        public virtual Fs ServerRoot
         {
-            get
-            {
-                return _serverRoot ?? BamConf.Fs;
-            }
-            protected set
-            {
-                _serverRoot = value;
-            }
+            get => _serverRoot ?? BamConf.Fs;
+            protected set => _serverRoot = value;
         }
 
         /// <summary>

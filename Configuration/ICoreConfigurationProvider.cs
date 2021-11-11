@@ -5,7 +5,6 @@ namespace Bam.Net.CoreServices
 {
     public interface ICoreConfigurationProvider: IConfigurationProvider
     {
-        Dictionary<string, string> GetApplicationConfiguration(string applicationName = null, string configurationName = null);
         Dictionary<string, string> GetCommonConfiguration();
         ApplicationConfiguration GetConfiguration(string applicationName = null, string machineName = null, string configurationName = null);
         Dictionary<string, string> GetMachineConfiguration(string machineName, string configurationName = null);

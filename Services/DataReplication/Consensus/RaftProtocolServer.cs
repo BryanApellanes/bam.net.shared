@@ -61,7 +61,6 @@ namespace Bam.Net.Services.DataReplication.Consensus
                         Logger.AddEntry("Invalid raft request received: {0}", request?.ToString() ?? "[null]");
                         throw new InvalidOperationException(
                             $"Invalid raft request received: {request?.ToString() ?? "[null]"}");
-                        break;
                     default:
                         break;
                 }

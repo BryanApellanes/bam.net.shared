@@ -11,8 +11,8 @@ using Bam.Net.Incubation;
 namespace Bam.Net.ServiceProxy.Secure
 {
     /// <summary>
-    /// An ExecutionRequest that will encrypt the result
-    /// when executed
+    /// An ExecutionRequest that encrypts the result
+    /// when executed.
     /// </summary>
     public class SecureExecutionRequest: ExecutionRequest
     {

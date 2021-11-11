@@ -23,11 +23,11 @@ namespace Bam.Net.Application.Network
                 options = "-r";
             }
 
-            OutLineFormat("If your local public key is not in the ~/.ssh/authorized_keys file of the remote, the password prompt will prevent success, and this command will timeout in 60 seconds", ConsoleColor.Yellow);
+            Message.PrintLine("If your local public key is not in the ~/.ssh/authorized_keys file of the remote, the password prompt will prevent success, and this command will timeout in 60 seconds", ConsoleColor.Yellow);
             ProcessOutput output = Scp.Run(options, localData.FullName, $"{UserName}@{host}:{localPathOnRemote}");
             
-            OutLineFormat("*** out ***\r\n{0}\r\n*** / out ***", ConsoleColor.Cyan, output.StandardOutput);
-            OutLineFormat("*** err ***\r\n{0}\r\n*** / err ***", ConsoleColor.Yellow, output.StandardError);
+            Message.PrintLine("*** out ***\r\n{0}\r\n*** / out ***", ConsoleColor.Cyan, output.StandardOutput);
+            Message.PrintLine("*** err ***\r\n{0}\r\n*** / err ***", ConsoleColor.Yellow, output.StandardError);
         }
 
         public void Delete(string host, string localPathOnRemote)

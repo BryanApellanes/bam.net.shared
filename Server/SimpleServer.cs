@@ -7,10 +7,10 @@ using System.Linq;
 
 namespace Bam.Net.Server
 {
-    public abstract class SimpleServer<R> where R: IResponder
+    public abstract class SimpleServer<TResponder> where TResponder: IResponder
     {
         HttpServer _server;
-        public SimpleServer(R responder, ILogger logger)
+        public SimpleServer(TResponder responder, ILogger logger)
         {
             Responder = responder;
             Logger = logger ?? Log.Default;
@@ -31,7 +31,7 @@ namespace Bam.Net.Server
         /// <summary>
         /// The responder
         /// </summary>
-        public R Responder { get; set; }
+        public TResponder Responder { get; set; }
         
         /// <summary>
         /// The logger

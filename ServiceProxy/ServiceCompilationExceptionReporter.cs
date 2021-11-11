@@ -1,4 +1,5 @@
 using System;
+using Bam.Net.CommandLine;
 using Bam.Net.Testing;
 
 namespace Bam.Net.ServiceProxy
@@ -16,14 +17,14 @@ namespace Bam.Net.ServiceProxy
         }
 
         private static Action<object, ServiceCompilationEventArgs> _defaultReporter;
-        private static object _defaultReporterLock = new object();
+        private static readonly object _defaultReporterLock = new object();
         public static Action<object, ServiceCompilationEventArgs> DefaultReporter
         {
             get 
             { 
                 return _defaultReporterLock.DoubleCheckLock(ref _defaultReporter, () =>
                 {
-                    return (o, args) => OutLineFormat("*** APP=({0} [{1}]) Service Compilation Exception ***\r\n\r\n{2}\r\n\r\n{3}", args?.AppConf?.Name, args?.AppConf?.DisplayName, args?.Exception?.Message, args?.Exception?.StackTrace);
+                    return (o, args) => Message.PrintLine("*** APP=({0} [{1}]) Service Compilation Exception ***\r\n\r\n{2}\r\n\r\n{3}", args?.AppConf?.Name, args?.AppConf?.DisplayName, args?.Exception?.Message, args?.Exception?.StackTrace);
                 }); 
             }
         }

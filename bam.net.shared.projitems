@@ -721,6 +721,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\IApplicationServiceRegistryResolver.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\IServiceCompilationExceptionReporter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\JsWebServiceProxyGenerator.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\Secure\SecureServiceProxyInvokeRequest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\ServiceCompilationEventArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\ApplicationServiceSourceResolver.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\IContextCloneable.cs" />
@@ -2004,7 +2005,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Month.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)NamedThread.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)NetworkExtensions.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Paths.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ProcessInfo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ProcessMode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Profiguration\AppSettings.cs" />

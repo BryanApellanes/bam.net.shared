@@ -177,7 +177,11 @@ namespace Bam.Net
                     _threads[name].Abort();
                     _threads[name].Join(3000);
                 }
-                catch { }
+                catch
+                {
+                    // ignored
+                }
+
                 _threads[name] = thread;
             }
             else
@@ -200,7 +204,10 @@ namespace Bam.Net
                         victim.Abort();
                         victim.Join(joinBlock);
                     }
-                    catch { }
+                    catch
+                    {
+                        // ignored
+                    }
                 }
                 _threads.Remove(name);
             }

@@ -17,6 +17,7 @@ namespace Bam.Net.Server.JsonRpc
         {
             this.RpcParams = new JsonRpcParameters();
         }
+        
         [Exclude]
         public object Clone()
         {

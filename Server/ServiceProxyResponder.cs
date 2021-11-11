@@ -18,11 +18,9 @@ using Bam.Net.Web;
 using Bam.Net.Server.Renderers;
 using Bam.Net.Presentation.Html;
 using Bam.Net.Configuration;
-
 using System.Threading.Tasks;
 using Bam.Net.Application;
 using Bam.Net.Presentation;
-//using Bam.Net.Schema.Org.Things;
 using Bam.Net.Server.PathHandlers;
 using Bam.Net.Services;
 
@@ -366,7 +364,7 @@ namespace Bam.Net.Server
         /// this responder is last in line.
         /// </summary>
         /// <param name="context"></param>
-        ///// <returns></returns>
+        /// <returns></returns>
         public override bool MayRespond(IHttpContext context)
         {
             return true;

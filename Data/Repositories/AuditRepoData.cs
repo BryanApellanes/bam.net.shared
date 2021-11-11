@@ -8,7 +8,6 @@ using System.Text;
 using System.Threading.Tasks;
 using NCuid;
 using Bam.Net.Data;
-//using Bam.Net.Data.Dynamic;
 
 namespace Bam.Net.Data.Repositories
 {
@@ -45,7 +44,7 @@ namespace Bam.Net.Data.Repositories
         /// <param name="modifiedBy"></param>
         /// <param name="propertyNames"></param>
         /// <returns></returns>
-        public T EnsureSingle<T>(IRepository repo, string modifiedBy, params string[] propertyNames)  where T: AuditRepoData, new()
+        public new T EnsureSingle<T>(IRepository repo, string modifiedBy, params string[] propertyNames)  where T: AuditRepoData, new()
         {
             T instance = QueryFirstOrDefault<T>(repo, propertyNames);
             if (instance == null) // wasn't saved/found, should reset Id so the repo will Create

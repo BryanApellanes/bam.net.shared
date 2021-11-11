@@ -10,30 +10,6 @@ namespace Bam.Net.ServiceProxy
     public class DefaultApiArgumentProvider<TService> : DefaultApiArgumentProvider, IApiArgumentProvider<TService>
     {
 
-        HashSet<string> _methods;
-        object _methodsLock = new object();
-        public HashSet<string> Methods
-        {
-            get
-            {
-                return _methodsLock.DoubleCheckLock(ref _methods, () => new HashSet<string>(ServiceProxySystem.GetProxiedMethods(typeof(TService)).Select(m => m.Name).ToArray()));
-            }
-        }
-
-        public Dictionary<string, object> GetNamedArguments(string methodName, object[] parameters)
-        {
-            if (!Methods.Contains(methodName))
-            {
-                throw Args.Exception<InvalidOperationException>("{0} is not proxied from type {1}", methodName, typeof(TService).Name);
-            }
-
-            MethodInfo method = typeof(TService).GetMethod(methodName, parameters.Select(obj => obj.GetType()).ToArray());
-
-            Dictionary<string, object> result = GetNamedArguments(method, parameters);
-
-            return result;
-        }
-
         static DefaultApiArgumentProvider<TService> _current;
         static object _currentLock = new object();
         public new static DefaultApiArgumentProvider<TService> Current
@@ -47,9 +23,19 @@ namespace Bam.Net.ServiceProxy
 
     public class DefaultApiArgumentProvider : IApiArgumentProvider
     {
-        public string ArgumentsToJsonArgumentsObjectString(params object[] arguments)
+        public Type ServiceType { get; set; }
+        HashSet<string> _methods;
+        object _methodsLock = new object();
+        public HashSet<string> Methods
         {
-            return ApiArguments.ArgumentsToJsonArgumentsObjectString(arguments);
+            get
+            {
+                return _methodsLock.DoubleCheckLock(ref _methods, () => new HashSet<string>(ServiceProxySystem.GetProxiedMethods(ServiceType).Select(m => m.Name).ToArray()));
+            }
+        }
+        public string ArgumentsToJsonArgsMember(params object[] arguments)
+        {
+            return ApiArguments.ArgumentsToJsonArgsMember(arguments);
         }
 
         public string GetStringToHash(ExecutionRequest request)
@@ -81,6 +67,20 @@ namespace Bam.Net.ServiceProxy
              {
                  return WebUtility.UrlEncode(value.ToJson());
              }
+        }
+
+        public Dictionary<string, object> GetNamedArguments(string methodName, object[] parameters)
+        {
+            if (!Methods.Contains(methodName))
+            {
+                throw Args.Exception<InvalidOperationException>("{0} is not proxied from type {1}", methodName, ServiceType.Name);
+            }
+
+            MethodInfo method = ServiceType.GetMethod(methodName, parameters.Select(obj => obj.GetType()).ToArray());
+
+            Dictionary<string, object> result = GetNamedArguments(method, parameters);
+
+            return result;
         }
 
         public Dictionary<string, object> GetNamedArguments(MethodInfo method, object[] parameters)
@@ -133,6 +133,11 @@ namespace Bam.Net.ServiceProxy
             }
 
             return result.ToString();
+        }
+
+        public string[] ArgumentsToJsonArgumentsArray(params object[] arguments)
+        {
+            return ApiArguments.ArgumentsToJsonArgumentsArray(arguments);
         }
 
         static DefaultApiArgumentProvider _current;

@@ -268,7 +268,7 @@ namespace Bam.Net.Server
         {
             OnCommonTemplateRendererInitializing();
 
-            CommonTemplateManager = new CommonDustRenderer(this);
+            CommonTemplateManager = new CommonHandlebarsRenderer(this);
 
             OnCommonTemplateRendererInitialized();
         }

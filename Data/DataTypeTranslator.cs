@@ -6,8 +6,13 @@ using System.Threading.Tasks;
 
 namespace Bam.Net.Data
 {
+    /// <summary>
+    /// A class for converting between database type string to instance of Type.
+    /// </summary>
     public class DataTypeTranslator : IDataTypeTranslator
     {
+
+
         public virtual Type TypeFromDbDataType(string dbDataType)
         {
             return TypeFromDataType(TranslateDataType(dbDataType));

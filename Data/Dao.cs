@@ -997,7 +997,7 @@ namespace Bam.Net.Data
 
         /// <summary>
         /// Returns the connection name for the specified type or the proxied
-        /// name if the connection name for the specified type has been proxied
+        /// name if the connection name for the specified type is proxied.
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
@@ -1175,52 +1175,38 @@ namespace Bam.Net.Data
             }
         }
         
-        public virtual ulong? GetId()
-        {
-            object value = PrimaryKey;
-            if (value != null && value != DBNull.Value)
-            {
-                if (value.IsNumber() || value is string)
-                {
-                    _id = new ulong?(Convert.ToUInt64(value));
-                }
-            }
-
-            return _id;
-        }
-
         public virtual void SetId(ulong? id)
         {
             _id = id;
         }
         
-        // TODO: deprecate this property in favor of GetId() method
-        // TODO: update code generation templates to address the above
-        [Obsolete("Use GetId() instead")]
+        public virtual ulong? GetId()
+        {
+            object value = PrimaryKey;
+            if (value != null && value != DBNull.Value)
+            {
+                try
+                {
+                    if (value.IsNumber() || value is string)
+                    {
+                        _id = new ulong?(Convert.ToUInt64(value));
+                    }                        
+                }
+                catch (Exception ex)
+                {
+                    Type type = GetType();
+                    Assembly assembly = type.Assembly;
+                    Log.AddEntry("Exception getting IdValue for Dao instance of type ({0}.{1}) in Assembly ({2}) with hash (sha256) ({3})", ex, type.Namespace, type.Name, assembly.FullName, assembly.GetFileInfo().Sha256());
+                }
+            }
+
+            return _id;
+        }
+        
         [Exclude]
         public ulong? IdValue
         {
-            get
-            {
-                object value = PrimaryKey;
-                if (value != null && value != DBNull.Value)
-                {
-                    try
-                    {
-                        if (value.IsNumber() || value is string)
-                        {
-                            _id = new ulong?(Convert.ToUInt64(value));
-                        }                        
-                    }
-                    catch (Exception ex)
-                    {
-                        Type type = GetType();
-                        Assembly assembly = type.Assembly;
-                        Log.AddEntry("Exception getting IdValue for Dao instance of type ({0}.{1}) in Assembly ({2}) with hash (sha256) ({3})", ex, type.Namespace, type.Name, assembly.FullName, assembly.GetFileInfo().Sha256());
-                    }
-                }
-                return _id;
-            }
+            get => GetId();
             set => _id = value;
         }
 

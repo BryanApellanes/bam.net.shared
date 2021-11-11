@@ -13,7 +13,6 @@ namespace Bam.Net.Server.JsonRpc
     {
         public object Id { get; set; }
 
-        public IHttpContext HttpContext { get; set; }
         /// <summary>
         /// Execute the request and return the response
         /// </summary>
@@ -25,17 +24,17 @@ namespace Bam.Net.Server.JsonRpc
             return response;
         }
 
-        public static JsonRpcRequest Parse(string json)
+        public new static JsonRpcRequest Parse(string json)
         {
             return json.FromJson<JsonRpcRequest>();
         }
 
-        public static JsonRpcRequest Create<T>(Incubator incubator, string methodName, params object[] parameters)
+        public new static JsonRpcRequest Create<T>(Incubator incubator, string methodName, params object[] parameters)
         {
             return Create<T>(incubator, (object)Guid.NewGuid().ToString(), methodName, parameters);            
         }
 
-        public static JsonRpcRequest Create<T>(string methodName, params object[] parameters)
+        public new static JsonRpcRequest Create<T>(string methodName, params object[] parameters)
         {
             return Create<T>((object)Guid.NewGuid().ToString(), methodName, parameters);
         }
@@ -50,7 +49,7 @@ namespace Bam.Net.Server.JsonRpc
             return Create(incubator, id, typeof(T).GetMethod(methodName, parameters.Select(p => p.GetType()).ToArray()), parameters);
         }
 
-        public static JsonRpcRequest Create(MethodInfo method, params object[] parameters)
+        public new static JsonRpcRequest Create(MethodInfo method, params object[] parameters)
         {
             return Create(Guid.NewGuid().ToString(), method, parameters);
         }
@@ -60,7 +59,7 @@ namespace Bam.Net.Server.JsonRpc
             return Create(Incubator.Default, id, method, parameters);
         }
 
-        public static JsonRpcRequest Create(Incubator incubator, MethodInfo method, params object[] parameters)
+        public new static JsonRpcRequest Create(Incubator incubator, MethodInfo method, params object[] parameters)
         {
             return Create(incubator, (object)Guid.NewGuid().ToString(), method, parameters);            
         }

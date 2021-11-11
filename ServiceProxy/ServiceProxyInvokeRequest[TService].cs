@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -9,16 +10,24 @@ namespace Bam.Net.ServiceProxy
     {
         public ServiceProxyInvokeRequest()
         {
-            this.Type = typeof(TService);
+            this.ServiceType = typeof(TService);
         }
 
-        public new ServiceProxyClient<TService> Client
+        public ServiceProxyInvokeRequest(HttpClient httpClient): this()
+        {
+            this.ServiceProxyClient = new ServiceProxyClient<TService>(httpClient);
+        }
+
+        public ServiceProxyInvokeRequest(ServiceProxyClient<TService> client) : this()
+        {
+            this.ServiceProxyClient = client;
+        }
+
+        public new ServiceProxyClient<TService> ServiceProxyClient
         {
             get;
             set;
         }
-
-        public Type Type { get; set; }
 
         string _className;
         public override string ClassName 
@@ -27,7 +36,7 @@ namespace Bam.Net.ServiceProxy
             {
                 if(string.IsNullOrEmpty(_className))
                 {
-                    _className = Type?.Name;
+                    _className = ServiceType?.Name;
                 }
                 return _className;
             }
@@ -37,22 +46,8 @@ namespace Bam.Net.ServiceProxy
             }
         }
 
-        string _queryStringArguments;
-        object _queryStringArgumentsLock = new object();
-        public override string QueryStringArguments
-        {
-            get 
-            {
-                return _queryStringArgumentsLock.DoubleCheckLock(ref _queryStringArguments, () => new ServiceProxyArguments<TService>(MethodName, Arguments).QueryStringArguments);
-            }
-            set 
-            {
-                _queryStringArguments = value;
-            }
-        }
-
         ServiceProxyArguments<TService> _serviceProxyArguments;
-        public ServiceProxyArguments<TService> ServiceProxyArguments
+        public new ServiceProxyArguments<TService> ServiceProxyArguments
         {
             get
             {
@@ -72,7 +67,7 @@ namespace Bam.Net.ServiceProxy
 
         public async Task<string> ExecuteAsync(ServiceProxyClient<TService> client)
         {
-            this.Client = client;
+            this.ServiceProxyClient = client;
             if (ServiceProxyArguments.Verb == ServiceProxyVerbs.Post)
             {
                 return await client.ReceivePostResponseAsync(this);

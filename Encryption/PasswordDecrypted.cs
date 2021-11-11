@@ -27,13 +27,7 @@ namespace Bam.Net.Encryption
             return d.Data;
         }
 
-        public string Value
-        {
-            get
-            {
-                return Data;
-            }
-        }
+        public override string Value => Data;
 
         public string Decrypt(string password)
         {

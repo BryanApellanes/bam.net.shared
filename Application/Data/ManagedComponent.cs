@@ -9,8 +9,6 @@ namespace Bam.Net.Application.Data
     {
         public string DomId { get; set; }
 
-        public string Name { get; set; }
-
         public virtual List<ManagedPage> Pages { get; set; }
 
         public virtual List<ManagedComponentIdentifier> ChildComponents { get; set; }

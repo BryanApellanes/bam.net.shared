@@ -11,7 +11,5 @@ namespace Bam.Net.Data
 {
 	public class OracleCredentials : DatabaseCredentials
 	{
-		public string UserId { get; set; }
-		public string Password { get; set; }
 	}
 }

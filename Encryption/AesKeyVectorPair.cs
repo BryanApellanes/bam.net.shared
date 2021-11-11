@@ -27,7 +27,7 @@ namespace Bam.Net.Encryption
             {
                 if (_key == null)
                 {
-                    string fileName = Path.Combine(Paths.Local, "appkey.aes");
+                    string fileName = Path.Combine(BamHome.Local, "appkey.aes");
                     if (File.Exists(fileName))
                     {
                         _key = AesKeyVectorPair.Load(fileName);

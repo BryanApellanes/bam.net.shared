@@ -90,7 +90,7 @@ namespace Bam.Net.ServiceProxy
                 HttpArgs args = new HttpArgs();
                 args.ParseJson(execRequest.InputString);
                 
-                execRequest.JsonArgs = args[ServiceProxyClient.JsonArgsKey];
+                execRequest.JsonArgs = args[ServiceProxyClient.JsonArgsMemberName];
                 execRequest.Instance.Property("Logger", execRequest.Logger);
             }
         }

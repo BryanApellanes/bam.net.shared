@@ -92,7 +92,7 @@ namespace Bam.Net.CoreServices
         /// <returns>
         ///   <c>true</c> if the current user is in the specified role name; otherwise, <c>false</c>.
         /// </returns>
-        protected bool IsInRole(string roleName)
+        public virtual bool IsInRole(string roleName)
         {
             return RoleResolver.IsInRole(UserResolver, roleName);
         }

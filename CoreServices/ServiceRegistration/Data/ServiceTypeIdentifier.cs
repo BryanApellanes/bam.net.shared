@@ -11,6 +11,9 @@ using Bam.Net.Logging;
 
 namespace Bam.Net.CoreServices.ServiceRegistration.Data
 {
+    /// <summary>
+    /// Uniquely identifies a service type.
+    /// </summary>
     public class ServiceTypeIdentifier: RepoData
     {
         /// <summary>
@@ -98,6 +101,11 @@ namespace Bam.Net.CoreServices.ServiceRegistration.Data
                 return sti.DurableHash.Equals(DurableHash);
             }
             return false;
+        }
+
+        public override int GetHashCode()
+        {
+            return ToString().ToSha1Int();
         }
 
         private void WarnForBlanks(ILogger logger = null)

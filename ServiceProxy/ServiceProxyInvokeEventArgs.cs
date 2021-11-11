@@ -59,9 +59,6 @@ namespace Bam.Net.ServiceProxy
 
         public ServiceProxyClient Client { get; set; }
 
-        [Obsolete("Use RequestMessage instead")]
-        public HttpWebRequest Request { get; set; }
-
         /// <summary>
         /// Gets or sets the request message.
         /// </summary>
@@ -91,8 +88,8 @@ namespace Bam.Net.ServiceProxy
 
         public bool CancelInvoke
         {
-            get => InvokeRequest.CancelInvoke;
-            internal set => InvokeRequest.CancelInvoke = value;
+            get;
+            internal set;
         }
 
         public string BaseAddress
@@ -111,12 +108,6 @@ namespace Bam.Net.ServiceProxy
         {
             get => InvokeRequest.MethodName;
             internal set => InvokeRequest.MethodName = value;
-        }
-
-        public string QueryStringArguments
-        {
-            get => InvokeRequest.QueryStringArguments;
-            internal set => InvokeRequest.QueryStringArguments = value;
         }
 
         public object[] Arguments

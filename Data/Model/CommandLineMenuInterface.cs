@@ -114,12 +114,11 @@ namespace Bam.Net.Data.Model
             for (int i = 0; i < _types.Count; i++)
             {
                 Type type = _types[i];
-                string display = string.Format("{0}.{1}", type.Namespace, type.Name);
-                OutLineFormat("{0}. {1}", i + 1, display);
+                string display = $"{type.Namespace}.{type.Name}";
+                Message.PrintLine("{0}. {1}", i + 1, display);
             }
             string selection = Prompt(" select class");
-            int num = 0;
-            if (int.TryParse(selection, out num))
+            if (int.TryParse(selection, out var num))
             {
                 if (num > _types.Count || num <=0)
                 {

@@ -266,10 +266,7 @@ namespace Bam.Net.Data.Repositories
 					dao.IdValue = null;
 					dao.DataRow = null;
 					dao.ForceInsert = true;
-					dao.UniqueFilterProvider = (d) =>
-					{
-						return Query.Where("Uuid") == uuid;
-					};
+					dao.UniqueFilterProvider = (d) => Query.Where("Uuid") == uuid;
 					ForceUpdateIfExistsInTarget(uuid, dao);
 					SetTemporaryForeignKeys(dao, tempForeignKeyTargets);
 

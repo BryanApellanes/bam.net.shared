@@ -23,13 +23,13 @@ namespace Bam.Net.Server.Renderers
             this.ContentResponder = content;
         }
 
-        public ContentResponder ContentResponder
+        public sealed override ContentResponder ContentResponder
         {
             get;
             set;
         }
 
-        object _renderLock = new object();
+        readonly object _renderLock = new object();
         public override void Render(object toRender)
         {
             base.Render(toRender);

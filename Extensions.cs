@@ -277,7 +277,7 @@ namespace Bam.Net
 
         /// <summary>
         /// Returns true if the string equals "true", "t", "yes", "y" or "1" using a case
-        /// insensitive comparison
+        /// insensitive comparison.
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>

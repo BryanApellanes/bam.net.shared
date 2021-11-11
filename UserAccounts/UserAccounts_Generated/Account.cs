@@ -242,7 +242,7 @@ namespace Bam.Net.UserAccounts.Data
 		/// <summary>
 		/// Gets a query filter that should uniquely identify
 		/// the current instance.  The default implementation
-		/// compares the Id/key field to the current instance's.
+		/// compares the Id/key field to that of the current instance.
 		/// </summary>
 		[Bam.Net.Exclude] 
 		public override IQueryFilter GetUniqueFilter()

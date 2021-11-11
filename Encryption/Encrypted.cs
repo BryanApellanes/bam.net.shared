@@ -14,7 +14,7 @@ namespace Bam.Net.Encryption
 {
     public class Encrypted
     {
-        protected static string DefaultIV = Convert.ToBase64String(new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 });
+        protected static readonly string DefaultIV = Convert.ToBase64String(new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 });
 
         public Encrypted()
         {
@@ -39,9 +39,8 @@ namespace Bam.Net.Encryption
         /// 
         /// </summary>
         /// <param name="data">The plain text data to be encrypted</param>
-        /// <param name="b64Key">A plaintext value to derive a key from</param>
-        /// <param name="b64IV">A plain text vlaue to derive 
-        /// the initialization vector from</param>
+        /// <param name="b64Key">A base 64 encoded key</param>
+        /// <param name="b64IV">A base 64 encoded initialization vector</param>
         public Encrypted(string data, string b64Key, string b64IV)
         {
             this.Plain = data;
@@ -52,7 +51,7 @@ namespace Bam.Net.Encryption
             this.Cipher = Encrypt();
         }
 
-        public Encrypted(byte[] cipher, byte[] key, byte[] iv)
+        protected Encrypted(byte[] cipher, byte[] key, byte[] iv)
         {
             this.Key = key;
             this.Cipher = cipher;
@@ -64,13 +63,7 @@ namespace Bam.Net.Encryption
             return enc.Value;
         }
 
-        public string Value
-        {
-            get
-            {
-                return Base64Cipher;
-            }
-        }
+        public virtual string Value => Base64Cipher;
 
         public byte[] Key
         {
@@ -81,16 +74,10 @@ namespace Bam.Net.Encryption
         public byte[] IV
         {
             get;
-            set;
+            private set;
         }
 
-        public string Salt
-        {
-            get
-            {
-                return ";".RandomLetters(1);
-            }
-        }
+        public string Salt => ";".RandomLetters(1); // TODO: review this for validity - why 1, - are things dependent on this? 
 
         public string Plain
         {
@@ -101,7 +88,7 @@ namespace Bam.Net.Encryption
         public byte[] Cipher
         {
             get;
-            set;
+            private set;
         }
 
         public string Base64Cipher
@@ -115,47 +102,31 @@ namespace Bam.Net.Encryption
 
                 return Convert.ToBase64String(Cipher);
             }
-            set
-            {
-                Cipher = Convert.FromBase64String(value);
-            }
+            protected set => Cipher = Convert.FromBase64String(value);
         }
 
-        public string Base64Key
+        /// <summary>
+        /// Gets the base64 encoded key.
+        /// </summary>
+        protected string Base64Key
         {
-            get
-            {
-                if (Key != null)
-                {
-                    return Convert.ToBase64String(Key);
-                }
-
-                return string.Empty;
-            }
-            set
-            {
-                Key = Convert.FromBase64String(value);
-            }
+            get => Key != null ? Convert.ToBase64String(Key) : string.Empty;
+            set => Key = Convert.FromBase64String(value);
         }
 
-        public string Base64IV
+        /// <summary>
+        /// Gets the base64 encoded initialization vector.
+        /// </summary>
+        protected string Base64IV
         {
-            get
-            {
-                if (IV != null)
-                {
-                    return Convert.ToBase64String(IV);
-                }
-
-                return string.Empty;
-            }
+            get => IV != null ? Convert.ToBase64String(IV) : string.Empty;
             set
             {
                 IV = Convert.FromBase64String(value);
             }
         }
 
-        protected byte[] Encrypt()
+        private byte[] Encrypt()
         {
             Base64Cipher = Aes.Encrypt(string.Concat(Plain, Salt), Base64Key, Base64IV);
             return Cipher;

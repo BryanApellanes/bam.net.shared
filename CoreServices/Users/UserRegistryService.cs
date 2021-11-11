@@ -43,54 +43,30 @@ namespace Bam.Net.CoreServices
         
         public Func<string, string> GetConfirmationUrlFunction
         {
-            get
-            {
-                return UserManager.GetConfirmationUrlFunction;
-            }
+            get => UserManager.GetConfirmationUrlFunction;
 
-            set
-            {
-                UserManager.GetConfirmationUrlFunction = value;
-            }
+            set => UserManager.GetConfirmationUrlFunction = value;
         }
         
         public Func<string, string> GetPasswordResetUrlFunction
         {
-            get
-            {
-                return UserManager.GetPasswordResetUrlFunction;
-            }
+            get => UserManager.GetPasswordResetUrlFunction;
 
-            set
-            {
-                UserManager.GetPasswordResetUrlFunction = value;
-            }
+            set => UserManager.GetPasswordResetUrlFunction = value;
         }
 
         public int PasswordResetTokensExpireInThisManyMinutes
         {
-            get
-            {
-                return UserManager.PasswordResetTokensExpireInThisManyMinutes;
-            }
+            get => UserManager.PasswordResetTokensExpireInThisManyMinutes;
 
-            set
-            {
-                UserManager.PasswordResetTokensExpireInThisManyMinutes = value;
-            }
+            set => UserManager.PasswordResetTokensExpireInThisManyMinutes = value;
         }
 
         public string SmtpSettingsVaultPath
         {
-            get
-            {
-                return UserManager.SmtpSettingsVaultPath;
-            }
+            get => UserManager.SmtpSettingsVaultPath;
 
-            set
-            {
-                UserManager.SmtpSettingsVaultPath = value;
-            }
+            set => UserManager.SmtpSettingsVaultPath = value;
         }
 
         public event EventHandler ConfirmAccountFailed;
@@ -190,7 +166,7 @@ namespace Bam.Net.CoreServices
             return UserResolver.GetUser(context);
         }
         
-        public virtual bool IsInRole(string roleName)
+        public override bool IsInRole(string roleName)
         {
             return RoleResolver.IsInRole(UserResolver, roleName);
         }
