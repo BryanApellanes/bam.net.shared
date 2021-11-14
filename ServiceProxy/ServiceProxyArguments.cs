@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Reflection;
+using System.Net.Http;
 
 namespace Bam.Net.ServiceProxy
 {
@@ -16,19 +17,16 @@ namespace Bam.Net.ServiceProxy
     /// </summary>
     public class ServiceProxyArguments
     {
+        public const string JsonMediaType = "application/json; charset=utf-8";
+        public const string JsonArgsMemberName = "jsonArgs";
+
         public ServiceProxyArguments(ServiceProxyInvokeRequest invokeRequest)
         {
+            this.ServiceProxyInvokeRequest = invokeRequest;
             this.ServiceType = invokeRequest.ServiceType;
             this.MethodName = invokeRequest.MethodName;
             this.Arguments = invokeRequest.Arguments;
             this.MethodInfo = GetMethodInfo();
-        }
-
-        public ServiceProxyArguments(Type serviceType, MethodInfo method, object[] arguments)
-        {
-            this.ServiceType = serviceType;
-            this.MethodInfo = method;
-            this.Arguments = arguments;
             this.ApiArgumentProvider = DefaultApiArgumentProvider.Current;
         }
 
@@ -36,6 +34,12 @@ namespace Bam.Net.ServiceProxy
         {
             get;
             set;
+        }
+
+        public ServiceProxyInvokeRequest ServiceProxyInvokeRequest
+        {
+            get;
+            protected set;
         }
 
         public Type ServiceType { get; set; }
@@ -69,6 +73,35 @@ namespace Bam.Net.ServiceProxy
             set;
         }
 
+        public string ArgumentsAsJsonArrayOfJsonStrings
+        {
+            get
+            {
+                string[] arrayOfJsonStrings = Arguments.Select(argument => argument.ToJson()).ToArray();
+                return arrayOfJsonStrings.ToJson();
+            }
+        }
+
+        public Dictionary<string, object> NamedArguments
+        {
+            get
+            {
+                return ApiArgumentProvider.GetNamedArguments(MethodInfo, Arguments);
+            }
+        }
+
+        public string QueryStringArguments
+        {
+            get
+            {
+                if (Verb == ServiceProxyVerbs.Post)
+                {
+                    return string.Empty;
+                }
+                return ApiArgumentProvider.ArgumentsToQueryString(NamedArguments);
+            }
+        }
+
         public string NumberedQueryStringParameters
         {
             get
@@ -83,6 +116,12 @@ namespace Bam.Net.ServiceProxy
             {
                 return NumberedQueryStringParameters?.Length > 2048 ? ServiceProxyVerbs.Post : ServiceProxyVerbs.Get;
             }
+        }
+
+        public virtual void SetContent(HttpRequestMessage requestMessage)
+        {
+            string jsonArgsMember = GetJsonArgsMember();
+            requestMessage.Content = new StringContent(jsonArgsMember, Encoding.UTF8, JsonMediaType);
         }
 
         public virtual MethodInfo GetMethodInfo()

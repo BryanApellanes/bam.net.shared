@@ -23,10 +23,10 @@ namespace Bam.Net.ServiceProxy.Secure
     [Serializable]
     public class SetSessionKeyRequest
     {
-        public SetSessionKeyRequest(string passwordCipher, string passwordHashCipher, string ivCipher, string ivHashCipher, bool? usePkcsPadding = false)
+        public SetSessionKeyRequest(string keyCipher, string keyHashCipher, string ivCipher, string ivHashCipher, bool? usePkcsPadding = false)
         {
-            this.KeyCipher = passwordCipher;
-            this.KeyHashCipher = passwordHashCipher;
+            this.KeyCipher = keyCipher;
+            this.KeyHashCipher = keyHashCipher;
             this.IVCipher = ivCipher;
             this.IVHashCipher = ivHashCipher;
             this.UsePkcsPadding = usePkcsPadding;

@@ -28,9 +28,15 @@ namespace Bam.Net.ServiceProxy.Secure
             return ApiEncryptionValidation.ReadEncryptedValidationToken(headers);
         }
 
-        public void SetEncryptedValidationToken(HttpRequestMessage request, string postString, string publicKey)
+        /// <summary>
+        /// Sets the Nonce (X-Bam-Timestamp) and ValidationToken (X-Bam-Validation-Token) headers on the specified request.
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="validatedString"></param>
+        /// <param name="publicKey"></param>
+        public void SetEncryptedValidationTokenHeaders(HttpRequestMessage request, string validatedString, string publicKey)
         {
-            ApiEncryptionValidation.SetEncryptedValidationToken(request, postString, publicKey);
+            ApiEncryptionValidation.SetEncryptedValidationTokenHeaders(request, validatedString, publicKey);
         }
 
         public EncryptedTokenValidationStatus ValidateEncrtypedToken(SecureSession session, string hashCipher, string nonceCipher, string plainPost, bool usePkcsPadding = false)

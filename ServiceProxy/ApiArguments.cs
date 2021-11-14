@@ -32,7 +32,7 @@ namespace Bam.Net.ServiceProxy
     {
         public static string GetStringToHash(ExecutionRequest request)
         {
-            return GetStringToHash(request.ClassName, request.MethodName, request.JsonArgs);
+            return GetStringToHash(request.ClassName, request.MethodName, request.ArgumentsAsJsonArrayOfJsonStrings);
         }
 
         public static string GetStringToHash(string className, string methodName, string jsonArgs)

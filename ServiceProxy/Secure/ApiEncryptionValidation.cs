@@ -23,18 +23,12 @@ namespace Bam.Net.ServiceProxy.Secure
     /// </summary>
     internal class ApiEncryptionValidation
     {
-        public static void SetEncryptedValidationToken(HttpRequestMessage request, string plainPostString, string publicKeyPem)
+        public static void SetEncryptedValidationTokenHeaders(HttpRequestMessage request, string plainPostString, string publicKeyPem)
         {
-            SetEncryptedValidationToken(request.Headers, plainPostString, publicKeyPem);
+            SetEncryptedValidationTokenHeaders(request.Headers, plainPostString, publicKeyPem);
         }
 
-        [Obsolete("Use the overload that takes HttpRequestMessage instead.")]
-        public static void SetEncryptedValidationToken(HttpWebRequest request, string plainPostString, string publicKeyPem)
-        {
-            SetEncryptedValidationToken(request.Headers, plainPostString, publicKeyPem);
-        }
-
-        [Obsolete("Use overload that takes HttpRequestHeaders instead.")]
+        [Obsolete("Use SetEncryptedValidationTokenHeaders instead.")]
         public static void SetEncryptedValidationToken(NameValueCollection headers, string plainPostString, string publicKeyPem)
         {
             EncryptedValidationToken token = CreateEncryptedValidationToken(plainPostString, publicKeyPem);
@@ -42,7 +36,7 @@ namespace Bam.Net.ServiceProxy.Secure
             headers[Headers.ValidationToken] = token.HashCipher;
         }
         
-        public static void SetEncryptedValidationToken(HttpRequestHeaders headers, string plainPostString, string publicKeyPem)
+        public static void SetEncryptedValidationTokenHeaders(HttpRequestHeaders headers, string plainPostString, string publicKeyPem)
         {
             EncryptedValidationToken token = CreateEncryptedValidationToken(plainPostString, publicKeyPem);
             headers.Add(Headers.Nonce, token.NonceCipher);
@@ -75,11 +69,11 @@ namespace Bam.Net.ServiceProxy.Secure
             return CreateEncryptedValidationToken(instant, postString, publicKeyPem);
         }
 
-        public static EncryptedValidationToken CreateEncryptedValidationToken(Instant instant, string postString, string publicKeyPem, HashAlgorithms algorithm = HashAlgorithms.SHA256)
+        public static EncryptedValidationToken CreateEncryptedValidationToken(Instant instant, string validatedString, string publicKeyPem, HashAlgorithms algorithm = HashAlgorithms.SHA256)
         {
             //{Month}/{Day}/{Year};{Hour}.{Minute}.{Second}.{Millisecond}:{PostString}
             string nonce = instant.ToString();
-            string hash = $"{nonce}:{postString}".HashHexString(algorithm);
+            string hash = $"{nonce}:{validatedString}".HashHexString(algorithm);
             string hashCipher = hash.EncryptWithPublicKey(publicKeyPem);
             string nonceCipher = nonce.EncryptWithPublicKey(publicKeyPem);
 

@@ -105,7 +105,7 @@ namespace Bam.Net.ServiceProxy.Secure
         /// Establish a secure session
         /// </summary>
         /// <returns></returns>
-        public SecureChannelMessage<ClientSessionInfo> InitSession(Instant instant)
+        public SecureChannelMessage<ClientSessionInfo> StartSession(Instant instant)
         {
             SecureSession session = SecureSession.Get(HttpContext, instant);
             ClientSessionInfo result = GetClientSessionInfo(session);

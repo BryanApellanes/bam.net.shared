@@ -24,26 +24,20 @@ namespace Bam.Net.Encryption
             this.Plain = string.Empty;
         }
 
-        public Encrypted(string data)
-            : this()
+        public Encrypted(string plainText): this()
         {
-            this.Plain = data;
-        }
-
-        public Encrypted(string data, string b64Key)
-            : this(data, b64Key, DefaultIV)
-        {
+            this.Plain = plainText;
         }
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="data">The plain text data to be encrypted</param>
+        /// <param name="plainText">The plain text data to be encrypted</param>
         /// <param name="b64Key">A base 64 encoded key</param>
         /// <param name="b64IV">A base 64 encoded initialization vector</param>
-        public Encrypted(string data, string b64Key, string b64IV)
+        public Encrypted(string plainText, string b64Key, string b64IV)
         {
-            this.Plain = data;
+            this.Plain = plainText;
 
             this.Base64Key = b64Key;
             this.Base64IV = b64IV;
@@ -77,7 +71,11 @@ namespace Bam.Net.Encryption
             private set;
         }
 
-        public string Salt => ";".RandomLetters(1); // TODO: review this for validity - why 1, - are things dependent on this? 
+        public string Salt
+        {
+            get;
+            set;
+        }
 
         public string Plain
         {

@@ -27,9 +27,31 @@ namespace Bam.Net.ServiceProxy
 
         public string BaseAddress { get; set; }
 
+        string _className;
         public virtual string ClassName
         {
-            get; set; 
+            get
+            {
+                if (string.IsNullOrEmpty(_className))
+                {
+                    _className = ServiceType?.Name;
+                }
+                return _className;
+            }
+            set
+            {
+                _className = value;
+            }
+        }
+
+        HashSet<string> _methods;
+        object _methodsLock = new object();
+        public HashSet<string> Methods
+        {
+            get
+            {
+                return _methodsLock.DoubleCheckLock(ref _methods, () => new HashSet<string>(ServiceProxySystem.GetProxiedMethods(ServiceType).Select(m => m.Name).ToArray()));
+            }
         }
 
         public virtual string MethodName { get; set; }

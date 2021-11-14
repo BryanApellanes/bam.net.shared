@@ -8,7 +8,7 @@ namespace Bam.Net.ServiceProxy.Secure
 {
     public interface IApiEncryptionProvider
     {
-        void SetEncryptedValidationToken(HttpRequestMessage request, string postString, string publicKey);
+        void SetEncryptedValidationTokenHeaders(HttpRequestMessage request, string postString, string publicKey);
 
         EncryptedValidationToken ReadEncryptedValidationToken(NameValueCollection headers);
 

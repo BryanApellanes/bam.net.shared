@@ -28,66 +28,13 @@ namespace Bam.Net.ServiceProxy
             }
         }
 
-        public ServiceProxyClient(string baseAddress, string implementingClassName)
-            : this(baseAddress)
-        {
-            this.ClassName = implementingClassName;
-        }
-
-        IApiArgumentProvider<TService> _apiArgumentProvider;
-        object _apiArgumentProviderLock = new object();
-        public new IApiArgumentProvider<TService> ApiArgumentProvider
-        {
-            get
-            {
-                return _apiArgumentProviderLock.DoubleCheckLock(ref _apiArgumentProvider, () => new DefaultApiArgumentProvider<TService>());
-            }
-            set
-            {
-                _apiArgumentProvider = value;
-            }
-        }
-
-        string _className;
-        object _classNameLock = new object();
-        /// <summary>
-        /// Gets or sets the name of the implementing class on the server.  If typeof(T)
-        /// is an interface as determined by typeof(T).IsInterface then it
-        /// is assumed that the classname equals typeof(T).Name.Substring(1)
-        /// which drops the first character of the name.
-        /// </summary>
-        public string ClassName
-        {
-            get
-            {
-                return _classNameLock.DoubleCheckLock(ref _className, () => typeof(TService).IsInterface ? typeof(TService).Name.Substring(1) : typeof(TService).Name);
-            }
-            set
-            {
-                _className = value;
-            }
-        }
-
-        HashSet<string> _methods;
-        object _methodsLock = new object();
-        public HashSet<string> Methods
-        {
-            get
-            {
-                return _methodsLock.DoubleCheckLock(ref _methods, () => new HashSet<string>(ServiceProxySystem.GetProxiedMethods(typeof(TService)).Select(m => m.Name).ToArray()));
-            }
-        }
-
-        public string LastResponse { get; private set; }
-
-        public async Task<TResult> InvokeServcieMethodAsync<TResult>(string methodName, params object[] arguments)
+        public async Task<TResult> InvokeServiceMethodAsync<TResult>(string methodName, params object[] arguments)
         {
             return await Task.Run(() => InvokeServiceMethod<TResult>(methodName, arguments));
         }
 
         /// <summary>
-        /// Invoke the specified methodName on the server side
-        /// type T returning value of type T1
+        /// Invoke the specified remote service method.
         /// </summary>
         /// <typeparam name="TResult">The return type of the specified method</typeparam>
         /// <param name="methodName">The name of the method to invoke</param>
@@ -101,7 +48,7 @@ namespace Bam.Net.ServiceProxy
 
         public override Task<string> InvokeServiceMethodAsync(string methodName, object[] arguments)
         {
-            return Task.Run(() => InvokeServiceMethodAsync(BaseAddress, ClassName, methodName, arguments));
+            return Task.Run(() => InvokeServiceMethodAsync(BaseAddress, typeof(TService).Name, methodName, arguments));
         }
 
         /// <summary>
@@ -113,7 +60,7 @@ namespace Bam.Net.ServiceProxy
         /// <returns></returns>
         public string InvokeServiceMethod(string methodName, params object[] parameters)
         {
-            return InvokeServiceMethodAsync(BaseAddress, ClassName, methodName, parameters).Result;
+            return InvokeServiceMethodAsync(BaseAddress, typeof(TService).Name, methodName, parameters).Result;
         }
 
         public override Task<string> InvokeServiceMethodAsync(string className, string methodName, object[] arguments)
@@ -123,27 +70,23 @@ namespace Bam.Net.ServiceProxy
 
         public override async Task<string> InvokeServiceMethodAsync(string baseAddress, string className, string methodName, params object[] arguments)
         {
-            if (!Methods.Contains(methodName) && typeof(TService).Name.Equals(className))
-            {
-                throw Args.Exception<InvalidOperationException>("{0} is not proxied from type {1}", methodName, className);
-            }
             ServiceProxyInvokeRequest<TService> request = new ServiceProxyInvokeRequest<TService>() { BaseAddress = baseAddress, ClassName = className, ServiceProxyClient = this, MethodName = methodName, Arguments = arguments };
 
             ServiceProxyInvokeEventArgs args = request.CopyAs<ServiceProxyInvokeEventArgs>();
             OnInvokeMethodStarted(args);
-            string result = string.Empty;
+            string response = string.Empty;
             if(args.CancelInvoke)
             {
                 OnInvokeMethodCanceled(args);
             }
             else
             {
-                result = await ReceiveServiceMethodResponseAsync(request);
-                LastResponse = result;
+                response = await ReceiveServiceMethodResponseAsync(request);
+                LastResponse = response;
                 OnInvokeMethodComplete(args);
             }
 
-            return result;
+            return response;
         }
 
         /// <summary>

@@ -13,37 +13,10 @@ namespace Bam.Net.ServiceProxy
             this.ServiceType = typeof(TService);
         }
 
-        public ServiceProxyInvokeRequest(HttpClient httpClient): this()
-        {
-            this.ServiceProxyClient = new ServiceProxyClient<TService>(httpClient);
-        }
-
-        public ServiceProxyInvokeRequest(ServiceProxyClient<TService> client) : this()
-        {
-            this.ServiceProxyClient = client;
-        }
-
         public new ServiceProxyClient<TService> ServiceProxyClient
         {
             get;
             set;
-        }
-
-        string _className;
-        public override string ClassName 
-        {
-            get
-            {
-                if(string.IsNullOrEmpty(_className))
-                {
-                    _className = ServiceType?.Name;
-                }
-                return _className;
-            }
-            set
-            {
-                _className = value;
-            }
         }
 
         ServiceProxyArguments<TService> _serviceProxyArguments;
@@ -67,6 +40,10 @@ namespace Bam.Net.ServiceProxy
 
         public async Task<string> ExecuteAsync(ServiceProxyClient<TService> client)
         {
+            if (!Methods.Contains(MethodName))
+            {
+                throw Args.Exception<InvalidOperationException>("{0} is not proxied from type {1}", MethodName, typeof(TService).Name);
+            }
             this.ServiceProxyClient = client;
             if (ServiceProxyArguments.Verb == ServiceProxyVerbs.Post)
             {

@@ -90,7 +90,7 @@ namespace Bam.Net.ServiceProxy
                 HttpArgs args = new HttpArgs();
                 args.ParseJson(execRequest.InputString);
                 
-                execRequest.JsonArgs = args[ServiceProxyClient.JsonArgsMemberName];
+                execRequest.ArgumentsAsJsonArrayOfJsonStrings = args[ServiceProxyArguments.JsonArgsMemberName];
                 execRequest.Instance.Property("Logger", execRequest.Logger);
             }
         }
@@ -120,19 +120,6 @@ namespace Bam.Net.ServiceProxy
         {
             get;
             set;
-        }
-
-        protected string HttpMethod
-        {
-            get
-            {
-                if (Request != null)
-                {
-                    return Request.HttpMethod.ToUpperInvariant();
-                }
-
-                return "GET";
-            }
         }
 
         string _inputString;
@@ -325,7 +312,7 @@ namespace Bam.Net.ServiceProxy
         /// Should be set to an array of strings stringified twice.  Parsing as Json will return an array of strings,
         /// each string can be individually parsed into separate objects
         /// </summary>
-        public string JsonArgs { get; set; }
+        public string ArgumentsAsJsonArrayOfJsonStrings { get; set; }
 
         Incubator _serviceProvider;
         readonly object _serviceProviderLock = new object();
@@ -442,10 +429,10 @@ namespace Bam.Net.ServiceProxy
                 string[] jsonStrings = jsonParams.FromJson<string[]>();
                 result = GetJsonArguments(jsonStrings);
             }
-            else if (!string.IsNullOrEmpty(JsonArgs))
+            else if (!string.IsNullOrEmpty(ArgumentsAsJsonArrayOfJsonStrings))
             {
                 // POST: bam.invoke
-                string[] jsonStrings = JsonArgs.FromJson<string[]>();
+                string[] jsonStrings = ArgumentsAsJsonArrayOfJsonStrings.FromJson<string[]>();
 
                 result = GetJsonArguments(jsonStrings);
             }

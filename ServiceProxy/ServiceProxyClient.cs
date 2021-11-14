@@ -20,8 +20,6 @@ namespace Bam.Net.ServiceProxy
 {
     public abstract class ServiceProxyClient
     {
-        public const string JsonMediaType = "application/json; charset=utf-8";
-        public const string JsonArgsMemberName = "jsonArgs";
         public const string DefaultBaseAddress = "http://localhost:8080";
 
         public ServiceProxyClient(Type serviceType, string baseAddress = DefaultBaseAddress)
@@ -53,6 +51,16 @@ namespace Bam.Net.ServiceProxy
         public event EventHandler<ServiceProxyInvokeEventArgs> GetStarted;
         public event EventHandler<ServiceProxyInvokeEventArgs> GetComplete;
 
+        public event EventHandler<ServiceProxyInvokeEventArgs> RequestExceptionThrown;
+
+        protected void OnRequestExceptionThrown(ServiceProxyInvokeEventArgs args)
+        {
+            if (RequestExceptionThrown != null)
+            {
+                RequestExceptionThrown(this, args);
+            }
+        }
+
         /// <summary>
         /// Fires the Getting event 
         /// </summary>
@@ -79,7 +87,7 @@ namespace Bam.Net.ServiceProxy
         /// Fires the Got event
         /// </summary>
         /// <param name="args"></param>
-        protected void OnGot(ServiceProxyInvokeEventArgs args)
+        protected void OnGetComplete(ServiceProxyInvokeEventArgs args)
         {
             if (GetComplete != null)
             {
@@ -153,7 +161,7 @@ namespace Bam.Net.ServiceProxy
         {
             get
             {
-                return _apiArgumentProviderLock.DoubleCheckLock(ref _apiArgumentProvider, () => new DefaultApiArgumentProvider());
+                return _apiArgumentProviderLock.DoubleCheckLock(ref _apiArgumentProvider, () => new DefaultApiArgumentProvider() { ServiceType = ServiceType });
             }
             set
             {
@@ -192,6 +200,8 @@ namespace Bam.Net.ServiceProxy
                 this.Headers["User-Agent"] = value;
             }
         }
+        
+        protected string LastResponse { get; set; }
 
         protected internal HttpClient HttpClient { get; set; }
 
@@ -199,6 +209,7 @@ namespace Bam.Net.ServiceProxy
         /// The event that is raised when an exception occurs during method invocation.
         /// </summary>
         public event EventHandler<ServiceProxyInvokeEventArgs> InvocationException;
+
         protected void OnInvocationException(ServiceProxyInvokeEventArgs args)
         {
             InvocationException?.Invoke(this, args);
@@ -227,15 +238,9 @@ namespace Bam.Net.ServiceProxy
             return await ReceivePostResponseAsync(new ServiceProxyInvokeRequest() { BaseAddress = BaseAddress, ServiceType = ServiceType, MethodName = methodName, Arguments = arguments });
         }
 
-        public virtual async Task<string> ReceivePostResponseAsync(ServiceProxyInvokeRequest request)
+        public virtual async Task<string> ReceivePostResponseAsync(ServiceProxyInvokeRequest serviceProxyInvokeRequest)
         {
-            HttpRequestMessage message = await CreateServiceProxyRequestMessageAsync(ServiceProxyVerbs.Post, request.ClassName, request.MethodName, "nocache=".RandomLetters(4));
-            return await ReceivePostResponseAsync(request, message);
-        }
-
-        protected virtual async Task<string> ReceivePostResponseAsync(ServiceProxyInvokeRequest invokeRequest, HttpRequestMessage request)
-        {
-            ServiceProxyInvokeEventArgs args = new ServiceProxyInvokeEventArgs(invokeRequest);
+            ServiceProxyInvokeEventArgs args = new ServiceProxyInvokeEventArgs(serviceProxyInvokeRequest);
             args.Client = this;
 
             OnPosting(args);
@@ -246,19 +251,24 @@ namespace Bam.Net.ServiceProxy
             }
             else
             {
-                string jsonArgsMember = ApiArgumentProvider.ArgumentsToJsonArgsMember(args.Arguments);
-                Uri uri = new Uri(args.BaseAddress);
-                if (HttpClient.BaseAddress == null || !HttpClient.BaseAddress.ToString().Equals(uri.ToString(), StringComparison.InvariantCultureIgnoreCase))
+                ServiceProxyArguments serviceProxyArguments = serviceProxyInvokeRequest.ServiceProxyArguments;
+                HttpRequestMessage request = await CreateServiceProxyRequestMessageAsync(serviceProxyArguments.Verb, serviceProxyInvokeRequest.ClassName, serviceProxyInvokeRequest.MethodName, "nocache=".RandomLetters(4));
+                serviceProxyArguments.SetContent(request);
+
+                try
                 {
-                    HttpClient.BaseAddress = uri;
+                    HttpResponseMessage response = await HttpClient.SendAsync(request);
+                    args.RequestMessage = request;
+                    args.ResponseMessage = response;
+                    result = await response.Content.ReadAsStringAsync();
+                    response.EnsureSuccessStatusCode();
+                    OnPosted(args);
                 }
-                SetHttpArgsContent(jsonArgsMember, request);
-                HttpResponseMessage response = await HttpClient.SendAsync(request);
-                args.RequestMessage = request;
-                args.ResponseMessage = response;
-                result = await response.Content.ReadAsStringAsync();
-                response.EnsureSuccessStatusCode();
-                OnPosted(args);
+                catch (Exception ex)
+                {
+                    args.Exception = ex;
+                    OnRequestExceptionThrown(args);
+                }
             }
             return result;
         }
@@ -288,8 +298,14 @@ namespace Bam.Net.ServiceProxy
                 args.ResponseMessage = response;
                 result = await response.Content.ReadAsStringAsync();
                 response.EnsureSuccessStatusCode();
+                OnGetComplete(args);
             }
             return result;
+        }
+
+        protected virtual internal Task<HttpRequestMessage> CreateServiceProxyRequestMessageAsync(ServiceProxyInvokeRequest request, ServiceProxyArguments arguments)
+        {
+            return CreateServiceProxyRequestMessageAsync(arguments.Verb, request.ClassName, request.MethodName, arguments.QueryStringArguments);
         }
 
         protected internal async Task<HttpRequestMessage> CreateServiceProxyRequestMessageAsync(ServiceProxyVerbs verb, string methodName, params object[] arguments)
@@ -311,11 +327,6 @@ namespace Bam.Net.ServiceProxy
                 request.Headers.Add(key, Headers[key]);
             });
             return Task.FromResult(request);
-        }
-
-        protected internal virtual void SetHttpArgsContent(string jsonArgsMemberString, HttpRequestMessage request)
-        {
-            request.Content = new StringContent(jsonArgsMemberString, Encoding.UTF8, JsonMediaType);
         }
 
         public abstract Task<string> InvokeServiceMethodAsync(string baseAddress, string className, string methodName, object[] arguments);

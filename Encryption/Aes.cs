@@ -94,11 +94,11 @@ namespace Bam.Net.Encryption
         /// <summary>
         /// Decrypts the specified base64 encoded value.
         /// </summary>
-        /// <param name="base64EncodedValue">The base64 encoded value.</param>
+        /// <param name="base64EndoedCipher">The base64 encoded value.</param>
         /// <param name="base64EncodedKey">The base64 encoded key.</param>
         /// <param name="base64EncodedIV">The base64 encoded iv.</param>
         /// <returns></returns>
-        public static string Decrypt(string base64EncodedValue, string base64EncodedKey, string base64EncodedIV)
+        public static string Decrypt(string base64EndoedCipher, string base64EncodedKey, string base64EncodedIV)
         {
             AesManaged aes = new AesManaged
             {
@@ -108,7 +108,7 @@ namespace Bam.Net.Encryption
 
             ICryptoTransform decryptor = aes.CreateDecryptor();
 
-            byte[] encData = Convert.FromBase64String(base64EncodedValue);
+            byte[] encData = Convert.FromBase64String(base64EndoedCipher);
             using (MemoryStream decryptBuffer = new MemoryStream(encData))
             {
                 using(CryptoStream decryptStream = new CryptoStream(decryptBuffer, decryptor, CryptoStreamMode.Read))

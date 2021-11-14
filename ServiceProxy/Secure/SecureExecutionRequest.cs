@@ -16,7 +16,7 @@ namespace Bam.Net.ServiceProxy.Secure
     /// </summary>
     public class SecureExecutionRequest: ExecutionRequest
     {
-        public SecureExecutionRequest(IHttpContext context, string className, string methodName, string jsonParams)
+        public SecureExecutionRequest(IHttpContext context, string className, string methodName, string jsonArgs)
         {
             Args.ThrowIfNull(context, "context");
             Args.ThrowIfNullOrEmpty(className, "className");
@@ -24,7 +24,7 @@ namespace Bam.Net.ServiceProxy.Secure
 
             this.ClassName = className;
             this.MethodName = methodName;
-            this.JsonArgs = jsonParams;
+            this.ArgumentsAsJsonArrayOfJsonStrings = jsonArgs;
             this.Ext = "json";
             this.Context = context;
             this.IsUnencrypted = true;

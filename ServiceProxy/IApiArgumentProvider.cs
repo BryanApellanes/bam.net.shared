@@ -5,10 +5,6 @@ using System.Text;
 
 namespace Bam.Net.ServiceProxy
 {
-    public interface IApiArgumentProvider<TService> : IApiArgumentProvider
-    {
-    }
-
     public interface IApiArgumentProvider
     {
         string GetStringToHash(ExecutionRequest request);

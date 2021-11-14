@@ -7,7 +7,7 @@ using System.Text;
 
 namespace Bam.Net.ServiceProxy
 {
-    public class DefaultApiArgumentProvider<TService> : DefaultApiArgumentProvider, IApiArgumentProvider<TService>
+/*    public class DefaultApiArgumentProvider<TService> : DefaultApiArgumentProvider, IApiArgumentProvider
     {
 
         static DefaultApiArgumentProvider<TService> _current;
@@ -19,7 +19,7 @@ namespace Bam.Net.ServiceProxy
                 return _currentLock.DoubleCheckLock(ref _current, () => new DefaultApiArgumentProvider<TService>());
             }
         }
-    }
+    }*/
 
     public class DefaultApiArgumentProvider : IApiArgumentProvider
     {
@@ -33,6 +33,7 @@ namespace Bam.Net.ServiceProxy
                 return _methodsLock.DoubleCheckLock(ref _methods, () => new HashSet<string>(ServiceProxySystem.GetProxiedMethods(ServiceType).Select(m => m.Name).ToArray()));
             }
         }
+
         public string ArgumentsToJsonArgsMember(params object[] arguments)
         {
             return ApiArguments.ArgumentsToJsonArgsMember(arguments);

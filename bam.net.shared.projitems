@@ -721,6 +721,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\IApplicationServiceRegistryResolver.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\IServiceCompilationExceptionReporter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\JsWebServiceProxyGenerator.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\Secure\SecureChannelRequestMessage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\Secure\SecureServiceProxyArguments[TService].cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\Secure\SecureServiceProxyInvokeRequest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\ServiceCompilationEventArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\ApplicationServiceSourceResolver.cs" />

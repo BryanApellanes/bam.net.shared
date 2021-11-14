@@ -75,7 +75,7 @@ namespace Bam.Net.Encryption
         }
 
         /// <summary>
-        /// Gets or sets the key.
+        /// Gets or sets the base 64 encoded key.
         /// </summary>
         /// <value>
         /// The key.
@@ -83,7 +83,7 @@ namespace Bam.Net.Encryption
         public string Key { get; set; }
 
         /// <summary>
-        /// Gets or sets the initialization vector.
+        /// Gets or sets the base 64 encoded initialization vector.
         /// </summary>
         /// <value>
         /// The iv.

@@ -41,12 +41,36 @@ namespace Bam.Net.ServiceProxy.Secure
         }
 
         /// <summary>
-        /// The server Rsa public key of the current session as a Pem string
+        /// Gets or sets the server Rsa public key of the current session as a Pem string.
         /// </summary>
         public string PublicKey
         {
             get;
             set;
+        }
+
+        /// <summary>
+        /// The key for the current session.
+        /// </summary>
+        protected internal string SessionKey
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// The initialization vector for the current session
+        /// </summary>
+        protected internal string SessionIV
+        {
+            get;
+            set;
+        }
+
+        public string Encrypt(string plainText)
+        {
+            Encrypted encrypted = new Encrypted(plainText, SessionKey, SessionIV);
+            return encrypted.Base64Cipher;
         }
 
         public override bool Equals(object obj)

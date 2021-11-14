@@ -30,7 +30,7 @@ namespace Bam.Net
         {
             get
             {
-                string fromConfig = DefaultConfiguration.GetAppSetting("ProcessMode", "Dev");
+                string fromConfig = DefaultConfiguration.GetAppSetting("ProcessMode", nameof(ProcessModes.Dev));
                 return FromString(fromConfig);
             }
         }
@@ -39,7 +39,7 @@ namespace Bam.Net
         {
             get
             {
-                string fromConfig = Config.Current["ProcessMode", "Dev"];
+                string fromConfig = Config.Current["ProcessMode", nameof(ProcessModes.Dev)];
                 return FromString(fromConfig);
             }
         }

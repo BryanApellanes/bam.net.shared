@@ -31,20 +31,12 @@ namespace Bam.Net.ServiceProxy.Secure
     /// <typeparam name="TService"></typeparam>
     public class SecureServiceProxyClient<TService>: ServiceProxyClient<TService>
     {
-        public const string AsymetricCipherMediaType = "application/vnd.bam+cipher;algorithm=asymetric";
-        public const string SymetricCipherMediaType = "application/vnd.bam+cipher;algorithm=symetric";
-
         public SecureServiceProxyClient(string baseAddress)
             : base(baseAddress)
         {
             this.Initialize();
         }
-        
-        public SecureServiceProxyClient(string baseAddress, string implementingClassName)
-            : base(baseAddress, implementingClassName)
-        {
-            this.Initialize();
-        }
+
 
         IApiKeyResolver _apiKeyResolver;
         object _apiKeyResolverSync = new object();
@@ -150,31 +142,20 @@ namespace Bam.Net.ServiceProxy.Secure
             }
         }
 
-        protected internal bool TypeRequiresApiKey
-        {
-            get
-            {                
-                return Type.HasCustomAttributeOfType<ApiKeyRequiredAttribute>();
-            }
-        }
-
-        protected internal bool MethodRequiresApiKey(string methodName)
-        {
-            MethodInfo method = Type.GetMethod(methodName);
-            if(method == null)
-            {
-                return false;
-            }
-            return method.HasCustomAttributeOfType<ApiKeyRequiredAttribute>();
-        }
-
         /// <summary>
         /// The key for the current session.
         /// </summary>
         protected internal string SessionKey
         {
-            get;
-            set;
+            get
+            {
+                return SessionInfo?.SessionKey;
+            }
+            set
+            {
+                Args.ThrowIf<ArgumentNullException>(SessionInfo == null, "SessionInfo not set");
+                SessionInfo.SessionKey = value;
+            }
         }
 
         /// <summary>
@@ -182,8 +163,15 @@ namespace Bam.Net.ServiceProxy.Secure
         /// </summary>
         protected internal string SessionIV
         {
-            get;
-            set;
+            get
+            {
+                return SessionInfo?.SessionIV;
+            }
+            set
+            {
+                Args.ThrowIf<ArgumentNullException>(SessionInfo == null, "SessionInfo not set");
+                SessionInfo.SessionIV = value;
+            }
         }
 
         public event Action<SecureServiceProxyClient<TService>> SessionStarting;
@@ -208,61 +196,28 @@ namespace Bam.Net.ServiceProxy.Secure
             StartSessionException?.Invoke(this, ex);
         }
 
-        object _sessionInfoLock = new object();
-        public void StartSession()
+        public async Task<ClientSessionInfo> StartSessionAsync()
         {
-            if (SessionInfo == null)
+            OnSessionStarting();
+
+            try
             {
-                lock (_sessionInfoLock)
-                {
-                    if (SessionInfo == null)
-                    {
-                        OnSessionStarting();
-
-                        try
-                        {
-                            ServiceProxyInvokeRequest<SecureChannel> invokeRequest = new ServiceProxyInvokeRequest<SecureChannel>()
-                                {
-                                    MethodName = nameof(SecureChannel.InitSession)
-                                };
-
-
-                           
-                       /*     HttpWebRequest request = GetServiceProxyRequestMessage(ServiceProxyVerbs.GET, typeof(SecureChannel).Name, "InitSession", new Instant());
-
-                            using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
-                            {
-                                SessionCookie = response.Cookies[SecureSession.CookieName];
-                                Cookies.Add(SessionCookie);
-
-                                using (StreamReader sr = new StreamReader(response.GetResponseStream()))
-                                {
-                                    SecureChannelMessage<ClientSessionInfo> message = sr.ReadToEnd().FromJson<SecureChannelMessage<ClientSessionInfo>>();
-                                    if (!message.Success)
-                                    {
-                                        throw new Exception(message.Message);
-                                    }
-                                    else
-                                    {
-                                        SessionInfo = message.Data;
-                                    }
-                                }
-
-                                SetSessionKey();
-                            }*/
-                        }
-                        catch (Exception ex)
-                        {
-                            SessionStartException = ex;
-                            OnStartSessionException(ex);
-                            return;
-                        }
-
-                        OnSessionStarted();
-                    }
-                }
-
+                HttpRequestMessage requestMessage = CreateServiceProxyRequestMessageAsync(ServiceProxyVerbs.Post, nameof(SecureChannel), nameof(SecureChannel.StartSession), new Instant()).Result;
+                HttpResponseMessage responseMessage = await HttpClient.SendAsync(requestMessage);
+                string responseString = await responseMessage.Content.ReadAsStringAsync();
+                LastResponse = responseString;
+                responseMessage.EnsureSuccessStatusCode();
+                await SetSessionKeyAsync();
+                OnSessionStarted();
+                return responseString.FromJson<ClientSessionInfo>();
             }
+            catch (Exception ex)
+            {
+                SessionStartException = ex;
+                OnStartSessionException(ex);
+            }
+
+            return null;
         }
 
         protected internal override async Task<string> ReceiveServiceMethodResponseAsync(ServiceProxyInvokeRequest<TService> request)
@@ -297,58 +252,46 @@ namespace Bam.Net.ServiceProxy.Secure
             return (await ReceivePostResponseAsync(new ServiceProxyInvokeRequest { BaseAddress = BaseAddress, ClassName = className, MethodName = methodName, Arguments = arguments })).FromJson<TResult>();
         }
 
-        protected override async Task<string> ReceivePostResponseAsync(ServiceProxyInvokeRequest invokeRequest, HttpRequestMessage request)
+        public override async Task<string> ReceivePostResponseAsync(ServiceProxyInvokeRequest serviceProxyInvokeRequest)
         {
-            string className = invokeRequest.ClassName;
-            string methodName = invokeRequest.MethodName;
-            object[] arguments = invokeRequest.Arguments;
-            if(className.Equals(nameof(SecureChannel), StringComparison.InvariantCultureIgnoreCase) && methodName.Equals(nameof(SecureChannel.Invoke), StringComparison.InvariantCultureIgnoreCase))
+            ServiceProxyInvokeEventArgs args = new ServiceProxyInvokeEventArgs(serviceProxyInvokeRequest);
+            args.Client = this;
+            OnPosting(args);
+            string response = string.Empty;
+            if (args.CancelInvoke)
             {
-                // the target is the SecureChannel.Invoke method but we
-                // need the actual className and method that is in the arguments 
-                // object
-                string actualClassName = (string)arguments[0];
-                string actualMethodName = (string)arguments[1];
-                string jsonArgs = (string)arguments[2];
-                HttpArgs args = new HttpArgs();
-                args.ParseJson(jsonArgs);
-                if(TypeRequiresApiKey || MethodRequiresApiKey(actualMethodName))
-                {
-                    ApiKeyResolver.SetKeyToken(request, ApiArgumentProvider.GetStringToHash(actualClassName, actualMethodName, args[JsonArgsMemberName]));
-                }
-            }
-            return await base.ReceivePostResponseAsync(invokeRequest, request);
-        }
-
-        protected internal override void SetHttpArgsContent(string jsonArgumentsString, HttpRequestMessage request)
-        {
-            if (string.IsNullOrEmpty(SessionKey))
-            {
-                base.SetHttpArgsContent(jsonArgumentsString, request);
+                OnPostCanceled(args);
             }
             else
             {
-                Encrypted cipher = new Encrypted(jsonArgumentsString, SessionKey, SessionIV);
-                string bodyCipher = cipher.Base64Cipher;
-                request.Content = new StringContent(bodyCipher, Encoding.UTF8, AsymetricCipherMediaType);
+                try
+                {
+                    HttpRequestMessage requestMessage = await CreateServiceProxyRequestMessageAsync(ServiceProxyVerbs.Post, nameof(SecureChannel), nameof(SecureChannel.Invoke), string.Empty);
 
-                ApiEncryptionProvider.SetEncryptedValidationToken(request, jsonArgumentsString, SessionInfo.PublicKey);
+                    SecureServiceProxyArguments<TService> secureServiceProxyArguments = new SecureServiceProxyArguments<TService>(SessionInfo, ApiKeyResolver, ApiEncryptionProvider, serviceProxyInvokeRequest);
+                    secureServiceProxyArguments.SetContent(requestMessage);
+                    secureServiceProxyArguments.SetKeyToken(requestMessage, serviceProxyInvokeRequest.MethodName);
+
+                    HttpResponseMessage responseMessage = await HttpClient.SendAsync(requestMessage);
+                    args.RequestMessage = requestMessage;
+                    args.ResponseMessage = responseMessage;
+                    response = await responseMessage.Content.ReadAsStringAsync();
+                    responseMessage.EnsureSuccessStatusCode();
+                }
+                catch (Exception ex)
+                {
+                    args.Exception = ex;
+                    OnRequestExceptionThrown(args);
+                }
             }
-        }
-
-        protected internal override Task<HttpRequestMessage> CreateServiceProxyRequestMessageAsync(ServiceProxyVerbs verb, string className, string methodName, string queryStringParameters = "")
-        {
-            throw new NotImplementedException();
-            // create a secure execution request
-            // - execution target is SecureChannel
-            // - encrypt the actual request
+            return response;
         }
 
         protected async Task SetSessionKeyAsync()
         {
-            CreateSetSessionKeyRequest(out AesKeyVectorPair kvp, out SetSessionKeyRequest request);           
+            SetSessionKeyRequest request = CreateSetSessionKeyRequest(out AesKeyVectorPair kvp);           
 
-            SecureChannelMessage response = await this.ReceivePostResponseAsync<SecureChannelMessage>(nameof(SecureChannel), "SetSessionKey", new object[] { request });
+            SecureChannelMessage response = await this.ReceivePostResponseAsync<SecureChannelMessage>(nameof(SecureChannel), nameof(SecureChannel.SetSessionKey), new object[] { request });
             if (!response.Success)
             {
                 throw new Exception(response.Message);
@@ -358,21 +301,29 @@ namespace Bam.Net.ServiceProxy.Secure
             SessionIV = kvp.IV;
         }
 
-        protected internal void CreateSetSessionKeyRequest(out AesKeyVectorPair kvp, out SetSessionKeyRequest request)
+        protected internal SetSessionKeyRequest CreateSetSessionKeyRequest(out AesKeyVectorPair kvp)
         {
-            request = SecureSession.CreateSetSessionKeyRequest(SessionInfo.PublicKey, out kvp);
+            return SecureSession.CreateSetSessionKeyRequest(SessionInfo.PublicKey, out kvp);
         }
 
         private void Initialize()
         {
-            this.InvokeMethodStarted += (s, a) => TryStartSession();
+            this.InvokeMethodStarted += async (s, a) => await TryStartSessionAsync();
         }
 
-        private void TryStartSession()
+        Task<ClientSessionInfo> _startSessionTask;
+        private async Task TryStartSessionAsync()
         {
             try
             {
-                StartSession();
+                if (SessionInfo == null)
+                {
+                    if (_startSessionTask == null)
+                    {
+                        _startSessionTask = StartSessionAsync();
+                    }
+                    SessionInfo = await _startSessionTask;
+                }
             }
             catch (Exception ex)
             {

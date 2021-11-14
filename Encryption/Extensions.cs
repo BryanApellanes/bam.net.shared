@@ -48,11 +48,26 @@ namespace Bam.Net.Encryption
             return gen.GenerateKeyPair();
         }
         
+        /// <summary>
+        /// Gets a base 64 encoded asymmetric cipher of the specified input.
+        /// </summary>
+        /// <param name="input"></param>
+        /// <param name="publicPemKey"></param>
+        /// <param name="encoding"></param>
+        /// <returns></returns>
         public static string EncryptWithPublicKey(this string input, string publicPemKey, Encoding encoding = null)
         {
             return EncryptWithPublicKey(input, publicPemKey.ToKey(), encoding);
         }
         
+        /// <summary>
+        /// Gets a base 64 encoded asymmetric cipher of the specified input.
+        /// </summary>
+        /// <param name="input"></param>
+        /// <param name="key"></param>
+        /// <param name="encoding"></param>
+        /// <param name="engine"></param>
+        /// <returns></returns>
         public static string EncryptWithPublicKey(this string input, AsymmetricKeyParameter key, Encoding encoding = null, IAsymmetricBlockCipher engine = null)
         {
             if (encoding == null)

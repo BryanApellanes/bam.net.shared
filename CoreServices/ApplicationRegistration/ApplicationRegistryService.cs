@@ -263,7 +263,7 @@ namespace Bam.Net.CoreServices
 
             string className = request.ClassName;
             string methodName = request.MethodName;
-            string stringToHash = ApiArguments.GetStringToHash(className, methodName, request.JsonArgs);
+            string stringToHash = ApiArguments.GetStringToHash(className, methodName, request.ArgumentsAsJsonArrayOfJsonStrings);
 
             string token = request.Context.Request.Headers[Headers.KeyToken];
             bool result = false;

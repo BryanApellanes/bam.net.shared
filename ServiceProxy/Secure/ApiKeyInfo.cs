@@ -53,7 +53,7 @@ namespace Bam.Net.ServiceProxy.Secure
         }
 
         /// <summary>
-        /// The shared secret; keep this value private
+        /// The shared secret; keep this value private.
         /// </summary>
         public string ApiKey
         {
