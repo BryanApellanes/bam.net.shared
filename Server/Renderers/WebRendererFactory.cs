@@ -33,14 +33,14 @@ namespace Bam.Net.Server.Renderers
 
         protected ILogger Logger { get; set; }
 
-        public void Respond(ExecutionRequest request, ContentResponder contentResponder)
+        public void Respond(ServiceProxyInvocation request, ContentResponder contentResponder)
         {
             IWebRenderer renderer = CreateRenderer(request, contentResponder);
 
             renderer.Respond(request);
         }
 
-        protected internal IWebRenderer CreateRenderer(ExecutionRequest request, ContentResponder contentResponder)
+        protected internal IWebRenderer CreateRenderer(ServiceProxyInvocation request, ContentResponder contentResponder)
         {
             IRequest webRequest = request.Request;
             IResponse webResponse = request.Response;

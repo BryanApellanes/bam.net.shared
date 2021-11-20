@@ -156,7 +156,7 @@ namespace Bam.Net.Services.Clients
             return $"{keyInfo.ApiKey}:{stringToHash}".HashHexString(HashAlgorithm);
         }
 
-        public bool IsValidRequest(ExecutionRequest request)
+        public bool IsValidRequest(ServiceProxyInvocation request)
         {
             Args.ThrowIfNull(request, "request");
             string stringToHash = ApiArguments.GetStringToHash(request);

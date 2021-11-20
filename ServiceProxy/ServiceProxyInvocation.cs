@@ -16,21 +16,21 @@ using System.Reflection;
 
 namespace Bam.Net.ServiceProxy
 {
-    public partial class ExecutionRequest
+    public class ServiceProxyInvocation
     {
-        static ExecutionRequest()
+        static ServiceProxyInvocation()
         {
             MaxRecursion = 5;
         }
 
-        public ExecutionRequest()
+        public ServiceProxyInvocation()
         {
             ViewName = "Default";
             IsInitialized = true;
             OnAnyInstanciated(this);
         }
 
-        public ExecutionRequest(string className, string methodName, string ext)
+        public ServiceProxyInvocation(string className, string methodName, string ext)
         {
             Context = new HttpContextWrapper();
             ViewName = "Default";
@@ -42,7 +42,7 @@ namespace Bam.Net.ServiceProxy
             OnAnyInstanciated(this);
         }
 
-        public ExecutionRequest(RequestWrapper request, ResponseWrapper response, params ProxyAlias[] aliases)
+        public ServiceProxyInvocation(RequestWrapper request, ResponseWrapper response, params ProxyAlias[] aliases)
         {
             Context = new HttpContextWrapper();
             Request = request;
@@ -51,7 +51,7 @@ namespace Bam.Net.ServiceProxy
             OnAnyInstanciated(this);
         }
 
-        public ExecutionRequest(IHttpContext context, Incubator serviceProvider, params ProxyAlias[] aliases)
+        public ServiceProxyInvocation(IHttpContext context, Incubator serviceProvider, params ProxyAlias[] aliases)
         {
             Context = context;
             ProxyAliases = aliases;
@@ -59,9 +59,9 @@ namespace Bam.Net.ServiceProxy
             OnAnyInstanciated(this);
         }
 
-        public static ExecutionRequest Create(Incubator incubator, MethodInfo method, params object[] parameters)
+        public static ServiceProxyInvocation Create(Incubator incubator, MethodInfo method, params object[] parameters)
         {
-            ExecutionRequest request = new ExecutionRequest()
+            ServiceProxyInvocation request = new ServiceProxyInvocation()
             {
                 ServiceProvider = incubator,
                 MethodName = method.Name,
@@ -79,7 +79,7 @@ namespace Bam.Net.ServiceProxy
         /// if it is intended for the SecureChannel
         /// </summary>
         /// <param name="execRequest"></param>
-        public static void DecryptSecureChannelInvoke(ExecutionRequest execRequest)
+        public static void DecryptSecureChannelInvoke(ServiceProxyInvocation execRequest)
         {
             if (execRequest.Instance != null &&
                 execRequest.Instance.GetType() == typeof(SecureChannel) &&
@@ -233,19 +233,19 @@ namespace Bam.Net.ServiceProxy
         /// <summary>
         /// Parse the Url to determine class, method and extension
         /// </summary>
-        protected internal virtual ExecutionTargetInfo ResolveExecutionTargetInfo()
+        protected internal virtual InvocationTargetInfo ResolveExecutionTargetInfo()
         {
             // TODO: to help de-bloat efforts stated in GetArguments(), these operations should be extracted into an IExecutionRequestTargetResolver interface.
 
             // parse the request url to set the className, methodName and ext
-            ExecutionTargetInfo executionTargetInfo = ResolveExecutionTarget(RequestUrl.AbsolutePath, ServiceProvider, ProxyAliases);
+            InvocationTargetInfo executionTargetInfo = ResolveExecutionTarget(RequestUrl.AbsolutePath, ServiceProvider, ProxyAliases);
             _className = executionTargetInfo.ClassName;
             _methodName = executionTargetInfo.MethodName;
-            _ext = executionTargetInfo.Ext;
+            _ext = "json";//executionTargetInfo.Ext;
             return executionTargetInfo;
         }
 
-        private static ExecutionTargetInfo ResolveExecutionTarget(string path, Incubator serviceProvider, ProxyAlias[] proxyAliases)
+        private static InvocationTargetInfo ResolveExecutionTarget(string path, Incubator serviceProvider, ProxyAlias[] proxyAliases)
         {
             if (path.StartsWith("/get", StringComparison.InvariantCultureIgnoreCase))
             {
@@ -260,7 +260,7 @@ namespace Bam.Net.ServiceProxy
                 path = path.TruncateFront("/serviceproxy".Length);
             }
 
-            return ExecutionTargetInfo.ResolveExecutionTarget(path, serviceProvider, proxyAliases);
+            return InvocationTargetInfo.ResolveInvocationTarget(path, serviceProvider, proxyAliases);
         }
 
         string _className;
@@ -734,67 +734,67 @@ namespace Bam.Net.ServiceProxy
             private set;
         }
 
-        public event EventHandler<ExecutionRequest> Initializing;
+        public event EventHandler<ServiceProxyInvocation> Initializing;
         protected void OnInitializing()
         {
             Initializing?.Invoke(this, this);
         }
-        public event EventHandler<ExecutionRequest> Initialized;
+        public event EventHandler<ServiceProxyInvocation> Initialized;
         protected void OnInitialized()
         {
             Initialized?.Invoke(this, this);
         }
 
-        public static event Action<ExecutionRequest> AnyInstanciated;     
-        protected static void OnAnyInstanciated(ExecutionRequest request)
+        public static event Action<ServiceProxyInvocation> AnyInstanciated;     
+        protected static void OnAnyInstanciated(ServiceProxyInvocation request)
         {
             AnyInstanciated?.Invoke(request);
         }
 
-        public static event Action<ExecutionRequest, object> AnyExecuting;
+        public static event Action<ServiceProxyInvocation, object> AnyExecuting;
         protected void OnAnyExecuting(object target)
         {
             AnyExecuting?.Invoke(this, target);
         }
-        public static event Action<ExecutionRequest, object> AnyExecuted;
+        public static event Action<ServiceProxyInvocation, object> AnyExecuted;
         protected void OnAnyExecuted(object target)
         {
             AnyExecuted?.Invoke(this, target);
         }
 
-        public event Action<ExecutionRequest, object> Executing;
+        public event Action<ServiceProxyInvocation, object> Executing;
         protected void OnExecuting(object target)
         {
             Executing?.Invoke(this, target);
         }
 
-        public event Action<ExecutionRequest, object> AnyExecutionException;
+        public event Action<ServiceProxyInvocation, object> AnyExecutionException;
 
         protected void OnAnyExecutionException(object target)
         {
             AnyExecutionException?.Invoke(this, target);
         }
         
-        public event Action<ExecutionRequest, object> ExecutionException;
+        public event Action<ServiceProxyInvocation, object> ExecutionException;
 
         protected void OnExecutionException(object target)
         {
             ExecutionException?.Invoke(this, target);
         }
         
-        public event Action<ExecutionRequest, object> Executed;
+        public event Action<ServiceProxyInvocation, object> Executed;
         protected void OnExecuted(object target)
         {
             Executed?.Invoke(this, target);
         }
 
-        public event Action<ExecutionRequest, object> ContextSet;
+        public event Action<ServiceProxyInvocation, object> ContextSet;
         protected void OnContextSet(object target)
         {
             ContextSet?.Invoke(this, target);
         }
 
-        public event Action<ExecutionRequest, object> ServiceProviderSet;
+        public event Action<ServiceProxyInvocation, object> ServiceProviderSet;
         protected void OnServiceProviderSet(object target)
         {
             ServiceProviderSet?.Invoke(this, target);

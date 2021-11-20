@@ -14,20 +14,15 @@ namespace Bam.Net.ServiceProxy
 {
     public class ServiceProxyInvokeEventArgs<TService>: ServiceProxyInvokeEventArgs
     {
-        public ServiceProxyInvokeEventArgs()
+        public ServiceProxyInvokeEventArgs(ServiceProxyInvokeRequest serviceProxyInvokeRequest) : base(serviceProxyInvokeRequest)
         {
-            this.InvokeRequest = new ServiceProxyInvokeRequest<TService>();
+            this.InvokeRequest = serviceProxyInvokeRequest;
             this.Cuid = NCuid.Cuid.Generate();
         }
 
-        public ServiceProxyInvokeEventArgs(bool cancelInvoke) : this()
+        public ServiceProxyInvokeEventArgs(ServiceProxyInvokeRequest serviceProxyInvokeRequest, bool cancelInvoke = false) : this(serviceProxyInvokeRequest)
         {
             this.CancelInvoke = cancelInvoke;
-        }
-
-        public ServiceProxyInvokeEventArgs(ServiceProxyInvokeRequest request, bool cancelInvoke = false) : this(cancelInvoke)
-        {
-            this.InvokeRequest = request;
         }
 
         public new ServiceProxyClient<TService> Client
@@ -39,20 +34,10 @@ namespace Bam.Net.ServiceProxy
 
     public class ServiceProxyInvokeEventArgs: EventArgs
     {
-        public ServiceProxyInvokeEventArgs()
+        public ServiceProxyInvokeEventArgs(ServiceProxyInvokeRequest serviceProxyInvokeRequest)
         {
-            this.InvokeRequest = new ServiceProxyInvokeRequest();
+            this.InvokeRequest = serviceProxyInvokeRequest;
             this.Cuid = NCuid.Cuid.Generate();
-        }
-
-        public ServiceProxyInvokeEventArgs(bool cancelInvoke) : this()
-        {
-            this.CancelInvoke = cancelInvoke;
-        }
-
-        public ServiceProxyInvokeEventArgs(ServiceProxyInvokeRequest request, bool cancelInvoke = false): this(cancelInvoke)
-        {
-            this.InvokeRequest = request;
         }
 
         public ServiceProxyInvokeRequest InvokeRequest { get; set; }

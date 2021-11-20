@@ -87,12 +87,12 @@ namespace Bam.Net.Server
             });
         }
 
-        public bool CanHandle(IRequest request, out ExecutionRequest executionRequest)
+        public bool CanHandle(IRequest request, out ServiceProxyInvocation executionRequest)
         {
             throw new NotImplementedException();
         }
         
-        public ExecutionRequest ResolveRequest(string url)
+        public ServiceProxyInvocation ResolveRequest(string url)
         {
             throw new NotImplementedException();
         }

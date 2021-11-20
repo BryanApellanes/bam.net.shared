@@ -20,11 +20,21 @@ namespace Bam.Net.Web
         public ProxyAlias(string alias, Type typeToAlias)
         {
             this.Alias = alias;
-            this.ClassName = typeToAlias.Name;
+			this.Type = typeToAlias;
         }
 
         public string Alias { get; set; }
-        public string ClassName { get; set; }
+        
+		public string ClassName 
+		{
+			get => Type.Name;
+		}
+
+		public Type Type
+		{
+			get;
+			set;
+		}
 
 		public override string ToString()
 		{

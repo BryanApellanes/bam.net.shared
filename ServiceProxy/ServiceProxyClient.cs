@@ -26,6 +26,7 @@ namespace Bam.Net.ServiceProxy
             : base() 
         {
             this.ServiceType = serviceType;
+            this.BaseAddress = baseAddress;
             this.HttpClient = new HttpClient() { BaseAddress = new Uri(baseAddress) };
             this.Headers = new Dictionary<string, string>()
             {
@@ -182,12 +183,12 @@ namespace Bam.Net.ServiceProxy
                 _logger = value;
             }
         }
-
+/*
         /// <summary>
         /// The class responsible for providing the name of the
         /// current application.
         /// </summary>
-        public IApplicationNameProvider ClientApplicationNameProvider { get; set; }
+        public IApplicationNameProvider ClientApplicationNameProvider { get; set; }*/
 
         public string UserAgent
         {
@@ -235,7 +236,7 @@ namespace Bam.Net.ServiceProxy
 
         public async Task<string> ReceivePostResponseAsync(string methodName, params object[] arguments)
         {
-            return await ReceivePostResponseAsync(new ServiceProxyInvokeRequest() { BaseAddress = BaseAddress, ServiceType = ServiceType, MethodName = methodName, Arguments = arguments });
+            return await ReceivePostResponseAsync(new ServiceProxyInvokeRequest(this, BaseAddress, ServiceType.Name, methodName, arguments));
         }
 
         public virtual async Task<string> ReceivePostResponseAsync(ServiceProxyInvokeRequest serviceProxyInvokeRequest)
@@ -276,7 +277,7 @@ namespace Bam.Net.ServiceProxy
         public async Task<string> ReceiveGetResponseAsync(string methodName, params object[] arguments)
         {
             MethodInfo methodInfo = ServiceType.GetMethod(methodName, arguments.Select(argument => argument.GetType()).ToArray());
-            return await ReceiveGetResponseAsync(new ServiceProxyInvokeRequest { BaseAddress = BaseAddress, ClassName = ServiceType.Name, MethodName = methodName, Arguments = arguments });
+            return await ReceiveGetResponseAsync(new ServiceProxyInvokeRequest(this, BaseAddress, ServiceType.Name, methodName, arguments));
         }
 
         public virtual async Task<string> ReceiveGetResponseAsync(ServiceProxyInvokeRequest request)
@@ -292,7 +293,7 @@ namespace Bam.Net.ServiceProxy
             }
             else
             {
-                HttpRequestMessage requestMessage = await CreateServiceProxyRequestMessageAsync(ServiceProxyVerbs.Get, request.MethodName, request.Arguments);
+                HttpRequestMessage requestMessage = await CreateServiceProxyRequestMessageWithArgumentsAsync(ServiceProxyVerbs.Get, request.MethodName, request.Arguments);
                 HttpResponseMessage response = await HttpClient.SendAsync(requestMessage);
                 args.RequestMessage = requestMessage;
                 args.ResponseMessage = response;
@@ -303,12 +304,12 @@ namespace Bam.Net.ServiceProxy
             return result;
         }
 
-        protected virtual internal Task<HttpRequestMessage> CreateServiceProxyRequestMessageAsync(ServiceProxyInvokeRequest request, ServiceProxyArguments arguments)
+/*        protected virtual internal Task<HttpRequestMessage> CreateServiceProxyRequestMessageAsync(ServiceProxyInvokeRequest request, ServiceProxyArguments arguments)
         {
             return CreateServiceProxyRequestMessageAsync(arguments.Verb, request.ClassName, request.MethodName, arguments.QueryStringArguments);
-        }
+        }*/
 
-        protected internal async Task<HttpRequestMessage> CreateServiceProxyRequestMessageAsync(ServiceProxyVerbs verb, string methodName, params object[] arguments)
+        protected internal async Task<HttpRequestMessage> CreateServiceProxyRequestMessageWithArgumentsAsync(ServiceProxyVerbs verb, string methodName, params object[] arguments)
         {
             Dictionary<string, object> namedArguments = ApiArgumentProvider.GetNamedArguments(methodName, arguments);
             string queryString = ApiArgumentProvider.ArgumentsToQueryString(namedArguments);

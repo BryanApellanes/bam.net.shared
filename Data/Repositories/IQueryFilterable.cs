@@ -5,7 +5,7 @@ namespace Bam.Net.Data.Repositories
 {
     /// <summary>
     /// When implemented by a derived class, enables querying of persisted types using
-    /// QueryFilter objects.
+    /// QueryFilter objects.  See also, <see cref="QueryFilter"/>
     /// </summary>
     public interface IQueryFilterable
     {

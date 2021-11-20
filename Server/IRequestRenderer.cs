@@ -14,6 +14,6 @@ namespace Bam.Net.Server
 {
     public interface IRequestRenderer: IWebRenderer
     {
-        ExecutionRequest Request { get; set; }
+        ServiceProxyInvocation Request { get; set; }
     }
 }

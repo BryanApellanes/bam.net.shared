@@ -43,7 +43,7 @@ namespace Bam.Net.Server
             _respondToPrefixes = new List<string>();
             _ignorePrefixes = new List<string>();
 
-            AddRespondToPrefix(ResponderSignificantName);
+            AddRespondToPrefix(ResponderName);
             ApplicationServiceRegistry = conf?.Server?.LoadApplicationServiceRegistry()?.Result;
         }
 
@@ -379,16 +379,16 @@ namespace Bam.Net.Server
         /// <summary>
         /// The name of the current responder with the "Responder" suffix removed.
         /// </summary>
-        protected internal virtual string ResponderSignificantName
+        protected internal virtual string ResponderName
         {
             get
             {
-                string responderSignificantName = this.Name;
-                if (responderSignificantName.EndsWith("Responder", StringComparison.InvariantCultureIgnoreCase))
+                string responderName = this.Name;
+                if (responderName.EndsWith("Responder", StringComparison.InvariantCultureIgnoreCase))
                 {
-                    responderSignificantName = responderSignificantName.Truncate(9);
+                    responderName = responderName.Truncate(9);
                 }
-                return responderSignificantName;
+                return responderName;
             }
         }
 

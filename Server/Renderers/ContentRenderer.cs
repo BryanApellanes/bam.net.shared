@@ -17,14 +17,14 @@ namespace Bam.Net.Server.Renderers
 {
     public abstract class ContentRenderer: WebRenderer
     {
-        public ContentRenderer(ExecutionRequest request, ContentResponder content, string contentType, params string[] extensions)
+        public ContentRenderer(ServiceProxyInvocation request, ContentResponder content, string contentType, params string[] extensions)
             :base(contentType, extensions)
         {
             this.ExecutionRequest = request;
             this.ContentResponder = content;
         }
 
-        protected ExecutionRequest ExecutionRequest
+        protected ServiceProxyInvocation ExecutionRequest
         {
             get;
             set;

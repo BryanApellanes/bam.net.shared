@@ -67,10 +67,15 @@ namespace Bam.Net.ServiceProxy.Secure
             set;
         }
 
-        public string Encrypt(string plainText)
+        public string GetSymetricCipher(string plainText)
         {
             Encrypted encrypted = new Encrypted(plainText, SessionKey, SessionIV);
             return encrypted.Base64Cipher;
+        }
+
+        public string GetAsymetricCipher(string plainText)
+        {
+            return plainText.EncryptWithPublicKey(PublicKey);
         }
 
         public override bool Equals(object obj)

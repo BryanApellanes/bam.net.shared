@@ -13,14 +13,14 @@ namespace Bam.Net.Data
 {
     public class ValidationResult
     {
-        readonly ExecutionRequest _toValidate;
+        readonly ServiceProxyInvocation _toValidate;
 
         public ValidationResult()
         {
             this.Success = true;
         }
 
-        public ValidationResult(ExecutionRequest request, string messageDelimiter = null)
+        public ValidationResult(ServiceProxyInvocation request, string messageDelimiter = null)
         {
             _toValidate = request;
             Delimiter = messageDelimiter ?? ",\r\n";

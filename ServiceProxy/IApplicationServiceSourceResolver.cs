@@ -7,7 +7,7 @@ namespace Bam.Net.ServiceProxy
     /// <summary>
     /// When implemented, provides a mechanism to resolve the location of all service source files for compilation.
     /// </summary>
-    public interface IApplicationServiceSourceResolver
+    public interface IApplicationServiceSourceResolver  
     {
         event EventHandler CompilationException;
         ApplicationServiceAssembly CompileAppServices(AppConf appConf);

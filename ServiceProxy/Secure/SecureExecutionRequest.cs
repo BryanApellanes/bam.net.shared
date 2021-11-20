@@ -14,7 +14,7 @@ namespace Bam.Net.ServiceProxy.Secure
     /// An ExecutionRequest that encrypts the result
     /// when executed.
     /// </summary>
-    public class SecureExecutionRequest: ExecutionRequest
+    public class SecureExecutionRequest: ServiceProxyInvocation
     {
         public SecureExecutionRequest(IHttpContext context, string className, string methodName, string jsonArgs)
         {
@@ -63,16 +63,16 @@ namespace Bam.Net.ServiceProxy.Secure
             IsInitialized = true;
         }
 
-        protected internal override ExecutionTargetInfo ResolveExecutionTargetInfo()
+        protected internal override InvocationTargetInfo ResolveExecutionTargetInfo()
         {
             // effectively turns off parsing of the url since
             // everything is explicitly set already
             //base.ParseRequestUrl();
-            return new ExecutionTargetInfo
+            return new InvocationTargetInfo
             {
                 ClassName = ClassName,
                 MethodName = MethodName,
-                Ext = Ext
+                //Ext = Ext
             };
         }
 

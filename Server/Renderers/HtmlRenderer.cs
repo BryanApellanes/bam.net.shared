@@ -13,7 +13,7 @@ namespace Bam.Net.Server.Renderers
 {
     public class HtmlRenderer: ContentRenderer
     {
-        public HtmlRenderer(ExecutionRequest request, ContentResponder contentResponder)
+        public HtmlRenderer(ServiceProxyInvocation request, ContentResponder contentResponder)
             : base(request, contentResponder, "text/html", ".htm", ".html")
         {
             this.AppName = UriApplicationNameResolver.ResolveApplicationName(request.Request.Url);

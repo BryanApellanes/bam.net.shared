@@ -9,8 +9,6 @@ namespace Bam.Net.ServiceProxy.Secure
 {
     public class SecureServiceProxyArguments<TService> : ServiceProxyArguments<TService>
     {
-        public const string SymetricCipherMediaType = "application/vnd.bam+cipher;algorithm=symetric";
-
         public SecureServiceProxyArguments(ClientSessionInfo clientSessionInfo, IApiKeyResolver apiKeyResolver, IApiEncryptionProvider apiEncryptionProvider, ServiceProxyInvokeRequest serviceProxyInvokeRequest) : base(serviceProxyInvokeRequest)
         {
             this.ApiKeyResolver = apiKeyResolver;
@@ -53,9 +51,9 @@ namespace Bam.Net.ServiceProxy.Secure
         /// <param name="requestMessage"></param>
         public override void SetContent(HttpRequestMessage requestMessage)
         {
-            SecureChannelRequestMessage<TService> secureChannelRequestMessage = new SecureChannelRequestMessage<TService>(ServiceProxyInvokeRequest);
+            SecureChannelRequestMessage secureChannelRequestMessage = new SecureChannelRequestMessage(ServiceProxyInvokeRequest);
 
-            requestMessage.Content = secureChannelRequestMessage.GetContent(ClientSessionInfo);
+            requestMessage.Content = secureChannelRequestMessage.GetSymetricCipherContent(ClientSessionInfo);
             secureChannelRequestMessage.SetEncryptedValidationTokenHeaders(ApiEncryptionProvider, ClientSessionInfo, requestMessage);
         }
     }

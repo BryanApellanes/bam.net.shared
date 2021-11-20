@@ -11,6 +11,10 @@ namespace Bam.Net.Server
 {
     public interface IRequestHandler
     {
-        void HandleRequest(IHttpContext context);
+        event EventHandler HandleRequestStarted;
+        event EventHandler HandleRequestCompleted;
+        event EventHandler HandleRequestExceptionThrown;
+
+        IHandleRequestResult HandleRequest(IHttpContext context);        
     }
 }

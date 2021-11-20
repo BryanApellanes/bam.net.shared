@@ -24,7 +24,7 @@ namespace Bam.Net.Server
         public bool IsHomeRequest(string uri, out RequestRoute requestRoute)
         {
             HomeRoute homeRoute = new HomeRoute(uri);
-            requestRoute = ToRequestRoute(uri);
+            requestRoute = GetRequestRoute(uri);
             return homeRoute.IsValid;
         }
 
@@ -36,7 +36,7 @@ namespace Bam.Net.Server
         public bool IsHomeRequest(Uri uri, out RequestRoute requestRoute)
         {
             HomeRoute homeRoute = new HomeRoute(uri);
-            requestRoute = ToRequestRoute(uri);
+            requestRoute = GetRequestRoute(uri);
             return homeRoute.IsValid;
         }
         
@@ -45,12 +45,12 @@ namespace Bam.Net.Server
         /// </summary>
         public string PathName { get; set; }
 
-        public RequestRoute ToRequestRoute(string url)
+        public RequestRoute GetRequestRoute(string url)
         {
-            return ToRequestRoute(new Uri(url));
+            return GetRequestRoute(new Uri(url));
         }
 
-        public RequestRoute ToRequestRoute(Uri uri)
+        public RequestRoute GetRequestRoute(Uri uri)
         {
             Dictionary<string, string> values = ToRouteValues(uri);
             return new RequestRoute

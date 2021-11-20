@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace Bam.Net.Services.DataReplication
 {
     /// <summary>
-    /// A class that provides a universal mapping between numeric (long) id values and Types.
+    /// A class that provides a universal mapping between numeric (ulong) id values and Types.
     /// The id of a type uniquely identifies a type by its fully qualified namespace name.
     /// </summary>
     public partial class TypeMap
@@ -24,8 +24,8 @@ namespace Bam.Net.Services.DataReplication
         public TypeMap(SystemPaths paths)
         {
             MappedTypes = new HashSet<Type>();
-            TypeMappings = new ConcurrentDictionary<long, string>();
-            PropertyMappings = new ConcurrentDictionary<long, string>();
+            TypeMappings = new ConcurrentDictionary<ulong, string>();
+            PropertyMappings = new ConcurrentDictionary<ulong, string>();
             
             if(paths != null)
             {
@@ -51,8 +51,8 @@ namespace Bam.Net.Services.DataReplication
 
         protected HashSet<Type> MappedTypes { get; set; }
 
-        public ConcurrentDictionary<long, string> TypeMappings { get; set; }
-        public ConcurrentDictionary<long, string> PropertyMappings { get; set; }
+        public ConcurrentDictionary<ulong, string> TypeMappings { get; set; }
+        public ConcurrentDictionary<ulong, string> PropertyMappings { get; set; }
 
         public void AddMapping(CompositeKeyAuditRepoData instance)
         {
@@ -75,7 +75,7 @@ namespace Bam.Net.Services.DataReplication
         /// </summary>
         /// <param name="typeId">The type identifier.</param>
         /// <returns></returns>
-        public string GetTypeName(long typeId)
+        public string GetTypeName(ulong typeId)
         {
             if(TypeMappings.TryGetValue(typeId, out string value))
             {
@@ -94,7 +94,7 @@ namespace Bam.Net.Services.DataReplication
             return GetTypeShortName(GetTypeId(instance));
         }
 
-        public string GetTypeShortName(long typeId)
+        public string GetTypeShortName(ulong typeId)
         {
             return GetTypeName(typeId).DelimitSplit(".").Last();
         }
@@ -105,7 +105,7 @@ namespace Bam.Net.Services.DataReplication
         /// </summary>
         /// <param name="propertyId">The property identifier.</param>
         /// <returns></returns>
-        public string GetPropertyName(long propertyId)
+        public string GetPropertyName(ulong propertyId)
         {
             if(PropertyMappings.TryGetValue(propertyId, out string value))
             {
@@ -114,22 +114,22 @@ namespace Bam.Net.Services.DataReplication
             return propertyId.ToString();
         }
 
-        public string GetPropertyShortName(long propertyId)
+        public string GetPropertyShortName(ulong propertyId)
         {
             string propAndType = GetPropertyName(propertyId).DelimitSplit(".").Last();
             return propAndType.DelimitSplit("__").First();
         }
         
-        protected long AddPropertyMapping(PropertyInfo property)
+        protected ulong AddPropertyMapping(PropertyInfo property)
         {
-            long key = GetPropertyId(property, out string name);
+            ulong key = GetPropertyId(property, out string name);
             PropertyMappings.TryAdd(key, name);
             return key;
         }
 
-        protected long AddTypeMapping(Type type)
+        protected ulong AddTypeMapping(Type type)
         {
-            long key = GetTypeId(type, out string name);
+            ulong key = GetTypeId(type, out string name);
             TypeMappings.TryAdd(key, name);
             return key;
         }
@@ -140,43 +140,43 @@ namespace Bam.Net.Services.DataReplication
             return dynamicType.GetProperties();
         }
 
-        public static long GetTypeId(CompositeKeyAuditRepoData instance)
+        public static ulong GetTypeId(CompositeKeyAuditRepoData instance)
         {
             return GetTypeId(instance, out object ignore1, out Type ignore2);
         }
 
-        public static long GetTypeId(Type type)
+        public static ulong GetTypeId(Type type)
         {
             return GetTypeId(type, out string ignore);
         }
 
-        public static long GetTypeId(Type type, out string name)
+        public static ulong GetTypeId(Type type, out string name)
         {
             name = NormalizeName(type);
             // TODO: change this implementation to account for property definitions, this allows definitions to be valid across updates to type schemas
             // TODO: define TypeMigration mapping old Type to new Type after change of schema
-            return name.ToSha256Long();
+            return name.ToSha256ULong();
         }
 
-        public static long GetPropertyId(PropertyInfo prop)
+        public static ulong GetPropertyId(PropertyInfo prop)
         {
             return GetPropertyId(prop, out string ignore);
         }
 
-        public static long GetPropertyId(PropertyInfo prop, out string name)
+        public static ulong GetPropertyId(PropertyInfo prop, out string name)
         {
             name = NormalizeName(prop);
-            return name.ToSha256Long();
+            return name.ToSha256ULong();
         }
 
-        public static long GetTypeId(string typeNamespace, string typeName)
+        public static ulong GetTypeId(string typeNamespace, string typeName)
         {
-            return $"{typeNamespace}.{typeName}".ToSha256Long();
+            return $"{typeNamespace}.{typeName}".ToSha256ULong();
         }
 
-        public static long GetPropertyId(string typeNamespace, string typeName, string propertyName)
+        public static ulong GetPropertyId(string typeNamespace, string typeName, string propertyName)
         {
-            return $"{typeNamespace}.{typeName}.{propertyName}__object".ToSha256Long();
+            return $"{typeNamespace}.{typeName}.{propertyName}__object".ToSha256ULong();
         }
 
         private static string NormalizeName(Type type)

@@ -2166,7 +2166,7 @@ namespace Bam.Net
 
         public static bool TryFromJson<T>(this string json)
         {
-            return TryFromJson<T>(json, out T ignore);
+            return TryFromJson<T>(json, out T _);
         }
 
         public static bool TryFromJson<T>(this string json, out T instance)

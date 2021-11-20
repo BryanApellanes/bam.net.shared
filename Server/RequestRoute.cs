@@ -17,8 +17,8 @@ namespace Bam.Net.Server
         public string Protocol { get; set; }
         public string Domain { get; set; }
         public string PathAndQuery { get; set; }
+
         protected internal Uri OriginalUrl { get; set; }
         protected internal Dictionary<string, string> ParsedValues { get; set; }
-
     }
 }

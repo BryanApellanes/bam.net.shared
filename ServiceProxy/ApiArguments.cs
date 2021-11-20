@@ -30,7 +30,7 @@ namespace Bam.Net.ServiceProxy
     /// </summary>
     public class ApiArguments
     {
-        public static string GetStringToHash(ExecutionRequest request)
+        public static string GetStringToHash(ServiceProxyInvocation request)
         {
             return GetStringToHash(request.ClassName, request.MethodName, request.ArgumentsAsJsonArrayOfJsonStrings);
         }

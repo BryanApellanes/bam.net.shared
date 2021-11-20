@@ -20,7 +20,7 @@ namespace Bam.Net.ServiceProxy.Secure
         string GetApplicationClientId(IApplicationNameProvider nameProvider);
         string GetApplicationName();
         string GetCurrentApiKey();
-        bool IsValidRequest(ExecutionRequest request);
+        bool IsValidRequest(ServiceProxyInvocation request);
         bool IsValidKeyToken(string stringToHash, string token);
 
         void SetKeyToken(HttpRequestMessage request, string stringToHash);

@@ -6,9 +6,10 @@ using System.Text.Json.Serialization;
 
 namespace Bam.Net.ServiceProxy.Secure
 {
-    public class SecureChannelRequestMessage<TService>
+    public class SecureChannelRequestMessage//<TService>
     {
         public const string AsymetricCipherMediaType = "application/vnd.bam+cipher;algorithm=asymetric";
+        public const string SymetricCipherMediaType = "application/vnd.bam+cipher;algorithm=symetric";
 
         public SecureChannelRequestMessage(ServiceProxyInvokeRequest serviceProxyInvokeRequest)
         {
@@ -21,19 +22,34 @@ namespace Bam.Net.ServiceProxy.Secure
         public string MethodName { get; set; }
         public string JsonArgs { get; set; }
 
-        public StringContent GetContent(ClientSessionInfo clientSessionInfo)
+        public StringContent GetSymetricCipherContent(ClientSessionInfo clientSessionInfo)
         {
-            return new StringContent(GetCipher(clientSessionInfo), Encoding.UTF8, AsymetricCipherMediaType);
+            return new StringContent(GetSymetricCipher(clientSessionInfo), Encoding.UTF8, SymetricCipherMediaType);
+        }
+
+        public StringContent GetAsymetricCipherContent(ClientSessionInfo clientSessionInfo)
+        {
+            return new StringContent(GetAsymetricCipher(clientSessionInfo), Encoding.UTF8, AsymetricCipherMediaType);
         }
 
         /// <summary>
-        /// Gets the cipher of the current message.
+        /// Gets the symetric cipher of the current message.
         /// </summary>
         /// <param name="clientSessionInfo"></param>
         /// <returns></returns>
-        public string GetCipher(ClientSessionInfo clientSessionInfo)
+        public string GetSymetricCipher(ClientSessionInfo clientSessionInfo)
         {
-            return clientSessionInfo.Encrypt(this.ToJson());
+            return clientSessionInfo.GetSymetricCipher(this.ToJson());
+        }
+
+        /// <summary>
+        /// Gets the asymetric cipher of the current message.
+        /// </summary>
+        /// <param name="clientSessionInfo"></param>
+        /// <returns></returns>
+        public string GetAsymetricCipher(ClientSessionInfo clientSessionInfo)
+        {
+            return clientSessionInfo.GetAsymetricCipher(this.ToJson());
         }
 
         public void SetEncryptedValidationTokenHeaders(IApiEncryptionProvider encryptionProvider, ClientSessionInfo clientSessionInfo, HttpRequestMessage requestMessage)

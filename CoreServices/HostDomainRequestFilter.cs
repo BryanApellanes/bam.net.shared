@@ -15,7 +15,7 @@ namespace Bam.Net.CoreServices
     /// </summary>
     public class HostDomainAuthorizedAttribute : RequestFilterAttribute
     {
-        public override bool RequestIsAllowed(ExecutionRequest request, out string failureMessage)
+        public override bool RequestIsAllowed(ServiceProxyInvocation request, out string failureMessage)
         {
             Args.ThrowIfNull(request, "request");
             Args.ThrowIfNull(request.Instance, "request.Instance");

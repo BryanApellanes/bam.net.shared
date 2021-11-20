@@ -941,9 +941,9 @@ namespace Bam.Net.Server
         /// <param name="responder"></param>
         public void AddResponder(Responder responder)
         {
-            if (!_respondersByName.ContainsKey(responder.ResponderSignificantName))
+            if (!_respondersByName.ContainsKey(responder.ResponderName))
             {
-                _respondersByName.AddMissing(responder.ResponderSignificantName, responder);
+                _respondersByName.AddMissing(responder.ResponderName, responder);
                 _responders.Add(responder);
                 ResponderAdded?.Invoke(this, responder);
             }
@@ -959,9 +959,9 @@ namespace Bam.Net.Server
             {
                 _responders.Remove(responder);
             }
-            if (_respondersByName.ContainsKey(responder.ResponderSignificantName))
+            if (_respondersByName.ContainsKey(responder.ResponderName))
             {
-                _respondersByName.Remove(responder.ResponderSignificantName);
+                _respondersByName.Remove(responder.ResponderName);
             }
         }
 
@@ -1010,6 +1010,7 @@ namespace Bam.Net.Server
         {
             IRequest request = context.Request;
             IResponse response = context.Response;
+
             ResponderList responder = new ResponderList(_conf, _responders);
             try
             {   

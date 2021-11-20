@@ -7,7 +7,7 @@ namespace Bam.Net.ServiceProxy
 {
     public interface IApiArgumentProvider
     {
-        string GetStringToHash(ExecutionRequest request);
+        string GetStringToHash(ServiceProxyInvocation request);
         string GetStringToHash(string className, string methodName, string jsonArguments);
 
         string ArgumentsToJsonArgsMember(params object[] arguments);

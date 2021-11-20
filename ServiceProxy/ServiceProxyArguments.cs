@@ -129,6 +129,11 @@ namespace Bam.Net.ServiceProxy
             return ServiceType.GetMethod(MethodName, Arguments.Select(argument => argument.GetType()).ToArray());
         }
 
+        /// <summary>
+        /// Gets an anonymous object that represents a json member with the name of `jsonArgs` whose 
+        /// value is a json serialized array of json strings.
+        /// </summary>
+        /// <returns></returns>
         public string GetJsonArgsMember()
         {
             return this.ApiArgumentProvider.ArgumentsToJsonArgsMember(Arguments);

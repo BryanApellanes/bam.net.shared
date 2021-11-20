@@ -9,18 +9,16 @@ using System.Threading.Tasks;
 namespace Bam.Net.ServiceProxy
 {
     /// <summary>
-    /// Represents a ClassName and MethodName plus file extension
-    /// referenced for execution.
+    /// Represents a ClassName and MethodName referenced for execution.
     /// </summary>
-    public class ExecutionTargetInfo
+    public class InvocationTargetInfo
     {
         public string ClassName { get; set; }
         public string MethodName { get; set; }
-        public string Ext { get; set; }
 
-        public static ExecutionTargetInfo ResolveExecutionTarget(string path, Incubator serviceProvider, ProxyAlias[] proxyAliases)
+        public static InvocationTargetInfo ResolveInvocationTarget(string path, Incubator serviceProvider, ProxyAlias[] proxyAliases)
         {
-            ExecutionTargetInfo result = new ExecutionTargetInfo();
+            InvocationTargetInfo result = new InvocationTargetInfo();
 
             Queue<string> split = new Queue<string>(path.DelimitSplit("/", "."));
             while (split.Count > 0)
@@ -49,10 +47,6 @@ namespace Bam.Net.ServiceProxy
                 else if (string.IsNullOrEmpty(result.MethodName))
                 {
                     result.MethodName = currentChunk;
-                }
-                else if (string.IsNullOrEmpty(result.Ext))
-                {
-                    result.Ext = currentChunk;
                 }
             }
 

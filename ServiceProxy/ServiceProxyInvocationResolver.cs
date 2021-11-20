@@ -1,4 +1,5 @@
-﻿using Bam.Net.Incubation;
+﻿using Bam.Net.CoreServices;
+using Bam.Net.Incubation;
 using Bam.Net.Logging;
 using Bam.Net.ServiceProxy.Secure;
 using Bam.Net.Web;
@@ -13,31 +14,31 @@ namespace Bam.Net.ServiceProxy
     /// <summary>
     /// Class used to determine what method to execute for a given HttpContext.
     /// </summary>
-    public class ExecutionRequestResolver: IExecutionRequestResolver
+    public class ServiceProxyInvocationResolver: IServiceProxyInvocationResolver
     {
-        public ExecutionRequestResolver(ILogger logger = null)
+        public ServiceProxyInvocationResolver(ILogger logger = null)
         {
             Logger = logger;
         }
 
-        public ExecutionRequestResolver(IHttpContext context, Incubator serviceProvider, params ProxyAlias[] aliases)
+        public ServiceProxyInvocationResolver(ServiceRegistry serviceProvider, params ProxyAlias[] aliases)
         {
             ServiceProvider = serviceProvider;
-            HttpContext = context;
+            //HttpContext = context;
             ProxyAliases = aliases;
         }
 
-        public Incubator ServiceProvider { get; set; }
-        public IHttpContext HttpContext { get; set; }
+        public ServiceRegistry ServiceProvider { get; set; }
+        //public IHttpContext HttpContext { get; set; }
         public ProxyAlias[] ProxyAliases { get; set; }
         public ILogger Logger { get; set; }
-        public virtual ExecutionRequest ResolveExecutionRequest()
+/*        public virtual ExecutionRequest ResolveExecutionRequest()
         {
             Args.ThrowIfNull(ServiceProvider, $"{nameof(ExecutionRequestResolver)}.{nameof(ServiceProvider)}");
             Args.ThrowIfNull(HttpContext, $"{nameof(ExecutionRequestResolver)}.{nameof(HttpContext)}");
             Args.ThrowIfNull(ProxyAliases, $"{nameof(ExecutionRequestResolver)}.{nameof(ProxyAliases)}");
             return ResolveExecutionRequest(HttpContext, ServiceProvider, ProxyAliases);
-        }
+        }*/
 
         /// <summary>
         /// Analyzes the specified IHttpContext, Incubator and ProxyAlias array
@@ -47,22 +48,22 @@ namespace Bam.Net.ServiceProxy
         /// <param name="serviceProvider"></param>
         /// <param name="aliases"></param>
         /// <returns></returns>
-        public virtual ExecutionRequest ResolveExecutionRequest(IHttpContext httpContext, Incubator serviceProvider, params ProxyAlias[] aliases)
+        public virtual ServiceProxyInvocation ResolveInvocationRequest(IHttpContext httpContext, Incubator serviceProvider, params ProxyAlias[] aliases)
         {
             // TODO: refactor this method to analyze httpContext.Request.ContentType
             // See ExecutionRequest.GetArguments see commit (2526558ea460852c033d1151dc190308a9feaefd)
-            ExecutionRequest execRequest = new ExecutionRequest(httpContext, serviceProvider, aliases)
+            ServiceProxyInvocation execRequest = new ServiceProxyInvocation(httpContext, serviceProvider, aliases)
             {
                 Logger = Logger ?? Log.Default
             };            
             
-            ExecutionRequest.DecryptSecureChannelInvoke(execRequest);
+            ServiceProxyInvocation.DecryptSecureChannelInvoke(execRequest);
             return execRequest;
         }   
         
-        public virtual ExecutionTargetInfo ResolveExecutionTarget(IHttpContext context)
+        public virtual InvocationTargetInfo ResolveInvocationTarget(IHttpContext context)
         {
-            return ExecutionTargetInfo.ResolveExecutionTarget(context.Request.Url.AbsolutePath, ServiceProvider, ProxyAliases);
+            return InvocationTargetInfo.ResolveInvocationTarget(context.Request.Url.AbsolutePath, ServiceProvider, ProxyAliases);
         }
 
         

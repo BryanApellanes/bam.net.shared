@@ -20,10 +20,8 @@ using Org.BouncyCastle.Security;
 
 namespace Bam.Net.ServiceProxy
 {
-    public partial class ServiceProxySystem
+    public static class ServiceProxySystem
     {
-        public const string ServiceProxyPartialFormat = "~/Views/ServiceProxy/{0}/{1}";
-
         static ServiceProxySystem()
         {
             UserResolvers = new UserResolvers();
@@ -138,7 +136,6 @@ namespace Bam.Net.ServiceProxy
         /// <param name="type"></param>
         public static void Register(Type type)
         {
-            Initialize();
             Incubator.Construct(type);
         }
 
@@ -148,7 +145,6 @@ namespace Bam.Net.ServiceProxy
         /// <typeparam name="T"></typeparam>
         public static void Register<T>()
         {
-            Initialize();
             Incubator.Construct<T>();
         }
 
@@ -159,7 +155,6 @@ namespace Bam.Net.ServiceProxy
         /// <param name="instance"></param>
         public static void Register<T>(T instance)
         {
-            Initialize();
             Incubator.Set<T>(instance);
         }
 
@@ -197,7 +192,7 @@ namespace Bam.Net.ServiceProxy
         static Incubator incubator;
         static readonly object incubatorLock = new object();
         /// <summary>
-        /// Gets or sets the default Incubator instance used by the ServiceProxy system.
+        /// Gets or sets the default dependency injection container used by the ServiceProxy system.
         /// </summary>
         public static Incubator Incubator
         {
@@ -249,7 +244,7 @@ namespace Bam.Net.ServiceProxy
             return GenerateCSharpProxyCode(defaultBaseAddress, classNames, nameSpace, contractNamespace, ServiceProxySystem.Incubator);
         }
 
-        public static string HeaderFormat
+        internal static string HeaderFormat
         {
             get
             {
@@ -260,7 +255,8 @@ This file was generated from {0}serviceproxy/csharpproxies.  This file should no
 ";
             }
         }
-        protected static string MethodFormat
+
+        internal static string MethodFormat
         {
             get
             {
@@ -273,9 +269,9 @@ This file was generated from {0}serviceproxy/csharpproxies.  This file should no
             }
         }
 
-        protected static string UsingFormat { get { return "\tusing {0};\r\n"; } }
+        internal static string UsingFormat { get { return "\tusing {0};\r\n"; } }
 
-        protected static string NameSpaceFormat
+        internal static string NameSpaceFormat
         {
             get
             {
@@ -288,7 +284,7 @@ namespace {0}
             }
         }
 
-        protected static string ClassFormat
+        internal static string ClassFormat
         {
             get
             {
@@ -309,7 +305,7 @@ namespace {0}
             }
         }
 
-        protected static string SecureClassFormat
+        internal static string SecureClassFormat
         {
             get
             {
@@ -330,7 +326,7 @@ namespace {0}
             }
         }
 
-        protected static string InterfaceFormat
+        internal static string InterfaceFormat
         {
             get
             {
@@ -343,7 +339,7 @@ namespace {0}
             }
         }
 
-        protected static string InterfaceMethodFormat
+        internal static string InterfaceMethodFormat
         {
             get
             {

@@ -9,14 +9,16 @@ namespace Bam.Net.ServiceProxy
 {
     public class ServiceProxyInvokeRequest
     {
-        public ServiceProxyInvokeRequest()
+        public ServiceProxyInvokeRequest(ServiceProxyClient serviceProxyClient, string  baseAddress, string className, string methodName, params object[] arguments)
         {
-            Cuid = NCuid.Cuid.Generate();
-        }
-
-        public ServiceProxyInvokeRequest(Type serviceType): this()
-        {
-            this.ServiceType = serviceType;
+            this.Cuid = NCuid.Cuid.Generate();
+            this.ServiceProxyClient = serviceProxyClient;
+            this.ServiceType = serviceProxyClient.ServiceType;
+            this.BaseAddress = baseAddress;
+            this.ClassName = className;
+            
+            this.MethodName = methodName;
+            this.Arguments = arguments;
         }
 
         public virtual ServiceProxyClient ServiceProxyClient { get; set; }

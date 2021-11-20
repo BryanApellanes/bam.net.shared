@@ -70,12 +70,12 @@ namespace Bam.Net.ServiceProxy
 
         public override async Task<string> InvokeServiceMethodAsync(string baseAddress, string className, string methodName, params object[] arguments)
         {
-            ServiceProxyInvokeRequest<TService> request = new ServiceProxyInvokeRequest<TService>() { BaseAddress = baseAddress, ClassName = className, ServiceProxyClient = this, MethodName = methodName, Arguments = arguments };
+            ServiceProxyInvokeRequest<TService> request = new ServiceProxyInvokeRequest<TService>(this, baseAddress, className, methodName, arguments);
 
-            ServiceProxyInvokeEventArgs args = request.CopyAs<ServiceProxyInvokeEventArgs>();
+            ServiceProxyInvokeEventArgs args = request.CopyAs<ServiceProxyInvokeEventArgs<TService>>(request);
             OnInvokeMethodStarted(args);
             string response = string.Empty;
-            if(args.CancelInvoke)
+            if (args.CancelInvoke)
             {
                 OnInvokeMethodCanceled(args);
             }

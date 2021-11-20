@@ -35,7 +35,7 @@ namespace Bam.Net.Services.DataReplication
         /// <value>
         /// The type.
         /// </value>
-        public long TypeId { get; set; }
+        public ulong TypeId { get; set; }
 
         /// <summary>
         /// Gets or sets the identifier.
@@ -59,7 +59,7 @@ namespace Bam.Net.Services.DataReplication
         /// <value>
         /// The property identifier.
         /// </value>
-        public long PropertyId { get; set; }
+        public ulong PropertyId { get; set; }
 
         public string GetKey()
         {
@@ -241,7 +241,7 @@ namespace Bam.Net.Services.DataReplication
             return instanceDirectory;
         }
 
-        public static DirectoryInfo GetTypeDirectory(Journal journal, long typeId)
+        public static DirectoryInfo GetTypeDirectory(Journal journal, ulong typeId)
         {
             return new JournalEntry { TypeId = typeId }.GetTypeDirectory(journal.JournalDirectory, journal.TypeMap);
         }

@@ -22,6 +22,7 @@ using Org.BouncyCastle.Security;
 using System.IO;
 using System.Reflection;
 using System.Net.Http;
+using System.Web;
 
 namespace Bam.Net.ServiceProxy.Secure
 {
@@ -36,7 +37,6 @@ namespace Bam.Net.ServiceProxy.Secure
         {
             this.Initialize();
         }
-
 
         IApiKeyResolver _apiKeyResolver;
         object _apiKeyResolverSync = new object();
@@ -202,14 +202,15 @@ namespace Bam.Net.ServiceProxy.Secure
 
             try
             {
-                HttpRequestMessage requestMessage = CreateServiceProxyRequestMessageAsync(ServiceProxyVerbs.Post, nameof(SecureChannel), nameof(SecureChannel.StartSession), new Instant()).Result;
+                HttpRequestMessage requestMessage = CreateServiceProxyRequestMessageAsync(ServiceProxyVerbs.Post, nameof(SecureChannel), nameof(SecureChannel.StartSession), $"instant={GetUrlEncodedInstant()}").Result;
                 HttpResponseMessage responseMessage = await HttpClient.SendAsync(requestMessage);
                 string responseString = await responseMessage.Content.ReadAsStringAsync();
                 LastResponse = responseString;
                 responseMessage.EnsureSuccessStatusCode();
+                SessionInfo = responseString.FromJson<ClientSessionInfo>();
                 await SetSessionKeyAsync();
                 OnSessionStarted();
-                return responseString.FromJson<ClientSessionInfo>();
+                return SessionInfo;
             }
             catch (Exception ex)
             {
@@ -220,10 +221,17 @@ namespace Bam.Net.ServiceProxy.Secure
             return null;
         }
 
+        private string GetUrlEncodedInstant()
+        {
+            return HttpUtility.UrlEncode(new Instant().ToString());
+        }
+
         protected internal override async Task<string> ReceiveServiceMethodResponseAsync(ServiceProxyInvokeRequest<TService> request)
         {
             try
-            {                   
+            {
+                _startSessionTask.Wait();
+
                 SecureChannelMessage<string> result = (await ReceivePostResponseAsync(request)).FromJson<SecureChannelMessage<string>>();
                 if (result.Success)
                 {
@@ -238,7 +246,7 @@ namespace Bam.Net.ServiceProxy.Secure
             }
             catch (Exception ex)
             {
-                ServiceProxyInvokeEventArgs<TService> args = request.TryCopyAs<ServiceProxyInvokeEventArgs<TService>>();
+                ServiceProxyInvokeEventArgs<TService> args = new ServiceProxyInvokeEventArgs<TService>(request);
                 args.Exception = ex;
                 args.Message = ex.Message;
                 OnInvocationException(args);
@@ -249,7 +257,7 @@ namespace Bam.Net.ServiceProxy.Secure
 
         public async Task<TResult> ReceivePostResponseAsync<TResult>(string className, string methodName, params object[] arguments)
         {
-            return (await ReceivePostResponseAsync(new ServiceProxyInvokeRequest { BaseAddress = BaseAddress, ClassName = className, MethodName = methodName, Arguments = arguments })).FromJson<TResult>();
+            return (await ReceivePostResponseAsync(new ServiceProxyInvokeRequest(this, BaseAddress, className,  methodName, arguments))).FromJson<TResult>();
         }
 
         public override async Task<string> ReceivePostResponseAsync(ServiceProxyInvokeRequest serviceProxyInvokeRequest)
@@ -308,11 +316,11 @@ namespace Bam.Net.ServiceProxy.Secure
 
         private void Initialize()
         {
-            this.InvokeMethodStarted += async (s, a) => await TryStartSessionAsync();
+            this.InvokeMethodStarted += (s, a) => _startSessionTask = TryStartSessionAsync();
         }
 
         Task<ClientSessionInfo> _startSessionTask;
-        private async Task TryStartSessionAsync()
+        private async Task<ClientSessionInfo> TryStartSessionAsync()
         {
             try
             {
@@ -329,6 +337,7 @@ namespace Bam.Net.ServiceProxy.Secure
             {
                 SessionStartException = ex;
             }
+            return SessionInfo;
         }
     }
 }

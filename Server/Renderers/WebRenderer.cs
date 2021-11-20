@@ -63,7 +63,7 @@ namespace Bam.Net.Server.Renderers
         /// Sets the content type then calls Render(request.Result, request.Response.OutputStream);
         /// </summary>
         /// <param name="request"></param>
-        public virtual void Respond(ExecutionRequest request)
+        public virtual void Respond(ServiceProxyInvocation request)
         {
             IResponse response = request.Response;
             object toRender = request.Result;
@@ -71,8 +71,7 @@ namespace Bam.Net.Server.Renderers
             Render(toRender, response.OutputStream);
         }
 
-        public virtual void EnsureDefaultTemplate(Type type) { }
-        
+        public virtual void EnsureDefaultTemplate(Type type) { }        
         
         public string Render(string templateName, object data)
         {

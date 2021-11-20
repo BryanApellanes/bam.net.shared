@@ -21,7 +21,7 @@ namespace Bam.Net.Server.Renderers
     {
         ConcurrentDictionary<string, byte[]> _cache;
         ConcurrentDictionary<string, byte[]> _minCache;
-        public ScriptRenderer(ExecutionRequest request, ContentResponder content)
+        public ScriptRenderer(ServiceProxyInvocation request, ContentResponder content)
             : base(request, content, "application/javascript", Extensions)
         {
             this._cache = new ConcurrentDictionary<string, byte[]>();
