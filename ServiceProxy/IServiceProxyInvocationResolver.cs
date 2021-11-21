@@ -1,4 +1,5 @@
-﻿using Bam.Net.Incubation;
+﻿using Bam.Net.CoreServices;
+using Bam.Net.Incubation;
 using Bam.Net.Web;
 using System;
 using System.Collections.Generic;
@@ -10,6 +11,6 @@ namespace Bam.Net.ServiceProxy
 {
     public interface IServiceProxyInvocationResolver: IInvocationTargetInfoResolver
     {
-        ServiceProxyInvocation ResolveInvocationRequest(IHttpContext context, Incubator serviceProvider, params ProxyAlias[] aliases);
+        ServiceProxyInvocation ResolveInvocationRequest(IHttpContext context, ServiceRegistry serviceProvider, params ProxyAlias[] aliases);
     }
 }

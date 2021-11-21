@@ -18,7 +18,7 @@ namespace Bam.Net.Server.Renderers
         {
             this.AppName = UriApplicationNameResolver.ResolveApplicationName(request.Request.Url);
             this.ContentResponder = contentResponder;
-            this.ExecutionRequest = request;
+            this.ServiceProxyInvocation = request;
         }
 
         public string AppName { get; set; }
@@ -30,7 +30,7 @@ namespace Bam.Net.Server.Renderers
             {
                 if (_args == null)
                 {
-                    _args = new HttpArgs(ExecutionRequest.Request.Url.Query);
+                    _args = new HttpArgs(ServiceProxyInvocation.Request.Url.Query);
                 }
                 return _args;
             }
@@ -63,7 +63,7 @@ namespace Bam.Net.Server.Renderers
         /// </summary>
         public void Render()
         {
-            Render(ExecutionRequest.Result, ExecutionRequest.Response.OutputStream);
+            Render(ServiceProxyInvocation.Result, ServiceProxyInvocation.Response.OutputStream);
         }
 
         public override void Render(object toRender, Stream output)
@@ -81,7 +81,7 @@ namespace Bam.Net.Server.Renderers
             byte[] data;
             if (HttpArgs.Has("layout", out string layout))
             {
-                string absolutePath = ExecutionRequest.Request.Url.AbsolutePath;
+                string absolutePath = ServiceProxyInvocation.Request.Url.AbsolutePath;
                 string extension = Path.GetExtension(absolutePath);
                 string path = absolutePath.Truncate(extension.Length);
                 LayoutModel layoutModel = appContentResponder.GetLayoutModelForPath(path);

@@ -28,12 +28,12 @@ namespace Bam.Net.Server.Renderers
             this._minCache = new ConcurrentDictionary<string,byte[]>();
             string path = request.Request.Url.AbsolutePath;
 
-            if (!request.WasExecuted)
+/*            if (!request.WasExecuted)
             {
                 request.Execute();
-            }
+            }*/
 
-            if (request.Success && request.Result is AppMetaResult result)
+            if (request.Result is AppMetaResult result)
             {
                 request.Result = result.Data;
             }
@@ -61,34 +61,37 @@ namespace Bam.Net.Server.Renderers
 
         private void SetResult()
         {
-            string path = ExecutionRequest.Request.Url.AbsolutePath;
-            if (!string.IsNullOrEmpty(ExecutionRequest.Ext) && ExecutionRequest.Ext.Equals(".min"))
+            string path = ServiceProxyInvocation.Request.Url.AbsolutePath;
+            ServiceProxyInvocation.Result = _cache[path];
+            /*
+            if (!string.IsNullOrEmpty(ServiceProxyInvocation.Ext) && ServiceProxyInvocation.Ext.Equals(".min"))
             {
-                ExecutionRequest.Result = _minCache[path];
+                ServiceProxyInvocation.Result = _minCache[path];
             }
             else
             {
-                ExecutionRequest.Result = _cache[path];
-            }
+                ServiceProxyInvocation.Result = _cache[path];
+            }*/
         }
 
         protected virtual void HandlePrependAndPostpend()
         {
-            string ext = ExecutionRequest.Ext;
+            /*string ext = ServiceProxyInvocation.Ext;
             // if ext is jsonp
             if (!string.IsNullOrEmpty(ext) && ext.ToLowerInvariant().Equals(".jsonp"))
             {
                 HandleJsonp();
             }
-            else if (ExecutionRequest.HasCallback)
+            else */
+            if (ServiceProxyInvocation.HasCallback)
             {
-                Postpend("\r\n;{0}"._Format(ExecutionRequest.Callback));
+                Postpend("\r\n;{0}"._Format(ServiceProxyInvocation.Callback));
             }
         }
 
         protected virtual void HandleJsonp()
         {
-            string callBack = ExecutionRequest.HasCallback ? ExecutionRequest.Callback : "alert";
+            string callBack = ServiceProxyInvocation.HasCallback ? ServiceProxyInvocation.Callback : "alert";
             Prepend("{0}('"._Format(callBack));
             Postpend("');\r\n");
         }
@@ -97,23 +100,23 @@ namespace Bam.Net.Server.Renderers
         {
             StringBuilder newResult = new StringBuilder();
             newResult.Append(prepend);
-            newResult.Append(ExecutionRequest.Result);
+            newResult.Append(ServiceProxyInvocation.Result);
             
-            ExecutionRequest.Result = newResult.ToString();
+            ServiceProxyInvocation.Result = newResult.ToString();
         }
 
         protected virtual void Postpend(string postpend)
         {
             StringBuilder newResult = new StringBuilder();
-            newResult.Append(ExecutionRequest.Result);
+            newResult.Append(ServiceProxyInvocation.Result);
             newResult.Append(postpend);
 
-            ExecutionRequest.Result = newResult.ToString();
+            ServiceProxyInvocation.Result = newResult.ToString();
         }
 
         public override void Render(object toRender, Stream output)
         {
-            Expect.AreSame(ExecutionRequest.Result, toRender, "Attempt to render unexpected value");
+            Expect.AreSame(ServiceProxyInvocation.Result, toRender, "Attempt to render unexpected value");
             byte[] data = toRender as byte[];
             if (data == null)
             {

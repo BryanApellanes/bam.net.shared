@@ -18,16 +18,16 @@ namespace Bam.Net.CoreServices
         public override bool RequestIsAllowed(ServiceProxyInvocation request, out string failureMessage)
         {
             Args.ThrowIfNull(request, "request");
-            Args.ThrowIfNull(request.Instance, "request.Instance");
+            Args.ThrowIfNull(request.InvocationTarget, "request.Instance");
             bool result = false;
             failureMessage = null;
-            if (request.Instance is ApplicationProxyableService svc)
+            if (request.InvocationTarget is ApplicationProxyableService svc)
             {
                 result = svc.HostDomainIsAuthorized();
             }
             else
             {
-                request.Logger.Warning($"Invalid Type {request.Instance.GetType().Name}: Attribute {nameof(HostDomainAuthorizedAttribute)} should only be applied to ApplicationProxyableService and its derivatives or methods");
+                request.Logger.Warning($"Invalid Type {request.InvocationTarget.GetType().Name}: Attribute {nameof(HostDomainAuthorizedAttribute)} should only be applied to ApplicationProxyableService and its derivatives or methods");
             }
             return result;
         }

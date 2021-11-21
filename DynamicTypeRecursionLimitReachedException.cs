@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace Bam.Net
 {
+	// TODO: move this to AppServices ...data.dynamic
 	public class DynamicTypeRecursionLimitReachedException: Exception
 	{
 		public DynamicTypeRecursionLimitReachedException(int limit)

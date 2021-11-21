@@ -7,7 +7,7 @@ namespace Bam.Net.Server
 {
     public class ProxyCodeRequestHandler : RequestHandler
     {
-        protected override IHandleRequestResult HandleRequest(IRequest request)
+        protected override IHttpResponse HandleRequest(IRequest request)
         {
             throw new NotImplementedException();
         }

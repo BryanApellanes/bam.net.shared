@@ -22,6 +22,7 @@ using Org.BouncyCastle.Crypto.Generators;
 using Org.BouncyCastle.Math;
 using Org.BouncyCastle.Crypto.Engines;
 using Bam.Net.Configuration;
+using Bam.Net.CoreServices;
 
 namespace Bam.Net.ServiceProxy.Secure
 {
@@ -171,18 +172,18 @@ namespace Bam.Net.ServiceProxy.Secure
             set;
         }
 
-        static Incubator _incubator;
+        static ServiceRegistry _incubator;
         static object _incubatorSync = new object();
         /// <summary>
         /// The incubator used for SecureChannel requests
         /// </summary>
-        public Incubator ServiceProvider
+        public ServiceRegistry ServiceProvider
         {
             get
             {
                 return _incubatorSync.DoubleCheckLock(ref _incubator, () =>
                 {
-                    return new Incubator();                    
+                    return new ServiceRegistry();                    
                 });
             }
             set

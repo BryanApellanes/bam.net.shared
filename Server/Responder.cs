@@ -153,16 +153,6 @@ namespace Bam.Net.Server
 
         public abstract bool TryRespond(IHttpContext context);
 
-        public static void SendResponse(IHttpContext context, int code, object dynamicObjectHeaders = null)
-        {
-            SendResponse(context, HttpStatusCodeHandler.Get(code), dynamicObjectHeaders ?? new object());
-        }
-
-        public static void SendResponse(IHttpContext context, HttpStatusCodeHandler handler)
-        {
-            SendResponse(context, handler.Handle(), handler.Code);
-        }
-
         public static void SendResponse(IHttpContext context, HttpStatusCodeHandler handler, object dynamicObjectHeaders)
         {
             SendResponse(context, handler.Handle(), handler.Code, null, dynamicObjectHeaders.ToDictionary(pi => $"X-{pi.Name.PascalSplit("-")}", (o) => (string)o));
@@ -394,7 +384,7 @@ namespace Bam.Net.Server
 
         protected static bool ShouldZip(IRequest request)
         {
-            if (request.Headers["Accept-Encoding"].DelimitSplit(",").ToList().Contains("gzip"))
+            if ((bool)request.Headers["Accept-Encoding"]?.DelimitSplit(",").ToList().Contains("gzip"))
             {
                 return true;
             }

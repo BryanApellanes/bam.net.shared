@@ -79,6 +79,11 @@ namespace Bam.Net.Server
 			return false;
 		}
 
+		protected virtual bool Patch(IHttpContext context)
+        {
+			return false;
+        }
+
 		Dictionary<string, Func<IHttpContext, bool>> _httpMethodHandlers;
 		object _httpMethodHandlersLock = new object();
 		protected Dictionary<string, Func<IHttpContext, bool>> HttpMethodHandlers
@@ -96,7 +101,8 @@ namespace Bam.Net.Server
 						{"CONNECT", Connect},
 						{"HEAD", Head},
 						{"OPTIONS", Options},
-						{"TRACE", Trace}
+						{"TRACE", Trace},
+						{"PATCH", Patch},
 					};
 				});
 			}

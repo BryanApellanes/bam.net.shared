@@ -464,8 +464,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)CoreServices\ClientCodeSource.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CoreServices\LocalOnlyProxyAssemblyGenerator.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CoreServices\LocalOnlyProxySettings.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Server\HandleRequestErrorResult.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Server\HandleRequestResult.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Data\DaoValidationResult.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Server\HttpErrorResponse.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Server\HttpMethodHandlers.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Server\HttpResponse.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Server\IHttpResponse.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Server\InvocationRequestHandler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Server\IRequestHandlerResolver.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Server\IRequestHandler.cs" />
@@ -483,6 +486,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\DefaultApiArgumentProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\IApiArgumentProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\IInvocationTargetInfoResolver.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\IServiceProxyInvocationResult.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\Secure\DefaultApiEncryptionProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\Secure\IApiEncryptionProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DefaultConsoleMessageHandler.cs" />
@@ -1757,7 +1761,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Data\StaticDatabaseInitializer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\TableAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\ValidationException.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Data\ValidationResult.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\ServiceProxyInvocationValidationResult.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\WhereDelegate.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\WhereFormat.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\XrefDaoCollection.cs" />

@@ -513,13 +513,13 @@ namespace Bam.Net.Data
             _childCollections.Clear();
         }
 
-        public virtual ValidationResult Validate()
+        public virtual DaoValidationResult Validate()
         {
             return Validator(this);
         }
 
-        Func<Dao, ValidationResult> _validator;
-        public Func<Dao, ValidationResult> Validator
+        Func<Dao, DaoValidationResult> _validator;
+        public Func<Dao, DaoValidationResult> Validator
         {
             get
             {
@@ -533,14 +533,14 @@ namespace Bam.Net.Data
             set => _validator = value;
         }
 
-        static Func<Dao, ValidationResult> _globalValidator;
-        public static Func<Dao, ValidationResult> GlobalValidator
+        static Func<Dao, DaoValidationResult> _globalValidator;
+        public static Func<Dao, DaoValidationResult> GlobalValidator
         {
             get
             {
                 if (_globalValidator == null)
                 {
-                    return (dao) => new ValidationResult();
+                    return (dao) => new DaoValidationResult();
                 }
 
                 return _globalValidator;
@@ -1608,7 +1608,7 @@ namespace Bam.Net.Data
 
         private void ThrowIfInvalid()
         {
-            ValidationResult valid = this.Validate();
+            DaoValidationResult valid = this.Validate();
             if (!valid.Success)
             {
                 throw new ValidationException(valid.Message, valid.Exception);

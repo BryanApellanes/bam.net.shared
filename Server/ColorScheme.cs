@@ -10,6 +10,7 @@ using Bam.Net;
 
 namespace Bam.Net.Server
 {
+    // TODO: move this to Bam.Net.Presentation
     public class AccentColors
     {
         public string blue { get; set; }

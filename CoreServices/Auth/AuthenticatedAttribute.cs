@@ -23,7 +23,7 @@ namespace Bam.Net.CoreServices.Auth
         public override bool RequestIsAllowed(ServiceProxyInvocation request, out string failureMessage)
         {
             failureMessage = null;
-            ApplicationProxyableService service = request.Instance as ApplicationProxyableService;
+            ApplicationProxyableService service = request.InvocationTarget as ApplicationProxyableService;
             if(service == null)
             {
                 MethodInfo method = request.MethodInfo;

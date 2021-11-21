@@ -51,7 +51,7 @@ namespace Bam.Net.Services
         public AsyncCallbackService CallbackService { get; set; }
 
         public Action<AsyncExecutionResponse> DefaultResponseHandler { get; set; }
-        public Incubator ServiceProvider { get; set; }
+        public ServiceRegistry ServiceProvider { get; set; }
 
         /// <summary>
         /// The number of milliseconds to wait for async tasks to complete

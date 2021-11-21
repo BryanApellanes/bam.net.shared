@@ -304,11 +304,6 @@ namespace Bam.Net.ServiceProxy
             return result;
         }
 
-/*        protected virtual internal Task<HttpRequestMessage> CreateServiceProxyRequestMessageAsync(ServiceProxyInvokeRequest request, ServiceProxyArguments arguments)
-        {
-            return CreateServiceProxyRequestMessageAsync(arguments.Verb, request.ClassName, request.MethodName, arguments.QueryStringArguments);
-        }*/
-
         protected internal async Task<HttpRequestMessage> CreateServiceProxyRequestMessageWithArgumentsAsync(ServiceProxyVerbs verb, string methodName, params object[] arguments)
         {
             Dictionary<string, object> namedArguments = ApiArgumentProvider.GetNamedArguments(methodName, arguments);

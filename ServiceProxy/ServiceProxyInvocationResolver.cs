@@ -48,7 +48,7 @@ namespace Bam.Net.ServiceProxy
         /// <param name="serviceProvider"></param>
         /// <param name="aliases"></param>
         /// <returns></returns>
-        public virtual ServiceProxyInvocation ResolveInvocationRequest(IHttpContext httpContext, Incubator serviceProvider, params ProxyAlias[] aliases)
+        public virtual ServiceProxyInvocation ResolveInvocationRequest(IHttpContext httpContext, ServiceRegistry serviceProvider, params ProxyAlias[] aliases)
         {
             // TODO: refactor this method to analyze httpContext.Request.ContentType
             // See ExecutionRequest.GetArguments see commit (2526558ea460852c033d1151dc190308a9feaefd)
@@ -57,7 +57,7 @@ namespace Bam.Net.ServiceProxy
                 Logger = Logger ?? Log.Default
             };            
             
-            ServiceProxyInvocation.DecryptSecureChannelInvoke(execRequest);
+            //ServiceProxyInvocation.DecryptSecureChannelInvoke(execRequest);
             return execRequest;
         }   
         

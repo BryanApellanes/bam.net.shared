@@ -15,6 +15,6 @@ namespace Bam.Net.Server
         event EventHandler HandleRequestCompleted;
         event EventHandler HandleRequestExceptionThrown;
 
-        IHandleRequestResult HandleRequest(IHttpContext context);        
+        IHttpResponse HandleRequest(IHttpContext context);        
     }
 }

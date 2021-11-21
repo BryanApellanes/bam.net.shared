@@ -1,6 +1,7 @@
 /*
 	Copyright © Bryan Apellanes 2015  
 */
+using Bam.Net.CoreServices;
 using Bam.Net.Data;
 using Bam.Net.Encryption;
 using Bam.Net.Incubation;
@@ -16,7 +17,7 @@ using System.Reflection;
 
 namespace Bam.Net.ServiceProxy
 {
-    public class ServiceProxyInvocation
+    public class ServiceProxyInvocation // TODO: move this to Bam.Net.Server
     {
         static ServiceProxyInvocation()
         {
@@ -25,7 +26,7 @@ namespace Bam.Net.ServiceProxy
 
         public ServiceProxyInvocation()
         {
-            ViewName = "Default";
+            //ViewName = "Default";
             IsInitialized = true;
             OnAnyInstanciated(this);
         }
@@ -33,10 +34,10 @@ namespace Bam.Net.ServiceProxy
         public ServiceProxyInvocation(string className, string methodName, string ext)
         {
             Context = new HttpContextWrapper();
-            ViewName = "Default";
+            //ViewName = "Default";
             ClassName = className;
             MethodName = methodName;
-            Ext = ext;
+            //Ext = ext;
 
             IsInitialized = true;
             OnAnyInstanciated(this);
@@ -51,7 +52,7 @@ namespace Bam.Net.ServiceProxy
             OnAnyInstanciated(this);
         }
 
-        public ServiceProxyInvocation(IHttpContext context, Incubator serviceProvider, params ProxyAlias[] aliases)
+        public ServiceProxyInvocation(IHttpContext context, ServiceRegistry serviceProvider, params ProxyAlias[] aliases)
         {
             Context = context;
             ProxyAliases = aliases;
@@ -59,7 +60,7 @@ namespace Bam.Net.ServiceProxy
             OnAnyInstanciated(this);
         }
 
-        public static ServiceProxyInvocation Create(Incubator incubator, MethodInfo method, params object[] parameters)
+        public static ServiceProxyInvocation Create(ServiceRegistry incubator, MethodInfo method, params object[] parameters)
         {
             ServiceProxyInvocation request = new ServiceProxyInvocation()
             {
@@ -73,7 +74,7 @@ namespace Bam.Net.ServiceProxy
             };
             return request;
         }
-
+/*
         /// <summary>
         /// Decrypt the input string of the specified ExecutionRequest
         /// if it is intended for the SecureChannel
@@ -93,14 +94,14 @@ namespace Bam.Net.ServiceProxy
                 execRequest.ArgumentsAsJsonArrayOfJsonStrings = args[ServiceProxyArguments.JsonArgsMemberName];
                 execRequest.Instance.Property("Logger", execRequest.Logger);
             }
-        }
+        }*/
 
-        public virtual ValidationResult Validate()
+        public virtual ServiceProxyInvocationValidationResult Validate()
         {
             Initialize();
-            ValidationResult result = new ValidationResult(this);
-            result.Execute(Context, Decrypted);
-            return result;
+            ServiceProxyInvocationValidationResult validation = new ServiceProxyInvocationValidationResult(this);
+            validation.Execute(Context, InputString);
+            return validation;
         }
 
         ILogger _logger;
@@ -122,14 +123,16 @@ namespace Bam.Net.ServiceProxy
             set;
         }
 
-        string _inputString;
+        //string _inputString;
         /// <summary>
         /// The input stream of the request read in as 
         /// a string
         /// </summary>
         protected internal string InputString
         {
-            get
+            get;
+            set;
+/*            get
             {
                 if (string.IsNullOrEmpty(_inputString))
                 {
@@ -147,7 +150,7 @@ namespace Bam.Net.ServiceProxy
                 }
                 return _inputString;
             }
-            set => _inputString = value;
+            set => _inputString = value;*/
         }
 
         HttpArgs _httpArgs;
@@ -187,7 +190,7 @@ namespace Bam.Net.ServiceProxy
             }
         }
         
-        Decrypted _decrypted;
+/*        Decrypted _decrypted;
         internal Decrypted Decrypted
         {
             get => _decrypted;
@@ -196,13 +199,13 @@ namespace Bam.Net.ServiceProxy
                 _decrypted = value;
                 InputString = value;
             }
-        }
-
+        }*/
+/*
         internal bool IsUnencrypted
         {
             get;
             set;
-        }
+        }*/
 
         Uri _requestUrl;
         protected internal Uri RequestUrl
@@ -241,7 +244,7 @@ namespace Bam.Net.ServiceProxy
             InvocationTargetInfo executionTargetInfo = ResolveExecutionTarget(RequestUrl.AbsolutePath, ServiceProvider, ProxyAliases);
             _className = executionTargetInfo.ClassName;
             _methodName = executionTargetInfo.MethodName;
-            _ext = "json";//executionTargetInfo.Ext;
+            //_ext = "json";//executionTargetInfo.Ext;
             return executionTargetInfo;
         }
 
@@ -293,40 +296,16 @@ namespace Bam.Net.ServiceProxy
             set => _methodName = value;
         }
 
-        string _ext;
-        public string Ext
-        {
-            get
-            {
-                if (!IsInitialized)
-                {
-                    Initialize();
-                }
-
-                return _ext;
-            }
-            set => _ext = value;
-        }
-
         /// <summary>
         /// Should be set to an array of strings stringified twice.  Parsing as Json will return an array of strings,
         /// each string can be individually parsed into separate objects
         /// </summary>
         public string ArgumentsAsJsonArrayOfJsonStrings { get; set; }
 
-        Incubator _serviceProvider;
-        readonly object _serviceProviderLock = new object();
-        public Incubator ServiceProvider
+        public ServiceRegistry ServiceProvider
         {
-            get
-            {
-                return _serviceProviderLock.DoubleCheckLock(ref _serviceProvider, () => ServiceProxySystem.Incubator);
-            }
-            set
-            {
-                Reset();
-                _serviceProvider = value;
-            }
+            get;
+            set;
         }
 
         Type _targetType;
@@ -336,25 +315,25 @@ namespace Bam.Net.ServiceProxy
             {
                 if (_targetType == null && !string.IsNullOrWhiteSpace(ClassName))
                 {
-                    Instance = ServiceProvider.Get(ClassName, out _targetType);
+                    InvocationTarget = ServiceProvider.Get(ClassName, out _targetType);
                 }
 
                 return _targetType;
             }
             set => _targetType = value;
         }
-        object _instance;
-        public object Instance
+        object _invocationTarget;
+        public object InvocationTarget
         {
             get
             {
-                if (_instance == null)
+                if (_invocationTarget == null)
                 {
-                    _instance = ServiceProvider.Get(ClassName);
+                    _invocationTarget = ServiceProvider.Get(ClassName);
                 }
-                return _instance;
+                return _invocationTarget;
             }
-            protected set => _instance = value;
+            protected set => _invocationTarget = value;
         }
 
         MethodInfo _methodInfo;
@@ -385,18 +364,10 @@ namespace Bam.Net.ServiceProxy
             }
         }
 
-        object[] _arguments;
         public object[] Arguments
         {
-            get
-            {
-                if (_arguments == null)
-                {
-                    _arguments = GetArguments();
-                }
-                return _arguments;
-            }
-            set => _arguments = value;
+            get;
+            set;
         }
 
         public static int MaxRecursion
@@ -462,14 +433,14 @@ namespace Bam.Net.ServiceProxy
                     string[] jsonStrings = ((string)(o["jsonParams"])).FromJson<string[]>();
                     result = GetJsonArguments(jsonStrings);
                 }
-                else if (named)
+/*                else if (named)
                 {
                     result = GetNamedQueryStringArguments();
                 }
                 else
                 {
                     result = GetNumberedQueryStringArguments();
-                }
+                }*/
             }
 
             return result;
@@ -513,11 +484,11 @@ namespace Bam.Net.ServiceProxy
 
 		public string ViewName { get; set; }
 
-        private string GetMessage(Exception ex, bool stack)
+/*        private string GetMessage(Exception ex, bool stack)
         {
             string st = stack ? ex.StackTrace : "";
             return $"{ex.Message}:\r\n\r\n{st}";
-        }
+        }*/
 
         private object[] GetJsonArguments(string[] jsonStrings)
         {
@@ -538,7 +509,7 @@ namespace Bam.Net.ServiceProxy
             return paramInstances;
         }
 
-        private object[] GetNamedQueryStringArguments()
+/*        private object[] GetNamedQueryStringArguments()
         {
             object[] results = new object[ParameterInfos.Length];
             for (int i = 0; i < ParameterInfos.Length; i++)
@@ -552,7 +523,7 @@ namespace Bam.Net.ServiceProxy
             }
 
             return results;
-        }
+        }*/
 
         private void SetDefault(object[] parameters, int i)
         {
@@ -563,7 +534,7 @@ namespace Bam.Net.ServiceProxy
             }
         }
 
-        private object[] GetNumberedQueryStringArguments()
+/*        private object[] GetNumberedQueryStringArguments()
         {
             object[] results = new object[ParameterInfos.Length];
             for (int i = 0; i < ParameterInfos.Length; i++)
@@ -576,9 +547,9 @@ namespace Bam.Net.ServiceProxy
             }
 
             return results;
-        }
+        }*/
 
-        private static void SetValue(object[] results, int i, Type paramType, string value)
+/*        private static void SetValue(object[] results, int i, Type paramType, string value)
         {
             if (string.IsNullOrEmpty(value))
             {
@@ -598,7 +569,9 @@ namespace Bam.Net.ServiceProxy
                     results[i] = value.FromJson(paramType);
                 }
             }
-        }
+        }*/
+
+        // TOOD: encapsulate this as a ServiceProxyInvocationFormArguments
         // parse form input
         private object[] GetFormArguments(Queue<string> inputValues)
         {
@@ -688,12 +661,12 @@ namespace Bam.Net.ServiceProxy
             }
             return parameterValue;
         }
-
+/*
 		private void Reset()
 		{
 			IsInitialized = false;
 			Result = null;
-		}
+		}*/
 
         protected internal IHttpContext Context
         {
@@ -713,6 +686,7 @@ namespace Bam.Net.ServiceProxy
             set => Context.Response = value;
         }
 
+        [Obsolete("Use IServiceProxyInvocationResult.Success")]
         public bool Success
         {
             get;
@@ -726,12 +700,6 @@ namespace Bam.Net.ServiceProxy
         {
             get;
             internal set;
-        }
-
-        public bool WasExecuted
-        {
-            get;
-            private set;
         }
 
         public event EventHandler<ServiceProxyInvocation> Initializing;
@@ -802,12 +770,12 @@ namespace Bam.Net.ServiceProxy
 
         public bool ExecuteWithoutValidation()
         {
-            return Execute(Instance, false);
+            return Execute(InvocationTarget, false);
         }
 
         public bool Execute()
         {
-            return Execute(Instance, true);
+            return Execute(InvocationTarget, true);
         }
 
         public bool Execute(object target, bool validate = true)
@@ -815,7 +783,7 @@ namespace Bam.Net.ServiceProxy
             bool result = false;
             if (validate)
             {
-                ValidationResult validation = Validate();
+                ServiceProxyInvocationValidationResult validation = Validate();
                 if (!validation.Success)
                 {
                     Result = validation;
@@ -846,7 +814,7 @@ namespace Bam.Net.ServiceProxy
                 }
             }
 
-            WasExecuted = true;
+            //WasExecuted = true;
             Success = result;
             return result;
         }

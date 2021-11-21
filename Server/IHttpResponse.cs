@@ -5,8 +5,8 @@ using System.Text;
 
 namespace Bam.Net.Server
 {
-    public interface IHandleRequestResult
+    public interface IHttpResponse
     {
-        void SendResponse(IResponse response);
+        void Send(IResponse response, int statusCode = 0);
     }
 }

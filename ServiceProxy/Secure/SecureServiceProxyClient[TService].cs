@@ -202,7 +202,7 @@ namespace Bam.Net.ServiceProxy.Secure
 
             try
             {
-                HttpRequestMessage requestMessage = CreateServiceProxyRequestMessageAsync(ServiceProxyVerbs.Post, nameof(SecureChannel), nameof(SecureChannel.StartSession), $"instant={GetUrlEncodedInstant()}").Result;
+                HttpRequestMessage requestMessage = CreateServiceProxyRequestMessageAsync(ServiceProxyVerbs.Get, nameof(SecureChannel), nameof(SecureChannel.StartSession), $"instant={GetUrlEncodedInstant()}").Result;
                 HttpResponseMessage responseMessage = await HttpClient.SendAsync(requestMessage);
                 string responseString = await responseMessage.Content.ReadAsStringAsync();
                 LastResponse = responseString;

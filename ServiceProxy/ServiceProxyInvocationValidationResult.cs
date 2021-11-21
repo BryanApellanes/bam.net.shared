@@ -9,18 +9,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Bam.Net.Data
+namespace Bam.Net.ServiceProxy
 {
-    public class ValidationResult
+    public class ServiceProxyInvocationValidationResult
     {
         readonly ServiceProxyInvocation _toValidate;
 
-        public ValidationResult()
+        public ServiceProxyInvocationValidationResult()
         {
             this.Success = true;
         }
 
-        public ValidationResult(ServiceProxyInvocation request, string messageDelimiter = null)
+        public ServiceProxyInvocationValidationResult(ServiceProxyInvocation request, string messageDelimiter = null)
         {
             _toValidate = request;
             Delimiter = messageDelimiter ?? ",\r\n";
@@ -31,7 +31,7 @@ namespace Bam.Net.Data
         public Exception Exception { get; set; }
         public ValidationFailures[] ValidationFailures { get; set; }
 
-        internal void Execute(IHttpContext context, Decrypted input)
+        internal void Execute(IHttpContext context, string input)
         {
             List<ValidationFailures> failures = new List<ValidationFailures>();
             List<string> messages = new List<string>();
@@ -52,6 +52,7 @@ namespace Bam.Net.Data
             Message = messages.ToArray().ToDelimited(s => s, Delimiter);
             this.Success = failures.Count == 0;
         }
+
         private void ValidateRequestFilters(IHttpContext context, List<ValidationFailures> failures, List<string> messages)
         {
             if (_toValidate.TargetType != null &&
@@ -185,13 +186,13 @@ namespace Bam.Net.Data
             }
         }
 
-        private static void ValidateEncryptedToken(IHttpContext context, Decrypted input, List<ValidationFailures> failures, List<string> messages)
+        private static void ValidateEncryptedToken(IHttpContext context, string input, List<ValidationFailures> failures, List<string> messages)
         {
             if (input != null)
             {
                 try
                 {
-                    EncryptedTokenValidationStatus tokenStatus = ApiEncryptionValidation.ValidateEncryptedToken(context, input.Value);
+                    EncryptedTokenValidationStatus tokenStatus = ApiEncryptionValidation.ValidateEncryptedToken(context, input);
                     switch (tokenStatus)
                     {
                         case EncryptedTokenValidationStatus.Unknown:

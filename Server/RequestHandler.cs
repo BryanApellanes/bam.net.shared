@@ -11,19 +11,19 @@ namespace Bam.Net.Server
         public event EventHandler HandleRequestCompleted;
         public event EventHandler HandleRequestExceptionThrown;
 
-        public IHandleRequestResult HandleRequest(IHttpContext context)
+        public IHttpResponse HandleRequest(IHttpContext context)
         {
             try
             {
                 OnHandleRequestStarted(context);
-                IHandleRequestResult result = HandleRequest(context.Request);
+                IHttpResponse result = HandleRequest(context.Request);
                 OnHandleRequestCompleted(context);
                 return result;
             }
             catch (Exception ex)
             {
                 this.OnHandleRequestExceptionThrown(context, ex);
-                return new HandleRequestErrorResult { Exception = ex };
+                return new HttpErrorResponse(ex);
             }
         }
 
@@ -42,6 +42,6 @@ namespace Bam.Net.Server
             HandleRequestExceptionThrown?.Invoke(this, new RequestHandlerEventArgs { HttpContext = context, RequestHandler = this, Exception = ex });
         }
 
-        protected abstract IHandleRequestResult HandleRequest(IRequest request);
+        protected abstract IHttpResponse HandleRequest(IRequest request);
     }
 }

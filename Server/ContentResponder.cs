@@ -487,7 +487,7 @@ namespace Bam.Net.Server
             {
                 return HostAppMappings[context.Request.Url.Host].AppName;
             }
-            return ApplicationNameResolver.ResolveApplicationName(context);
+            return ApplicationNameResolver.ResolveApplicationName(context.Request);
         }
 
         protected void LogContentNotFound(string path, string appName, string[] checkedPaths)

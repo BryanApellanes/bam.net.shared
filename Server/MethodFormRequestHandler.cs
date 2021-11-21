@@ -8,7 +8,7 @@ namespace Bam.Net.Server
 {
     public class MethodFormRequestHandler : RequestHandler
     {
-        protected override IHandleRequestResult HandleRequest(IRequest request)
+        protected override IHttpResponse HandleRequest(IRequest request)
         {
             //InputFormProvider inputFormProvider = new InputFormProvider();
             throw new NotImplementedException();

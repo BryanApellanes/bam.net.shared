@@ -23,6 +23,7 @@ using Bam.Net.Application;
 using Bam.Net.Presentation;
 using Bam.Net.Server.PathHandlers;
 using Bam.Net.Services;
+using Bam.Net.CoreServices;
 
 namespace Bam.Net.Server
 {
@@ -544,7 +545,7 @@ namespace Bam.Net.Server
 
                 RequestHandler requestHandler = _requestHandlerResolver.ResolveHandler(httpContext);
 
-                IHandleRequestResult requestResult = requestHandler.HandleRequest(httpContext);
+                IHttpResponse requestResult = requestHandler.HandleRequest(httpContext);
 
                 throw new NotImplementedException();
 
@@ -564,7 +565,7 @@ namespace Bam.Net.Server
                     
                     if(!responded)
                     {
-                        string appName = ApplicationNameResolver.ResolveApplicationName(httpContext);
+                        string appName = ApplicationNameResolver.ResolveApplicationName(request);
 
                         ServiceProxyInvocation execRequest = ResolveExecutionRequest(httpContext, appName);
                         
@@ -684,7 +685,7 @@ namespace Bam.Net.Server
 
         public virtual ServiceProxyInvocation ResolveExecutionRequest(IHttpContext httpContext, string appName)
         {
-            GetServiceProxies(appName, out Incubator proxiedClasses, out List<ProxyAlias> aliases);
+            GetServiceProxies(appName, out ServiceRegistry proxiedClasses, out List<ProxyAlias> aliases);
 
             return ServiceProxyInvocationResolver.ResolveInvocationRequest(httpContext, proxiedClasses, aliases.ToArray());
         }
@@ -707,9 +708,9 @@ namespace Bam.Net.Server
             RendererFactory.Respond(execRequest, ContentResponder);
         }
 
-        private void GetServiceProxies(string appName, out Incubator proxiedClasses, out List<ProxyAlias> aliases)
+        private void GetServiceProxies(string appName, out ServiceRegistry proxiedClasses, out List<ProxyAlias> aliases)
         {
-            proxiedClasses = new Incubator();
+            proxiedClasses = new ServiceRegistry();
 
             aliases = new List<ProxyAlias>(GetProxyAliases(ServiceProxySystem.Incubator));
             proxiedClasses.CopyFrom(ServiceProxySystem.Incubator, true);
@@ -751,8 +752,8 @@ namespace Bam.Net.Server
             bool result = false;
             IRequest request = context.Request;
             string path = request.Url.AbsolutePath.ToLowerInvariant();
-            string appName = ApplicationNameResolver.ResolveApplicationName(context);
-            bool includeLocalMethods = request.UserHostAddress.StartsWith("127.0.0.1");
+            string appName = ApplicationNameResolver.ResolveApplicationName(context.Request);
+            //bool includeLocalMethods = request.UserHostAddress.StartsWith("127.0.0.1");
             string[] split = path.DelimitSplit("/", ".");
 
             if (split.Length >= 2)

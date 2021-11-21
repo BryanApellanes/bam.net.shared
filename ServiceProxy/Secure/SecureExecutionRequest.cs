@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Bam.Net.CoreServices;
 using Bam.Net.Incubation;
 
 namespace Bam.Net.ServiceProxy.Secure
@@ -14,6 +15,7 @@ namespace Bam.Net.ServiceProxy.Secure
     /// An ExecutionRequest that encrypts the result
     /// when executed.
     /// </summary>
+    [Obsolete("use SecureServiceClient instead")]
     public class SecureExecutionRequest: ServiceProxyInvocation
     {
         public SecureExecutionRequest(IHttpContext context, string className, string methodName, string jsonArgs)
@@ -25,9 +27,9 @@ namespace Bam.Net.ServiceProxy.Secure
             this.ClassName = className;
             this.MethodName = methodName;
             this.ArgumentsAsJsonArrayOfJsonStrings = jsonArgs;
-            this.Ext = "json";
+            //this.Ext = "json";
             this.Context = context;
-            this.IsUnencrypted = true;
+            //this.IsUnencrypted = true;
 
             this.Executed += (o, t) =>
             {
@@ -46,7 +48,7 @@ namespace Bam.Net.ServiceProxy.Secure
         {
             return Create<T>(context, methodName, Incubator.Default, parameters);
         }
-        public static SecureExecutionRequest Create<T>(IHttpContext context, string methodName, Incubator serviceProvider, params object[] parameters)
+        public static SecureExecutionRequest Create<T>(IHttpContext context, string methodName, ServiceRegistry serviceProvider, params object[] parameters)
         {
             string jsonParams = ApiArguments.ArgumentsToJsonArgumentsArray(parameters).ToJson();
             SecureExecutionRequest request = new SecureExecutionRequest(context, typeof(T).Name, methodName, jsonParams)
