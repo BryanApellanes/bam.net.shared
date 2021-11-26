@@ -418,9 +418,37 @@ namespace Bam.Net
         /// returning the characters read and producing remainder as an out parameter.  Discards
         /// the specified charToFind returning only values on either side
         /// </summary>
+        public static string ReadUntil(this string toRead, char charToFind, bool skipBlanks, out string remainder)
+        {
+            string result = string.Empty;
+            remainder = string.Empty;
+            if (skipBlanks)
+            {
+                string read = toRead;
+                while (string.IsNullOrEmpty(result) && !string.IsNullOrEmpty(read))
+                {
+                    result = ReadUntil(read, charToFind, out remainder);
+                    if (!string.IsNullOrEmpty(remainder))
+                    {
+                        read = remainder;
+                    }
+                }
+            }
+            else
+            {
+                result =  ReadUntil(toRead, charToFind, out remainder);
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// Read the specified string up to the first instance of the specified charToFind
+        /// returning the characters read and producing remainder as an out parameter.  Discards
+        /// the specified charToFind returning only values on either side
+        /// </summary>
         public static string ReadUntil(this string toRead, char charToFind)
         {
-            return ReadUntil(toRead, charToFind, out string ignore);
+            return ReadUntil(toRead, charToFind, out _);
         }
 
         /// <summary>

@@ -1,4 +1,5 @@
-﻿using Bam.Net.Services;
+﻿using Bam.Net.CoreServices;
+using Bam.Net.Services;
 using Bam.Net.Web;
 using System;
 using System.Collections.Generic;
@@ -11,6 +12,11 @@ namespace Bam.Net.ServiceProxy
     /// </summary>
     public class WebServiceProxyDescriptors
     {
+        public static implicit operator ServiceRegistry(WebServiceProxyDescriptors webServiceProxyDescriptors)
+        {
+            return webServiceProxyDescriptors.WebServiceRegistry;
+        }
+
         /// <summary>
         /// Gets or sets the WebServiceRegistry.
         /// </summary>

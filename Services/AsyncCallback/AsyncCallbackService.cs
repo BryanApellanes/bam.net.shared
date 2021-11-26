@@ -140,7 +140,7 @@ namespace Bam.Net.Services
                 Ssl = HostPrefix.Ssl,
                 ClassName = type.Name,
                 MethodName = methodName,
-                JsonParams = ApiArguments.ArgumentsToJsonArgumentsArray(arguments).ToJson()
+                JsonArgs = ApiArgumentEncoder.ArgumentsToJsonArgumentsArray(arguments).ToJson()
             };
         }
 
@@ -229,7 +229,7 @@ namespace Bam.Net.Services
                     RequestHash = requestHash,
                     ClassName = request.ClassName,
                     MethodName = request.MethodName,
-                    JsonParams = request.JsonParams
+                    JsonArgs = request.JsonArgs
                 };
                 Expect.AreEqual(requestHash, requestData.GetRequestHash());
                 AsyncCallbackRepository.Save(requestData);

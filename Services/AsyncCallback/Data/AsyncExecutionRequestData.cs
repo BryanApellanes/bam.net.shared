@@ -28,11 +28,11 @@ namespace Bam.Net.Services.AsyncCallback.Data
         }
         public string ClassName { get; set; }        
         public string MethodName { get; set; }        
-        public string JsonParams { get; set; } // TODO: rename this to JsonArgs; requires any databases that currently contain this to be reinitialized
+        public string JsonArgs { get; set; } // TODO: rename this to JsonArgs; requires any databases that currently contain this to be reinitialized
 
         public string GetRequestHash()
         {
-            return $"{ClassName}\r\n{MethodName}\r\n{JsonParams}".Sha256();
+            return $"{ClassName}\r\n{MethodName}\r\n{JsonArgs}".Sha256();
         }
     }
 }

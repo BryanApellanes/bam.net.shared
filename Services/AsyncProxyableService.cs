@@ -25,8 +25,8 @@ namespace Bam.Net.Services
     /// This component can optionally wait for responses in a non blocking way using Tasks.
     /// </summary>
     /// <seealso cref="Bam.Net.CoreServices.ApplicationProxyableService" />
-    /// <seealso cref="Bam.Net.ServiceProxy.IHasServiceProvider" />
-    public abstract partial class AsyncProxyableService : ApplicationProxyableService, IHasServiceProvider
+    /// <seealso cref="Bam.Net.ServiceProxy.IHasServiceRegistry" />
+    public abstract partial class AsyncProxyableService : ApplicationProxyableService, IHasServiceRegistry
     {
         ProxyFactory _proxyFactory;
 
@@ -51,7 +51,7 @@ namespace Bam.Net.Services
         public AsyncCallbackService CallbackService { get; set; }
 
         public Action<AsyncExecutionResponse> DefaultResponseHandler { get; set; }
-        public ServiceRegistry ServiceProvider { get; set; }
+        public ServiceRegistry ServiceRegistry { get; set; }
 
         /// <summary>
         /// The number of milliseconds to wait for async tasks to complete

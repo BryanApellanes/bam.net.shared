@@ -12,7 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Bam.Net.Data.Repositories;
 using Bam.Net.Server;
-using Bam.Net.ServiceProxy;
+using Bam.Net.Server.ServiceProxy;
 
 namespace Bam.Net.Services
 {

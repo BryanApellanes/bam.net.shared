@@ -66,7 +66,7 @@ namespace Bam.Net.Server
 
         public static AppConf FromDefaultConfig()
         {
-            return new AppConf { Name = DefaultConfiguration.GetAppSetting("ApplicationName", ServiceProxy.Secure.Application.Unknown.Name) };
+            return new AppConf { Name = DefaultConfiguration.GetAppSetting("ApplicationName", CoreServices.ApplicationRegistration.Data.Application.Unknown.Name) };
         }
 
         public static AppConf FromConfig()

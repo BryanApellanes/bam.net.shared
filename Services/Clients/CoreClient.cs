@@ -21,6 +21,7 @@ using Bam.Net.CoreServices.ApplicationRegistration.Data.Dao.Repository;
 using Bam.Net.CoreServices.ApplicationRegistration.Data;
 using Bam.Net.CoreServices.Auth;
 using System.Net.Http;
+using Bam.Net.Server.ServiceProxy;
 
 namespace Bam.Net.Services.Clients
 {
@@ -159,7 +160,7 @@ namespace Bam.Net.Services.Clients
         public bool IsValidRequest(ServiceProxyInvocation request)
         {
             Args.ThrowIfNull(request, "request");
-            string stringToHash = ApiArguments.GetStringToHash(request);
+            string stringToHash = ApiArgumentEncoder.GetStringToHash(request);
             string token = request.Context.Request.Headers[Headers.KeyToken];
             bool result = false;
             if (!string.IsNullOrEmpty(token))
@@ -601,12 +602,12 @@ namespace Bam.Net.Services.Clients
         }
         public event EventHandler InvocationExceptionThrown; 
         public event EventHandler MethodInvoked;
-        protected virtual void OnInvocationException(object sender, ServiceProxyInvokeEventArgs args)
+        protected virtual void OnInvocationException(object sender, ServiceProxyInvocationRequestEventArgs args)
         {
             FireEvent(InvocationExceptionThrown, sender, args);
         }
 
-        protected virtual void OnInvocation(object sender, ServiceProxyInvokeEventArgs args)
+        protected virtual void OnInvocation(object sender, ServiceProxyInvocationRequestEventArgs args)
         {
             FireEvent(MethodInvoked, sender, args);
         }

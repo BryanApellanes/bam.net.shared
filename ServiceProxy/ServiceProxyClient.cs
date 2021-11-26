@@ -32,7 +32,7 @@ namespace Bam.Net.ServiceProxy
             {
                 { "User-Agent", UserAgents.ServiceProxyClient() }
             };
-            this.MethodUrlFormat = "{BaseAddress}serviceproxy/{ClassName}/{MethodName}?{Parameters}";
+            this.MethodUrlFormat = "{BaseAddress}serviceproxy/{ClassName}/{MethodName}?{Arguments}";
             this.HttpMethods = new Dictionary<ServiceProxyVerbs, HttpMethod>()
             {
                 { ServiceProxyVerbs.Get, HttpMethod.Get },
@@ -46,15 +46,15 @@ namespace Bam.Net.ServiceProxy
             this.BaseAddress = httpClient.BaseAddress.ToString();
         }
 
-        public event EventHandler<ServiceProxyInvokeEventArgs> PostStarted;
-        public event EventHandler<ServiceProxyInvokeEventArgs> PostComplete;
-        public event EventHandler<ServiceProxyInvokeEventArgs> PostCanceled;
-        public event EventHandler<ServiceProxyInvokeEventArgs> GetStarted;
-        public event EventHandler<ServiceProxyInvokeEventArgs> GetComplete;
+        public event EventHandler<ServiceProxyInvocationRequestEventArgs> PostStarted;
+        public event EventHandler<ServiceProxyInvocationRequestEventArgs> PostComplete;
+        public event EventHandler<ServiceProxyInvocationRequestEventArgs> PostCanceled;
+        public event EventHandler<ServiceProxyInvocationRequestEventArgs> GetStarted;
+        public event EventHandler<ServiceProxyInvocationRequestEventArgs> GetComplete;
 
-        public event EventHandler<ServiceProxyInvokeEventArgs> RequestExceptionThrown;
+        public event EventHandler<ServiceProxyInvocationRequestEventArgs> RequestExceptionThrown;
 
-        protected void OnRequestExceptionThrown(ServiceProxyInvokeEventArgs args)
+        protected void OnRequestExceptionThrown(ServiceProxyInvocationRequestEventArgs args)
         {
             if (RequestExceptionThrown != null)
             {
@@ -66,15 +66,15 @@ namespace Bam.Net.ServiceProxy
         /// Fires the Getting event 
         /// </summary>
         /// <param name="args"></param>
-        protected void OnGetStarted(ServiceProxyInvokeEventArgs args)
+        protected void OnGetStarted(ServiceProxyInvocationRequestEventArgs args)
         {
             if (GetStarted != null)
             {
                 GetStarted(this, args);
             }
         }
-        public event EventHandler<ServiceProxyInvokeEventArgs> GetCanceled;
-        protected void OnGetCanceled(ServiceProxyInvokeEventArgs args)
+        public event EventHandler<ServiceProxyInvocationRequestEventArgs> GetCanceled;
+        protected void OnGetCanceled(ServiceProxyInvocationRequestEventArgs args)
         {
             if (GetCanceled != null)
             {
@@ -88,7 +88,7 @@ namespace Bam.Net.ServiceProxy
         /// Fires the Got event
         /// </summary>
         /// <param name="args"></param>
-        protected void OnGetComplete(ServiceProxyInvokeEventArgs args)
+        protected void OnGetComplete(ServiceProxyInvocationRequestEventArgs args)
         {
             if (GetComplete != null)
             {
@@ -100,7 +100,7 @@ namespace Bam.Net.ServiceProxy
         /// Fires the Posting event 
         /// </summary>
         /// <param name="args"></param>
-        protected void OnPosting(ServiceProxyInvokeEventArgs args)
+        protected void OnPosting(ServiceProxyInvocationRequestEventArgs args)
         {
             if (PostStarted != null)
             {
@@ -108,7 +108,7 @@ namespace Bam.Net.ServiceProxy
             }
         }
 
-        protected void OnPostCanceled(ServiceProxyInvokeEventArgs args)
+        protected void OnPostCanceled(ServiceProxyInvocationRequestEventArgs args)
         {
             if (PostCanceled != null)
             {
@@ -122,7 +122,7 @@ namespace Bam.Net.ServiceProxy
         /// Fires the Got event
         /// </summary>
         /// <param name="args"></param>
-        protected void OnPosted(ServiceProxyInvokeEventArgs args)
+        protected void OnPosted(ServiceProxyInvocationRequestEventArgs args)
         {
             if (PostComplete != null)
             {
@@ -209,39 +209,39 @@ namespace Bam.Net.ServiceProxy
         /// <summary>
         /// The event that is raised when an exception occurs during method invocation.
         /// </summary>
-        public event EventHandler<ServiceProxyInvokeEventArgs> InvocationException;
+        public event EventHandler<ServiceProxyInvocationRequestEventArgs> InvocationException;
 
-        protected void OnInvocationException(ServiceProxyInvokeEventArgs args)
+        protected void OnInvocationException(ServiceProxyInvocationRequestEventArgs args)
         {
             InvocationException?.Invoke(this, args);
         }
 
-        public event EventHandler<ServiceProxyInvokeEventArgs> InvokeMethodStarted;
-        protected void OnInvokeMethodStarted(ServiceProxyInvokeEventArgs args)
+        public event EventHandler<ServiceProxyInvocationRequestEventArgs> InvokeMethodStarted;
+        protected void OnInvokeMethodStarted(ServiceProxyInvocationRequestEventArgs args)
         {
             InvokeMethodStarted?.Invoke(this, args);
         }
 
-        public event EventHandler<ServiceProxyInvokeEventArgs> InvokeMethodComplete;
-        protected void OnInvokeMethodComplete(ServiceProxyInvokeEventArgs args)
+        public event EventHandler<ServiceProxyInvocationRequestEventArgs> InvokeMethodComplete;
+        protected void OnInvokeMethodComplete(ServiceProxyInvocationRequestEventArgs args)
         {
             InvokeMethodComplete?.Invoke(this, args);
         }
 
-        public event EventHandler<ServiceProxyInvokeEventArgs> InvokeMethodCanceled;
-        protected void OnInvokeMethodCanceled(ServiceProxyInvokeEventArgs args)
+        public event EventHandler<ServiceProxyInvocationRequestEventArgs> InvokeMethodCanceled;
+        protected void OnInvokeMethodCanceled(ServiceProxyInvocationRequestEventArgs args)
         {
             InvokeMethodCanceled?.Invoke(this, args);
         }
 
         public async Task<string> ReceivePostResponseAsync(string methodName, params object[] arguments)
         {
-            return await ReceivePostResponseAsync(new ServiceProxyInvokeRequest(this, BaseAddress, ServiceType.Name, methodName, arguments));
+            return await ReceivePostResponseAsync(new ServiceProxyInvocationRequest(this, BaseAddress, ServiceType.Name, methodName, arguments));
         }
 
-        public virtual async Task<string> ReceivePostResponseAsync(ServiceProxyInvokeRequest serviceProxyInvokeRequest)
+        public virtual async Task<string> ReceivePostResponseAsync(ServiceProxyInvocationRequest serviceProxyInvokeRequest)
         {
-            ServiceProxyInvokeEventArgs args = new ServiceProxyInvokeEventArgs(serviceProxyInvokeRequest);
+            ServiceProxyInvocationRequestEventArgs args = new ServiceProxyInvocationRequestEventArgs(serviceProxyInvokeRequest);
             args.Client = this;
 
             OnPosting(args);
@@ -252,8 +252,8 @@ namespace Bam.Net.ServiceProxy
             }
             else
             {
-                ServiceProxyArguments serviceProxyArguments = serviceProxyInvokeRequest.ServiceProxyArguments;
-                HttpRequestMessage request = await CreateServiceProxyRequestMessageAsync(serviceProxyArguments.Verb, serviceProxyInvokeRequest.ClassName, serviceProxyInvokeRequest.MethodName, "nocache=".RandomLetters(4));
+                ServiceProxyInvocationRequestArguments serviceProxyArguments = serviceProxyInvokeRequest.ServiceProxyInvocationRequestArguments;
+                HttpRequestMessage request = await CreateServiceProxyRequestMessageAsync(serviceProxyInvokeRequest.Verb, serviceProxyInvokeRequest.ClassName, serviceProxyInvokeRequest.MethodName, "nocache=".RandomLetters(4));
                 serviceProxyArguments.SetContent(request);
 
                 try
@@ -277,12 +277,12 @@ namespace Bam.Net.ServiceProxy
         public async Task<string> ReceiveGetResponseAsync(string methodName, params object[] arguments)
         {
             MethodInfo methodInfo = ServiceType.GetMethod(methodName, arguments.Select(argument => argument.GetType()).ToArray());
-            return await ReceiveGetResponseAsync(new ServiceProxyInvokeRequest(this, BaseAddress, ServiceType.Name, methodName, arguments));
+            return await ReceiveGetResponseAsync(new ServiceProxyInvocationRequest(this, BaseAddress, ServiceType.Name, methodName, arguments));
         }
 
-        public virtual async Task<string> ReceiveGetResponseAsync(ServiceProxyInvokeRequest request)
+        public virtual async Task<string> ReceiveGetResponseAsync(ServiceProxyInvocationRequest request)
         {
-            ServiceProxyInvokeEventArgs args = request.CopyAs<ServiceProxyInvokeEventArgs>();
+            ServiceProxyInvocationRequestEventArgs args = request.CopyAs<ServiceProxyInvocationRequestEventArgs>();
             args.Client = this;
 
             OnGetStarted(args);
@@ -310,10 +310,10 @@ namespace Bam.Net.ServiceProxy
             string queryString = ApiArgumentProvider.ArgumentsToQueryString(namedArguments);
             return await CreateServiceProxyRequestMessageAsync(verb, ApiArgumentProvider.ServiceType.Name, methodName, queryString);
         }
-
-        protected virtual internal Task<HttpRequestMessage> CreateServiceProxyRequestMessageAsync(ServiceProxyVerbs verb, string className, string methodName, string queryStringParameters = "")
+        
+        protected virtual internal Task<HttpRequestMessage> CreateServiceProxyRequestMessageAsync(ServiceProxyVerbs verb, string className, string methodName, string queryStringArguments = "")
         {
-            string methodUrl = MethodUrlFormat.NamedFormat(new { BaseAddress, Verb = verb, ClassName = className, MethodName = methodName, Parameters = queryStringParameters });
+            string methodUrl = MethodUrlFormat.NamedFormat(new { BaseAddress, ClassName = className, MethodName = methodName, Arguments = queryStringArguments });
             HttpRequestMessage request = new HttpRequestMessage(HttpMethods[verb], methodUrl);
             request.Headers.Add("User-Agent", UserAgent);
             request.Headers.Add(Web.Headers.ProcessMode, ProcessMode.Current.Mode.ToString());
@@ -323,6 +323,22 @@ namespace Bam.Net.ServiceProxy
                 request.Headers.Add(key, Headers[key]);
             });
             return Task.FromResult(request);
+        }
+
+        public string GetServiceProxyInvocationUrl(ServiceProxyInvocationRequest serviceProxyInvocationRequest, ServiceProxyInvocationRequestArguments serviceProxyInvocationRequestArguments)
+        {
+            return GetServiceProxyInvocationUrl(serviceProxyInvocationRequest.ClassName, serviceProxyInvocationRequest.MethodName, serviceProxyInvocationRequestArguments);
+        }
+
+        public string GetServiceProxyInvocationUrl(string className, string methodName, ServiceProxyInvocationRequestArguments serviceProxyInvocationRequestArguments)
+        {
+            return MethodUrlFormat.NamedFormat(new 
+            {
+                BaseAddress,
+                ClassName = className,
+                MethodName = methodName,
+                Arguments = serviceProxyInvocationRequestArguments.QueryStringArguments
+            });
         }
 
         public abstract Task<string> InvokeServiceMethodAsync(string baseAddress, string className, string methodName, object[] arguments);

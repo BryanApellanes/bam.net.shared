@@ -9,11 +9,10 @@ using System.Threading.Tasks;
 using System.IO;
 using Bam.Net.Web;
 using Bam.Net.Presentation.Html;
-using Bam.Net.Server;
-using Bam.Net.ServiceProxy;
 using System.Reflection;
 using System.Collections.Concurrent;
 using Bam.Net.Server.PathHandlers;
+using Bam.Net.Server.ServiceProxy;
 
 namespace Bam.Net.Server.Renderers
 {
@@ -38,7 +37,7 @@ namespace Bam.Net.Server.Renderers
                 request.Result = result.Data;
             }
 
-            HandlePrependAndPostpend();
+            //HandlePrependAndPostpend();
 
             string script = request.Result as string;
             if (script == null)
@@ -74,28 +73,28 @@ namespace Bam.Net.Server.Renderers
             }*/
         }
 
-        protected virtual void HandlePrependAndPostpend()
+/*        protected virtual void HandlePrependAndPostpend()
         {
-            /*string ext = ServiceProxyInvocation.Ext;
+            *//*string ext = ServiceProxyInvocation.Ext;
             // if ext is jsonp
             if (!string.IsNullOrEmpty(ext) && ext.ToLowerInvariant().Equals(".jsonp"))
             {
                 HandleJsonp();
             }
-            else */
+            else *//*
             if (ServiceProxyInvocation.HasCallback)
             {
                 Postpend("\r\n;{0}"._Format(ServiceProxyInvocation.Callback));
             }
-        }
-
+        }*/
+/*
         protected virtual void HandleJsonp()
         {
             string callBack = ServiceProxyInvocation.HasCallback ? ServiceProxyInvocation.Callback : "alert";
             Prepend("{0}('"._Format(callBack));
             Postpend("');\r\n");
-        }
-
+        }*/
+/*
         protected virtual void Prepend(string prepend)
         {
             StringBuilder newResult = new StringBuilder();
@@ -103,16 +102,16 @@ namespace Bam.Net.Server.Renderers
             newResult.Append(ServiceProxyInvocation.Result);
             
             ServiceProxyInvocation.Result = newResult.ToString();
-        }
+        }*/
 
-        protected virtual void Postpend(string postpend)
+/*        protected virtual void Postpend(string postpend)
         {
             StringBuilder newResult = new StringBuilder();
             newResult.Append(ServiceProxyInvocation.Result);
             newResult.Append(postpend);
 
             ServiceProxyInvocation.Result = newResult.ToString();
-        }
+        }*/
 
         public override void Render(object toRender, Stream output)
         {

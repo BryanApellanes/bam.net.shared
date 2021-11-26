@@ -5,8 +5,9 @@ using System.Text;
 
 namespace Bam.Net.Server
 {
-    public class RequestHandlerResolverEventArgs : RequestHandlerEventArgs
+    public class RequestHandlerResolverEventArgs<TResponder> : RequestHandlerEventArgs<TResponder>
+        where TResponder : Responder
     {
-        public IRequestHandlerResolver RequestHandlerResolver { get; set; }
+        public IContextHandlerResolver<TResponder> RequestHandlerResolver { get; set; }
     }
 }

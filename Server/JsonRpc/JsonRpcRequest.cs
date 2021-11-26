@@ -69,7 +69,7 @@ namespace Bam.Net.Server.JsonRpc
         {
             JsonRpcNotification notification = JsonRpcNotification.Create(incubator, method, parameters);
             JsonRpcRequest request = notification.CopyAs<JsonRpcRequest>();
-            request.Incubator = incubator;
+            request.ServiceRegistry = incubator;
             request.Id = id;
             return request;
         }

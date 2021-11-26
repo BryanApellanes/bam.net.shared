@@ -19,6 +19,6 @@ namespace Bam.Net.Server
         public string PathAndQuery { get; set; }
 
         protected internal Uri OriginalUrl { get; set; }
-        protected internal Dictionary<string, string> ParsedValues { get; set; }
+        //protected internal Dictionary<string, string> ParsedValues { get; set; }
     }
 }

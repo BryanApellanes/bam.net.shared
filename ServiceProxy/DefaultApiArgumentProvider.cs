@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Bam.Net.Server.ServiceProxy;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -7,7 +8,6 @@ using System.Text;
 
 namespace Bam.Net.ServiceProxy
 {
-
     public class DefaultApiArgumentProvider : IApiArgumentProvider
     {
         public Type ServiceType { get; set; }
@@ -23,17 +23,17 @@ namespace Bam.Net.ServiceProxy
 
         public string ArgumentsToJsonArgsMember(params object[] arguments)
         {
-            return ApiArguments.ArgumentsToJsonArgsMember(arguments);
+            return ApiArgumentEncoder.ArgumentsToJsonArgsMember(arguments);
         }
 
         public string GetStringToHash(ServiceProxyInvocation request)
         {
-            return ApiArguments.GetStringToHash(request);
+            return ApiArgumentEncoder.GetStringToHash(request);
         }
 
         public string GetStringToHash(string className, string methodName, string jsonArguments)
         {
-            return ApiArguments.GetStringToHash(className, methodName, jsonArguments);
+            return ApiArgumentEncoder.GetStringToHash(className, methodName, jsonArguments);
         }
 
         public string GetArgumentFromValue(object value)
@@ -88,7 +88,7 @@ namespace Bam.Net.ServiceProxy
             });
             return result;
         }
-
+/*
         public string ArgumentsToNumberedQueryString(object[] arguments)
         {
             StringBuilder result = new StringBuilder();
@@ -103,7 +103,7 @@ namespace Bam.Net.ServiceProxy
             }
 
             return result.ToString();
-        }
+        }*/
 
         public string ArgumentsToQueryString(Dictionary<string, object> arguments)
         {
@@ -125,7 +125,7 @@ namespace Bam.Net.ServiceProxy
 
         public string[] ArgumentsToJsonArgumentsArray(params object[] arguments)
         {
-            return ApiArguments.ArgumentsToJsonArgumentsArray(arguments);
+            return ApiArgumentEncoder.ArgumentsToJsonArgumentsArray(arguments);
         }
 
         static DefaultApiArgumentProvider _current;

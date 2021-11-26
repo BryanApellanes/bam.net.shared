@@ -6,7 +6,7 @@ using System;
 using System.IO;
 using System.Text;
 using Bam.Net.Presentation;
-using Bam.Net.ServiceProxy;
+using Bam.Net.Server.ServiceProxy;
 using Bam.Net.Web;
 
 namespace Bam.Net.Server.Renderers

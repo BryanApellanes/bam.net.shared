@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Reflection;
 using Bam.Net.Server;
+using Bam.Net.Server.ServiceProxy;
 
 namespace Bam.Net.CoreServices.Auth
 {

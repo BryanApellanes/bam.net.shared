@@ -174,6 +174,7 @@ namespace Bam.Net.Data.Repositories
                 return _typeSchema;
 			}
 		}
+
         [Verbosity(VerbosityLevel.Warning, SenderMessageFormat = "Missing {PropertyType} property: {ClassName}.{PropertyName}")]
         public event EventHandler SchemaWarning;
 
@@ -804,10 +805,9 @@ namespace Bam.Net.Data.Repositories
 
 		public object ConstructWrapper(Type baseType)
 		{
-
             Type wrapperType = GetWrapperType(baseType);
 			ConstructorInfo ctor = wrapperType.GetConstructor(new Type[] { typeof(DaoRepository) });
-			object result = null;
+            object result;
 			if (ctor == null)
 			{
 				ctor = wrapperType.GetConstructor(Type.EmptyTypes);

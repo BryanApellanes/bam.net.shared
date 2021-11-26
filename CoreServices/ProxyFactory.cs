@@ -94,7 +94,7 @@ namespace Bam.Net.CoreServices
         /// </summary>
         public string WorkspaceDirectory { get; private set; }
 
-        public T GetProxy<T>(EventHandler<ServiceProxyInvokeEventArgs> invocationExceptionHandler)
+        public T GetProxy<T>(EventHandler<ServiceProxyInvocationRequestEventArgs> invocationExceptionHandler)
         {
             T result = GetProxy<T>();
             SubscribeToInvocationExceptions(result, invocationExceptionHandler);
@@ -111,7 +111,7 @@ namespace Bam.Net.CoreServices
         /// <param name="port"></param>
         /// <param name="invocationExceptionHandler"></param>
         /// <returns></returns>
-        public T GetProxy<T>(string hostName, int port, EventHandler<ServiceProxyInvokeEventArgs> invocationExceptionHandler)
+        public T GetProxy<T>(string hostName, int port, EventHandler<ServiceProxyInvocationRequestEventArgs> invocationExceptionHandler)
         {
             T result = GetProxy<T>(hostName, port, new HashSet<Assembly>());
             SubscribeToInvocationExceptions(result, invocationExceptionHandler);
@@ -305,7 +305,7 @@ namespace Bam.Net.CoreServices
             return result;
         }
         
-        private static void SubscribeToInvocationExceptions<T>(T result, EventHandler<ServiceProxyInvokeEventArgs> invocationExceptionHandler)
+        private static void SubscribeToInvocationExceptions<T>(T result, EventHandler<ServiceProxyInvocationRequestEventArgs> invocationExceptionHandler)
         {
             ServiceProxyClient client = result.Property<ServiceProxyClient>("Client"); // Client is defined on the generated proxy class, and this is using reflection to access it; magical knowledge 
             client.Subscribe(nameof(ServiceProxyClient.InvocationException), invocationExceptionHandler);

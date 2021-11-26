@@ -11,9 +11,9 @@ using Bam.Net.Web;
 using Bam.Net.Presentation.Html;
 using Bam.Net;
 using Bam.Net.Logging;
-using Bam.Net.Server;
 using Bam.Net.ServiceProxy;
 using Bam.Net.Presentation;
+using Bam.Net.Server.ServiceProxy;
 
 namespace Bam.Net.Server.Renderers
 {
@@ -51,11 +51,11 @@ namespace Bam.Net.Server.Renderers
             string ext = Path.GetExtension(path);
 
             IWebRenderer renderer = CreateRenderer(webRequest, ext);
-
+/*
             if (request.HasCallback || ScriptRenderer.Extensions.Contains(ext.ToLowerInvariant()))
             {
                 renderer = new ScriptRenderer(request, contentResponder);
-            }
+            }*/
 
             OnCreatedRenderer(webRequest, renderer);
             return renderer;

@@ -2,7 +2,7 @@
 	Copyright © Bryan Apellanes 2015  
 */
 using Bam.Net.Encryption;
-using Bam.Net.ServiceProxy;
+using Bam.Net.Server.ServiceProxy;
 using Bam.Net.ServiceProxy.Secure;
 using System;
 using System.Collections.Generic;
@@ -31,12 +31,12 @@ namespace Bam.Net.ServiceProxy
         public Exception Exception { get; set; }
         public ValidationFailures[] ValidationFailures { get; set; }
 
-        internal void Execute(IHttpContext context, string input)
+        internal void Execute(IHttpContext context)//, string input)
         {
             List<ValidationFailures> failures = new List<ValidationFailures>();
             List<string> messages = new List<string>();
 
-            ValidateEncryptedToken(context, input, failures, messages);
+            //ValidateEncryptedToken(context, input, failures, messages);
             ValidateClassName(failures, messages);
             ValidateTargetType(failures, messages);
             ValidateMethodName(failures, messages);

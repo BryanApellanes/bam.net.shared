@@ -24,19 +24,20 @@ using Bam.Net.Presentation;
 using Bam.Net.Server.PathHandlers;
 using Bam.Net.Services;
 using Bam.Net.CoreServices;
+using Bam.Net.Server.ServiceProxy;
 
 namespace Bam.Net.Server
 {
     /// <summary>
     /// Responder responsible for generating service proxies
-    /// and responding to service proxy requests
+    /// and responding to service proxy requests.
     /// </summary>
     public partial class ServiceProxyResponder : Responder, IInitialize<ServiceProxyResponder>
     {
         public const string ServiceProxyRelativePath = "~/services";
         const string MethodFormPrefixFormat = "/{0}/MethodForm";
 
-        private ResponderRequestHandlerResolver _requestHandlerResolver;
+        private ResponderContextHandlerResolver<ServiceProxyResponder> _requestHandlerResolver;
 
         public ServiceProxyResponder(BamConf conf, ILogger logger)
             : base(conf, logger)
@@ -46,16 +47,16 @@ namespace Bam.Net.Server
             _appSecureChannels = new Dictionary<string, SecureChannel>();
             _commonSecureChannel = new SecureChannel();
             _clientProxyGenerators = new Dictionary<string, IClientProxyGenerator>();
-            _requestHandlerResolver = new ResponderRequestHandlerResolver(this);
+            _requestHandlerResolver = new ResponderContextHandlerResolver<ServiceProxyResponder>(this);
             RendererFactory = new WebRendererFactory(logger);
             ServiceProxyInvocationResolver = new ServiceProxyInvocationResolver();
             ApplicationServiceSourceResolver = new ApplicationServiceSourceResolver();
             ApplicationServiceRegistryResolver = new ApplicationServiceRegistryResolver();
             ServiceCompilationExceptionReporter = new ServiceCompilationExceptionReporter();
 
-            _requestHandlerResolver.AddPathNameHandler("MethodForm", new MethodFormRequestHandler());
-            _requestHandlerResolver.AddPathNameHandler("ProxyCode", new ProxyCodeRequestHandler());
-            _requestHandlerResolver.AddPathNameHandler("Invoke", new InvocationRequestHandler(this), true);
+            _requestHandlerResolver.AddPathNameHandler<MethodFormContextHandler>("MethodForm");
+            _requestHandlerResolver.AddPathNameHandler<ProxyCodeContextHandler>("ProxyCode");
+            _requestHandlerResolver.AddPathNameHandler<ServiceProxyContextHandler>("Invoke", true);
 
             AddCommonService(_commonSecureChannel);
             AddClientProxyGenerator(new CsClientProxyGenerator(), "proxies.cs", "csproxies", "csharpproxies");
@@ -81,6 +82,12 @@ namespace Bam.Net.Server
 
                 AppSecureChannels[appName].ServiceProvider.Set(type, instance, false);
             };
+        }
+        private bool SendMethodForm(IHttpContext context)
+        {
+            // TODO: use InputFormProvider to send method form
+            Logger.AddEntry("{0} method is not supported by this platform", nameof(SendMethodForm));
+            return false;
         }
 
         protected virtual void HandleCompilationException(object sender, RoslynCompilationExceptionEventArgs args)
@@ -543,9 +550,9 @@ namespace Bam.Net.Server
                 //
                 // replace 584+ with the above described implementations
 
-                RequestHandler requestHandler = _requestHandlerResolver.ResolveHandler(httpContext);
+                ResponderContextHandler<ServiceProxyResponder> contextHandler = _requestHandlerResolver.ResolveHandler(httpContext);
 
-                IHttpResponse requestResult = requestHandler.HandleRequest(httpContext);
+                IHttpResponse requestResult = contextHandler.HandleContextAsync(httpContext).Result;
 
                 throw new NotImplementedException();
 
@@ -567,9 +574,9 @@ namespace Bam.Net.Server
                     {
                         string appName = ApplicationNameResolver.ResolveApplicationName(request);
 
-                        ServiceProxyInvocation execRequest = ResolveExecutionRequest(httpContext, appName);
+                        //ServiceProxyInvocation execRequest = ResolveExecutionRequest(httpContext, appName);
                         
-                        responded = execRequest.Execute();
+                       // responded = execRequest.Execute();
                         if (responded)
                         {
                             // TODO: make this configurable
@@ -578,7 +585,7 @@ namespace Bam.Net.Server
                             response.AddHeader("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
                             // ---
                             
-                            RenderResult(appName, path, execRequest);
+                            //RenderResult(appName, path, execRequest);
                         }
                     }
                 }
@@ -683,14 +690,7 @@ namespace Bam.Net.Server
             }
         }
 
-        public virtual ServiceProxyInvocation ResolveExecutionRequest(IHttpContext httpContext, string appName)
-        {
-            GetServiceProxies(appName, out ServiceRegistry proxiedClasses, out List<ProxyAlias> aliases);
-
-            return ServiceProxyInvocationResolver.ResolveInvocationRequest(httpContext, proxiedClasses, aliases.ToArray());
-        }
-
-        private void RenderResult(string appName, string path, ServiceProxyInvocation execRequest)
+/*        private void RenderResult(string appName, string path, ServiceProxyInvocation execRequest)
         {
             string ext = Path.GetExtension(path).ToLowerInvariant();
             if (string.IsNullOrEmpty(ext))
@@ -706,45 +706,7 @@ namespace Bam.Net.Server
             }
 
             RendererFactory.Respond(execRequest, ContentResponder);
-        }
-
-        private void GetServiceProxies(string appName, out ServiceRegistry proxiedClasses, out List<ProxyAlias> aliases)
-        {
-            proxiedClasses = new ServiceRegistry();
-
-            aliases = new List<ProxyAlias>(GetProxyAliases(ServiceProxySystem.Incubator));
-            proxiedClasses.CopyFrom(ServiceProxySystem.Incubator, true);
-
-            aliases.AddRange(GetProxyAliases(CommonServiceProvider));
-            proxiedClasses.CopyFrom(CommonServiceProvider, true);
-
-            if (AppServiceProviders.ContainsKey(appName))
-            {
-                Incubator appIncubator = AppServiceProviders[appName];
-                aliases.AddRange(GetProxyAliases(appIncubator));
-                proxiedClasses.CopyFrom(appIncubator, true);
-            }
-        }
-
-        private ProxyAlias[] GetProxyAliases(Incubator incubator)
-        {
-            List<ProxyAlias> results = new List<ProxyAlias>();
-            results.AddRange(BamConf.ProxyAliases);
-            incubator.ClassNames.Each(cn =>
-            {
-                Type currentType = incubator[cn];
-                ProxyAttribute attr;
-                if (currentType.HasCustomAttributeOfType<ProxyAttribute>(out attr))
-                {
-                    if (!string.IsNullOrEmpty(attr.VarName) && !attr.VarName.Equals(currentType.Name))
-                    {
-                        results.Add(new ProxyAlias(attr.VarName, currentType));
-                    }
-                }
-            });
-
-            return results.ToArray();
-        }
+        }*/
 
         readonly Dictionary<string, IClientProxyGenerator> _clientProxyGenerators;
         private bool SendProxyCode(IHttpContext context)
@@ -817,12 +779,12 @@ namespace Bam.Net.Server
             }
         }
 
-        private LayoutModel GetLayoutModel(string appName)
+/*        private LayoutModel GetLayoutModel(string appName)
         {
             AppConf conf = BamConf.AppConfigs.FirstOrDefault(c => c.Name.Equals(appName));
             LayoutConf defaultLayoutConf = new LayoutConf(conf);
             LayoutModel layoutModel = defaultLayoutConf.CreateLayoutModel();
             return layoutModel;
-        }
+        }*/
     }
 }

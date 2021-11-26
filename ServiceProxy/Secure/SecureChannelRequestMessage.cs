@@ -11,11 +11,11 @@ namespace Bam.Net.ServiceProxy.Secure
         public const string AsymetricCipherMediaType = "application/vnd.bam+cipher;algorithm=asymetric";
         public const string SymetricCipherMediaType = "application/vnd.bam+cipher;algorithm=symetric";
 
-        public SecureChannelRequestMessage(ServiceProxyInvokeRequest serviceProxyInvokeRequest)
+        public SecureChannelRequestMessage(ServiceProxyInvocationRequest serviceProxyInvokeRequest)
         {
             this.ClassName = serviceProxyInvokeRequest.ClassName;
             this.MethodName = serviceProxyInvokeRequest.MethodName;
-            this.JsonArgs = serviceProxyInvokeRequest.ServiceProxyArguments.GetJsonArgumentsArray().ToJson();
+            this.JsonArgs = serviceProxyInvokeRequest.ServiceProxyInvocationRequestArguments.GetJsonArgumentsArray().ToJson();
         }
 
         public string ClassName { get; set; }

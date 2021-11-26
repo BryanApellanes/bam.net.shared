@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Bam.Net.CoreServices;
 using Bam.Net.Incubation;
+using Bam.Net.Server.ServiceProxy;
 
 namespace Bam.Net.ServiceProxy.Secure
 {
@@ -26,7 +27,7 @@ namespace Bam.Net.ServiceProxy.Secure
 
             this.ClassName = className;
             this.MethodName = methodName;
-            this.ArgumentsAsJsonArrayOfJsonStrings = jsonArgs;
+            //this.ArgumentsAsJsonArrayOfJsonStrings = jsonArgs;
             //this.Ext = "json";
             this.Context = context;
             //this.IsUnencrypted = true;
@@ -50,33 +51,26 @@ namespace Bam.Net.ServiceProxy.Secure
         }
         public static SecureExecutionRequest Create<T>(IHttpContext context, string methodName, ServiceRegistry serviceProvider, params object[] parameters)
         {
-            string jsonParams = ApiArguments.ArgumentsToJsonArgumentsArray(parameters).ToJson();
+            string jsonParams = ApiArgumentEncoder.ArgumentsToJsonArgumentsArray(parameters).ToJson();
             SecureExecutionRequest request = new SecureExecutionRequest(context, typeof(T).Name, methodName, jsonParams)
             {
-                ServiceProvider = serviceProvider
+                ServiceRegistry = serviceProvider
             };
             return request;
         }
 
-        protected internal override void Initialize()
-        {
-            // turn off initialization for this type
-            //base.Initialize();
-            IsInitialized = true;
-        }
-
-        protected internal override InvocationTargetInfo ResolveExecutionTargetInfo()
+/*        protected internal override ServiceProxyInvocationTarget ResolveExecutionTargetInfo()
         {
             // effectively turns off parsing of the url since
             // everything is explicitly set already
             //base.ParseRequestUrl();
-            return new InvocationTargetInfo
+            return new ServiceProxyInvocationTarget
             {
                 ClassName = ClassName,
                 MethodName = MethodName,
                 //Ext = Ext
             };
-        }
+        }*/
 
         SecureSession _session;
         readonly object _sessionSync = new object();

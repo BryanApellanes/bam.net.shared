@@ -11,6 +11,7 @@ using Bam.Net.Data;
 using Bam.Net.Data.Repositories;
 using Bam.Net.Logging;
 using Bam.Net.Server;
+using Bam.Net.Server.ServiceProxy;
 using Bam.Net.ServiceProxy;
 using Bam.Net.ServiceProxy.Secure;
 using Bam.Net.UserAccounts;
@@ -263,7 +264,7 @@ namespace Bam.Net.CoreServices
 
             string className = request.ClassName;
             string methodName = request.MethodName;
-            string stringToHash = ApiArguments.GetStringToHash(className, methodName, request.ArgumentsAsJsonArrayOfJsonStrings);
+            string stringToHash = string.Empty;// ApiArgumentEncoder.GetStringToHash(className, methodName, request.ArgumentsAsJsonArrayOfJsonStrings);
 
             string token = request.Context.Request.Headers[Headers.KeyToken];
             bool result = false;

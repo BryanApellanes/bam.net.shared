@@ -9,9 +9,8 @@ using System.Threading.Tasks;
 using System.IO;
 using Bam.Net.Web;
 using Bam.Net.Presentation.Html;
-using Bam.Net.Server;
-using Bam.Net.ServiceProxy;
 using System.Reflection;
+using Bam.Net.Server.ServiceProxy;
 
 namespace Bam.Net.Server.Renderers
 {

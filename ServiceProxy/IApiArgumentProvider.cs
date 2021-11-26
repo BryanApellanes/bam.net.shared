@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Bam.Net.Server.ServiceProxy;
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
@@ -28,7 +29,6 @@ namespace Bam.Net.ServiceProxy
         /// <returns></returns>
         string GetArgumentFromValue(object value);
 
-        string ArgumentsToNumberedQueryString(object[] arguments);
         string ArgumentsToQueryString(Dictionary<string, object> arguments);
     }
 }

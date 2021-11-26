@@ -14,7 +14,7 @@ namespace Bam.Net.Server
         {
             CommonTemplateManager = templateManager;
             ApplicationTemplateManager = new AppHandlebarsRenderer(appContentResponder);
-            RequestRouter = new RequestRouter();
+            //RequestRouter = new RequestRouter();
             AppContentResponder = appContentResponder;
             DefaultRenderers = new Dictionary<int, Func<IRequest, IResponse, byte[]>>();
             _routeInfos = new Dictionary<string, RouteInfo>();
@@ -24,7 +24,7 @@ namespace Bam.Net.Server
         {
             CommonTemplateManager = templateManager;
             ApplicationTemplateManager = applicationTemplateManager;
-            RequestRouter = new RequestRouter();
+            //RequestRouter = new RequestRouter();
             ApplicationTemplateManager.AppContentResponder = appContentResponder;
             AppContentResponder = appContentResponder;
             DefaultRenderers = new Dictionary<int, Func<IRequest, IResponse, byte[]>>();
@@ -35,7 +35,7 @@ namespace Bam.Net.Server
         /// Functions used to render default content for status codes that do not yield content by default.
         /// </summary>
         public Dictionary<int, Func<IRequest, IResponse, byte[]>> DefaultRenderers { get; private set; }
-        protected RequestRouter RequestRouter { get; set; }
+        //protected RequestRouter RequestRouter { get; set; }
         public AppContentResponder AppContentResponder { get; set; }
         public IApplicationTemplateManager ApplicationTemplateManager { get; set; }
         public ITemplateManager CommonTemplateManager { get; set; }
@@ -57,10 +57,10 @@ namespace Bam.Net.Server
                 RouteInfo info = new RouteInfo
                 {
                     Request = request,
-                    IsHomeRequest = RequestRouter.IsHomeRequest(request.Url, out RequestRoute route),
-                    RequestRoute = route
+                    //IsHomeRequest = RequestRouter.IsHomeRequest(request.Url, out RequestRoute route),
+                    //RequestRoute = route
                 };
-                info.CanRender = !info.IsHomeRequest ? route.IsValid : info.IsHomeRequest;
+                info.CanRender = true;//!info.IsHomeRequest ? route.IsValid : info.IsHomeRequest;
 
                 _routeInfos.AddMissing(url, info);
             }

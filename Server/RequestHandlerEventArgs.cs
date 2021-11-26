@@ -5,7 +5,8 @@ using System.Text;
 
 namespace Bam.Net.Server
 {
-    public class RequestHandlerEventArgs : EventArgs
+    public class RequestHandlerEventArgs<TResponder> : EventArgs
+        where TResponder : Responder
     {        
         public IHttpContext HttpContext { get; set; }
 
@@ -14,7 +15,7 @@ namespace Bam.Net.Server
             get => HttpContext?.Request;
         }
 
-        public RequestHandler RequestHandler { get; set; }
+        public ResponderContextHandler<TResponder> RequestHandler { get; set; }
 
         public Exception Exception { get; set; }
     }

@@ -12,6 +12,7 @@ using Bam.Net;
 using Bam.Net.Web;
 using Bam.Net.Configuration;
 using System.Net.Http;
+using Bam.Net.Server.ServiceProxy;
 
 namespace Bam.Net.ServiceProxy.Secure
 {
@@ -121,8 +122,7 @@ namespace Bam.Net.ServiceProxy.Secure
         public string CreateKeyToken(string stringToHash)
         {
             ApiKeyInfo apiKey = this.GetApiKeyInfo(this);
-            // TODO: change this to use an Hmac
-            return $"{apiKey.ApiKey}:{stringToHash}".HashHexString(HashAlgorithm);
+            return $"{apiKey.ApiKey}:{stringToHash}".HmacHexString(apiKey.ApiKey, HashAlgorithm);
         }
 
         public bool IsValidRequest(ServiceProxyInvocation request)
@@ -131,7 +131,7 @@ namespace Bam.Net.ServiceProxy.Secure
 			
             string className = request.ClassName;
             string methodName = request.MethodName;
-            string stringToHash = ApiArguments.GetStringToHash(className, methodName, request.ArgumentsAsJsonArrayOfJsonStrings);
+            string stringToHash = ApiArgumentEncoder.GetStringToHash(className, methodName, "");//, request.ArgumentsAsJsonArrayOfJsonStrings);
 
             string token = request.Context.Request.Headers[Headers.KeyToken];
             bool result = false;

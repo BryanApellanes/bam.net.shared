@@ -70,9 +70,9 @@ namespace Bam.Net.ServiceProxy
 
         public override async Task<string> InvokeServiceMethodAsync(string baseAddress, string className, string methodName, params object[] arguments)
         {
-            ServiceProxyInvokeRequest<TService> request = new ServiceProxyInvokeRequest<TService>(this, baseAddress, className, methodName, arguments);
+            ServiceProxyInvocationRequest<TService> request = new ServiceProxyInvocationRequest<TService>(this, baseAddress, className, methodName, arguments);
 
-            ServiceProxyInvokeEventArgs args = request.CopyAs<ServiceProxyInvokeEventArgs<TService>>(request);
+            ServiceProxyInvocationRequestEventArgs args = request.CopyAs<ServiceProxyInvocationRequestEventArgs<TService>>(request);
             OnInvokeMethodStarted(args);
             string response = string.Empty;
             if (args.CancelInvoke)
@@ -94,7 +94,7 @@ namespace Bam.Net.ServiceProxy
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
-        protected internal virtual async Task<string> ReceiveServiceMethodResponseAsync(ServiceProxyInvokeRequest<TService> request)
+        protected internal virtual async Task<string> ReceiveServiceMethodResponseAsync(ServiceProxyInvocationRequest<TService> request)
         {
             string result = string.Empty;
             try
@@ -103,7 +103,7 @@ namespace Bam.Net.ServiceProxy
             }
             catch (Exception ex)
             {
-                ServiceProxyInvokeEventArgs<TService> args = request.CopyAs<ServiceProxyInvokeEventArgs<TService>>();
+                ServiceProxyInvocationRequestEventArgs<TService> args = request.CopyAs<ServiceProxyInvocationRequestEventArgs<TService>>();
                 args.Exception = ex;
                 OnInvocationException(args);
             }
