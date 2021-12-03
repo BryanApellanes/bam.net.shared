@@ -64,7 +64,7 @@ namespace Bam.Net.ServiceProxy.Secure
 
         protected internal IAsymmetricBlockCipher GetEngine()
         {
-            return RsaCrypto.GetRsaEngine(UsePkcsPadding.Value);
+            return Rsa.GetRsaEngine(UsePkcsPadding.Value);
         }
     }
 }

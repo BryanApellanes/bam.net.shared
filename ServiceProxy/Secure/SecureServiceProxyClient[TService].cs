@@ -202,7 +202,8 @@ namespace Bam.Net.ServiceProxy.Secure
 
             try
             {
-                HttpRequestMessage requestMessage = CreateServiceProxyRequestMessageAsync(ServiceProxyVerbs.Get, nameof(SecureChannel), nameof(SecureChannel.StartSession), $"instant={GetUrlEncodedInstant()}").Result;
+                ServiceProxyInvocationRequest<SecureChannel> serviceProxyInvocationRequest = new ServiceProxyInvocationRequest<SecureChannel>(nameof(SecureChannel.StartSession), new Instant());
+                HttpRequestMessage requestMessage = await CreateServiceProxyRequestMessageAsync(serviceProxyInvocationRequest);
                 HttpResponseMessage responseMessage = await HttpClient.SendAsync(requestMessage);
                 string responseString = await responseMessage.Content.ReadAsStringAsync();
                 LastResponse = responseString;
@@ -257,12 +258,12 @@ namespace Bam.Net.ServiceProxy.Secure
 
         public async Task<TResult> ReceivePostResponseAsync<TResult>(string className, string methodName, params object[] arguments)
         {
-            return (await ReceivePostResponseAsync(new ServiceProxyInvocationRequest(this, BaseAddress, className,  methodName, arguments))).FromJson<TResult>();
+            return (await ReceivePostResponseAsync(new ServiceProxyInvocationRequest(this, className,  methodName, arguments))).FromJson<TResult>();
         }
 
-        public override async Task<string> ReceivePostResponseAsync(ServiceProxyInvocationRequest serviceProxyInvokeRequest)
+        public override async Task<string> ReceivePostResponseAsync(ServiceProxyInvocationRequest serviceProxyInvocationRequest)
         {
-            ServiceProxyInvocationRequestEventArgs args = new ServiceProxyInvocationRequestEventArgs(serviceProxyInvokeRequest);
+            ServiceProxyInvocationRequestEventArgs args = new ServiceProxyInvocationRequestEventArgs(serviceProxyInvocationRequest);
             args.Client = this;
             OnPosting(args);
             string response = string.Empty;
@@ -274,11 +275,10 @@ namespace Bam.Net.ServiceProxy.Secure
             {
                 try
                 {
-                    HttpRequestMessage requestMessage = await CreateServiceProxyRequestMessageAsync(ServiceProxyVerbs.Post, nameof(SecureChannel), nameof(SecureChannel.Invoke), string.Empty);
-
-                    SecureServiceProxyInvocationRequestArguments<TService> secureServiceProxyArguments = new SecureServiceProxyInvocationRequestArguments<TService>(SessionInfo, ApiKeyResolver, ApiEncryptionProvider, serviceProxyInvokeRequest);
-                    secureServiceProxyArguments.SetContent(requestMessage);
-                    secureServiceProxyArguments.SetKeyToken(requestMessage, serviceProxyInvokeRequest.MethodName);
+                    HttpRequestMessage requestMessage = await CreateServiceProxyRequestMessageAsync(serviceProxyInvocationRequest);
+                    SecureServiceProxyInvocationRequestArguments<TService> secureServiceProxyArguments = new SecureServiceProxyInvocationRequestArguments<TService>(SessionInfo, ApiKeyResolver, ApiEncryptionProvider, serviceProxyInvocationRequest);
+                    secureServiceProxyArguments.WriteArgumentContent(requestMessage);
+                    secureServiceProxyArguments.SetKeyToken(requestMessage);
 
                     HttpResponseMessage responseMessage = await HttpClient.SendAsync(requestMessage);
                     args.RequestMessage = requestMessage;

@@ -19,7 +19,7 @@ namespace Bam.Net.Encryption
             SetKeyAndIv();
         }
 
-        static object _aesLock = new object();
+        static readonly object _aesLock = new object();
         static volatile AesKeyVectorPair _key;
         public static AesKeyVectorPair AppKey
         {
@@ -27,15 +27,18 @@ namespace Bam.Net.Encryption
             {
                 if (_key == null)
                 {
-                    string fileName = Path.Combine(BamHome.Local, "appkey.aes");
-                    if (File.Exists(fileName))
+                    lock(_aesLock)
                     {
-                        _key = AesKeyVectorPair.Load(fileName);
-                    }
-                    else
-                    {
-                        _key = new AesKeyVectorPair();
-                        _key.Save(fileName);
+                        string fileName = Path.Combine(BamHome.Local, "appkey.aes");
+                        if (File.Exists(fileName))
+                        {
+                            _key = Load(fileName);
+                        }
+                        else
+                        {
+                            _key = new AesKeyVectorPair();
+                            _key.Save(fileName);
+                        }
                     }
                 }
 
@@ -92,7 +95,7 @@ namespace Bam.Net.Encryption
 
         /// <summary>
         /// Gets a Base64 encoded value representing the cypher of the specified
-        /// value using the specified key.
+        /// value using the current key.
         /// </summary>
         public string Encrypt(string value)
         {
@@ -102,11 +105,11 @@ namespace Bam.Net.Encryption
         /// <summary>
         /// Decrypts the specified base64 encoded value.
         /// </summary>
-        /// <param name="base64EncodedValue">The base64 encoded value.</param>
+        /// <param name="base64EncodedCipher">The base64 encoded value.</param>
         /// <returns></returns>
-        public string Decrypt(string base64EncodedValue)
+        public string Decrypt(string base64EncodedCipher)
         {
-            return Aes.Decrypt(base64EncodedValue, this);
+            return Aes.Decrypt(base64EncodedCipher, this);
         }
     }
 }

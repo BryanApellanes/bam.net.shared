@@ -37,11 +37,11 @@ namespace Bam.Net.ServiceProxy.Secure
             }
         }
 
-        public void SetKeyToken(HttpRequestMessage requestMessage, string methodName)
+        public void SetKeyToken(HttpRequestMessage requestMessage)
         {
             if(TypeRequiresApiKey || MethodRequiresApiKey)
             {
-                ApiKeyResolver.SetKeyToken(requestMessage, ApiArgumentProvider.GetStringToHash(typeof(TService).Name, methodName, GetJsonArgsMember()));
+                ApiKeyResolver.SetKeyToken(requestMessage, ApiArgumentEncoder.GetStringToHash(typeof(TService).Name, MethodInfo.Name, GetJsonArgsMember()));
             }            
         }
 
@@ -49,9 +49,9 @@ namespace Bam.Net.ServiceProxy.Secure
         /// Sets the content of the specified request message to the encrypted cipher of the invocation request.  Additionally, applies encrypted validation token headers.
         /// </summary>
         /// <param name="requestMessage"></param>
-        public override void SetContent(HttpRequestMessage requestMessage)
+        public override void WriteArgumentContent(HttpRequestMessage requestMessage)
         {
-            SecureChannelRequestMessage secureChannelRequestMessage = new SecureChannelRequestMessage(ServiceProxyInvokeRequest);
+            SecureChannelRequestMessage secureChannelRequestMessage = new SecureChannelRequestMessage(ServiceProxyInvocationRequest);
 
             requestMessage.Content = secureChannelRequestMessage.GetSymetricCipherContent(ClientSessionInfo);
             secureChannelRequestMessage.SetEncryptedValidationTokenHeaders(ApiEncryptionProvider, ClientSessionInfo, requestMessage);

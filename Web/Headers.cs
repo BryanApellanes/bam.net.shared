@@ -20,6 +20,9 @@ namespace Bam.Net.Web
 
         public static string ApplicationName => "X-Bam-AppName";
 
+        public static string SecureChannelSessionId => "X-Bam-Secure-Channel-Session-Id";
+
+        [Obsolete("Use SecureChannelSessionId instead")]
         public static string SecureSessionId => "X-Bam-Sps-Session-Id";
 
         public static string ValidationToken => "X-Bam-Validation-Token";

@@ -407,7 +407,7 @@ namespace Bam.Net.Encryption
         public static void SetVaultKey(Vault vault, string password, RsaKeyLength rsaKeyLength, Database database)
         {
             VaultKey key = vault.VaultKeysByVaultId.JustOne(database, false);
-            AsymmetricCipherKeyPair keys = RsaKeyGen.GenerateKeyPair(rsaKeyLength);
+            AsymmetricCipherKeyPair keys = Rsa.GenerateKeyPair(rsaKeyLength);
             key.RsaKey = keys.ToPem();
             key.Password = password.EncryptWithPublicKey(keys);
             key.Save(database);

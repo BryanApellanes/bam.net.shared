@@ -1102,7 +1102,7 @@ File Version: {1}
                     ConstructorInfo ctor = method.DeclaringType.GetConstructor(Type.EmptyTypes);
                     if (ctor == null)
                     {
-                        ExceptionHelper.Throw<InvalidOperationException>("Specified non-static method is declared on a type that has no parameterless constructor. {0}.{1}", method.DeclaringType.Name, method.Name);
+                        ExceptionExtensions.Throw<InvalidOperationException>("Specified non-static method is declared on a type that has no parameterless constructor. {0}.{1}", method.DeclaringType.Name, method.Name);
                     }
 
                     action.Provider = ctor.Invoke(null);

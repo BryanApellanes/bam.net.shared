@@ -57,6 +57,8 @@ namespace Bam.Net.ServiceProxy.Secure
             get;
         }
 
+        public IApiArgumentEncoder ApiArgumentEncoder { get; set; }
+
         public IApiKeyProvider ApiKeyProvider
         {
             get;
@@ -125,6 +127,7 @@ namespace Bam.Net.ServiceProxy.Secure
             return $"{apiKey.ApiKey}:{stringToHash}".HmacHexString(apiKey.ApiKey, HashAlgorithm);
         }
 
+        // TODO: fix this to use ServiceProxyInvocationRequest
         public bool IsValidRequest(ServiceProxyInvocation request)
         {
             Args.ThrowIfNull(request, "request");

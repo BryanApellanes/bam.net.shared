@@ -60,5 +60,25 @@ namespace Bam.Net.ServiceProxy.Secure
             get;
             set;
         }
+
+        public Bam.Net.CoreServices.ApplicationRegistration.Data.ApiKey ToApiKey()
+        {
+            Bam.Net.CoreServices.ApplicationRegistration.Data.ApiKey key = new Bam.Net.CoreServices.ApplicationRegistration.Data.ApiKey()
+            {
+                ClientIdentifier = this.ApplicationClientId,
+                SharedSecret = this.ApiKey
+            };
+            return key;
+        }
+
+/*        public ApiKeyInfo ToKeyInfo()
+        {
+            return new ApiKeyInfo
+            {
+                ApplicationClientId = ClientIdentifier,
+                ApiKey = SharedSecret,
+                ApplicationNameProvider = new StaticApplicationNameProvider(Application.Name)
+            };
+        }*/
     }
 }

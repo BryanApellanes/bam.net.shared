@@ -11,6 +11,7 @@ using Bam.Net.Data.Qi;
 
 namespace Bam.Net.ServiceProxy.Secure
 {
+    [Obsolete("Use Bam.Net.CoreServices.ApplicationRegistration.Data.ApiKey instead")]
 	public partial class ApiKey
 	{
         public static ApiKey Blank

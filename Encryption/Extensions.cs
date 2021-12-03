@@ -126,36 +126,10 @@ namespace Bam.Net.Encryption
             return Convert.ToBase64String(encrypted);
         }
 
-        /// <summary>
-        /// Encrypt the specified input and return the encrypted byte[] converted to 
-        /// base 64
-        /// </summary>
-        /// <param name="input"></param>
-        /// <param name="keyPair"></param>
-        /// <param name="encoding"></param>
-        /// <returns></returns>
-        public static string EncryptWithPrivateKey(this string input, AsymmetricCipherKeyPair keyPair, Encoding encoding = null)
-        {
-            if (encoding == null)
-            {
-                encoding = Encoding.UTF8;
-            }
-
-            byte[] data = encoding.GetBytes(input);
-            byte[] encrypted = data.EncryptWithPrivateKey(keyPair);
-            return Convert.ToBase64String(encrypted);
-        }
-
-        public static byte[] EncryptWithPrivateKey(this byte[] data, AsymmetricCipherKeyPair keyPair)
-        {
-            return Encrypt(data, keyPair.Private);
-        }
-
         public static byte[] EncryptWithPublicKey(this byte[] data, AsymmetricCipherKeyPair keyPair)
         {
             return Encrypt(data, keyPair.Public);
         }
-
 
         public static byte[] Encrypt(this byte[] data, AsymmetricKeyParameter key)
         {
@@ -181,21 +155,6 @@ namespace Bam.Net.Encryption
             }
 
             return output.ToArray();
-        }
-
-        public static byte[] DecryptWithPublicKey(this byte[] data, AsymmetricCipherKeyPair keyPair)
-        {
-            return Decrypt(data, keyPair.Public);
-        }
-
-        public static byte[] DecryptWithPrivateKey(this byte[] data, AsymmetricCipherKeyPair keyPair)
-        {
-            return Decrypt(data, keyPair.Private);
-        }
-
-        public static byte[] Decrypt(this byte[] data, AsymmetricKeyParameter key)
-        {
-            return Decrypt(data, key, null);
         }
 
         public static byte[] Decrypt(this byte[] data, AsymmetricKeyParameter key, IAsymmetricBlockCipher e)

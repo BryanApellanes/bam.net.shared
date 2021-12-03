@@ -32,7 +32,7 @@ namespace Bam.Net.ServiceProxy
             {
                 { "User-Agent", UserAgents.ServiceProxyClient() }
             };
-            this.MethodUrlFormat = "{BaseAddress}serviceproxy/{ClassName}/{MethodName}?{Arguments}";
+            this.MethodUrlFormat = "{BaseAddress}serviceproxy/{ClassName}/{MethodName}?{QueryStringArguments}";
             this.HttpMethods = new Dictionary<ServiceProxyVerbs, HttpMethod>()
             {
                 { ServiceProxyVerbs.Get, HttpMethod.Get },
@@ -53,6 +53,18 @@ namespace Bam.Net.ServiceProxy
         public event EventHandler<ServiceProxyInvocationRequestEventArgs> GetComplete;
 
         public event EventHandler<ServiceProxyInvocationRequestEventArgs> RequestExceptionThrown;
+
+        public string MethodUrlFormat
+        {
+            get;
+            set;
+        }
+
+        public string BaseAddress
+        {
+            get;
+            set;
+        }
 
         protected void OnRequestExceptionThrown(ServiceProxyInvocationRequestEventArgs args)
         {
@@ -138,31 +150,19 @@ namespace Bam.Net.ServiceProxy
 
         public Type ServiceType { get; internal set; }
 
-        public string MethodUrlFormat
-        {
-            get;
-            set;
-        }
-
-        public string BaseAddress
-        {
-            get;
-            set;
-        }
-
         protected Dictionary<string, string> Headers
         {
             get;
             set;
         }
 
-        IApiArgumentProvider _apiArgumentProvider;
+        IApiArgumentEncoder _apiArgumentProvider;
         object _apiArgumentProviderLock = new object();
-        public IApiArgumentProvider ApiArgumentProvider
+        public IApiArgumentEncoder ApiArgumentEncoder
         {
             get
             {
-                return _apiArgumentProviderLock.DoubleCheckLock(ref _apiArgumentProvider, () => new DefaultApiArgumentProvider() { ServiceType = ServiceType });
+                return _apiArgumentProviderLock.DoubleCheckLock(ref _apiArgumentProvider, () => new DefaultApiArgumentEncoder() { ServiceType = ServiceType });
             }
             set
             {
@@ -183,12 +183,6 @@ namespace Bam.Net.ServiceProxy
                 _logger = value;
             }
         }
-/*
-        /// <summary>
-        /// The class responsible for providing the name of the
-        /// current application.
-        /// </summary>
-        public IApplicationNameProvider ClientApplicationNameProvider { get; set; }*/
 
         public string UserAgent
         {
@@ -236,12 +230,12 @@ namespace Bam.Net.ServiceProxy
 
         public async Task<string> ReceivePostResponseAsync(string methodName, params object[] arguments)
         {
-            return await ReceivePostResponseAsync(new ServiceProxyInvocationRequest(this, BaseAddress, ServiceType.Name, methodName, arguments));
+            return await ReceivePostResponseAsync(new ServiceProxyInvocationRequest(this, ServiceType.Name, methodName, arguments));
         }
 
-        public virtual async Task<string> ReceivePostResponseAsync(ServiceProxyInvocationRequest serviceProxyInvokeRequest)
+        public virtual async Task<string> ReceivePostResponseAsync(ServiceProxyInvocationRequest serviceProxyInvocationRequest)
         {
-            ServiceProxyInvocationRequestEventArgs args = new ServiceProxyInvocationRequestEventArgs(serviceProxyInvokeRequest);
+            ServiceProxyInvocationRequestEventArgs args = new ServiceProxyInvocationRequestEventArgs(serviceProxyInvocationRequest);
             args.Client = this;
 
             OnPosting(args);
@@ -252,9 +246,9 @@ namespace Bam.Net.ServiceProxy
             }
             else
             {
-                ServiceProxyInvocationRequestArguments serviceProxyArguments = serviceProxyInvokeRequest.ServiceProxyInvocationRequestArguments;
-                HttpRequestMessage request = await CreateServiceProxyRequestMessageAsync(serviceProxyInvokeRequest.Verb, serviceProxyInvokeRequest.ClassName, serviceProxyInvokeRequest.MethodName, "nocache=".RandomLetters(4));
-                serviceProxyArguments.SetContent(request);
+                HttpRequestMessage request = await CreateServiceProxyRequestMessageAsync(serviceProxyInvocationRequest);
+                ServiceProxyInvocationRequestArguments serviceProxyArguments = serviceProxyInvocationRequest.ServiceProxyInvocationRequestArguments;
+                serviceProxyArguments.WriteArguments(request);
 
                 try
                 {
@@ -277,7 +271,7 @@ namespace Bam.Net.ServiceProxy
         public async Task<string> ReceiveGetResponseAsync(string methodName, params object[] arguments)
         {
             MethodInfo methodInfo = ServiceType.GetMethod(methodName, arguments.Select(argument => argument.GetType()).ToArray());
-            return await ReceiveGetResponseAsync(new ServiceProxyInvocationRequest(this, BaseAddress, ServiceType.Name, methodName, arguments));
+            return await ReceiveGetResponseAsync(new ServiceProxyInvocationRequest(this, ServiceType.Name, methodName, arguments));
         }
 
         public virtual async Task<string> ReceiveGetResponseAsync(ServiceProxyInvocationRequest request)
@@ -293,7 +287,7 @@ namespace Bam.Net.ServiceProxy
             }
             else
             {
-                HttpRequestMessage requestMessage = await CreateServiceProxyRequestMessageWithArgumentsAsync(ServiceProxyVerbs.Get, request.MethodName, request.Arguments);
+                HttpRequestMessage requestMessage = await CreateServiceProxyRequestMessageAsync(request);
                 HttpResponseMessage response = await HttpClient.SendAsync(requestMessage);
                 args.RequestMessage = requestMessage;
                 args.ResponseMessage = response;
@@ -304,17 +298,10 @@ namespace Bam.Net.ServiceProxy
             return result;
         }
 
-        protected internal async Task<HttpRequestMessage> CreateServiceProxyRequestMessageWithArgumentsAsync(ServiceProxyVerbs verb, string methodName, params object[] arguments)
+        public virtual Task<HttpRequestMessage> CreateServiceProxyRequestMessageAsync(ServiceProxyInvocationRequest serviceProxyInvocationRequest)
         {
-            Dictionary<string, object> namedArguments = ApiArgumentProvider.GetNamedArguments(methodName, arguments);
-            string queryString = ApiArgumentProvider.ArgumentsToQueryString(namedArguments);
-            return await CreateServiceProxyRequestMessageAsync(verb, ApiArgumentProvider.ServiceType.Name, methodName, queryString);
-        }
-        
-        protected virtual internal Task<HttpRequestMessage> CreateServiceProxyRequestMessageAsync(ServiceProxyVerbs verb, string className, string methodName, string queryStringArguments = "")
-        {
-            string methodUrl = MethodUrlFormat.NamedFormat(new { BaseAddress, ClassName = className, MethodName = methodName, Arguments = queryStringArguments });
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethods[verb], methodUrl);
+            string methodUrl = GetServiceProxyInvocationUrl(serviceProxyInvocationRequest);
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethods[serviceProxyInvocationRequest.Verb], methodUrl);
             request.Headers.Add("User-Agent", UserAgent);
             request.Headers.Add(Web.Headers.ProcessMode, ProcessMode.Current.Mode.ToString());
             request.Headers.Add(Web.Headers.ProcessLocalIdentifier, Bam.Net.CoreServices.ApplicationRegistration.Data.ProcessDescriptor.LocalIdentifier);
@@ -325,19 +312,14 @@ namespace Bam.Net.ServiceProxy
             return Task.FromResult(request);
         }
 
-        public string GetServiceProxyInvocationUrl(ServiceProxyInvocationRequest serviceProxyInvocationRequest, ServiceProxyInvocationRequestArguments serviceProxyInvocationRequestArguments)
+        public string GetServiceProxyInvocationUrl(ServiceProxyInvocationRequest serviceProxyInvocationRequest)
         {
-            return GetServiceProxyInvocationUrl(serviceProxyInvocationRequest.ClassName, serviceProxyInvocationRequest.MethodName, serviceProxyInvocationRequestArguments);
-        }
-
-        public string GetServiceProxyInvocationUrl(string className, string methodName, ServiceProxyInvocationRequestArguments serviceProxyInvocationRequestArguments)
-        {
-            return MethodUrlFormat.NamedFormat(new 
+            return MethodUrlFormat.NamedFormat(new
             {
                 BaseAddress,
-                ClassName = className,
-                MethodName = methodName,
-                Arguments = serviceProxyInvocationRequestArguments.QueryStringArguments
+                serviceProxyInvocationRequest.ClassName,
+                serviceProxyInvocationRequest.MethodName,
+                serviceProxyInvocationRequest.ServiceProxyInvocationRequestArguments.QueryStringArguments
             });
         }
 

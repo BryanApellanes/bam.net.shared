@@ -27,7 +27,7 @@ namespace Bam.Net.Encryption
 
         public Decrypted(string base64Cipher, string b64Key, string iv = null)
         {
-            iv = iv ?? DefaultIV;
+            iv = iv ?? Convert.ToBase64String(new SecureRandom().GenerateSeed(16));
             this.Base64Cipher = base64Cipher;
             this.Base64Key = b64Key;
             this.Base64IV = iv;

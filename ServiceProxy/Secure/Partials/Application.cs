@@ -11,7 +11,8 @@ using Bam.Net.Data.Qi;
 
 namespace Bam.Net.ServiceProxy.Secure
 {
-	public partial class Application
+    [Obsolete("Use Bam.Net.ServiceProxy.Secure.Data.ApiKey instead")]
+    public partial class Application
 	{
         /// <summary>
         /// Creates an Application using ApiKeyManager.Default.CreateApplication

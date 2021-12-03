@@ -8,10 +8,15 @@ namespace Bam.Net.ServiceProxy
 {
     public class ServiceProxyInvocationRequest<TService> : ServiceProxyInvocationRequest
     {
-        public ServiceProxyInvocationRequest(ServiceProxyClient serviceProxyClient, string baseAddress, string className, string methodName, params object[] arguments)
-            : base(serviceProxyClient, baseAddress, className, methodName, arguments)
+        public ServiceProxyInvocationRequest(ServiceProxyClient serviceProxyClient, string methodName, params object[] arguments)
+            : base(serviceProxyClient, typeof(TService).Name, methodName, arguments)
         {
             this.ServiceType = typeof(TService);
+        }
+
+        public ServiceProxyInvocationRequest(string methodName, params object[] arguments)
+            : this(new ServiceProxyClient<TService>(), methodName, arguments)
+        {
         }
 
         public new ServiceProxyClient<TService> ServiceProxyClient

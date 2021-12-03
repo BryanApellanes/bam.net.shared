@@ -11,6 +11,7 @@ using Bam.Net.Data.Qi;
 
 namespace Bam.Net.ServiceProxy.Secure
 {
+	[Obsolete("Use  Bam.Net.CoreServices.Configuration.SourcedConfurationSetting instead")]
 	public partial class ConfigSetting
 	{
 		  // Your code here

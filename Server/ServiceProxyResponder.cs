@@ -344,7 +344,7 @@ namespace Bam.Net.Server
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public bool Contains<T>()
+        public bool ContainsService<T>()
         {
             return _commonServiceProvider.Contains<T>();
         }

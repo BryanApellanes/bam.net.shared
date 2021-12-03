@@ -27,6 +27,12 @@ namespace Bam.Net.Server.ServiceProxy
                 { new ContentTypeMethod("GET"), DefaultArgumentReader },
                 { new ContentTypeMethod("POST", ServiceProxyInvocationRequestArguments.JsonMediaType), new InputStreamServiceProxyInvocationArgumentReader() },
             };
+            // CREATE A CUSTOM ENCODING PIPELINE ARGUMENT READER
+            // IMPLEMENT IValueEncoder that takes a list of encoding names,
+            // for example: json, aes, gzip
+            // or
+            // json, rsa, gzip
+            // use internally from ApiArgumentEncoder and ...ArgumentReader
 
             //   asym cipher is set key request
             //      - target is SecureChannel

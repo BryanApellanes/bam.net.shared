@@ -38,7 +38,7 @@ namespace Bam.Net.Encryption
             }
             else if(!string.IsNullOrEmpty(Cipher))
             {
-                result = Crypto.DecryptStringAES(Cipher, password);
+                result = Rijndael.DecryptStringAES(Cipher, password);
                 Data = result;
             }
             else

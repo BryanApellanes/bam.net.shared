@@ -21,7 +21,7 @@ namespace Bam.Net.ServiceProxy.Secure
         {
             get
             {
-                return ".\\{0}.json"._Format(typeof(SecureChannelConfig).Name);
+                return $"./{typeof(SecureChannelConfig).Name}.json";
             }
         }
 

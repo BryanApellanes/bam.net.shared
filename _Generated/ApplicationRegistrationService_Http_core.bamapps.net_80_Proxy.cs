@@ -206,10 +206,10 @@ namespace Bam.Net.CoreServices
 		}
 
 
-		public override ApiKeyInfo[] ListApiKeys()
+/*		public override ApiKeyInfo[] ListApiKeys()
 		{
 			return _proxyClient.ListApiKeys();
-		}
+		}*/
 
 		public override ApiKeyInfo AddApiKey()
 		{

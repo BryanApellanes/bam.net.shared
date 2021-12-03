@@ -465,6 +465,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)CoreServices\LocalOnlyProxyAssemblyGenerator.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CoreServices\LocalOnlyProxySettings.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\DaoValidationResult.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Encoder.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Encryption\RsaEncoder.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IDecoder.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IEncoder.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)JsonEncoder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Server\HttpErrorResponse.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Server\HttpMethodHandlers.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Server\HttpResponse.cs" />
@@ -490,8 +495,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Server\RequestHandlerResolverEventArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Server\ResponderContextHandlerResolver.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\ApiArgumentEncoder.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\DefaultApiArgumentProvider.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\IApiArgumentProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\DefaultApiArgumentEncoder.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\IApiArgumentEncoder.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\Secure\Data\SecureChannelSession.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\Secure\DefaultApiEncryptionProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\Secure\IApiEncryptionProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DefaultConsoleMessageHandler.cs" />
@@ -753,6 +759,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\ServiceProxyInvocationRequestArguments[TService].cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\ServiceProxyInvocationRequest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\ServiceProxyInvocationRequest[TService].cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\ValueEncoderPipeline.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\WebServiceProxyDescriptors.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\Catalog\CatalogRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\Catalog\CatalogService.cs" />
@@ -950,6 +957,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Try.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)HomePath.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UserAccounts\IDaoUserResolver.cs" />
+    <Compile Include="..\submodules\bam.net.shared\Encoder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)VersionSpec.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)WebServiceAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Web\HttpVerbs.cs" />
@@ -1794,7 +1802,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\CredentialInfo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\CredentialManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\CredentialProvider.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Encryption\Crypto.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Encryption\Rijndael.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\Decrypted.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\DecryptedVaultItem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\DefaultConfigurationCredentialProvider.cs" />
@@ -1830,8 +1838,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\PasswordEncrypted.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\Pem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\Rsa.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Encryption\RsaCrypto.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Encryption\RsaKeyGen.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\RsaKeyLength.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\RsaKeyPair.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\RSAKeyValue.cs" />
@@ -1847,7 +1853,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)ExceptionHandling\ExceptionHandler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ExceptionHandling\IArbitrateExceptions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ExceptionHandling\ReflectionTypeLoadAggregateException.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ExceptionHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ExceptionExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ExcludeAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Exec.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ExistingFileAction.cs" />

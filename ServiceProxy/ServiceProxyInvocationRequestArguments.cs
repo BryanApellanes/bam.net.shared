@@ -19,23 +19,23 @@ namespace Bam.Net.ServiceProxy
     {
         public const string JsonMediaType = "application/json; charset=utf-8";
 
-        public ServiceProxyInvocationRequestArguments(ServiceProxyInvocationRequest invokeRequest)
+        public ServiceProxyInvocationRequestArguments(ServiceProxyInvocationRequest invocationRequest, IApiArgumentEncoder apiArgumentEncoder = null)
         {
-            this.ServiceProxyInvokeRequest = invokeRequest;
-            this.ServiceType = invokeRequest.ServiceType;
-            this.MethodName = invokeRequest.MethodName;
-            this.Arguments = invokeRequest.Arguments;
+            this.ServiceProxyInvocationRequest = invocationRequest;
+            this.ServiceType = invocationRequest.ServiceType;
+            this.MethodName = invocationRequest.MethodName;
+            this.Arguments = invocationRequest.Arguments;
             this.MethodInfo = GetMethodInfo();
-            this.ApiArgumentProvider = DefaultApiArgumentProvider.Current;
+            this.ApiArgumentEncoder = apiArgumentEncoder ?? DefaultApiArgumentEncoder.Current;
         }
 
-        public virtual IApiArgumentProvider ApiArgumentProvider
+        public virtual IApiArgumentEncoder ApiArgumentEncoder
         {
             get;
             set;
         }
 
-        public ServiceProxyInvocationRequest ServiceProxyInvokeRequest
+        public ServiceProxyInvocationRequest ServiceProxyInvocationRequest
         {
             get;
             protected set;
@@ -76,25 +76,45 @@ namespace Bam.Net.ServiceProxy
         {
             get
             {
-                return ApiArgumentProvider.GetNamedArguments(MethodInfo, Arguments);
+                return ApiArgumentEncoder.GetNamedArguments(MethodInfo, Arguments);
             }
         }
 
         /// <summary>
-        /// NamedArguments as URL encoded key value pairs.
+        /// NamedArguments as query string key value pairs.
         /// </summary>
         public string QueryStringArguments
         {
             get
             {
-                return ApiArgumentProvider.ArgumentsToQueryString(NamedArguments);
+                return ApiArgumentEncoder.ArgumentsToQueryString(NamedArguments);
             }
         }
 
-        public virtual void SetContent(HttpRequestMessage requestMessage)
+        public virtual void WriteArguments(HttpRequestMessage requestMessage)
+        {
+            if(requestMessage.Method == HttpMethod.Get)
+            {
+                WriteArgumentQueryString(requestMessage);
+            }
+            else
+            {
+                WriteArgumentContent(requestMessage);
+            }
+
+        }
+
+        public virtual void WriteArgumentContent(HttpRequestMessage requestMessage)
         {
             string jsonArgsMember = GetJsonArgsMember();
             requestMessage.Content = new StringContent(jsonArgsMember, Encoding.UTF8, JsonMediaType);
+        }
+
+        public virtual void WriteArgumentQueryString(HttpRequestMessage requestMessage)
+        {
+            Uri currentUri = requestMessage.RequestUri;
+            Uri newUri = new Uri($"{currentUri.Scheme}://{currentUri.Authority}{currentUri.AbsolutePath}?{QueryStringArguments}");
+            requestMessage.RequestUri = newUri;
         }
 
         public virtual MethodInfo GetMethodInfo()
@@ -109,12 +129,12 @@ namespace Bam.Net.ServiceProxy
         /// <returns></returns>
         public string GetJsonArgsMember()
         {
-            return this.ApiArgumentProvider.ArgumentsToJsonArgsMember(Arguments);
+            return this.ApiArgumentEncoder.ArgumentsToJsonArgsMember(Arguments);
         }
 
         public string[] GetJsonArgumentsArray()
         {
-            return this.ApiArgumentProvider.ArgumentsToJsonArgumentsArray(Arguments);
+            return this.ApiArgumentEncoder.ArgumentsToJsonArgumentsArray(Arguments);
         }
     }
 }

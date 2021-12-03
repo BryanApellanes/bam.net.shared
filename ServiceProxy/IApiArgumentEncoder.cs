@@ -6,18 +6,23 @@ using System.Text;
 
 namespace Bam.Net.ServiceProxy
 {
-    public interface IApiArgumentProvider
+    public interface IApiArgumentEncoder
     {
-        string GetStringToHash(ServiceProxyInvocation request);
+        string GetStringToHash(ServiceProxyInvocationRequest request);
         string GetStringToHash(string className, string methodName, string jsonArguments);
 
         string ArgumentsToJsonArgsMember(params object[] arguments);
 
         string[] ArgumentsToJsonArgumentsArray(params object[] arguments);
 
+        IEncoder ValueEncoder { get; }
+
         Type ServiceType { get; }
 
         HashSet<string> Methods { get; }
+
+        string GetArgumentsQueryString(ServiceProxyInvocationRequestArguments arguments);
+
         Dictionary<string, object> GetNamedArguments(MethodInfo method, object[] arguments);
         Dictionary<string, object> GetNamedArguments(string methodName, object[] arguments);
 
@@ -27,7 +32,7 @@ namespace Bam.Net.ServiceProxy
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
-        string GetArgumentFromValue(object value);
+        string EncodeValue(object value);
 
         string ArgumentsToQueryString(Dictionary<string, object> arguments);
     }

@@ -9,12 +9,12 @@ namespace Bam.Net.ServiceProxy
 {
     public class ServiceProxyInvocationRequest
     {
-        public ServiceProxyInvocationRequest(ServiceProxyClient serviceProxyClient, string  baseAddress, string className, string methodName, params object[] arguments)
+        public ServiceProxyInvocationRequest(ServiceProxyClient serviceProxyClient, string className, string methodName, params object[] arguments)
         {
             this.Cuid = NCuid.Cuid.Generate();
             this.ServiceProxyClient = serviceProxyClient;
             this.ServiceType = serviceProxyClient.ServiceType;
-            this.BaseAddress = baseAddress;
+            this.BaseAddress = serviceProxyClient.BaseAddress;
             this.ClassName = className;
             
             this.MethodName = methodName;
@@ -58,13 +58,29 @@ namespace Bam.Net.ServiceProxy
 
         public virtual string MethodName { get; set; }
 
+        /// <summary>
+        /// Gets or sets the arguments intended for the method invocation.
+        /// </summary>
         public object[] Arguments { get; set; }
-        
+
+        ServiceProxyVerbs _verb;
         public virtual ServiceProxyVerbs Verb 
         {
             get
             {
-                return ServiceProxyClient.GetServiceProxyInvocationUrl(this, ServiceProxyInvocationRequestArguments)?.Length >= 2048 ? ServiceProxyVerbs.Post: ServiceProxyVerbs.Get;
+                if(_verb == ServiceProxyVerbs.Invalid)
+                {
+                    // 2048 is a somewhat arbitrary value that is the longest Url Internet Explorer can accept.
+                    // ServiceProxyClient and derivatives use HttpClient under the hood which 
+                    // shouldn't have this limitation. Specifying this limit helps provide broader support
+                    // in the future to display results in a browser when rendering responses natively as html.
+                    _verb = ServiceProxyClient.GetServiceProxyInvocationUrl(this)?.Length >= 2048 ? ServiceProxyVerbs.Post : ServiceProxyVerbs.Get; 
+                }
+                return _verb;
+            }
+            set
+            {
+                _verb = value;
             }
         }
 

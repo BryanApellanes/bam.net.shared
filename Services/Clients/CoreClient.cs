@@ -151,6 +151,8 @@ namespace Bam.Net.Services.Clients
             get; set;
         }
 
+        public IApiArgumentEncoder ApiArgumentEncoder { get; set; }
+
         public string CreateKeyToken(string stringToHash)
         {
             ApiKeyInfo keyInfo = GetApiKeyInfo(this);
@@ -160,7 +162,7 @@ namespace Bam.Net.Services.Clients
         public bool IsValidRequest(ServiceProxyInvocation request)
         {
             Args.ThrowIfNull(request, "request");
-            string stringToHash = ApiArgumentEncoder.GetStringToHash(request);
+            string stringToHash = ApiArgumentEncoder.GetStringToHash(request.ClassName, request.MethodName, ApiArgumentEncoder.ArgumentsToJsonArgsMember(request.Arguments));
             string token = request.Context.Request.Headers[Headers.KeyToken];
             bool result = false;
             if (!string.IsNullOrEmpty(token))

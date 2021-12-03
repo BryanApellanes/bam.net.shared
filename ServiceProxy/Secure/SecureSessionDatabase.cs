@@ -13,6 +13,7 @@ namespace Bam.Net.ServiceProxy.Secure
     /// as a wrapper to whatever database is specified to the constructor
     /// or a SQLiteDatabase
     /// </summary>
+    [Obsolete("Use SecureSessionRepository instead")]
     public class SecureSessionDatabase: Database
     {            
         public SecureSessionDatabase() : this(DefaultConfigurationApplicationNameProvider.Instance)

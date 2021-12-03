@@ -10,9 +10,18 @@ namespace Bam.Net.ServiceProxy
     {
         public ServiceProxyInvocationRequestArguments(ServiceProxyInvocationRequest request): base(request)
         {
-            this.ServiceProxyInvokeRequest = request;
+            this.ServiceProxyInvocationRequest = request;
             this.ServiceType = typeof(TService);
-            this.ApiArgumentProvider = request.ServiceProxyClient.ApiArgumentProvider;
+            this.ApiArgumentEncoder = request.ServiceProxyClient.ApiArgumentEncoder;
+        }
+
+        public ServiceProxyInvocationRequestArguments(string methodName, params object[] arguments) : this(new ServiceProxyInvocationRequest<TService>(methodName, arguments))
+        {
+        }
+
+        public ServiceProxyInvocationRequestArguments(IApiArgumentEncoder apiArgumentEncoder, string methodName, params object[] arguments) : this(new ServiceProxyInvocationRequest<TService>(methodName, arguments))
+        {
+            this.ApiArgumentEncoder = apiArgumentEncoder;
         }
     }
 }

@@ -11,6 +11,7 @@ using Bam.Net.Data.Qi;
 
 namespace Bam.Net.ServiceProxy.Secure
 {
+	[Obsolete("Use Bam.Net.CoreServices.ApplicationConfiguration instead")]
 	public partial class Configuration
 	{
 		  // Your code here

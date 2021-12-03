@@ -53,12 +53,9 @@ namespace Bam.Net.Server.ServiceProxy
             }
 
             ServiceProxyInvocation serviceProxyInvocation = ServiceProxyResponder.ServiceProxyInvocationResolver.ResolveServiceProxyInvocation(serviceProxyPath, webServiceProxyDescriptors, context);
-            
 
-            //ServiceProxyResponder.ServiceProxyInvocationResolver.ResolveServiceProxyInvocation
 
-            //request.InputStream
-            //ServiceProxyInvocation serviceProxyInvocation = 
+            serviceProxyInvocation.Execute();
             throw new NotImplementedException();
         }
 

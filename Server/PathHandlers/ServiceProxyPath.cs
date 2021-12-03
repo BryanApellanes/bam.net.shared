@@ -11,7 +11,14 @@ namespace Bam.Net.Server.PathHandlers
             this.PathName = "ServiceProxy";
         }
 
+        /// <summary>
+        /// Gets or sets the type identifier, typically the class name.
+        /// </summary>
         public string TypeIdentifier { get; set; }
+
+        /// <summary>
+        /// Gets or sets the method name.
+        /// </summary>
         public string MethodName { get; set; }
 
         public new static ServiceProxyPath FromUri(Uri uri)

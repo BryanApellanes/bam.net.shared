@@ -59,7 +59,7 @@ namespace Bam.Net.Encryption
         public string Encrypt(string password)
         {
             _password = password;
-            Cipher = Crypto.EncryptStringAES(Data, password);
+            Cipher = Rijndael.EncryptStringAES(Data, password);
             return Cipher;
         }
     }

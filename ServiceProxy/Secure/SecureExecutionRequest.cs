@@ -49,7 +49,8 @@ namespace Bam.Net.ServiceProxy.Secure
         {
             return Create<T>(context, methodName, Incubator.Default, parameters);
         }
-        public static SecureExecutionRequest Create<T>(IHttpContext context, string methodName, ServiceRegistry serviceProvider, params object[] parameters)
+
+/*        public static SecureExecutionRequest Create<T>(IHttpContext context, string methodName, ServiceRegistry serviceProvider, params object[] parameters)
         {
             string jsonParams = ApiArgumentEncoder.ArgumentsToJsonArgumentsArray(parameters).ToJson();
             SecureExecutionRequest request = new SecureExecutionRequest(context, typeof(T).Name, methodName, jsonParams)
@@ -57,7 +58,7 @@ namespace Bam.Net.ServiceProxy.Secure
                 ServiceRegistry = serviceProvider
             };
             return request;
-        }
+        }*/
 
 /*        protected internal override ServiceProxyInvocationTarget ResolveExecutionTargetInfo()
         {

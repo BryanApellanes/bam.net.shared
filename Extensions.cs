@@ -2875,7 +2875,6 @@ namespace Bam.Net
 
         public static Dictionary<string, object> PropertiesToDictionary(this object value)
         {
-            Dictionary<string, object> result = new Dictionary<string, object>();
             Type type = value.GetType();
             PropertyInfo[] props = type.GetProperties();
             return PropertiesToDictionary(value, props);

@@ -75,7 +75,7 @@ namespace Bam.Net
                 return _textFilesByName[fileName];
             }
 
-            ExceptionHelper.Throw<FileNotFoundException>("The file {0} was not found in the specified assembly '{1}'", fileName, assemblyToReadFrom.FullName);
+            ExceptionExtensions.Throw<FileNotFoundException>("The file {0} was not found in the specified assembly '{1}'", fileName, assemblyToReadFrom.FullName);
             return string.Empty;
         }
 

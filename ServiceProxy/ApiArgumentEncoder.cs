@@ -22,31 +22,132 @@ using System.Collections;
 using Bam.Net;
 using Newtonsoft.Json;
 using Bam.Net.Server.ServiceProxy;
+using System.Web;
 
 namespace Bam.Net.ServiceProxy
 {
     /// <summary>
     /// A class used to properly format parameters for service proxy calls.
     /// </summary>
-    public class ApiArgumentEncoder
+    public class ApiArgumentEncoder : IApiArgumentEncoder
     {
-        public static string GetStringToHash(ServiceProxyInvocation request)
+        public ApiArgumentEncoder()
         {
-            return GetStringToHash(request.ClassName, request.MethodName, "");// request.ArgumentsAsJsonArrayOfJsonStrings);
+            this.ValueEncoder = new JsonEncoder();
         }
 
-        public static string GetStringToHash(string className, string methodName, string jsonArgsArray)
+        public IEncoder ValueEncoder { get; private set; }
+        public Type ServiceType { get; set; }
+        HashSet<string> _methods;
+        object _methodsLock = new object();
+        public HashSet<string> Methods
         {
-            return string.Format("{0}.{1}.{2}", className, methodName, jsonArgsArray);
+            get
+            {
+                return _methodsLock.DoubleCheckLock(ref _methods, () => new HashSet<string>(ServiceProxySystem.GetProxiedMethods(ServiceType).Select(m => m.Name).ToArray()));
+            }
         }
 
-        /// <summary>
-        /// Convert the specified arguments to an array of json strings set as the value of a
-        /// property named `jsonArgs` of a json serialized anonymous object.
-        /// </summary>
-        /// <param name="arguments"></param>
-        /// <returns></returns>
-        public static string ArgumentsToJsonArgsMember(params object[] arguments)
+
+        public string GetStringToHash(ServiceProxyInvocationRequest request)
+        {
+            return GetStringToHash(request.ClassName, request.MethodName, GetArgumentsQueryString(request.ServiceProxyInvocationRequestArguments));
+        }
+
+        public string GetStringToHash(string className, string methodName, string jsonArguments)
+        {
+            return string.Format("{0}.{1}.{2}", className, methodName, jsonArguments);
+        }
+
+
+        public string EncodeValue(object value)
+        {
+            if (value == null)
+            {
+                return "null";
+            }
+
+            Type type = value.GetType();
+            if (type == typeof(string) ||
+                type == typeof(int) ||
+                type == typeof(decimal) ||
+                type == typeof(long))
+            {
+                return value.ToString();
+            }
+            else
+            {
+                return HttpUtility.UrlEncode(value.ToJson());
+            }
+        }
+
+        public string GetArgumentsQueryString(ServiceProxyInvocationRequestArguments requestArguments)
+        {
+            return ArgumentsToQueryString(requestArguments.NamedArguments);
+        }
+
+        public Dictionary<string, object> GetNamedArguments(string methodName, object[] arguments)
+        {
+            if (!Methods.Contains(methodName))
+            {
+                throw Args.Exception<InvalidOperationException>("{0} is not proxied from type {1}", methodName, ServiceType.Name);
+            }
+
+            MethodInfo method = ServiceType.GetMethod(methodName, arguments.Select(obj => obj.GetType()).ToArray());
+
+            Dictionary<string, object> result = GetNamedArguments(method, arguments);
+
+            return result;
+        }
+
+        public Dictionary<string, object> GetNamedArguments(MethodInfo method, object[] arguments)
+        {
+            List<ParameterInfo> parameterInfos = new List<ParameterInfo>(method.GetParameters());
+            parameterInfos.Sort((l, r) => l.MetadataToken.CompareTo(r.MetadataToken));
+
+            if (arguments.Length != parameterInfos.Count)
+            {
+                throw new InvalidOperationException("Argument count mismatch");
+            }
+
+            Dictionary<string, object> result = new Dictionary<string, object>();
+            parameterInfos.Each((pi, i) =>
+            {
+                result[pi.Name] = arguments[i];
+            });
+            return result;
+        }
+
+        public string ArgumentsToQueryString(Dictionary<string, object> arguments)
+        {
+            StringBuilder result = new StringBuilder();
+            bool first = true;
+            foreach (string key in arguments.Keys)
+            {
+                if (!first)
+                {
+                    result.Append("&");
+                }
+
+                result.AppendFormat("{0}={1}", key, EncodeValue(arguments[key]));
+                first = false;
+            }
+
+            return result.ToString();
+        }
+
+        public string[] ArgumentsToJsonArgumentsArray(params object[] arguments)
+        {
+            // create a string array
+            string[] jsonArgs = new string[arguments.Length];
+
+            JsonSerializerSettings settings = new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore };
+            // for each parameter stringify it and put it into the array
+            arguments.Each((o, i) => jsonArgs[i] = o.ToJson(settings));
+            return jsonArgs;
+        }
+
+        public string ArgumentsToJsonArgsMember(params object[] arguments)
         {
             string[] jsonArguments = ArgumentsToJsonArgumentsArray(arguments);
             string jsonArgumentsString = (new
@@ -57,20 +158,5 @@ namespace Bam.Net.ServiceProxy
             return jsonArgumentsString;
         }
 
-        /// <summary>
-        /// Returns an array of json strings that represent each parameter.
-        /// </summary>
-        /// <param name="arguments"></param>
-        /// <returns></returns>
-        public static string[] ArgumentsToJsonArgumentsArray(params object[] arguments)
-        {
-            // create a string array
-            string[] jsonArgs = new string[arguments.Length];
-
-            JsonSerializerSettings settings = new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore };
-            // for each parameter stringify it and put it into the array
-            arguments.Each((o, i) => jsonArgs[i] = o.ToJson(settings));
-            return jsonArgs;
-        }
     }
 }

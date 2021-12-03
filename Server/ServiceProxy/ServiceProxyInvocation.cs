@@ -22,8 +22,6 @@ namespace Bam.Net.Server.ServiceProxy
 {
     public class ServiceProxyInvocation
     {
-        public const int DefaultMaxRecursion = 5;
-
         public ServiceProxyInvocation()
         {
             OnAnyInstanciated(this);
@@ -184,7 +182,7 @@ namespace Bam.Net.Server.ServiceProxy
             set;
         }
 
-        int _maxRecursion;
+/*        int _maxRecursion;
         public int MaxRecursion
         {
             get
@@ -199,7 +197,7 @@ namespace Bam.Net.Server.ServiceProxy
             {
                 _maxRecursion = value;
             }
-        }
+        }*/
 
         protected virtual object[] GetArguments()
         {
@@ -272,132 +270,6 @@ namespace Bam.Net.Server.ServiceProxy
 
             return result;
         }
-
-/*        public bool HasCallback => !string.IsNullOrEmpty(Request.QueryString["callback"]);
-*/
-/*        string _callBack;
-        readonly object _callBackLock = new object();
-
-        /// <summary>
-        /// The name of the javascript client side callback function if any or "callback"
-        /// </summary>
-		public string Callback
-        {
-            get
-            {
-                if (string.IsNullOrEmpty(_callBack))
-                {
-                    lock (_callBackLock)
-                    {
-                        if (string.IsNullOrEmpty(_callBack))
-                        {
-                            _callBack = "callback";
-                            if (Request != null)
-                            {
-                                string qCb = Request.QueryString["callback"];
-                                if (!string.IsNullOrEmpty(qCb))
-                                {
-                                    _callBack = qCb;
-                                }
-                            }
-                        }
-                    }
-                }
-
-                return _callBack;
-            }
-            set => _callBack = value;
-        }*/
-/*
-        public string ViewName { get; set; }*/
-
-        /*        private string GetMessage(Exception ex, bool stack)
-                {
-                    string st = stack ? ex.StackTrace : "";
-                    return $"{ex.Message}:\r\n\r\n{st}";
-                }*/
-
-/*        private object[] GetJsonArguments(string[] jsonStrings)
-        {
-            if (jsonStrings.Length != ParameterInfos.Length)
-            {
-                throw new TargetParameterCountException();
-            }
-
-            object[] paramInstances = new object[ParameterInfos.Length];
-            for (int i = 0; i < ParameterInfos.Length; i++)
-            {
-                string paramJson = jsonStrings[i];
-                Type paramType = ParameterInfos[i].ParameterType;
-                paramInstances[i] = paramJson?.FromJson(paramType);
-
-                SetDefault(paramInstances, i);
-            }
-            return paramInstances;
-        }*/
-
-        /*        private object[] GetNamedQueryStringArguments()
-                {
-                    object[] results = new object[ParameterInfos.Length];
-                    for (int i = 0; i < ParameterInfos.Length; i++)
-                    {
-                        System.Reflection.ParameterInfo paramInfo = ParameterInfos[i];
-                        Type paramType = paramInfo.ParameterType;
-                        string value = Request.QueryString[paramInfo.Name];
-                        SetValue(results, i, paramType, value);
-
-                        SetDefault(results, i);
-                    }
-
-                    return results;
-                }*/
-
-/*        private void SetDefault(object[] parameters, int i)
-        {
-            object val = parameters[i];
-            if (val == null && ParameterInfos[i].HasDefaultValue)
-            {
-                parameters[i] = ParameterInfos[i].DefaultValue;
-            }
-        }*/
-
-        /*        private object[] GetNumberedQueryStringArguments()
-                {
-                    object[] results = new object[ParameterInfos.Length];
-                    for (int i = 0; i < ParameterInfos.Length; i++)
-                    {
-                        Type paramType = ParameterInfos[i].ParameterType;
-                        string value = WebUtility.UrlDecode(Request.QueryString[i.ToString()]);
-                        SetValue(results, i, paramType, value);
-
-                        SetDefault(results, i);
-                    }
-
-                    return results;
-                }*/
-
-        /*        private static void SetValue(object[] results, int i, Type paramType, string value)
-                {
-                    if (string.IsNullOrEmpty(value))
-                    {
-                        results[i] = null;
-                    }
-                    else
-                    {
-                        if (paramType == typeof(string) ||
-                           paramType == typeof(int) ||
-                           paramType == typeof(decimal) ||
-                           paramType == typeof(long))
-                        {
-                            results[i] = Convert.ChangeType(value, paramType);
-                        }
-                        else
-                        {
-                            results[i] = value.FromJson(paramType);
-                        }
-                    }
-                }*/
-
         // TOOD: encapsulate this as a ServiceProxyInvocationFormArguments
         // parse form input
         private object[] GetFormArguments(Queue<string> inputValues)
@@ -523,17 +395,6 @@ namespace Bam.Net.Server.ServiceProxy
             internal set;
         }
 
-        public event EventHandler<ServiceProxyInvocation> Initializing;
-        protected void OnInitializing()
-        {
-            Initializing?.Invoke(this, this);
-        }
-        public event EventHandler<ServiceProxyInvocation> Initialized;
-        protected void OnInitialized()
-        {
-            Initialized?.Invoke(this, this);
-        }
-
         public static event Action<ServiceProxyInvocation> AnyInstanciated;
         protected static void OnAnyInstanciated(ServiceProxyInvocation request)
         {
@@ -590,11 +451,6 @@ namespace Bam.Net.Server.ServiceProxy
             ServiceRegistrySet?.Invoke(this, target);
         }
         // -- / end TODO
-
-        public bool ExecuteWithoutValidation()
-        {
-            return Execute(InvocationTarget, false);
-        }
 
         public bool Execute()
         {

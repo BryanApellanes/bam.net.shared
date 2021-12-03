@@ -69,6 +69,7 @@ namespace Bam.Net.CoreServices
             return proxyFactory.GetProxy<T>(hostName, port, Logger);
         }
         
+        public IApiArgumentEncoder ApiArgumentEncoder { get; set; }
         public IDatabaseProvider DatabaseProvider { get; set; }
         public IRepositoryResolver RepositoryResolver { get; set; }
         
@@ -193,9 +194,6 @@ namespace Bam.Net.CoreServices
 
         [Exclude]
         public U.Session Session => U.Session.Init(HttpContext);
-
-        [Exclude]
-        public SecureSession SecureSession => SecureSession.Init(HttpContext);
 
         [Exclude]
         public U.User CurrentUser => UserManager.GetUser(HttpContext);

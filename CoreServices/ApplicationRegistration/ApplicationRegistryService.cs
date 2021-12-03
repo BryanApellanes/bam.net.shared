@@ -66,11 +66,11 @@ namespace Bam.Net.CoreServices
         
         public CompositeRepository CompositeRepository { get; set; }
 
-        [ApiKeyRequired]
+/*        [ApiKeyRequired]
         public virtual ApiKeyInfo[] ListApiKeys()
         {
             return Application?.ApiKeys.Select(k => k.ToKeyInfo()).ToArray();
-        }
+        }*/
 
         [ApiKeyRequired]
         public virtual ApiKeyInfo AddApiKey()
@@ -370,10 +370,11 @@ namespace Bam.Net.CoreServices
             CoreServices.ApplicationRegistration.Data.ApiKey ignore;
             return AddApiKey(repo, app, out ignore);
         }
+
         protected internal CoreServices.ApplicationRegistration.Data.Application AddApiKey(ApplicationRegistrationRepository repo, CoreServices.ApplicationRegistration.Data.Application app, out CoreServices.ApplicationRegistration.Data.ApiKey key)
         {
             ApiKeyInfo keyInfo = GenerateApiKeyInfo(app);
-            key = CoreServices.ApplicationRegistration.Data.ApiKey.FromKeyInfo(keyInfo);
+            key = keyInfo.ToApiKey();
             key.Created = DateTime.UtcNow;
             key.CreatedBy = CurrentUser.UserName;
             app.ApiKeys.Add(key);

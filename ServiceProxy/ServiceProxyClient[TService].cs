@@ -28,6 +28,9 @@ namespace Bam.Net.ServiceProxy
             }
         }
 
+        public ServiceProxyClient() : this(DefaultBaseAddress) 
+        { }
+
         public async Task<TResult> InvokeServiceMethodAsync<TResult>(string methodName, params object[] arguments)
         {
             return await Task.Run(() => InvokeServiceMethod<TResult>(methodName, arguments));

@@ -401,8 +401,7 @@ namespace Bam.Net.Server
 
                 IRequest request = context.Request;
                 IResponse response = context.Response;
-                Session.Init(context);
-                SecureSession.Init(context);
+                Session.Init(context);                
 
                 bool handled = false;
                 string relativePathFromUrl = request.Url.AbsolutePath;

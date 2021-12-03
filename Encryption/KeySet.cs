@@ -13,9 +13,10 @@ namespace Bam.Net.Encryption
     /// </summary>
     public class KeySet
     {
-        public KeySet()
+        public KeySet(RsaKeyLength keyLength = RsaKeyLength._2048)
         {
-            Name = ApplicationNameProvider.Default.GetApplicationName();
+            this.RsaKeyLength = keyLength;
+            this.ApplicationName = ApplicationNameProvider.Default.GetApplicationName();
             Init();
         }
 
@@ -31,13 +32,13 @@ namespace Bam.Net.Encryption
 
         public static FileInfo New(string name)
         {
-            KeySet keyset = new KeySet() { Name = name };
+            KeySet keyset = new KeySet() { ApplicationName = name };
             return keyset.Save();
         }
 
         public FileInfo Save()
         {
-            FileInfo file = GetFile(Name);
+            FileInfo file = GetFile(ApplicationName);
             this.ToJsonFile(file);
             return file;
         }
@@ -57,7 +58,7 @@ namespace Bam.Net.Encryption
             return file.FromJsonFile<KeySet>();            
         }
 
-        public string Name { get; set; }
+        public string ApplicationName { get; set; }
         public string AesKeyCipher { get; set; }
         public string AesIvCipher { get; set; }
 
@@ -90,6 +91,12 @@ namespace Bam.Net.Encryption
         public string GetAesKey()
         {
             return AesKey;
+        }
+
+        public RsaKeyLength RsaKeyLength
+        {
+            get;
+            set;
         }
 
         AsymmetricCipherKeyPair _asymmetricKeys;
@@ -172,7 +179,7 @@ namespace Bam.Net.Encryption
         
         private void Init()
         {
-            _asymmetricKeys = RsaKeyGen.GenerateKeyPair(RsaKeyLength._2048);
+            _asymmetricKeys = Rsa.GenerateKeyPair(RsaKeyLength);
             AsymmetricKey = _asymmetricKeys.ToPem();
 
             AesKeyVectorPair akvp = new AesKeyVectorPair();

@@ -14,10 +14,9 @@ namespace Bam.Net.Encryption
 {
     /// <summary>
     /// This class was taken verbatim from the highest ranked answer from 
-    /// http://stackoverflow.com/questions/202011/encrypt-and-decrypt-a-string
-    /// although it wasn't marked as the answer it appears to be sufficient
+    /// http://stackoverflow.com/questions/202011/encrypt-and-decrypt-a-string.
     /// </summary>
-    public class Crypto
+    public class Rijndael
     {
         private static byte[] _salt = Encoding.ASCII.GetBytes("o6806642kbM7c5");
 

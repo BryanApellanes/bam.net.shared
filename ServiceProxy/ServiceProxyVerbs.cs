@@ -11,6 +11,7 @@ namespace Bam.Net.ServiceProxy
 {
     public enum ServiceProxyVerbs
     {
+        Invalid,
         Get,
         Post
     }

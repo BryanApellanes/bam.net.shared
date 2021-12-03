@@ -32,6 +32,7 @@ using System.Collections.Concurrent;
 
 namespace Bam.Net.ServiceProxy.Secure
 {
+    [Obsolete("Use Bam.Net.ServiceProxy.Secure.Data.SecureChannelSession instead")]
     public partial class SecureSession
     {
         static ConcurrentDictionary<string, SecureSession> _secureSessions;
@@ -73,11 +74,6 @@ namespace Bam.Net.ServiceProxy.Secure
             {
                 return _publicKeyLock.DoubleCheckLock(ref _publicKeyParameter, () => AsymmetricKey.ToKeyPair().Public);
             }
-        }
-
-        public static SecureSession Init(IHttpContext context)
-        {
-            return Get(context);
         }
 
         /// <summary>
@@ -271,7 +267,7 @@ namespace Bam.Net.ServiceProxy.Secure
 
         protected internal string DecryptWithPrivateKey(string cipher, bool usePkcsPadding)
         {
-            return DecryptWithPrivateKey(cipher, RsaCrypto.GetRsaEngine(usePkcsPadding));
+            return DecryptWithPrivateKey(cipher, Rsa.GetRsaEngine(usePkcsPadding));
         }
 
         /// <summary>
@@ -360,7 +356,7 @@ namespace Bam.Net.ServiceProxy.Secure
                 IsActive = true
             };
 
-            AsymmetricCipherKeyPair keys = RsaKeyGen.GenerateKeyPair(DefaultKeySize);
+            AsymmetricCipherKeyPair keys = Rsa.GenerateKeyPair(DefaultKeySize);
             result.AsymmetricKey = keys.ToPem();
 
             AesKeyVectorPair kvp = new AesKeyVectorPair();
