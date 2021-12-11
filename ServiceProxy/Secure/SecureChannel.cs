@@ -30,13 +30,17 @@ namespace Bam.Net.ServiceProxy.Secure
     /// A secure communication channel.  Provides 
     /// application layer encrypted communication
     /// </summary>
-    [Proxy("secureChannelServer")]
-    public partial class SecureChannel: IRequiresHttpContext
+    [Proxy("secureChannel")]
+    public partial class SecureChannel: IRequiresHttpContext, IHasServiceRegistry
     {
-        static SecureChannel()
+        public SecureChannel()
         {
-            InitializeDatabase();
-            Debug = DefaultConfiguration.GetAppSetting($"{nameof(SecureChannel)}.Debug", "false").IsAffirmative();
+            this.SecureChannelSessionManager = new SecureChannelSessionManager();
+        }
+
+        public SecureChannel(ISecureChannelSessionManager secureChannelSessionManager)
+        {
+            this.SecureChannelSessionManager = secureChannelSessionManager;
         }
 
         [Exclude]
@@ -46,25 +50,6 @@ namespace Bam.Net.ServiceProxy.Secure
             clone.CopyProperties(this);
             
             return clone;
-        }
-
-        /// <summary>
-        /// Ensure that the SecureServiceProxy database is initialized
-        /// using the specified logger to output messages
-        /// </summary>
-        /// <param name="logger"></param>
-        protected internal static void InitializeDatabase(ILogger logger = null)
-        {
-            if (logger == null)
-            {
-                logger = Log.Default;
-            }
-
-            Config.SchemaInitializer.Initialize(logger, out Exception ex);
-            if (ex != null)
-            {
-                InitializationException = ex;
-            }
         }
 
         ILogger _logger;
@@ -81,26 +66,8 @@ namespace Bam.Net.ServiceProxy.Secure
             }
         }
 
-        public static Exception InitializationException
-        {
-            get;
-            private set;
-        }
+        protected ISecureChannelSessionManager SecureChannelSessionManager { get; set; }
 
-        static SecureChannelConfig _config;
-        static object _configSync = new object();
-        public static SecureChannelConfig Config
-        {
-            get
-            {
-                return _configSync.DoubleCheckLock(ref _config, () => SecureChannelConfig.Load());
-            }
-            set
-            {
-                _config = value;
-                _config.Save();
-            }
-        }
 
         /// <summary>
         /// Establish a secure session
@@ -114,6 +81,13 @@ namespace Bam.Net.ServiceProxy.Secure
             SetSessionCookie(session);
 
             return new SecureChannelMessage<ClientSessionInfo>(result);
+        }
+
+        public void EndSession(string sessionIdentifier)
+        {
+            SecureSession session = SecureSession.Get(sessionIdentifier);
+            session.Delete();
+            Log.AddEntry("EndSession: Session {0} was deleted", sessionIdentifier);
         }
 
         private void SetSessionCookie(SecureSession session)
@@ -172,31 +146,24 @@ namespace Bam.Net.ServiceProxy.Secure
             set;
         }
 
-        static ServiceRegistry _incubator;
-        static object _incubatorSync = new object();
+        static ServiceRegistry _serviceRegistry;
+        static object _serviceRegistrySync = new object();
         /// <summary>
         /// The incubator used for SecureChannel requests
         /// </summary>
-        public ServiceRegistry ServiceProvider
+        public ServiceRegistry ServiceRegistry
         {
             get
             {
-                return _incubatorSync.DoubleCheckLock(ref _incubator, () =>
+                return _serviceRegistrySync.DoubleCheckLock(ref _serviceRegistry, () =>
                 {
                     return new ServiceRegistry();                    
                 });
             }
             set
             {
-                _incubator = value;
+                _serviceRegistry = value;
             }
-        }
-
-        public void EndSession(string sessionIdentifier)
-        {
-            SecureSession session = SecureSession.Get(sessionIdentifier);
-            session.Delete();
-            Log.AddEntry("EndSession: Session {0} was deleted", sessionIdentifier);
         }
 
         public IHttpContext HttpContext
@@ -204,5 +171,6 @@ namespace Bam.Net.ServiceProxy.Secure
             get;
             set;
         }
+
     }
 }

@@ -876,7 +876,7 @@ File Version: {1}
         /// <param name="message"></param>
         /// <param name="color"></param>
         /// <param name="formatArgs"></param>
-        [Obsolete("Use Message.PrintLine instead")]
+        [Obsolete("Use Message.PrintLine instead.")]
         public static void OutLineFormat(string message, ConsoleColor color, params object[] formatArgs)
         {
             Message.PrintLine(message, color, formatArgs);
@@ -891,6 +891,7 @@ File Version: {1}
         /// <param name="foreground"></param>
         /// <param name="background"></param>
         /// <param name="formatArgs"></param>
+        [Obsolete("Use Message.PrintLine instead.")]
         public static void OutLineFormat(string message, ConsoleColor foreground, ConsoleColor background, params object[] formatArgs)
         {
             OutLine(string.Format(message, formatArgs), new ConsoleColorCombo(foreground, background));
@@ -900,7 +901,7 @@ File Version: {1}
         {
             OutLine(string.Format(message, formatArgs), colors);
         }
-        //
+
         public static void OutFormat(string message, params object[] formatArgs)
         {
             Out(string.Format(message, formatArgs));
@@ -987,9 +988,10 @@ File Version: {1}
             ColoredBackgroundMessageProvider(message, colors);
         }
 
+        [Obsolete("Use Message.PrintLine instead.")]
         public static void OutLine(string message, ConsoleColor color = ConsoleColor.Gray)
         {
-            Out($"{message}\r\n", color);
+            Message.PrintLine(message, color);
         }
 
         public static void OutLine(string message, ConsoleColor foreground, ConsoleColor background)

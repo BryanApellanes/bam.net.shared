@@ -333,7 +333,6 @@ namespace Bam.Net.Caching
         /// <returns></returns>
         public virtual IEnumerable<CacheItem> Add<T>(params T[] values)
         {
-            List<CacheItem> results = new List<CacheItem>();
             HashSet<CacheItem> itemsCopy = new HashSet<CacheItem>(Items);
             foreach (object value in values)
             {
@@ -611,7 +610,6 @@ namespace Bam.Net.Caching
         /// <returns></returns>
 		protected int GetEvictableTailCount()
 		{
-			uint maxBytes = MaxBytes;
 			uint bytesOver = ItemsMemorySize - MaxBytes;
 			int result = 0;
 			if(bytesOver > 0)

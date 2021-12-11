@@ -418,9 +418,9 @@ namespace Bam.Net
                 }
                 else
                 {
-                    OutLineFormat("All ({0}) tests passed", ConsoleColor.Green, ConsoleColor.Black, summary.PassedTests.Count);
+                    Message.PrintLine("All ({0}) tests passed", ConsoleColor.Green, ConsoleColor.Black, summary.PassedTests.Count);
                 }
-                OutLine("********", ConsoleColor.Blue, ConsoleColor.Black);
+                Message.PrintLine("********", ConsoleColor.Blue, ConsoleColor.Black);
             };
             return runner;
         }

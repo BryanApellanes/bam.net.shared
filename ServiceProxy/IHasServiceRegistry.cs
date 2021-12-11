@@ -8,7 +8,6 @@ using Bam.Net.Incubation;
 
 namespace Bam.Net.ServiceProxy
 {
-    // TODO: rename this to IHasServiceRegistry
     public interface IHasServiceRegistry
     {
         ServiceRegistry ServiceRegistry { get; set; }

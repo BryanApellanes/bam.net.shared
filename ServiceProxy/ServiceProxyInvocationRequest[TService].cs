@@ -26,7 +26,7 @@ namespace Bam.Net.ServiceProxy
         }
 
         ServiceProxyInvocationRequestArguments<TService> _serviceProxyArguments;
-        public new ServiceProxyInvocationRequestArguments<TService> ServiceProxyArguments
+        public new ServiceProxyInvocationRequestArguments<TService> ServiceProxyInvocationRequestArguments
         {
             get
             {

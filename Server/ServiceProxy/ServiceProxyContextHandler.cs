@@ -20,7 +20,7 @@ namespace Bam.Net.Server.ServiceProxy
 
         public ServiceProxyResponder ServiceProxyResponder
         {
-            get => (ServiceProxyResponder)this.Responder;
+            get => this.Responder;
         }
 
         public BamConf BamConf
@@ -31,6 +31,11 @@ namespace Bam.Net.Server.ServiceProxy
         public IApplicationNameResolver ApplicationNameResolver
         {
             get => ServiceProxyResponder?.ApplicationNameResolver;
+        }
+
+        protected IServiceProxyInvocationResolver ServiceProxyInvocationResolver
+        {
+            get => ServiceProxyResponder?.ServiceProxyInvocationResolver;
         }
 
         protected HttpMethodHandlers HttpMethodHandlers { get; private set; }
@@ -52,8 +57,7 @@ namespace Bam.Net.Server.ServiceProxy
                 serviceProxyPath = ServiceProxyPath.FromUri(request.Url);
             }
 
-            ServiceProxyInvocation serviceProxyInvocation = ServiceProxyResponder.ServiceProxyInvocationResolver.ResolveServiceProxyInvocation(serviceProxyPath, webServiceProxyDescriptors, context);
-
+            ServiceProxyInvocation serviceProxyInvocation = ServiceProxyInvocationResolver.ResolveServiceProxyInvocation(serviceProxyPath, webServiceProxyDescriptors, context);
 
             serviceProxyInvocation.Execute();
             throw new NotImplementedException();

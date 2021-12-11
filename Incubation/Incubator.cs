@@ -159,7 +159,7 @@ namespace Bam.Net.Incubation
             return (T)Construct(typeof(T));
         }
 
-        /// <summary>
+/*        /// <summary>
         /// Construct an instance of type T without
         /// setting the new instance as the new internal gettable instance
         /// </summary>
@@ -180,7 +180,7 @@ namespace Bam.Net.Incubation
         {
             GetCtorAndParams(type, out ConstructorInfo ctor, out List<object> ctorParams);
             return ctor.Invoke(ctorParams.ToArray());
-        }
+        }*/
 
         /// <summary>
         /// Construct an instance of the specified type
@@ -228,7 +228,7 @@ namespace Bam.Net.Incubation
         /// values in the current Incubator.
         /// </summary>
         /// <param name="instance">The instance.</param>
-        public void SetInjectionProperties(object instance)
+        public void SetInjectionProperties(object instance) 
         {
             Type type = instance.GetType();
             PropertyInfo[] properties = type.GetProperties();

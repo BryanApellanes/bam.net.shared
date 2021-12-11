@@ -15,6 +15,7 @@ namespace Bam.Net.ServiceProxy.Secure
     /// Used to specify the SchemaInitializer for the underlying
     /// SecureServiceProxy schema
     /// </summary>
+    [Obsolete("This class is not necessary after changing subsystem to use ServiceProxyServerRepository.")]
     public class SecureChannelConfig
     {
         private static string FileName

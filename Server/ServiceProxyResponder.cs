@@ -32,7 +32,7 @@ namespace Bam.Net.Server
     /// Responder responsible for generating service proxies
     /// and responding to service proxy requests.
     /// </summary>
-    public partial class ServiceProxyResponder : Responder, IInitialize<ServiceProxyResponder>
+    public class ServiceProxyResponder : Responder, IInitialize<ServiceProxyResponder>
     {
         public const string ServiceProxyRelativePath = "~/services";
         const string MethodFormPrefixFormat = "/{0}/MethodForm";
@@ -65,22 +65,22 @@ namespace Bam.Net.Server
 
             CommonServiceAdded += (type, obj) =>
             {
-                CommonSecureChannel.ServiceProvider.Set(type, obj);
+                CommonSecureChannel.ServiceRegistry.Set(type, obj);
             };
             CommonServiceRemoved += (type) =>
             {
-                CommonSecureChannel.ServiceProvider.Remove(type);
+                CommonSecureChannel.ServiceRegistry.Remove(type);
             };
             AppServiceAdded += (appName, type, instance) =>
             {
                 if (!AppSecureChannels.ContainsKey(appName))
                 {
                     SecureChannel channel = new SecureChannel();
-                    channel.ServiceProvider.CopyFrom(CommonServiceProvider, true);
+                    channel.ServiceRegistry.CopyFrom(CommonServiceProvider, true);
                     AppSecureChannels.Add(appName, channel);
                 }
 
-                AppSecureChannels[appName].ServiceProvider.Set(type, instance, false);
+                AppSecureChannels[appName].ServiceRegistry.Set(type, instance, false);
             };
         }
         private bool SendMethodForm(IHttpContext context)
@@ -109,6 +109,7 @@ namespace Bam.Net.Server
         public IServiceProxyInvocationResolver ServiceProxyInvocationResolver { get; set; }
 
         private IApplicationServiceSourceResolver _applicationServiceSourceResolver;
+
         [Inject]
         public IApplicationServiceSourceResolver ApplicationServiceSourceResolver
         {
@@ -119,6 +120,9 @@ namespace Bam.Net.Server
                 _applicationServiceSourceResolver.SubscribeOnce( nameof(_applicationServiceSourceResolver.CompilationException),(o, a) => HandleCompilationException(o, (RoslynCompilationExceptionEventArgs) a));
             }
         }
+
+        [Inject]
+        public ISecureChannelSessionManager SecureChannelSessionManager { get; set; }
 
         [Inject]
         public IApplicationServiceRegistryResolver ApplicationServiceRegistryResolver { get; set; }
@@ -153,14 +157,14 @@ namespace Bam.Net.Server
         {
             webServiceRegistry.Set(typeof(SecureChannel), CommonSecureChannel);
             _commonServiceProvider = webServiceRegistry;
-            CommonSecureChannel.ServiceProvider = webServiceRegistry;
+            CommonSecureChannel.ServiceRegistry = webServiceRegistry;
         }
 
         public void SetApplicationWebServices(string applicationName, WebServiceRegistry webServiceRegistry)
         {
             webServiceRegistry.Set(typeof(SecureChannel), _appSecureChannels[applicationName]);
             _appServiceProviders[applicationName] = webServiceRegistry;
-            _appSecureChannels[applicationName].ServiceProvider = webServiceRegistry;
+            _appSecureChannels[applicationName].ServiceRegistry = webServiceRegistry;
         }
 
         public void AddClientProxyGenerator<T>(T proxyGenerator, params string[] fileNames) where T : IClientProxyGenerator
@@ -481,7 +485,6 @@ namespace Bam.Net.Server
         
         public void RegisterProxiedClasses()
         {
-            //string serviceProxyRelativePath = ServiceProxyRelativePath;
             List<string> registered = new List<string>();
             ForEachProxiedClass((type) =>
             {

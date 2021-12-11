@@ -105,7 +105,7 @@ namespace Bam.Net.Server.ServiceProxy
             {
                 if(_serviceRegistry == null)
                 {
-                    if(WebServiceProxyDescriptors != null)
+                    if (WebServiceProxyDescriptors != null)
                     {
                         _serviceRegistry = WebServiceProxyDescriptors.WebServiceRegistry;
                     }
@@ -475,7 +475,7 @@ namespace Bam.Net.Server.ServiceProxy
                 {
                     //Initialize();
                     target = SetContext(target);
-                    target = SetServiceProvider(target);
+                    target = SetServiceRegistry(target);
                     OnAnyExecuting(target);
                     OnExecuting(target);
                     Result = MethodInfo.Invoke(target, Arguments.Select(arg => arg.Value).ToArray());
@@ -511,7 +511,7 @@ namespace Bam.Net.Server.ServiceProxy
             return result;
         }
 
-        protected internal object SetServiceProvider(object target)
+        protected internal object SetServiceRegistry(object target)
         {
             object result = target;
             if (target is IHasServiceRegistry hasServiceRegistry)

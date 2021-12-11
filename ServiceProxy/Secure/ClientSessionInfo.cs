@@ -32,7 +32,7 @@ namespace Bam.Net.ServiceProxy.Secure
         }
 
         /// <summary>
-        /// The value of the session cookie
+        /// The value of the session cookie.
         /// </summary>
         public string ClientIdentifier
         {

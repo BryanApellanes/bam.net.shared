@@ -481,6 +481,14 @@
     <Compile Include="$(MSBuildThisFileDirectory)Server\PathHandlers\DataQueryPath.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Server\PathHandlers\ServiceProxyPath.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Server\ServiceProxy\ContentTypeMethod.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Server\ServiceProxy\Data\Generated_Dao\SecureChannelSession.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Server\ServiceProxy\Data\Generated_Dao\SecureChannelSessionCollection.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Server\ServiceProxy\Data\Generated_Dao\SecureChannelSessionColumns.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Server\ServiceProxy\Data\Generated_Dao\SecureChannelSessionPagedQuery.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Server\ServiceProxy\Data\Generated_Dao\SecureChannelSessionQuery.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Server\ServiceProxy\Data\Generated_Dao\SecureChannelSessionWrapper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Server\ServiceProxy\Data\Generated_Dao\ServiceProxyServerContext.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Server\ServiceProxy\Data\Generated_Dao\ServiceProxyServerRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Server\ServiceProxy\InputStreamServiceProxyInvocationArgumentReader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Server\ServiceProxy\QueryStringServiceProxyInvocationArgumentReader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Server\ServiceProxy\ServiceProxyInvocationArgument.cs" />
@@ -497,7 +505,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\ApiArgumentEncoder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\DefaultApiArgumentEncoder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\IApiArgumentEncoder.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\Secure\Data\SecureChannelSession.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Server\ServiceProxy\Data\SecureChannelSession.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\Secure\DefaultApiEncryptionProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\Secure\IApiEncryptionProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DefaultConsoleMessageHandler.cs" />
@@ -749,7 +757,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\IApplicationServiceRegistryResolver.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\IServiceCompilationExceptionReporter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\JsWebServiceProxyGenerator.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\Secure\ISecureChannelSessionManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\Secure\SecureChannelRequestMessage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\Secure\SecureChannelSessionManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\Secure\SecureServiceProxyInvocationRequestArguments[TService].cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\ServiceCompilationEventArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\ApplicationServiceSourceResolver.cs" />
@@ -3143,6 +3153,7 @@
     <None Include="$(MSBuildThisFileDirectory)Encryption\Encryption.db.js" />
     <None Include="$(MSBuildThisFileDirectory)Messaging\messaging.db.js" />
     <None Include="$(MSBuildThisFileDirectory)Server\README.md" />
+    <None Include="$(MSBuildThisFileDirectory)Server\ServiceProxy\Data\DaoRepoGenerationConfig.yaml" />
     <None Include="$(MSBuildThisFileDirectory)Services\AsyncCallback\regen_asyncecallback_dao.cmd" />
     <None Include="$(MSBuildThisFileDirectory)Services\Hosts\README.md" />
     <None Include="$(MSBuildThisFileDirectory)Services\OpenApi\OpenApi.sqlite" />

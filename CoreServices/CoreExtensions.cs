@@ -11,7 +11,7 @@ namespace Bam.Net.CoreServices
 {
     public static class CoreExtensions
     {
-        public static SecureClientSessionInfo GetSecureClientSessionInfo<T>(this SecureServiceProxyClient<T> client)
+/*        public static SecureClientSessionInfo GetSecureClientSessionInfo<T>(this SecureServiceProxyClient<T> client)
         {
             return new SecureClientSessionInfo
             {
@@ -21,6 +21,6 @@ namespace Bam.Net.CoreServices
                 SessionKey = client.SessionKey,
                 SessionIV = client.SessionIV
             };
-        }
+        }*/
     }
 }
