@@ -10,15 +10,15 @@ namespace Bam.Net.Server
     {
         public HttpMethodHandlers()
         {
-            this.HandlerFunctions = new Dictionary<HttpMethod, Func<IRequest, IHttpResponse>>();
+            this.HandlerFunctions = new Dictionary<HttpMethod, Func<IHttpContext, IHttpResponse>>();
         }
 
-        public void SetHandler(string httpMethod, Func<IRequest, IHttpResponse> handlerFunction)
+        public void SetHandler(string httpMethod, Func<IHttpContext, IHttpResponse> handlerFunction)
         {
             SetHandler(new HttpMethod(httpMethod), handlerFunction);
         }
 
-        public void SetHandler(HttpMethod httpMethod, Func<IRequest, IHttpResponse> handlerFunction)
+        public void SetHandler(HttpMethod httpMethod, Func<IHttpContext, IHttpResponse> handlerFunction)
         {
             if (HandlerFunctions.ContainsKey(httpMethod))
             {
@@ -30,16 +30,16 @@ namespace Bam.Net.Server
             }
         }
 
-        public IHttpResponse HandleRequest(IRequest request)
+        public IHttpResponse HandleRequest(IHttpContext context)
         {
-            HttpMethod httpMethod = new HttpMethod(request.HttpMethod);
+            HttpMethod httpMethod = new HttpMethod(context.Request.HttpMethod);
             if (HandlerFunctions.ContainsKey(httpMethod))
             {
-                return HandlerFunctions[httpMethod](request);
+                return HandlerFunctions[httpMethod](context);
             }
             return new HttpResponse("Not Found", 404);
         }
 
-        protected Dictionary<HttpMethod, Func<IRequest, IHttpResponse>> HandlerFunctions { get; }
+        protected Dictionary<HttpMethod, Func<IHttpContext, IHttpResponse>> HandlerFunctions { get; }
     }
 }

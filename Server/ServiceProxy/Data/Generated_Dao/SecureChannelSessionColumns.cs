@@ -47,6 +47,7 @@ namespace Bam.Net.Server.ServiceProxy.Data.Dao
         public SecureChannelSessionColumns Uuid => new SecureChannelSessionColumns("Uuid");
         public SecureChannelSessionColumns Cuid => new SecureChannelSessionColumns("Cuid");
         public SecureChannelSessionColumns Identifier => new SecureChannelSessionColumns("Identifier");
+        public SecureChannelSessionColumns AsymmetricKey => new SecureChannelSessionColumns("AsymmetricKey");
         public SecureChannelSessionColumns SymmetricKey => new SecureChannelSessionColumns("SymmetricKey");
         public SecureChannelSessionColumns SymmetricIV => new SecureChannelSessionColumns("SymmetricIV");
         public SecureChannelSessionColumns TimeOffset => new SecureChannelSessionColumns("TimeOffset");

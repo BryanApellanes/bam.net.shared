@@ -16,8 +16,11 @@ namespace Bam.Net.Encryption
     {
         protected static readonly string DefaultIV = Convert.ToBase64String(new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 });
 
+        protected static readonly string DefaultSalt = ":DEFAULT-SALT:";
+
         public Encrypted()
         {
+            this.Salt = DefaultSalt;
             SecureRandom random = new SecureRandom();
             this.Key = random.GenerateSeed(16);
             this.IV = random.GenerateSeed(16);

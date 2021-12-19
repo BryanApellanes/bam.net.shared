@@ -15,6 +15,7 @@ namespace Bam.Net.Server.ServiceProxy
 
         protected override IHttpResponse HandleContext(IHttpContext request)
         {
+            // Use InputFormProvider as basis of implementation
             //InputFormProvider inputFormProvider = new InputFormProvider();
             throw new NotImplementedException();
         }

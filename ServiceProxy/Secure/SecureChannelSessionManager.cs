@@ -1,4 +1,5 @@
 ﻿using Bam.Net.Caching;
+using Bam.Net.Data;
 using Bam.Net.Data.Repositories;
 using Bam.Net.Server.ServiceProxy.Data;
 using Bam.Net.Server.ServiceProxy.Data.Dao.Repository;
@@ -7,6 +8,7 @@ using Bam.Net.Web;
 using Org.BouncyCastle.Security;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Text;
 
@@ -29,13 +31,13 @@ namespace Bam.Net.ServiceProxy.Secure
         [Inject]
         public IUserResolver UserResolver { get; set; }
 
-        public virtual SecureChannelSession GetSecureChannelSessionForContext(IHttpContext httpContext)
+        public virtual SecureChannelSession GetSecureChannelSessionForContext(IHttpContext httpContext, Instant clientNow = null)
         {
             string existingSecureChannelSessionId = GetSecureChannelSessionIdentifier(httpContext.Request);
             SecureChannelSession secureChannelSession;
             if (string.IsNullOrEmpty(existingSecureChannelSessionId))
             {
-                secureChannelSession = CreateSecureChannelSession(httpContext.Response, ServiceProxyServerRepository);
+                secureChannelSession = CreateSecureChannelSession(httpContext.Response, ServiceProxyServerRepository, clientNow ?? new Instant());
             }
             else
             {
@@ -45,12 +47,14 @@ namespace Bam.Net.ServiceProxy.Secure
             return secureChannelSession;
         }
 
-        public SecureChannelSession CreateSecureChannelSession(IResponse response, ServiceProxyServerRepository repository)
+        public SecureChannelSession CreateSecureChannelSession(IResponse response, ServiceProxyServerRepository repository, Instant clientNow)
         {
+            SecureChannelSession secureChannelSession = new SecureChannelSession(clientNow, true).Initialize();
+            Cookie secureChannelSessionIdCookie = new Cookie(SecureChannelSession.CookieName, secureChannelSession.Identifier);
+            response.Cookies.Add(secureChannelSessionIdCookie);
+            secureChannelSession = ServiceProxyServerRepository.Save(secureChannelSession);
 
-            SecureChannelSession secureChannelSession = new SecureChannelSession();
-            throw new NotImplementedException();
-            // TODO: regenerate SecurChannelSession repo to add AsymmetricKey property
+            return secureChannelSession;
         }
 
         public string GetSecureChannelSessionIdentifier(IRequest request)
@@ -65,7 +69,7 @@ namespace Bam.Net.ServiceProxy.Secure
 
         public SecureChannelSession RetrieveSecureChannelSession(string sessionIdentifier, ServiceProxyServerRepository repository)
         {
-            throw new NotImplementedException();
+            return repository.Query<SecureChannelSession>(secureChannelSession => secureChannelSession.Identifier == sessionIdentifier).FirstOrDefault();
         }
 
         protected string GetSecureChannelSessionIdFromCookie(IRequest request)
@@ -82,5 +86,6 @@ namespace Bam.Net.ServiceProxy.Secure
         {
             return request.Headers[Headers.SecureChannelSessionId];            
         }
+
     }
 }

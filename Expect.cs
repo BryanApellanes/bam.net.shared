@@ -281,6 +281,32 @@ namespace Bam.Net
             }
         }
 
+        public static void AreEqual(byte[] x, byte[] y)
+        {
+            if (x.Length != y.Length)
+            {
+                throw new ExpectationFailedException("byte arrays are different lengths");
+            }
+
+            if (x == null && y != null)
+            {
+                throw new ExpectationFailedException("byte arrays are different");
+            }
+
+            if (x != null && y == null)
+            {
+                throw new ExpectationFailedException("byte arrays are different");
+            }
+
+            for (int i = 0; i < x.Length; i++)
+            {
+                if (x[i] != y[i])
+                {
+                    throw new ExpectationFailedException("byte arrays are different");
+                }
+            }
+        }
+
         /// <summary>
         /// Does an equality comparison using expected.Equals()
         /// </summary>

@@ -537,73 +537,35 @@ namespace Bam.Net.Server
                 }
             });
         }
-        
+
         public override bool TryRespond(IHttpContext httpContext)
+        {
+            return TryRespond(httpContext, out _);
+        }
+
+        public bool TryRespond(IHttpContext httpContext, out IHttpResponse response)
         {
             try
             {
-                // Define IRouteHandlerResolver
-                // - IRouteHandler ResolveRouteHandler(IHttpContext)
-                // Define ServiceProxyRequestHandlerResolver
-                // - ResolveRequestHandler
-                // -    determine which of the following handlers should handle the request
-                // Define MethodFormRequestHandler : IRequestHandler 
-                // Define ProxyCodeRequestHandler : IRequestHandler
-                // Define InvocationRequestHandler : IRequestHandler 
-                //
-                // replace 584+ with the above described implementations
-
                 ResponderContextHandler<ServiceProxyResponder> contextHandler = _requestHandlerResolver.ResolveHandler(httpContext);
 
-                IHttpResponse requestResult = contextHandler.HandleContextAsync(httpContext).Result;
+                response = contextHandler.HandleContextAsync(httpContext).Result;
 
-                throw new NotImplementedException();
-
-                RequestWrapper request = httpContext.Request as RequestWrapper;
-                ResponseWrapper response = httpContext.Response as ResponseWrapper;
-
-                bool responded = false;
-
-                if (request != null && response != null)
+                if (response.StatusCode >= 200 && response.StatusCode <= 299)
                 {
-                    string path = request.Url.AbsolutePath.ToLowerInvariant();
-
-                    if (path.StartsWith("/{0}"._Format(ResponderName.ToLowerInvariant())))
-                    {
-                        responded = path.StartsWith(MethodFormPrefixFormat._Format(ResponderName).ToLowerInvariant()) ? SendMethodForm(httpContext) : SendProxyCode(httpContext);
-                    }
-                    
-                    if(!responded)
-                    {
-                        string appName = ApplicationNameResolver.ResolveApplicationName(request);
-
-                        //ServiceProxyInvocation execRequest = ResolveExecutionRequest(httpContext, appName);
-                        
-                       // responded = execRequest.Execute();
-                        if (responded)
-                        {
-                            // TODO: make this configurable
-                            response.AddHeader("Access-Control-Allow-Origin", "*");
-                            response.AddHeader("Access-Control-Allow-Headers", "Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
-                            response.AddHeader("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
-                            // ---
-                            
-                            //RenderResult(appName, path, execRequest);
-                        }
-                    }
-                }
-                if (responded)
-                {
+                    response.Send(httpContext.Response);
                     OnResponded(httpContext);
+                    return true;
                 }
-                else
+                else if (response.StatusCode == 404 || (response.StatusCode >= 500 || response.StatusCode <= 599))
                 {
                     OnDidNotRespond(httpContext);
                 }
-                return responded;
+                return false;
             }
             catch (Exception ex)
             {
+                response = null;
                 Logger.AddEntry("An error occurred in {0}.{1}: {2}", ex, this.GetType().Name, MethodBase.GetCurrentMethod().Name, ex.Message);
                 OnDidNotRespond(httpContext);
                 return false;
@@ -692,24 +654,6 @@ namespace Bam.Net.Server
                 };
             }
         }
-
-/*        private void RenderResult(string appName, string path, ServiceProxyInvocation execRequest)
-        {
-            string ext = Path.GetExtension(path).ToLowerInvariant();
-            if (string.IsNullOrEmpty(ext))
-            {
-                AppConf appConf = this.BamConf[appName];
-                if (appConf != null)
-                {
-                    LayoutConf pageConf = new LayoutConf(appConf);
-                    string fileName = Path.GetFileName(path);
-                    string json = pageConf.ToJson(true);
-                    appConf.AppRoot.WriteFile($"~/{appConf.HtmlDir}/{fileName}.layout", json);
-                }
-            }
-
-            RendererFactory.Respond(execRequest, ContentResponder);
-        }*/
 
         readonly Dictionary<string, IClientProxyGenerator> _clientProxyGenerators;
         private bool SendProxyCode(IHttpContext context)

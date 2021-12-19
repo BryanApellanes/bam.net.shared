@@ -72,29 +72,16 @@ namespace Bam.Net.ServiceProxy.Secure
             private set;
         }
 
-        public bool IsSessionEstablished
+        public bool IsSessionStarted
         {
             get
             {
-                return SessionInfo != null && SessionInfo.SessionId > 0 && !string.IsNullOrEmpty(SessionInfo.PublicKey);
+                return ClientSessionInfo != null && !string.IsNullOrEmpty(ClientSessionInfo.PublicKey);
             }            
         }
 
-        [Obsolete("Use SecureSessionId instead")]
-        public Cookie SecureSessionCookie
-        {
-            get;
-            protected internal set;
-        }
-
-        public string SecureSessionId
-        {
-            get;
-            protected internal set;
-        }
-
         ClientSessionInfo _sessionInfo;
-        public ClientSessionInfo SessionInfo
+        public ClientSessionInfo ClientSessionInfo
         {
             get
             {
@@ -149,12 +136,12 @@ namespace Bam.Net.ServiceProxy.Secure
         {
             get
             {
-                return SessionInfo?.SessionKey;
+                return ClientSessionInfo?.SessionKey;
             }
             set
             {
-                Args.ThrowIf<ArgumentNullException>(SessionInfo == null, "SessionInfo not set");
-                SessionInfo.SessionKey = value;
+                Args.ThrowIf<ArgumentNullException>(ClientSessionInfo == null, $"{nameof(ClientSessionInfo)} not set");
+                ClientSessionInfo.SessionKey = value;
             }
         }
 
@@ -165,12 +152,12 @@ namespace Bam.Net.ServiceProxy.Secure
         {
             get
             {
-                return SessionInfo?.SessionIV;
+                return ClientSessionInfo?.SessionIV;
             }
             set
             {
-                Args.ThrowIf<ArgumentNullException>(SessionInfo == null, "SessionInfo not set");
-                SessionInfo.SessionIV = value;
+                Args.ThrowIf<ArgumentNullException>(ClientSessionInfo == null, $"{nameof(ClientSessionInfo)} not set");
+                ClientSessionInfo.SessionIV = value;
             }
         }
 
@@ -208,10 +195,10 @@ namespace Bam.Net.ServiceProxy.Secure
                 string responseString = await responseMessage.Content.ReadAsStringAsync();
                 LastResponse = responseString;
                 responseMessage.EnsureSuccessStatusCode();
-                SessionInfo = responseString.FromJson<ClientSessionInfo>();
+                ClientSessionInfo = responseString.FromJson<ClientSessionInfo>();
                 await SetSessionKeyAsync();
                 OnSessionStarted();
-                return SessionInfo;
+                return ClientSessionInfo;
             }
             catch (Exception ex)
             {
@@ -276,7 +263,7 @@ namespace Bam.Net.ServiceProxy.Secure
                 try
                 {
                     HttpRequestMessage requestMessage = await CreateServiceProxyRequestMessageAsync(serviceProxyInvocationRequest);
-                    SecureServiceProxyInvocationRequestArguments<TService> secureServiceProxyArguments = new SecureServiceProxyInvocationRequestArguments<TService>(SessionInfo, ApiKeyResolver, ApiEncryptionProvider, serviceProxyInvocationRequest);
+                    SecureServiceProxyInvocationRequestArguments<TService> secureServiceProxyArguments = new SecureServiceProxyInvocationRequestArguments<TService>(ClientSessionInfo, ApiKeyResolver, ApiEncryptionProvider, serviceProxyInvocationRequest);
                     secureServiceProxyArguments.WriteArgumentContent(requestMessage);
                     secureServiceProxyArguments.SetKeyToken(requestMessage);
 
@@ -311,7 +298,7 @@ namespace Bam.Net.ServiceProxy.Secure
 
         protected internal SetSessionKeyRequest CreateSetSessionKeyRequest(out AesKeyVectorPair kvp)
         {
-            return SecureSession.CreateSetSessionKeyRequest(SessionInfo.PublicKey, out kvp);
+            return SecureSession.CreateSetSessionKeyRequest(ClientSessionInfo.PublicKey, out kvp);
         }
 
         private void Initialize()
@@ -324,20 +311,20 @@ namespace Bam.Net.ServiceProxy.Secure
         {
             try
             {
-                if (SessionInfo == null)
+                if (ClientSessionInfo == null)
                 {
                     if (_startSessionTask == null)
                     {
                         _startSessionTask = StartSessionAsync();
                     }
-                    SessionInfo = await _startSessionTask;
+                    ClientSessionInfo = await _startSessionTask;
                 }
             }
             catch (Exception ex)
             {
                 SessionStartException = ex;
             }
-            return SessionInfo;
+            return ClientSessionInfo;
         }
     }
 }

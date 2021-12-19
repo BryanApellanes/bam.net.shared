@@ -4,14 +4,16 @@ using System.Text;
 
 namespace Bam.Net
 {
-    public interface IEncoder : IDecoder
+    public interface IValueEncoder<TDecoded, TEncoded>
     {
+        IValueDecoder<TEncoded, TDecoded> GetDecoder();
+
         /// <summary>
         /// When implemented in a derived class, encodes the specified value using
-        /// the appropriate encoding implementation and returns the base64 encoded result.
+        /// the appropriate encoding implementation.
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
-        byte[] Encode(object value);
+        TEncoded Encode(TDecoded value);
     }
 }

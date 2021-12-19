@@ -23,6 +23,7 @@ using Org.BouncyCastle.Math;
 using Org.BouncyCastle.Crypto.Engines;
 using Bam.Net.Configuration;
 using Bam.Net.CoreServices;
+using Bam.Net.Server.ServiceProxy.Data;
 
 namespace Bam.Net.ServiceProxy.Secure
 {
@@ -75,12 +76,10 @@ namespace Bam.Net.ServiceProxy.Secure
         /// <returns></returns>
         public SecureChannelMessage<ClientSessionInfo> StartSession(Instant instant)
         {
-            SecureSession session = SecureSession.Get(HttpContext, instant);
-            ClientSessionInfo result = GetClientSessionInfo(session);
+            SecureChannelSession secureChannelSession = SecureChannelSessionManager.GetSecureChannelSessionForContext(HttpContext, instant);
+            ClientSessionInfo clientSessionInfo = secureChannelSession.ToClientSessionInfo();
 
-            SetSessionCookie(session);
-
-            return new SecureChannelMessage<ClientSessionInfo>(result);
+            return new SecureChannelMessage<ClientSessionInfo>(clientSessionInfo);
         }
 
         public void EndSession(string sessionIdentifier)
@@ -90,20 +89,11 @@ namespace Bam.Net.ServiceProxy.Secure
             Log.AddEntry("EndSession: Session {0} was deleted", sessionIdentifier);
         }
 
-        private void SetSessionCookie(SecureSession session)
-        {
-            Cookie sessionCookie = HttpContext.Response.Cookies[SecureSession.CookieName];
-            if (sessionCookie == null)
-            {
-                HttpContext.Response.Cookies.Add(new Cookie(SecureSession.CookieName, session.Identifier));
-            }
-        }
-
         internal static ClientSessionInfo GetClientSessionInfo(SecureSession session)
         {
             ClientSessionInfo result = new ClientSessionInfo()
             {
-                SessionId = session.Id.Value,
+                //SessionId = session.Id.Value,
                 ClientIdentifier = session.Identifier,
                 PublicKey = session.PublicKey
             };

@@ -117,6 +117,20 @@ namespace Bam.Net.Server.ServiceProxy.Data.Dao
         }
     }
 
+    // property:AsymmetricKey, columnName: AsymmetricKey	
+    [Bam.Net.Data.Column(Name="AsymmetricKey", DbDataType="VarChar", MaxLength="4000", AllowNull=true)]
+    public string AsymmetricKey
+    {
+        get
+        {
+            return GetStringValue("AsymmetricKey");
+        }
+        set
+        {
+            SetValue("AsymmetricKey", value);
+        }
+    }
+
     // property:SymmetricKey, columnName: SymmetricKey	
     [Bam.Net.Data.Column(Name="SymmetricKey", DbDataType="VarChar", MaxLength="4000", AllowNull=true)]
     public string SymmetricKey

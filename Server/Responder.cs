@@ -152,7 +152,10 @@ namespace Bam.Net.Server
         }
 
         public abstract bool TryRespond(IHttpContext context);
-
+        public static void SendResponse(IHttpContext context, HttpStatusCodeHandler handler)
+        {
+            SendResponse(context, handler.Handle(), handler.Code);
+        }
         public static void SendResponse(IHttpContext context, HttpStatusCodeHandler handler, object dynamicObjectHeaders)
         {
             SendResponse(context, handler.Handle(), handler.Code, null, dynamicObjectHeaders.ToDictionary(pi => $"X-{pi.Name.PascalSplit("-")}", (o) => (string)o));
@@ -197,7 +200,6 @@ namespace Bam.Net.Server
 
         protected string GetContentTypeForPath(string path)
         {
-            string contentType = string.Empty;
             string ext = Path.GetExtension(path);
             return GetContentTypeForExtension(ext);
         }
@@ -257,23 +259,6 @@ namespace Bam.Net.Server
             context.Response.OutputStream.Close();
         }
 
-        protected static void WireResponseLogging(IResponder responder, ILogger logger)
-        {
-            responder.Responded += (r, context) => logger.AddEntry("*** ({0}) Responded ***\r\n{1}", LogEventType.Information, r.Name, context.Request.PropertiesToString());
-            responder.DidNotRespond += (r, context) => logger.AddEntry("*** ({0}) Didn't Respond ***\r\n{1}", LogEventType.Warning, r.Name, context.Request.PropertiesToString());
-            responder.ContentNotFound += (r, context, paths) =>
-            {
-                StringBuilder formattedPaths = new StringBuilder();
-                paths.Each(path => formattedPaths.AppendLine($"{path}"));
-                logger.AddEntry("*** ({0}) Content Not Found ***\r\n{1}\r\n{2}", LogEventType.Warning, r.Name, formattedPaths.ToString(), context.Request.PropertiesToString());
-            };
-        }
-
-        protected void WireResponseLogging(ILogger logger)
-        {
-            WireResponseLogging(this, logger);
-        }
-
         protected internal void OnResponded(IResponder responder, IHttpContext context)
         {
             Task.Run(() => Responded?.Invoke(responder, context));
@@ -313,6 +298,17 @@ namespace Bam.Net.Server
             }
 
             _respondToPrefixes.Add(prefix);
+        }
+        protected static void WireResponseLogging(IResponder responder, ILogger logger)
+        {
+            responder.Responded += (r, context) => logger.AddEntry("*** ({0}) Responded ***\r\n{1}", LogEventType.Information, r.Name, context.Request.PropertiesToString());
+            responder.DidNotRespond += (r, context) => logger.AddEntry("*** ({0}) Didn't Respond ***\r\n{1}", LogEventType.Warning, r.Name, context.Request.PropertiesToString());
+            responder.ContentNotFound += (r, context, paths) =>
+            {
+                StringBuilder formattedPaths = new StringBuilder();
+                paths.Each(path => formattedPaths.AppendLine($"{path}"));
+                logger.AddEntry("*** ({0}) Content Not Found ***\r\n{1}\r\n{2}", LogEventType.Warning, r.Name, formattedPaths.ToString(), context.Request.PropertiesToString());
+            };
         }
 
         readonly List<string> _ignorePrefixes;

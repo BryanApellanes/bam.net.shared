@@ -22,10 +22,10 @@ namespace Bam.Net.Server.ServiceProxy
         {
             this.Logger = logger;
             this.DefaultArgumentReader = new QueryStringServiceProxyInvocationArgumentReader();
-            this.ArgumentReaders = new Dictionary<ContentTypeMethod, ServiceProxyInvocationArgumentReader>()
+            this.ArgumentReaders = new Dictionary<HttpMethodContentTypeKey, ServiceProxyInvocationArgumentReader>()
             {
-                { new ContentTypeMethod("GET"), DefaultArgumentReader },
-                { new ContentTypeMethod("POST", ServiceProxyInvocationRequestArguments.JsonMediaType), new InputStreamServiceProxyInvocationArgumentReader() },
+                { new HttpMethodContentTypeKey("GET"), DefaultArgumentReader },
+                { new HttpMethodContentTypeKey("POST", ServiceProxyInvocationRequestArguments.JsonMediaType), new InputStreamServiceProxyInvocationArgumentReader() },
             };
             // CREATE A CUSTOM ENCODING PIPELINE ARGUMENT READER
             // IMPLEMENT IValueEncoder that takes a list of encoding names,
@@ -43,13 +43,13 @@ namespace Bam.Net.Server.ServiceProxy
             //      - decrypt body and read as SecureChannelMessage
         }
 
-        protected Dictionary<ContentTypeMethod, ServiceProxyInvocationArgumentReader> ArgumentReaders { get; }
+        protected Dictionary<HttpMethodContentTypeKey, ServiceProxyInvocationArgumentReader> ArgumentReaders { get; }
 
         protected ServiceProxyInvocationArgumentReader DefaultArgumentReader { get; }
 
         protected ServiceProxyInvocationArgumentReader GetArgumentReader(IRequest request)
         {
-            ContentTypeMethod key = new ContentTypeMethod(request);
+            HttpMethodContentTypeKey key = new HttpMethodContentTypeKey(request);
             if (ArgumentReaders.ContainsKey(key))
             {
                 return ArgumentReaders[key];

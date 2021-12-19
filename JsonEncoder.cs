@@ -4,22 +4,28 @@ using System.Text;
 
 namespace Bam.Net
 {
-    public class JsonEncoder : Encoder
+    public class JsonEncoder<TInput> : ValueEncoder<TInput, string>
     {
-        public JsonEncoder(Encoding encoding = null) : base(encoding)
-        { 
+        public JsonEncoder() 
+        {
+            this.Encoding = Encoding.UTF8;
         }
 
-        public override T Decode<T>(byte[] bytes)
+        public Encoding Encoding { get; set; }
+
+        public override TInput Decode(string output)
         {
-            string json = Encoding.UTF8.GetString(bytes);
-            return json.FromJson<T>();
+            return GetDecoder().Decode(output);
         }
 
-        public override byte[] Encode(object value)
+        public override string Encode(TInput value)
         {
-            string json = value.ToJson();
-            return Encoding.GetBytes(json);
+            return value.ToJson();
+        }
+
+        public override IValueDecoder<string, TInput> GetDecoder()
+        {
+            return new JsonDecoder<TInput>();
         }
     }
 }

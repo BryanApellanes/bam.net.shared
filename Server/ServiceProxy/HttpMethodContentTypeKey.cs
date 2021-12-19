@@ -5,19 +5,19 @@ using System.Text;
 
 namespace Bam.Net.Server.ServiceProxy
 {
-    public class ContentTypeMethod
+    public class HttpMethodContentTypeKey
     {
-        public ContentTypeMethod(string httpMethod)
+        public HttpMethodContentTypeKey(string httpVerb)
         {
-            this.HttpMethod = httpMethod.ToUpperInvariant();
+            this.HttpMethod = httpVerb.ToUpperInvariant();
         }
 
-        public ContentTypeMethod(string httpMethod, string contentType): this(httpMethod)
+        public HttpMethodContentTypeKey(string httpVerb, string contentType): this(httpVerb)
         {
             this.ContentType = contentType;
         }
 
-        public ContentTypeMethod(IRequest request):this(request.HttpMethod, request.ContentType)
+        public HttpMethodContentTypeKey(IRequest request):this(request.HttpMethod, request.ContentType)
         {
 
         }
@@ -27,7 +27,7 @@ namespace Bam.Net.Server.ServiceProxy
 
         public override bool Equals(object obj)
         {
-            if(obj is ContentTypeMethod value)
+            if(obj is HttpMethodContentTypeKey value)
             {
                 return value.ToString().Equals(this.ToString());
             }

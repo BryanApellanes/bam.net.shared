@@ -1,6 +1,7 @@
 ﻿using Bam.Net.Data.Repositories;
 using Bam.Net.Encryption;
 using Bam.Net.ServiceProxy;
+using Bam.Net.ServiceProxy.Secure;
 using Bam.Net.Web;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Security;
@@ -12,36 +13,34 @@ using System.Threading.Tasks;
 
 namespace Bam.Net.Server.ServiceProxy.Data
 {
+    [Serializable]
     public class SecureChannelSession : KeyedAuditRepoData
     {
         public const string CookieName = "bam-scs-id";
 
-        public SecureChannelSession(Instant clientNow = null, RsaKeyLength rsaKeyLength = RsaKeyLength._2048)
+        public SecureChannelSession()
         {
-            if(clientNow == null)
-            {
-                clientNow = new Instant();
-            }
             IdentifierHashAlgorithm = HashAlgorithms.SHA256;
             IdentifierSeedLength = 128;
             DateTime dateTimeNow = DateTime.UtcNow;
             Created = dateTimeNow;
             LastActivity = dateTimeNow;
-            TimeOffset = clientNow.DiffInMilliseconds(dateTimeNow);
-            AsymmetricCipherKeyPair asymmetricKeys = Rsa.GenerateKeyPair(rsaKeyLength);
-            
+            TimeOffset = 0;
         }
 
-        public SecureChannelSession(bool initializeIdentitifer) : this()
+        public SecureChannelSession(Instant clientNow, bool initialize = false, RsaKeyLength rsaKeyLength = RsaKeyLength._2048) : this()
         {
-            if (initializeIdentitifer)
+            TimeOffset = clientNow.DiffInMilliseconds(DateTime.UtcNow);
+            if (initialize)
             {
-                SetIdentifier();
+                Initialize(rsaKeyLength);
             }
         }
 
+        [CompositeKey]
         public HashAlgorithms IdentifierHashAlgorithm { get; set; }
 
+        [CompositeKey]
         public string Identifier { get; set; }
 
         public string AsymmetricKey { get; set; }
@@ -63,60 +62,35 @@ namespace Bam.Net.Server.ServiceProxy.Data
 
         public DateTime? LastActivity { get; set; }
 
+        public string GetPublicKey()
+        {
+            return AsymmetricKey.ToKeyPair().Public.ToPem();
+        }
+
+        public SecureChannelSession Initialize(RsaKeyLength rsaKeyLength = RsaKeyLength._2048)
+        {
+            SetIdentifier();
+            AsymmetricKey = Rsa.GenerateKeyPair(rsaKeyLength).ToPem();
+            return this;
+        }
+
+        public ClientSessionInfo ToClientSessionInfo()
+        {
+            return new ClientSessionInfo
+            {
+                ClientIdentifier = Identifier,
+                PublicKey = GetPublicKey(),
+                SessionIV = this.SymmetricIV,
+                SessionKey = this.SymmetricKey,
+            };
+        }
+
         internal int IdentifierSeedLength { get; set; }
 
         private void SetIdentifier()
         {
             SecureRandom secureRandom = new SecureRandom();
             Identifier = secureRandom.GenerateSeed(IdentifierSeedLength).ToBase64().HashHexString(IdentifierHashAlgorithm);
-        }
-
-        public static SecureChannelSession GetSecureChannelSessionForContext(IHttpContext httpContext, IRepositoryResolver repositoryResolver)
-        {
-            Args.ThrowIfNull(httpContext, nameof(httpContext));
-            string secureChannelSessionId = GetSecureChannelSessionIdentifier(httpContext.Request);
-
-            SecureChannelSession secureChannelSession;
-            IRepository repository = repositoryResolver.GetRepository(httpContext);
-            if (string.IsNullOrEmpty(secureChannelSessionId))
-            {
-                secureChannelSession = CreateSecureChannelSession(repository);
-            }
-            else
-            {
-                secureChannelSession = RetrieveSecureChannelSession(secureChannelSessionId, repository);
-            }
-
-            EnsureSecureChannelSessionIdentifierCookie(httpContext.Response, secureChannelSession.Identifier);
-
-            return secureChannelSession;
-        }
-
-        public static string GetSecureChannelSessionIdentifier(IRequest request)
-        {
-            Cookie cookie = request.Cookies[CookieName];
-            if(cookie != null)
-            {
-                return cookie.Value;
-            }
-            return string.Empty;
-        }
-
-        protected static SecureChannelSession CreateSecureChannelSession(IRepository repository)
-        {
-            SecureChannelSession secureChannelSession = new SecureChannelSession(true);
-            repository.Save(secureChannelSession);
-            return secureChannelSession;
-        }
-
-        protected static void EnsureSecureChannelSessionIdentifierCookie(IResponse response, string secureChannelSessionId)
-        {
-
-        }
-
-        public static SecureChannelSession RetrieveSecureChannelSession(string sessionIdentifier, IRepository repository)
-        {
-            throw new NotImplementedException();
         }
     }
 }

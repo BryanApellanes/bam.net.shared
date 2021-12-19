@@ -1,19 +1,36 @@
-﻿using System;
+﻿using Bam.Net.ServiceProxy;
+using Bam.Net.ServiceProxy.Secure;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Bam.Net.Encryption
 {
-    public class RsaEncoder : Encoder
+    public class RsaEncoder : ValueEncoder<string, byte[]>
     {
-        public override T Decode<T>(byte[] bytes)
+        public RsaEncoder()
         {
-            throw new NotImplementedException();
+            this.Encoding = Encoding.UTF8;
         }
 
-        public override byte[] Encode(object value)
+        public Encoding Encoding { get; set; }
+        public ClientSessionInfo ClientSessionInfo { get; set; }
+
+        public override string Decode(byte[] cipherBytes)
         {
-            throw new NotImplementedException();
+            return GetDecoder().Decode(cipherBytes);
+        }
+
+        public override byte[] Encode(string plainText)
+        {
+            Args.ThrowIfNull(ClientSessionInfo, $"{nameof(ClientSessionInfo)} not set");
+
+            return ClientSessionInfo.GetAsymetricCipherBytes(plainText, Encoding);
+        }
+
+        public override IValueDecoder<byte[], string> GetDecoder()
+        {
+            return new RsaDecoder();
         }
     }
 }

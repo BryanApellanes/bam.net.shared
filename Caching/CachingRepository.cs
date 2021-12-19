@@ -251,8 +251,6 @@ namespace Bam.Net.Caching
         [Verbosity(VerbosityLevel.Information, SenderMessageFormat="Different types were found with the same property name and value: \r\n{DifferingTypes}")]
 		public event EventHandler DifferringTypesFound;
 
-		public string Types { get; private set; }
-
 		public string PropertyName { get; set; }
 		public string Value { get; set; }
         /// <summary>
@@ -631,10 +629,12 @@ namespace Bam.Net.Caching
                 {
                     typeHash.Add(o.GetType());
                 });
-                Types = differingTypes.ToArray().ToDelimited(t => t.Name, ", ");
-                PropertyName = propertyName;
-                Value = value == null ? "null" : value.ToString();
-                FireEvent(DifferringTypesFound, EventArgs.Empty);
+                FireEvent(DifferringTypesFound, new CachingRepositoryEventArgs 
+                {
+                    PropertyName = propertyName, 
+                    ParameterValue = value == null ? "null" : value.ToString(), 
+                    DifferingTypes = differingTypes.ToArray().ToDelimited(t => t.Name, ", ") 
+                });
             }
         }
 

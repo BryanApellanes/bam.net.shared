@@ -22,16 +22,6 @@ namespace Bam.Net.ServiceProxy.Secure
     public class ClientSessionInfo
     {
         /// <summary>
-        /// The database id of the SecureSession instance on the 
-        /// server
-        /// </summary>
-        public ulong SessionId
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
         /// The value of the session cookie.
         /// </summary>
         public string ClientIdentifier
@@ -67,34 +57,63 @@ namespace Bam.Net.ServiceProxy.Secure
             set;
         }
 
+        /// <summary>
+        /// Returns the base 64 encoded symetric cipher for the specified plain text.
+        /// </summary>
+        /// <param name="plainText"></param>
+        /// <returns></returns>
         public string GetSymetricCipher(string plainText)
         {
             Encrypted encrypted = new Encrypted(plainText, SessionKey, SessionIV);
             return encrypted.Base64Cipher;
         }
 
-        public string GetAsymetricCipher(string plainText)
+        public byte[] GetSymetricCipherBytes(string plainText)
         {
-            return plainText.EncryptWithPublicKey(PublicKey);
+            Encrypted encrypted = new Encrypted(plainText, SessionKey, SessionIV);
+            return encrypted.Cipher;
+        }
+
+        public string GetPlainText(byte[] cipherBytes)
+        {
+            string base64Cipher = Convert.ToBase64String(cipherBytes);
+            Decrypted decrypted = new Decrypted(base64Cipher, SessionKey, SessionIV);
+            return decrypted.Value;
+        }
+
+        /// <summary>
+        /// Gets a base 64 encoded asymmetric cipher of the specified input.
+        /// </summary>
+        /// <param name="plainText"></param>
+        /// <param name="encoding"></param>
+        /// <returns></returns>
+        public string GetAsymetricCipher(string plainText, Encoding encoding = null)
+        {
+            return plainText.EncryptWithPublicKey(PublicKey, encoding);
+        }
+
+        public byte[] GetAsymetricCipherBytes(string plainText, Encoding encoding = null)
+        {
+            return plainText.GetPublicKeyEncryptedBytes(PublicKey.ToKey(), encoding);
         }
 
         public override bool Equals(object obj)
         {
             if (obj is ClientSessionInfo info)
             {
-                return info.SessionId == SessionId && info.ClientIdentifier.Equals(ClientIdentifier) && info.PublicKey.Equals(PublicKey);
+                return info.ClientIdentifier.Equals(ClientIdentifier) && info.PublicKey.Equals(PublicKey);
             }
             return base.Equals(obj);
         }
 
         public override int GetHashCode()
         {
-            return this.GetHashCode(SessionId, ClientIdentifier, PublicKey);
+            return this.GetHashCode(ClientIdentifier, PublicKey);
         }
 
         public override string ToString()
         {
-            return $"SessionId={SessionId};ClientIdentifier={ClientIdentifier};PublicKey={PublicKey}";
+            return $"ClientIdentifier={ClientIdentifier};PublicKey={PublicKey}";
         }
     }
 }

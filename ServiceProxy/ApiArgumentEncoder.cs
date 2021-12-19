@@ -33,10 +33,10 @@ namespace Bam.Net.ServiceProxy
     {
         public ApiArgumentEncoder()
         {
-            this.ValueEncoder = new JsonEncoder();
+            this.ValueEncoder = new JsonEncoder<object>();
         }
 
-        public IEncoder ValueEncoder { get; private set; }
+        public IValueEncoder<object, string> ValueEncoder { get; private set; }
         public Type ServiceType { get; set; }
         HashSet<string> _methods;
         object _methodsLock = new object();

@@ -5,7 +5,6 @@ using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Engines;
 using Org.BouncyCastle.Crypto.Generators;
 using Org.BouncyCastle.Crypto.Parameters;
-using Org.BouncyCastle.Crypto.Encodings;
 using Org.BouncyCastle.Math;
 using Org.BouncyCastle.Security;
 using System;
@@ -61,83 +60,95 @@ namespace Bam.Net.Encryption
         }
         
         /// <summary>
-        /// Gets a base 64 encoded asymmetric cipher of the specified input.
+        /// Gets a base 64 encoded asymmetric cipher of the specified plain text input.
         /// </summary>
-        /// <param name="input"></param>
+        /// <param name="plainText"></param>
         /// <param name="key"></param>
         /// <param name="encoding"></param>
         /// <param name="engine"></param>
         /// <returns></returns>
-        public static string EncryptWithPublicKey(this string input, AsymmetricKeyParameter key, Encoding encoding = null, IAsymmetricBlockCipher engine = null)
+        public static string EncryptWithPublicKey(this string plainText, AsymmetricKeyParameter key, Encoding encoding = null, IAsymmetricBlockCipher engine = null)
         {
-            if (encoding == null)
-            {
-                encoding = Encoding.UTF8;
-            }
-
-            byte[] data = encoding.GetBytes(input);
-            byte[] encrypted = data.Encrypt(key, engine);
+            byte[] encrypted = GetPublicKeyEncryptedBytes(plainText, key, encoding, engine);
             return Convert.ToBase64String(encrypted);
         }
-                
-        public static string DecryptWithPrivateKey(this string cipher, AsymmetricCipherKeyPair keys, Encoding encoding = null)
-        {
-            return DecryptWithPrivateKey(cipher, keys.Private, encoding);
-        }
 
-        public static string DecryptWithPrivateKey(this string cipher, AsymmetricKeyParameter key, Encoding encoding = null, IAsymmetricBlockCipher e = null)
+        public static byte[] GetPublicKeyEncryptedBytes(this string plainText, AsymmetricKeyParameter key, Encoding encoding = null, IAsymmetricBlockCipher engine = null)
         {
             if (encoding == null)
             {
                 encoding = Encoding.UTF8;
             }
 
-            byte[] encrypted = Convert.FromBase64String(cipher);
-            byte[] decrypted = Decrypt(encrypted, key, e);
+            byte[] plainData = encoding.GetBytes(plainText);
+            byte[] encrypted = plainData.AsymmetricEncrypt(key, engine);
+            return encrypted;
+        }
+
+        public static string DecryptWithPrivateKey(this string base64EncodedCipher, AsymmetricCipherKeyPair keys, Encoding encoding = null)
+        {
+            return DecryptWithPrivateKey(base64EncodedCipher, keys.Private, encoding);
+        }
+
+        public static string DecryptWithPrivateKey(this string base64EncodedCipher, AsymmetricKeyParameter key, Encoding encoding = null, IAsymmetricBlockCipher e = null)
+        {
+            byte[] decrypted = GetPrivateKeyDecryptedBytes(base64EncodedCipher, key, encoding, e);
             return encoding.GetString(decrypted);
         }
-        
-        public static string DecryptWithPrivateKey(this string cipher, string pemString, Encoding encoding = null)
+
+        public static byte[] GetPrivateKeyDecryptedBytes(string base64EncodedCipher, AsymmetricKeyParameter key, Encoding encoding, IAsymmetricBlockCipher e)
         {
             if (encoding == null)
             {
                 encoding = Encoding.UTF8;
             }
 
-            return DecryptWithPrivateKey(cipher, pemString.ToKeyPair(), encoding);
+            byte[] encrypted = Convert.FromBase64String(base64EncodedCipher);
+            byte[] decrypted = DecryptWithPrivateKey(encrypted, key, e);
+            return decrypted;
+        }
+
+        public static string DecryptWithPrivateKey(this string base64EncodedCipher, string pemString, Encoding encoding = null)
+        {
+            if (encoding == null)
+            {
+                encoding = Encoding.UTF8;
+            }
+
+            return DecryptWithPrivateKey(base64EncodedCipher, pemString.ToKeyPair(), encoding);
         }
 
         /// <summary>
         /// Encrypt with the Public key of the specified keyPair
         /// </summary>
-        /// <param name="input"></param>
+        /// <param name="plainText"></param>
         /// <param name="keyPair"></param>
         /// <param name="encoding"></param>
         /// <returns></returns>
-        public static string EncryptWithPublicKey(this string input, AsymmetricCipherKeyPair keyPair, Encoding encoding = null)
+        public static string EncryptWithPublicKey(this string plainText, AsymmetricCipherKeyPair keyPair, Encoding encoding = null)
         {
             if (encoding == null)
             {
                 encoding = Encoding.UTF8;
             }
 
-            byte[] data = encoding.GetBytes(input);
+            byte[] data = encoding.GetBytes(plainText);
             byte[] encrypted = data.EncryptWithPublicKey(keyPair);
             return Convert.ToBase64String(encrypted);
         }
 
-        public static byte[] EncryptWithPublicKey(this byte[] data, AsymmetricCipherKeyPair keyPair)
+        public static byte[] EncryptWithPublicKey(this byte[] plainData, AsymmetricCipherKeyPair keyPair)
         {
-            return Encrypt(data, keyPair.Public);
+            return AsymmetricEncrypt(plainData, keyPair.Public);
         }
 
-        public static byte[] Encrypt(this byte[] data, AsymmetricKeyParameter key)
+        public static byte[] AsymmetricEncrypt(this byte[] plainData, AsymmetricKeyParameter key)
         {
             RsaEngine e = new RsaEngine();
-            return Encrypt(data, key, e);
+            return AsymmetricEncrypt(plainData, key, e);
         }
 
-        public static byte[] Encrypt(this byte[] data, AsymmetricKeyParameter key, IAsymmetricBlockCipher e)
+        public static byte[] AsymmetricEncrypt(this byte[] plainData, AsymmetricKeyParameter key, IAsymmetricBlockCipher e)
         {
             if (e == null)
             {
@@ -148,16 +159,16 @@ namespace Bam.Net.Encryption
 
             int blockSize = e.GetInputBlockSize();
             List<byte> output = new List<byte>();
-            for (int chunkPosition = 0; chunkPosition < data.Length; chunkPosition += blockSize)
+            for (int chunkPosition = 0; chunkPosition < plainData.Length; chunkPosition += blockSize)
             {
-                int chunkSize = Math.Min(blockSize, data.Length - (chunkPosition * blockSize));
-                output.AddRange(e.ProcessBlock(data, chunkPosition, chunkSize));
+                int chunkSize = Math.Min(blockSize, plainData.Length - (chunkPosition * blockSize));
+                output.AddRange(e.ProcessBlock(plainData, chunkPosition, chunkSize));
             }
 
             return output.ToArray();
         }
 
-        public static byte[] Decrypt(this byte[] data, AsymmetricKeyParameter key, IAsymmetricBlockCipher e)
+        public static byte[] DecryptWithPrivateKey(this byte[] byteArrayCipher, AsymmetricKeyParameter key, IAsymmetricBlockCipher e = null)
         {
             if (e == null)
             {
@@ -169,10 +180,10 @@ namespace Bam.Net.Encryption
             int blockSize = e.GetInputBlockSize();
 
             List<byte> output = new List<byte>();
-            for (int chunkPosition = 0; chunkPosition < data.Length; chunkPosition += blockSize)
+            for (int chunkPosition = 0; chunkPosition < byteArrayCipher.Length; chunkPosition += blockSize)
             {
-                int chunkSize = Math.Min(blockSize, data.Length - (chunkPosition * blockSize));
-                output.AddRange(e.ProcessBlock(data, chunkPosition, chunkSize));
+                int chunkSize = Math.Min(blockSize, byteArrayCipher.Length - (chunkPosition * blockSize));
+                output.AddRange(e.ProcessBlock(byteArrayCipher, chunkPosition, chunkSize));
             }
 
             return output.ToArray();

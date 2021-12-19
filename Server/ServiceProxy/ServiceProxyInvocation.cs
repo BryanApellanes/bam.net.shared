@@ -395,6 +395,12 @@ namespace Bam.Net.Server.ServiceProxy
             internal set;
         }
 
+        public Exception Exception
+        {
+            get;
+            internal set;
+        }
+
         public static event Action<ServiceProxyInvocation> AnyInstanciated;
         protected static void OnAnyInstanciated(ServiceProxyInvocation request)
         {
@@ -457,9 +463,16 @@ namespace Bam.Net.Server.ServiceProxy
             return Execute(InvocationTarget, true);
         }
 
+        public bool Execute(out object result)
+        {
+            bool success = Execute(InvocationTarget, true);
+            result = Result;
+            return success;
+        }
+
         public bool Execute(object target, bool validate = true)
         {
-            bool result = false;
+            bool success = false;
             if (validate)
             {
                 ServiceProxyInvocationValidationResult validation = Validate();
@@ -473,7 +486,6 @@ namespace Bam.Net.Server.ServiceProxy
             {
                 try
                 {
-                    //Initialize();
                     target = SetContext(target);
                     target = SetServiceRegistry(target);
                     OnAnyExecuting(target);
@@ -481,21 +493,19 @@ namespace Bam.Net.Server.ServiceProxy
                     Result = MethodInfo.Invoke(target, Arguments.Select(arg => arg.Value).ToArray());
                     OnExecuted(target);
                     OnAnyExecuted(target);
-                    result = true;
+                    success = true;
                 }
                 catch (Exception ex)
                 {
-                    string resultMessage = $"{ex.GetInnerException().Message} \r\n\r\n\t{ex.GetInnerException()?.StackTrace}";
-                    Result = resultMessage;
-                    result = false;
+                    Result = $"{ex.GetInnerException().Message} \r\n\r\n\t{ex.GetInnerException()?.StackTrace}";
+                    Exception = ex;
+                    success = false;
                     OnExecutionException(target);
                     OnAnyExecutionException(target);
                 }
             }
 
-            //WasExecuted = true;
-            //Success = result;
-            return result;
+            return success;
         }
 
         protected internal object SetContext(object target)

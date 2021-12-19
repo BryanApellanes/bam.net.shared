@@ -48,31 +48,32 @@ namespace Bam.Net.Server.ServiceProxy
 
         protected override IHttpResponse HandleContext(IHttpContext context)
         {
-            IRequest request = context.Request;
-            WebServiceProxyDescriptors webServiceProxyDescriptors = GetWebServiceProxyDescriptors(request);
-
-            ServiceProxyPath serviceProxyPath = NamedPath as ServiceProxyPath;
-            if (serviceProxyPath == null)
-            {
-                serviceProxyPath = ServiceProxyPath.FromUri(request.Url);
-            }
-
-            ServiceProxyInvocation serviceProxyInvocation = ServiceProxyInvocationResolver.ResolveServiceProxyInvocation(serviceProxyPath, webServiceProxyDescriptors, context);
-
-            serviceProxyInvocation.Execute();
-            throw new NotImplementedException();
+            return HttpMethodHandlers.HandleRequest(context);
         }
 
         protected void SetHttpMethodHandlers()
         {
             HttpMethodHandlers = new HttpMethodHandlers();
-            // GET or null content type
-            //   unencrypted invocation request
-            //      - read Uri to determine invoke target
-            //      - read query params to determine method arguments
-            HttpMethodHandlers.SetHandler("Get", (request) =>
+            HttpMethodHandlers.SetHandler("Get", (context) =>
             {
-                return new HttpResponse();
+                IRequest request = context.Request;
+                WebServiceProxyDescriptors webServiceProxyDescriptors = GetWebServiceProxyDescriptors(request);
+
+                ServiceProxyPath serviceProxyPath = NamedPath as ServiceProxyPath;
+                if (serviceProxyPath == null)
+                {
+                    serviceProxyPath = ServiceProxyPath.FromUri(request.Url);
+                }
+
+                ServiceProxyInvocation serviceProxyInvocation = ServiceProxyInvocationResolver.ResolveServiceProxyInvocation(serviceProxyPath, webServiceProxyDescriptors, context);
+
+                bool success = serviceProxyInvocation.Execute(out object result);
+                if (success)
+                {
+                    return new HttpResponse(result.ToJson(), 200);
+                }
+
+                return new HttpErrorResponse(serviceProxyInvocation.Exception) { StatusCode = 500 };
             });
 
             // POST read content type
@@ -131,6 +132,14 @@ namespace Bam.Net.Server.ServiceProxy
             return ApplicationWebServiceProxyDescriptors[applicationName];
         }
 
+        public override object Clone()
+        {
+            ServiceProxyContextHandler serviceProxyInvocationRequestHandler = new ServiceProxyContextHandler { Responder = this.ServiceProxyResponder };
+            serviceProxyInvocationRequestHandler.CopyProperties(this);
+            serviceProxyInvocationRequestHandler.CopyEventHandlers(this);
+            return serviceProxyInvocationRequestHandler;
+        }
+
         private void AddProxyAliases(Incubator source, HashSet<ProxyAlias> hashSetToPopulate)
         {
             if (source == null || hashSetToPopulate == null)
@@ -149,14 +158,6 @@ namespace Bam.Net.Server.ServiceProxy
                     }
                 }
             }
-        }
-
-        public override object Clone()
-        {
-            ServiceProxyContextHandler serviceProxyInvocationRequestHandler = new ServiceProxyContextHandler { Responder = this.ServiceProxyResponder };
-            serviceProxyInvocationRequestHandler.CopyProperties(this);
-            serviceProxyInvocationRequestHandler.CopyEventHandlers(this);
-            return serviceProxyInvocationRequestHandler;
         }
     }
 }
