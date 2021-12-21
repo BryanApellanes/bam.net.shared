@@ -53,7 +53,7 @@ namespace Bam.Net.Encryption
 
         protected string Decrypt()
         {
-            Plain = Decrypt(Cipher, Key, IV).Truncate(Salt.Length);
+            Plain = Decrypt(Cipher, Key, IV).Truncate(SaltLength);
             return Plain;
         }
 

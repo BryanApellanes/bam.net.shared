@@ -1,5 +1,4 @@
-﻿using Bam.Net;
-using Bam.Net.Server.ServiceProxy.Data;
+﻿using Bam.Net.Server.ServiceProxy.Data;
 using Bam.Net.ServiceProxy;
 using Bam.Net.ServiceProxy.Secure;
 using Bam.Net.Services;
@@ -9,22 +8,25 @@ using System.Text;
 
 namespace Bam.Net.Encryption
 {
-    public class AesDecoder : IValueDecoder<byte[], string>, IRequiresHttpContext, ICloneable, IContextCloneable
+    public class AesByteDecoder : IValueDecoder<byte[], byte[]>, IRequiresHttpContext, ICloneable, IContextCloneable
     {
-        public AesDecoder()
+        public AesByteDecoder()
         {
-            this.AesEncoder = new AesEncoder() { AesDecoder = this };
+            this.Encoding = Encoding.UTF8;
+            this.AesByteEncoder = new AesByteEncoder() { AesByteDecoder = this };
         }
 
-        public AesEncoder AesEncoder { get; internal set; }
+        public Encoding Encoding { get; set; }
 
         [Inject]
         public ISecureChannelSessionManager SecureChannelSessionManager { get; set; }
 
         public IHttpContext HttpContext { get; set; }
+
+        public AesByteEncoder AesByteEncoder { get; internal set; }
         public object Clone()
         {
-            object clone = new AesDecoder() { AesEncoder = AesEncoder };
+            object clone = new AesByteDecoder() { AesByteEncoder = AesByteEncoder };
             clone.CopyProperties(this);
             clone.CopyEventHandlers(this);
             return clone;
@@ -44,17 +46,18 @@ namespace Bam.Net.Encryption
             return Clone(HttpContext);
         }
 
-        public string Decode(byte[] cipherBytes)
+        public byte[] Decode(byte[] cipherBytes)
         {
             SecureChannelSession session = SecureChannelSessionManager.GetSecureChannelSessionForContext(HttpContext);
 
             ClientSessionInfo clientSessionInfo = session.ToClientSessionInfo();
-            return clientSessionInfo.GetPlainText(cipherBytes);
+
+            return clientSessionInfo.GetPlainBytes(cipherBytes, Encoding);
         }
 
-        public IValueEncoder<string, byte[]> GetEncoder()
+        public IValueEncoder<byte[], byte[]> GetEncoder()
         {
-            return this.AesEncoder;
+            return this.AesByteEncoder;
         }
     }
 }

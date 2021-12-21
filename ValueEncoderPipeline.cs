@@ -5,139 +5,87 @@ using System.Text;
 
 namespace Bam.Net
 {
-/*    public class ValueEncoderPipeline : ICollection<IValueEncoder<object, string>>, IValueEncoder<object, string>
+    public class ValueEncoderPipeline<TData> : ICollection<IValueEncoder<byte[], byte[]>>, IValueEncoder<TData, string>
     {
-        List<IValueEncoder<object, string>> _innerList;
-        public ValueEncoderPipeline(params IValueEncoder<object, string>[] values)
+        List<IValueEncoder<byte[], byte[]>> _encoders;
+        public ValueEncoderPipeline()
         {
-            this._innerList = new List<IValueEncoder<object, string>>();
+            this._encoders = new List<IValueEncoder<byte[], byte[]>>();
         }
 
-        IValueEncoder<object, string> _current;
-        public IValueEncoder<object, string> Current 
-        {
-            get
-            {
-                return _current;
-            }
-            private set
-            {
-                _current = value;
-                _currentIndex = _innerList.IndexOf(_current);
-            }
-        }
-
-        int _currentIndex;
-        public int CurrentIndex
-        {
-            get
-            {
-                return _currentIndex;
-            }
-            set
-            {
-                _currentIndex = value;
-                _current = _innerList[_currentIndex];
-            }
-        }
-
-        public byte[] CurrentBytes
-        {
-            get
-            {
-                return ConvertObjectToBytes(_current);
-            }
-        }
-
-        public object CurrentObject
-        {
-            get
-            {
-                return ConvertBytesToObject(CurrentBytes);
-            }
-        }
-
-        public int Count => this._innerList.Count;
+        public IValueConverter<TData> BeforeEncodeConverter { get; set; }
+        public IValueConverter AfterEncodeConverter { get; set; }
 
         public bool IsReadOnly => false;
 
-        public void Add(IValueEncoder<object, string> item)
+        public int Count => _encoders.Count;
+
+        public IValueEncoder<byte[], byte[]> this[int index]
         {
-            _innerList.Add(item);
+            get
+            {
+                return this._encoders[index];
+            }
+        }
+
+        public void Add(IValueEncoder<byte[], byte[]> item)
+        {
+            this._encoders.Add(item);
         }
 
         public void Clear()
         {
-            _innerList.Clear();
+            this._encoders.Clear();
         }
 
-        public bool Contains(IValueEncoder<object, string> item)
+        public bool Contains(IValueEncoder<byte[], byte[]> item)
         {
-            return _innerList.Contains(item);
+            return this._encoders.Contains(item);
         }
 
-        public void CopyTo(IValueEncoder<object, string>[] array, int arrayIndex)
+        public void CopyTo(IValueEncoder<byte[], byte[]>[] array, int arrayIndex)
         {
-            _innerList.CopyTo(array, arrayIndex);
+            this._encoders.CopyTo(array, arrayIndex);
         }
 
-        public byte[] Encode(object value)
+        public string Encode(TData value)
         {
-            byte[] result = null;
-            foreach (IValueEncoder<object, string> valueEncoder in this)
+            byte[] converted = BeforeEncodeConverter.ConvertObjectToBytes(value);
+            byte[] data = converted;
+
+            foreach(IValueEncoder<byte[], byte[]> encoder in this._encoders)
             {
-                result = Current.Encode(value);
+                data = encoder.Encode(data);
             }
-            return result;
+
+            return AfterEncodeConverter.ConvertBytesToString(data);
         }
 
-        public IEnumerator<IValueEncoder<object, string>> GetEnumerator()
+        public IValueDecoder<string, TData> GetDecoder()
         {
-            for (int i = 0; i < _innerList.Count; i++)
+            ValueDecoderPipeline<TData> decoder = new ValueDecoderPipeline<TData>();
+            decoder.BeforeDecodeConverter = this.AfterEncodeConverter;
+            decoder.AfterDecodeConverter = this.BeforeEncodeConverter;
+            foreach(IValueEncoder<byte[], byte[]> encoder in this._encoders)
             {
-                Current = _innerList[i];
-                yield return Current;
+                decoder.Add(encoder.GetDecoder());
             }
+            return decoder;
         }
 
-        /// <summary>
-        /// Using the current encoder converts the specified byte array to an object.
-        /// </summary>
-        /// <param name="bytes"></param>
-        /// <returns></returns>
-        public object ConvertBytesToObject(byte[] bytes)
+        public IEnumerator<IValueEncoder<byte[], byte[]>> GetEnumerator()
         {
-            return Current.ConvertBytesToObject(bytes);
+            return this._encoders.GetEnumerator();
         }
 
-        public bool Remove(IValueEncoder<object, string> item)
+        public bool Remove(IValueEncoder<byte[], byte[]> item)
         {
-            return _innerList.Remove(item);
+            return this._encoders.Remove(item);
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return this.GetEnumerator();
+            return GetEnumerator();
         }
-
-        public byte[] ConvertObjectToBytes(object value)
-        {
-            return Current.ConvertObjectToBytes(value);
-        }
-
-        public string ConvertByteArrayToString(byte[] bytes)
-        {
-            return Current.ConvertByteArrayToString(bytes);
-        }
-
-        public string ConvertObjectToString(object value)
-        {
-            return Current.ConvertObjectToString(value);
-        }
-
-        public string Decode(byte[] encoded)
-        {
-            return Current.Decode(encoded);
-        }
-    }*/
+    }
 }

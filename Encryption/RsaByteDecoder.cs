@@ -1,30 +1,31 @@
-﻿using Bam.Net;
-using Bam.Net.Server.ServiceProxy.Data;
+﻿using Bam.Net.Server.ServiceProxy.Data;
 using Bam.Net.ServiceProxy;
 using Bam.Net.ServiceProxy.Secure;
 using Bam.Net.Services;
+using Org.BouncyCastle.Crypto;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Bam.Net.Encryption
 {
-    public class AesDecoder : IValueDecoder<byte[], string>, IRequiresHttpContext, ICloneable, IContextCloneable
+    public class RsaByteDecoder : IValueDecoder<byte[], byte[]>, IRequiresHttpContext, ICloneable, IContextCloneable
     {
-        public AesDecoder()
+        public RsaByteDecoder()
         {
-            this.AesEncoder = new AesEncoder() { AesDecoder = this };
+            this.RsaByteEncoder = new RsaByteEncoder() { RsaByteDecoder = this };
         }
-
-        public AesEncoder AesEncoder { get; internal set; }
 
         [Inject]
         public ISecureChannelSessionManager SecureChannelSessionManager { get; set; }
 
+        public RsaByteEncoder RsaByteEncoder { get; set; }
+
         public IHttpContext HttpContext { get; set; }
+
         public object Clone()
         {
-            object clone = new AesDecoder() { AesEncoder = AesEncoder };
+            object clone = new RsaDecoder();
             clone.CopyProperties(this);
             clone.CopyEventHandlers(this);
             return clone;
@@ -32,7 +33,7 @@ namespace Bam.Net.Encryption
 
         public object Clone(IHttpContext context)
         {
-            AesDecoder clone = new AesDecoder();
+            RsaDecoder clone = new RsaDecoder();
             clone.CopyProperties(this);
             clone.CopyEventHandlers(this);
             clone.HttpContext = context;
@@ -44,17 +45,18 @@ namespace Bam.Net.Encryption
             return Clone(HttpContext);
         }
 
-        public string Decode(byte[] cipherBytes)
+        public byte[] Decode(byte[] cipherBytes)
         {
             SecureChannelSession session = SecureChannelSessionManager.GetSecureChannelSessionForContext(HttpContext);
 
-            ClientSessionInfo clientSessionInfo = session.ToClientSessionInfo();
-            return clientSessionInfo.GetPlainText(cipherBytes);
+            AsymmetricCipherKeyPair keyPair = session.AsymmetricKey.ToKeyPair();
+            byte[] decryptedBytes = cipherBytes.DecryptWithPrivateKey(keyPair.Private);
+            return decryptedBytes;
         }
 
-        public IValueEncoder<string, byte[]> GetEncoder()
+        public IValueEncoder<byte[], byte[]> GetEncoder()
         {
-            return this.AesEncoder;
+            return this.RsaByteEncoder;
         }
     }
 }

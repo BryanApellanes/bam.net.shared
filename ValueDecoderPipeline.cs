@@ -5,51 +5,84 @@ using System.Text;
 
 namespace Bam.Net
 {
-/*    public class ValueDecoderPipeline : ICollection<IValueDecoder<string, string>>
+    public class ValueDecoderPipeline<TData> : ICollection<IValueDecoder<byte[], byte[]>>, IValueDecoder<string, TData>
     {
-        List<IValueDecoder<string, string>> _innerList;
-        public ValueDecoderPipeline(params IValueDecoder<string, string>[] values)
+        List<IValueDecoder<byte[], byte[]>> _decoders;
+        public ValueDecoderPipeline()
         {
-            this._innerList = new List<IValueDecoder<string>>(values);
+            this._decoders = new List<IValueDecoder<byte[], byte[]>>();
         }
-
-        public int Count => this._innerList.Count;
+        public IValueConverter BeforeDecodeConverter { get; set; }
+        public IValueConverter<TData> AfterDecodeConverter { get; set; }
+        public int Count => this._decoders.Count;
 
         public bool IsReadOnly => false;
 
-        public void Add(IValueDecoder<string> item)
+        public IValueDecoder<byte[], byte[]> this[int index]
         {
-            this._innerList.Add(item);
+            get
+            {
+                return this._decoders[index];
+            }
+        }
+
+        public void Add(IValueDecoder<byte[], byte[]> item)
+        {
+            this._decoders.Add(item);
         }
 
         public void Clear()
         {
-            this._innerList.Clear();
+            this._decoders.Clear();
         }
 
-        public bool Contains(IValueDecoder<string> item)
+        public bool Contains(IValueDecoder<byte[], byte[]> item)
         {
-            return _innerList.Contains(item);
+            return this._decoders.Contains(item);
         }
 
-        public void CopyTo(IValueDecoder<string>[] array, int arrayIndex)
+        public void CopyTo(IValueDecoder<byte[], byte[]>[] array, int arrayIndex)
         {
-            _innerList.CopyTo(array, arrayIndex);
+            this._decoders.CopyTo(array, arrayIndex);
         }
 
-        public IEnumerator<IValueDecoder<string>> GetEnumerator()
+        public TData Decode(string encoded)
         {
-            return _innerList.GetEnumerator();
+            byte[] converted = BeforeDecodeConverter.ConvertStringToBytes(encoded);
+            byte[] data = converted;
+            foreach(IValueDecoder<byte[], byte[]> decoder in this._decoders)
+            {
+                data = decoder.Decode(data);
+            }
+            TData result = AfterDecodeConverter.ConvertBytesToObject(data);
+            return result;
         }
 
-        public bool Remove(IValueDecoder<string> item)
+        public IValueEncoder<TData, string> GetEncoder()
         {
-            return _innerList.Remove(item);
+            ValueEncoderPipeline<TData> encoder = new ValueEncoderPipeline<TData>();
+            encoder.BeforeEncodeConverter = AfterDecodeConverter;
+            encoder.AfterEncodeConverter = BeforeDecodeConverter;
+            foreach(IValueDecoder<byte[], byte[]> decoder in this._decoders)
+            {
+                encoder.Add(decoder.GetEncoder());
+            }
+            return encoder;
+        }
+
+        public IEnumerator<IValueDecoder<byte[], byte[]>> GetEnumerator()
+        {
+            return this._decoders.GetEnumerator();
+        }
+
+        public bool Remove(IValueDecoder<byte[], byte[]> item)
+        {
+            return this._decoders.Remove(item);
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return ((IEnumerable)_innerList).GetEnumerator();
+            return GetEnumerator();
         }
-    }*/
+    }
 }

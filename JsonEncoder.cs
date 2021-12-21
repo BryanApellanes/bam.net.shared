@@ -8,10 +8,7 @@ namespace Bam.Net
     {
         public JsonEncoder() 
         {
-            this.Encoding = Encoding.UTF8;
         }
-
-        public Encoding Encoding { get; set; }
 
         public override TInput Decode(string output)
         {

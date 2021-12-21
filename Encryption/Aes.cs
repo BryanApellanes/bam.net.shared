@@ -70,6 +70,32 @@ namespace Bam.Net.Encryption
             }
         }
 
+        public static byte[] EncryptBytes(byte[] plainData, string base64EncodedKey, string base64EncodedIV)
+        {
+            AesManaged aes = new AesManaged
+            {
+                IV = Convert.FromBase64String(base64EncodedIV),
+                Key = Convert.FromBase64String(base64EncodedKey)
+            };
+
+            ICryptoTransform encryptor = aes.CreateEncryptor();
+
+            return EncryptBytes(plainData, encryptor);            
+        }
+
+        public static byte[] EncryptBytes(byte[] plainData, ICryptoTransform encryptor)
+        {
+            using (MemoryStream encryptBuffer = new MemoryStream())
+            {
+                using (CryptoStream encryptStream = new CryptoStream(encryptBuffer, encryptor, CryptoStreamMode.Write))
+                {
+                    encryptStream.Write(plainData, 0, plainData.Length);
+                    encryptStream.FlushFinalBlock();
+                    return encryptBuffer.ToArray();
+                }
+            }
+        }
+
         /// <summary>
         /// Decrypts the specified base64 encoded value.
         /// </summary>

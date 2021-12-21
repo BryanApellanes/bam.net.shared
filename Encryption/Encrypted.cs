@@ -16,11 +16,11 @@ namespace Bam.Net.Encryption
     {
         protected static readonly string DefaultIV = Convert.ToBase64String(new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 });
 
-        protected static readonly string DefaultSalt = ":DEFAULT-SALT:";
+        protected static readonly int DefaultSaltLength = 8;
 
         public Encrypted()
         {
-            this.Salt = DefaultSalt;
+            this.SaltLength = DefaultSaltLength;
             SecureRandom random = new SecureRandom();
             this.Key = random.GenerateSeed(16);
             this.IV = random.GenerateSeed(16);
@@ -74,7 +74,7 @@ namespace Bam.Net.Encryption
             private set;
         }
 
-        public string Salt
+        public int SaltLength
         {
             get;
             set;
@@ -129,7 +129,7 @@ namespace Bam.Net.Encryption
 
         private byte[] Encrypt()
         {
-            Base64Cipher = Aes.Encrypt(string.Concat(Plain, Salt), Base64Key, Base64IV);
+            Base64Cipher = Aes.Encrypt(string.Concat(Plain, SaltLength.RandomLetters()), Base64Key, Base64IV);
             return Cipher;
         }
     }

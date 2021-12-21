@@ -7,6 +7,12 @@ namespace Bam.Net.Encryption
 {
     public class AesEncoder : ValueEncoder<string, byte[]>
     {
+        public AesEncoder()
+        {
+            this.AesDecoder = new AesDecoder() { AesEncoder = this } ;
+        }
+
+        public AesDecoder AesDecoder { get; internal set; }
         public ClientSessionInfo ClientSessionInfo { get; set; }
         public override string Decode(byte[] cipherBytes)
         {
@@ -20,7 +26,7 @@ namespace Bam.Net.Encryption
 
         public override IValueDecoder<byte[], string> GetDecoder()
         {
-            return new AesDecoder();
+            return this.AesDecoder;
         }
     }
 }

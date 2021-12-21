@@ -81,6 +81,14 @@ namespace Bam.Net.ServiceProxy.Secure
             return decrypted.Value;
         }
 
+        public byte[] GetPlainBytes(byte[] cipherBytes, Encoding encoding = null)
+        {
+            string base64Cipher = Convert.ToBase64String(cipherBytes);
+            Decrypted decrypted = new Decrypted(base64Cipher, SessionKey, SessionIV);
+            encoding = encoding ?? Encoding.UTF8;
+            return encoding.GetBytes(decrypted.Value);
+        }
+
         /// <summary>
         /// Gets a base 64 encoded asymmetric cipher of the specified input.
         /// </summary>
@@ -95,6 +103,11 @@ namespace Bam.Net.ServiceProxy.Secure
         public byte[] GetAsymetricCipherBytes(string plainText, Encoding encoding = null)
         {
             return plainText.GetPublicKeyEncryptedBytes(PublicKey.ToKey(), encoding);
+        }
+
+        public byte[] GetAsymetricCipherBytes(byte[] plainData)
+        {
+            return plainData.GetPublicKeyEncryptedBytes(PublicKey.ToKey());
         }
 
         public override bool Equals(object obj)

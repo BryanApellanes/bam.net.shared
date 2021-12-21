@@ -4,11 +4,11 @@ using System.Text;
 
 namespace Bam.Net
 {
-    public interface IValueConverter<TOutput> : IValueConverter
+    public interface IValueConverter<TData> : IValueConverter
     {
-        TOutput ConvertBytesToObject(byte[] bytes);
+        TData ConvertBytesToObject(byte[] bytes);
 
-        byte[] ConvertObjectToBytes(TOutput value);
+        byte[] ConvertObjectToBytes(TData value);
     }
 
     public interface IValueConverter
