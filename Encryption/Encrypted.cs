@@ -38,7 +38,7 @@ namespace Bam.Net.Encryption
         /// <param name="plainText">The plain text data to be encrypted</param>
         /// <param name="b64Key">A base 64 encoded key</param>
         /// <param name="b64IV">A base 64 encoded initialization vector</param>
-        public Encrypted(string plainText, string b64Key, string b64IV)
+        public Encrypted(string plainText, string b64Key, string b64IV) : this()
         {
             this.Plain = plainText;
 
@@ -48,7 +48,7 @@ namespace Bam.Net.Encryption
             this.Cipher = Encrypt();
         }
 
-        protected Encrypted(byte[] cipher, byte[] key, byte[] iv)
+        protected Encrypted(byte[] cipher, byte[] key, byte[] iv) : this()
         {
             this.Key = key;
             this.Cipher = cipher;

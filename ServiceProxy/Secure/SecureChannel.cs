@@ -39,11 +39,6 @@ namespace Bam.Net.ServiceProxy.Secure
             this.SecureChannelSessionManager = new SecureChannelSessionManager();
         }
 
-        public SecureChannel(ISecureChannelSessionManager secureChannelSessionManager)
-        {
-            this.SecureChannelSessionManager = secureChannelSessionManager;
-        }
-
         [Exclude]
         public object Clone()
         {
@@ -67,7 +62,22 @@ namespace Bam.Net.ServiceProxy.Secure
             }
         }
 
-        protected ISecureChannelSessionManager SecureChannelSessionManager { get; set; }
+        ISecureChannelSessionManager _secureChannelSessionManager;
+        protected ISecureChannelSessionManager SecureChannelSessionManager 
+        {
+            get
+            {
+                if(_secureChannelSessionManager == null)
+                {
+                    _secureChannelSessionManager = ServiceRegistry.Get<ISecureChannelSessionManager>();
+                }
+                return _secureChannelSessionManager;
+            }
+            set
+            {
+                _secureChannelSessionManager = value;
+            }
+        }
 
 
         /// <summary>
@@ -89,24 +99,13 @@ namespace Bam.Net.ServiceProxy.Secure
             Log.AddEntry("EndSession: Session {0} was deleted", sessionIdentifier);
         }
 
-        internal static ClientSessionInfo GetClientSessionInfo(SecureSession session)
-        {
-            ClientSessionInfo result = new ClientSessionInfo()
-            {
-                //SessionId = session.Id.Value,
-                ClientIdentifier = session.Identifier,
-                PublicKey = session.PublicKey
-            };
-            return result;
-        }
-
-        public SecureChannelMessage SetSessionKey(SetSessionKeyRequest request)
+        public SecureChannelMessage SetSessionKey(SetSessionKeyRequest setSessionKeyRequest)
         {
             SecureChannelMessage result = new SecureChannelMessage(true);
             try
             {
-                SecureSession session = SecureSession.Get(HttpContext);
-                session.SetSymmetricKey(request);
+                SecureChannelSessionManager.SetSessionKey(HttpContext, setSessionKeyRequest);
+                result.Success = true;
             }
             catch (Exception ex)
             {
@@ -161,6 +160,5 @@ namespace Bam.Net.ServiceProxy.Secure
             get;
             set;
         }
-
     }
 }

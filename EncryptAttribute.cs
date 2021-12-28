@@ -10,8 +10,8 @@ using System.Threading.Tasks;
 namespace Bam.Net
 {
     /// <summary>
-    /// Denotes a class that requires clients use
-    /// encrypted channels for method invocation calls
+    /// Denotes a class that requires encryption when streamed to file
+    /// or network.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class)]
     public class EncryptAttribute: Attribute

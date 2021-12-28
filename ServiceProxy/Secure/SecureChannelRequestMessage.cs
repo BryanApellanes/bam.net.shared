@@ -6,10 +6,10 @@ using System.Text.Json.Serialization;
 
 namespace Bam.Net.ServiceProxy.Secure
 {
-    public class SecureChannelRequestMessage//<TService>
+    public class SecureChannelRequestMessage
     {
-        public const string AsymetricCipherMediaType = "application/vnd.bam+cipher;algorithm=asymetric";
-        public const string SymetricCipherMediaType = "application/vnd.bam+cipher;algorithm=symetric";
+        public const string AsymetricCipherMediaType = "application/vnd+bam.cipher+asymetric";
+        public const string SymetricCipherMediaType = "application/vnd+bam.cipher+symetric";
 
         public SecureChannelRequestMessage(ServiceProxyInvocationRequest serviceProxyInvokeRequest)
         {

@@ -80,7 +80,7 @@ namespace Bam.Net.Caching
         }
 
         /// <summary>
-        /// Queries the source repository and adds the results to the internal cache
+        /// Queries the source repository and adds the results to the internal cache.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="query"></param>

@@ -14,6 +14,7 @@ using Bam.Net.Web;
 using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using Bam.Net.Server.ServiceProxy.Data;
 
 namespace Bam.Net.ServiceProxy.Secure
 {
@@ -21,19 +22,11 @@ namespace Bam.Net.ServiceProxy.Secure
     /// Class used to set and validate encryption validation
     /// tokens.
     /// </summary>
-    internal class ApiEncryptionValidation
+    internal class ApiEncryptionValidation // TODO: move this implementation to ApiEncryptionProvider 
     {
         public static void SetEncryptedValidationTokenHeaders(HttpRequestMessage request, string plainPostString, string publicKeyPem)
         {
             SetEncryptedValidationTokenHeaders(request.Headers, plainPostString, publicKeyPem);
-        }
-
-        [Obsolete("Use SetEncryptedValidationTokenHeaders instead.")]
-        public static void SetEncryptedValidationToken(NameValueCollection headers, string plainPostString, string publicKeyPem)
-        {
-            EncryptedValidationToken token = CreateEncryptedValidationToken(plainPostString, publicKeyPem);
-            headers[Headers.Nonce] = token.NonceCipher;
-            headers[Headers.ValidationToken] = token.HashCipher;
         }
         
         public static void SetEncryptedValidationTokenHeaders(HttpRequestHeaders headers, string plainPostString, string publicKeyPem)
@@ -61,6 +54,11 @@ namespace Bam.Net.ServiceProxy.Secure
         public static EncryptedValidationToken CreateEncryptedValidationToken(string postString, SecureSession session)
         {
             return CreateEncryptedValidationToken(postString, session.PublicKey);
+        }
+
+        public static EncryptedValidationToken CreateEncryptedValidationToken(string postString, SecureChannelSession session)
+        {
+            return CreateEncryptedValidationToken(postString, session.GetPublicKey());
         }
 
         public static EncryptedValidationToken CreateEncryptedValidationToken(string postString, string publicKeyPem)
@@ -106,6 +104,14 @@ namespace Bam.Net.ServiceProxy.Secure
             return ValidateEncryptedToken(session, token.HashCipher, token.NonceCipher, plainPost, usePkcsPadding);
         }
 
+        public static EncryptedTokenValidationStatus ValidateEncryptedToken(SecureChannelSession session, EncryptedValidationToken token, string plainPost, bool usePkcsPadding = false)
+        {
+            Args.ThrowIfNull(session, "session");
+            Args.ThrowIfNull(token, "token");
+
+            return ValidateEncryptedToken(session, token.HashCipher, token.NonceCipher, plainPost, usePkcsPadding);
+        }
+
         public static EncryptedTokenValidationStatus ValidateEncryptedToken(SecureSession session, string hashCipher, string nonceCipher, string plainPost, bool usePkcsPadding = false)
         {
             string hash = session.DecryptWithPrivateKey(hashCipher, usePkcsPadding);
@@ -120,6 +126,21 @@ namespace Bam.Net.ServiceProxy.Secure
             }
 
             return result;
+        }
+
+        public static EncryptedTokenValidationStatus ValidateEncryptedToken(SecureChannelSession session, string hashCipher, string nonceCipher, string plainPost, bool usePkcsPadding = false)
+        {
+            string hash = session.DecryptWithPrivateKey(hashCipher, usePkcsPadding);
+            string nonce = session.DecryptWithPrivateKey(nonceCipher, usePkcsPadding);
+
+            int offset = session.TimeOffset.Value;
+            EncryptedTokenValidationStatus encryptedTokenValidationStatus = ValidateNonce(nonce, offset);
+            if(encryptedTokenValidationStatus == EncryptedTokenValidationStatus.Success)
+            {
+                encryptedTokenValidationStatus = ValidateHash(nonce, hash, plainPost);
+            }
+
+            return encryptedTokenValidationStatus;
         }
 
         public static EncryptedTokenValidationStatus ValidateHash(string nonce, string hash, string plainPost)
@@ -137,7 +158,7 @@ namespace Bam.Net.ServiceProxy.Secure
 
         /// <summary>
         /// Checks that the specified nonce is no more than
-        /// 3 minutes in the past or future
+        /// 3 minutes in the past or future.
         /// </summary>
         /// <param name="nonce"></param>
         /// <param name="offset"></param>

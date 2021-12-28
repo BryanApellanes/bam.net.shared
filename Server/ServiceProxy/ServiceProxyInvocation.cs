@@ -58,7 +58,7 @@ namespace Bam.Net.Server.ServiceProxy
         public virtual ServiceProxyInvocationValidationResult Validate()
         {
             ServiceProxyInvocationValidationResult validation = new ServiceProxyInvocationValidationResult(this);
-            validation.Execute(Context);//, InputString);
+            validation.Execute(Context);
             return validation;
         }
 
@@ -181,23 +181,6 @@ namespace Bam.Net.Server.ServiceProxy
             get;
             set;
         }
-
-/*        int _maxRecursion;
-        public int MaxRecursion
-        {
-            get
-            {
-                if(_maxRecursion <= 0)
-                {
-                    _maxRecursion = DefaultMaxRecursion;
-                }
-                return _maxRecursion;
-            }
-            set
-            {
-                _maxRecursion = value;
-            }
-        }*/
 
         protected virtual object[] GetArguments()
         {

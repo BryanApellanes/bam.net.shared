@@ -38,6 +38,20 @@ namespace Bam.Net.ServiceProxy.Secure
             this.Initialize();
         }
 
+        ISecureChannelSessionManager _secureChannelSessionManager;
+        object _secureChannelSessionManagerLock = new object();
+        public ISecureChannelSessionManager SecureChannelSessionManager 
+        {
+            get
+            {
+                return _secureChannelSessionManagerLock.DoubleCheckLock(ref _secureChannelSessionManager, () => new SecureChannelSessionManager());
+            }
+            set
+            {
+                _secureChannelSessionManager = value;
+            }
+        }
+
         IApiKeyResolver _apiKeyResolver;
         object _apiKeyResolverSync = new object();
         public IApiKeyResolver ApiKeyResolver
@@ -58,7 +72,7 @@ namespace Bam.Net.ServiceProxy.Secure
         {
             get
             {
-                return _apiEncryptionProviderLock.DoubleCheckLock(ref _apiEncryptionProvider, () => new DefaultApiEncryptionProvider());
+                return _apiEncryptionProviderLock.DoubleCheckLock(ref _apiEncryptionProvider, () => new ApiEncryptionProvider(SecureChannelSessionManager));
             }
             set
             {
@@ -129,38 +143,6 @@ namespace Bam.Net.ServiceProxy.Secure
             }
         }
 
-        /// <summary>
-        /// The key for the current session.
-        /// </summary>
-        protected internal string SessionKey
-        {
-            get
-            {
-                return ClientSessionInfo?.SessionKey;
-            }
-            set
-            {
-                Args.ThrowIf<ArgumentNullException>(ClientSessionInfo == null, $"{nameof(ClientSessionInfo)} not set");
-                ClientSessionInfo.SessionKey = value;
-            }
-        }
-
-        /// <summary>
-        /// The initialization vector for the current session
-        /// </summary>
-        protected internal string SessionIV
-        {
-            get
-            {
-                return ClientSessionInfo?.SessionIV;
-            }
-            set
-            {
-                Args.ThrowIf<ArgumentNullException>(ClientSessionInfo == null, $"{nameof(ClientSessionInfo)} not set");
-                ClientSessionInfo.SessionIV = value;
-            }
-        }
-
         public event Action<SecureServiceProxyClient<TService>> SessionStarting;
         protected void OnSessionStarting()
         {
@@ -195,7 +177,13 @@ namespace Bam.Net.ServiceProxy.Secure
                 string responseString = await responseMessage.Content.ReadAsStringAsync();
                 LastResponse = responseString;
                 responseMessage.EnsureSuccessStatusCode();
-                ClientSessionInfo = responseString.FromJson<ClientSessionInfo>();
+                SecureChannelMessage<ClientSessionInfo> secureChannelMessage = responseString.FromJson<SecureChannelMessage<ClientSessionInfo>>();
+                if (!secureChannelMessage.Success)
+                {
+                    throw new SecureChannelException(secureChannelMessage);
+                }
+
+                ClientSessionInfo = secureChannelMessage.Data;
                 await SetSessionKeyAsync();
                 OnSessionStarted();
                 return ClientSessionInfo;
@@ -209,9 +197,20 @@ namespace Bam.Net.ServiceProxy.Secure
             return null;
         }
 
-        private string GetUrlEncodedInstant()
+        protected async Task SetSessionKeyAsync()
         {
-            return HttpUtility.UrlEncode(new Instant().ToString());
+            SetSessionKeyRequest setSessionKeyRequest = ClientSessionInfo.CreateSetSessionKeyRequest();
+            ServiceProxyInvocationRequest<SecureChannel> serviceProxyInvocationRequest = new ServiceProxyInvocationRequest<SecureChannel>(nameof(SecureChannel.SetSessionKey), setSessionKeyRequest);
+            HttpRequestMessage requestMessage = await CreateServiceProxyRequestMessageAsync(serviceProxyInvocationRequest);
+            HttpResponseMessage responseMessage = await HttpClient.SendAsync(requestMessage);
+            string responseString = await responseMessage.Content.ReadAsStringAsync();
+            LastResponse = responseString;
+            responseMessage.EnsureSuccessStatusCode();
+            SecureChannelMessage response = responseString.FromJson<SecureChannelMessage>();
+            if (!response.Success)
+            {
+                throw new Exception(response.Message);
+            }
         }
 
         protected internal override async Task<string> ReceiveServiceMethodResponseAsync(ServiceProxyInvocationRequest<TService> request)
@@ -219,11 +218,11 @@ namespace Bam.Net.ServiceProxy.Secure
             try
             {
                 _startSessionTask.Wait();
-
-                SecureChannelMessage<string> result = (await ReceivePostResponseAsync(request)).FromJson<SecureChannelMessage<string>>();
+                string responseString = await ReceivePostResponseAsync(request);
+                SecureChannelMessage<string> result = responseString.FromJson<SecureChannelMessage<string>>();
                 if (result.Success)
                 {
-                    Decrypted decrypted = new Decrypted(result.Data, SessionKey, SessionIV);
+                    Decrypted decrypted = new Decrypted(result.Data, ClientSessionInfo.SessionKey, ClientSessionInfo.SessionIV);
                     return decrypted.Value;
                 }
                 else
@@ -280,25 +279,6 @@ namespace Bam.Net.ServiceProxy.Secure
                 }
             }
             return response;
-        }
-
-        protected async Task SetSessionKeyAsync()
-        {
-            SetSessionKeyRequest request = CreateSetSessionKeyRequest(out AesKeyVectorPair kvp);           
-
-            SecureChannelMessage response = await this.ReceivePostResponseAsync<SecureChannelMessage>(nameof(SecureChannel), nameof(SecureChannel.SetSessionKey), new object[] { request });
-            if (!response.Success)
-            {
-                throw new Exception(response.Message);
-            }
-
-            SessionKey = kvp.Key;
-            SessionIV = kvp.IV;
-        }
-
-        protected internal SetSessionKeyRequest CreateSetSessionKeyRequest(out AesKeyVectorPair kvp)
-        {
-            return SecureSession.CreateSetSessionKeyRequest(ClientSessionInfo.PublicKey, out kvp);
         }
 
         private void Initialize()

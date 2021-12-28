@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Bam.Net.Server.ServiceProxy.Data;
+using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Net.Http;
@@ -8,11 +9,12 @@ namespace Bam.Net.ServiceProxy.Secure
 {
     public interface IApiEncryptionProvider
     {
+        ISecureChannelSessionManager SecureChannelSessionManager { get; }
         void SetEncryptedValidationTokenHeaders(HttpRequestMessage request, string postString, string publicKey);
 
         EncryptedValidationToken ReadEncryptedValidationToken(NameValueCollection headers);
 
-        EncryptedValidationToken CreateEncryptedValidationToken(string postString, SecureSession session);
+        EncryptedValidationToken CreateEncryptedValidationToken(SecureChannelSession session, string postString);
 
         EncryptedValidationToken CreateEncryptedValidationToken(string postString, string publicKeyPem);
 
@@ -22,9 +24,7 @@ namespace Bam.Net.ServiceProxy.Secure
 
         EncryptedTokenValidationStatus ValidateEncryptedToken(NameValueCollection headers, string plainPost, bool usePkcsPadding = false);
 
-        EncryptedTokenValidationStatus ValidateEncryptedToken(SecureSession session, EncryptedValidationToken token, string plainPost, bool usePkcsPadding = false);
-
-        EncryptedTokenValidationStatus ValidateEncrtypedToken(SecureSession session, string hashCipher, string nonceCipher, string plainPost, bool usePkcsPadding = false);
+        EncryptedTokenValidationStatus ValidateEncryptedToken(SecureChannelSession session, EncryptedValidationToken token, string plainPost, bool usePkcsPadding = false);
 
         EncryptedTokenValidationStatus ValidateHash(string nonce, string hash, string plainPost);
 

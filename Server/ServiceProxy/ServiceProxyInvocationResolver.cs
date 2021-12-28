@@ -28,7 +28,7 @@ namespace Bam.Net.Server.ServiceProxy
                 { new HttpMethodContentTypeKey("POST", ServiceProxyInvocationRequestArguments.JsonMediaType), new InputStreamServiceProxyInvocationArgumentReader() },
             };
             // CREATE A CUSTOM ENCODING PIPELINE ARGUMENT READER
-            // IMPLEMENT IValueEncoder that takes a list of encoding names,
+            // IMPLEMENT IValueTransformer that takes a list of encoding names,
             // for example: json, aes, gzip
             // or
             // json, rsa, gzip

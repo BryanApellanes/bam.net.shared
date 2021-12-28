@@ -15,7 +15,7 @@ namespace Bam.Net.ServiceProxy
 
         string[] ArgumentsToJsonArgumentsArray(params object[] arguments);
 
-        IValueEncoder<object, string> ValueEncoder { get; }
+        IValueTransformer<object, string> ValueEncoder { get; }
 
         Type ServiceType { get; }
 

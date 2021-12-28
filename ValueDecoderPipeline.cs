@@ -5,12 +5,12 @@ using System.Text;
 
 namespace Bam.Net
 {
-    public class ValueDecoderPipeline<TData> : ICollection<IValueDecoder<byte[], byte[]>>, IValueDecoder<string, TData>
+    public class ValueDecoderPipeline<TData> : ICollection<IValueUntransformer<byte[], byte[]>>, IValueUntransformer<string, TData>
     {
-        List<IValueDecoder<byte[], byte[]>> _decoders;
+        List<IValueUntransformer<byte[], byte[]>> _decoders;
         public ValueDecoderPipeline()
         {
-            this._decoders = new List<IValueDecoder<byte[], byte[]>>();
+            this._decoders = new List<IValueUntransformer<byte[], byte[]>>();
         }
         public IValueConverter BeforeDecodeConverter { get; set; }
         public IValueConverter<TData> AfterDecodeConverter { get; set; }
@@ -18,7 +18,7 @@ namespace Bam.Net
 
         public bool IsReadOnly => false;
 
-        public IValueDecoder<byte[], byte[]> this[int index]
+        public IValueUntransformer<byte[], byte[]> this[int index]
         {
             get
             {
@@ -26,7 +26,7 @@ namespace Bam.Net
             }
         }
 
-        public void Add(IValueDecoder<byte[], byte[]> item)
+        public void Add(IValueUntransformer<byte[], byte[]> item)
         {
             this._decoders.Add(item);
         }
@@ -36,46 +36,46 @@ namespace Bam.Net
             this._decoders.Clear();
         }
 
-        public bool Contains(IValueDecoder<byte[], byte[]> item)
+        public bool Contains(IValueUntransformer<byte[], byte[]> item)
         {
             return this._decoders.Contains(item);
         }
 
-        public void CopyTo(IValueDecoder<byte[], byte[]>[] array, int arrayIndex)
+        public void CopyTo(IValueUntransformer<byte[], byte[]>[] array, int arrayIndex)
         {
             this._decoders.CopyTo(array, arrayIndex);
         }
 
-        public TData Decode(string encoded)
+        public TData Untransform(string encoded)
         {
             byte[] converted = BeforeDecodeConverter.ConvertStringToBytes(encoded);
             byte[] data = converted;
-            foreach(IValueDecoder<byte[], byte[]> decoder in this._decoders)
+            foreach(IValueUntransformer<byte[], byte[]> decoder in this._decoders)
             {
-                data = decoder.Decode(data);
+                data = decoder.Untransform(data);
             }
             TData result = AfterDecodeConverter.ConvertBytesToObject(data);
             return result;
         }
 
-        public IValueEncoder<TData, string> GetEncoder()
+        public virtual IValueTransformer<TData, string> GetTransformer()
         {
             ValueEncoderPipeline<TData> encoder = new ValueEncoderPipeline<TData>();
             encoder.BeforeEncodeConverter = AfterDecodeConverter;
             encoder.AfterEncodeConverter = BeforeDecodeConverter;
-            foreach(IValueDecoder<byte[], byte[]> decoder in this._decoders)
+            foreach(IValueUntransformer<byte[], byte[]> decoder in this._decoders)
             {
-                encoder.Add(decoder.GetEncoder());
+                encoder.Add(decoder.GetTransformer());
             }
             return encoder;
         }
 
-        public IEnumerator<IValueDecoder<byte[], byte[]>> GetEnumerator()
+        public IEnumerator<IValueUntransformer<byte[], byte[]>> GetEnumerator()
         {
             return this._decoders.GetEnumerator();
         }
 
-        public bool Remove(IValueDecoder<byte[], byte[]> item)
+        public bool Remove(IValueUntransformer<byte[], byte[]> item)
         {
             return this._decoders.Remove(item);
         }

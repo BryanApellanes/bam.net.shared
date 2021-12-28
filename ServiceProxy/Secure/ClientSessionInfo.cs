@@ -21,6 +21,11 @@ namespace Bam.Net.ServiceProxy.Secure
 {
     public class ClientSessionInfo
     {
+        public ClientSessionInfo()
+        {
+            this.ValidationAlgorithm = HashAlgorithms.SHA256;
+        }
+
         /// <summary>
         /// The value of the session cookie.
         /// </summary>
@@ -34,6 +39,12 @@ namespace Bam.Net.ServiceProxy.Secure
         /// Gets or sets the server Rsa public key of the current session as a Pem string.
         /// </summary>
         public string PublicKey
+        {
+            get;
+            set;
+        }
+
+        public HashAlgorithms ValidationAlgorithm
         {
             get;
             set;
@@ -55,6 +66,22 @@ namespace Bam.Net.ServiceProxy.Secure
         {
             get;
             set;
+        }
+
+        public SetSessionKeyRequest CreateSetSessionKeyRequest(Encoding encoding = null)
+        {
+            Args.ThrowIfNullOrEmpty(PublicKey, nameof(PublicKey));
+
+            encoding = encoding ?? Encoding.UTF8;
+            AesKeyVectorPair kvp = SetSessionKey();
+            string keyCipher = kvp.Key.EncryptWithPublicKey(PublicKey, encoding);
+            string keyHash = kvp.Key.HashHexString(ValidationAlgorithm, encoding);
+            string keyHashCipher = keyHash.EncryptWithPublicKey(PublicKey, encoding);
+            string ivCipher = kvp.IV.EncryptWithPublicKey(PublicKey, encoding);
+            string ivHash = kvp.IV.HashHexString(ValidationAlgorithm, encoding);
+            string ivHashCipher = ivHash.EncryptWithPublicKey(PublicKey, encoding);
+
+            return new SetSessionKeyRequest(keyCipher, keyHashCipher, ivCipher, ivHashCipher);
         }
 
         /// <summary>
@@ -127,6 +154,14 @@ namespace Bam.Net.ServiceProxy.Secure
         public override string ToString()
         {
             return $"ClientIdentifier={ClientIdentifier};PublicKey={PublicKey}";
+        }
+
+        protected AesKeyVectorPair SetSessionKey()
+        {
+            AesKeyVectorPair kvp = new AesKeyVectorPair();
+            SessionKey = kvp.Key;
+            SessionIV = kvp.IV;
+            return kvp;
         }
     }
 }

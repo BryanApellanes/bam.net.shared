@@ -14,6 +14,8 @@ namespace Bam.Net.Encryption
     [Serializable]
     public class AesKeyVectorPair
     {
+        public const string SystemKeyFileName = "bamkey.aes";
+
         public AesKeyVectorPair()
         {
             SetKeyAndIv();
@@ -21,7 +23,11 @@ namespace Bam.Net.Encryption
 
         static readonly object _aesLock = new object();
         static volatile AesKeyVectorPair _key;
-        public static AesKeyVectorPair AppKey
+
+        /// <summary>
+        /// Gets the advanced encryption key vector pair for the currently running bam system.
+        /// </summary>
+        public static AesKeyVectorPair SystemKey
         {
             get
             {
@@ -29,7 +35,7 @@ namespace Bam.Net.Encryption
                 {
                     lock(_aesLock)
                     {
-                        string fileName = Path.Combine(BamHome.Local, "appkey.aes");
+                        string fileName = Path.Combine(BamHome.Local, SystemKeyFileName);
                         if (File.Exists(fileName))
                         {
                             _key = Load(fileName);

@@ -124,14 +124,14 @@ namespace Bam.Net.Server
         public event Action<BamServer, AppConf> CreatedApp;
         
         /// <summary>
-        /// The event that fires when a response has been sent
+        /// The event that fires before a response is flushed.
         /// </summary>
-        public event Action<BamServer, IResponder, IResponse> Responding;
+        public event Action<BamServer, IResponder, IResponse> ResponseFlushing;
         
         /// <summary>
-        /// The event that fires when a response has been sent
+        /// The event that fires when a response is flushed.
         /// </summary>
-        public event Action<BamServer, IResponder, IRequest> Responded;
+        public event Action<BamServer, IResponder, IRequest> ResponseFlushed;
         
         /// <summary>
         /// The event that fires when a response is not sent
@@ -1021,9 +1021,9 @@ namespace Bam.Net.Server
                 }
                 else
                 {
-                    TriggerResponding(response, responder.HandlingResponder);
-                    Respond(response);
-                    TriggerResponded(request, responder.HandlingResponder);
+                    TriggerResponseFlushing(response, responder.HandlingResponder);
+                    FlushResponse(response);
+                    TriggerResponseFlushed(request, responder.HandlingResponder);
                 }
             }
             catch (Exception ex)
@@ -1046,20 +1046,20 @@ namespace Bam.Net.Server
             }
         }
 
-        private static void Respond(IResponse response)
+        private static void FlushResponse(IResponse response)
         {
-            response.OutputStream.Flush();
-            response.OutputStream.Close();
+            response?.OutputStream?.Flush();
+            response?.OutputStream?.Close();
         }
 
-        private void TriggerResponded(IRequest request, IResponder responder)
+        private void TriggerResponseFlushed(IRequest request, IResponder responder)
         {
-            Responded?.Invoke(this, responder, request);
+            ResponseFlushed?.Invoke(this, responder, request);
         }
 
-        private void TriggerResponding(IResponse response, IResponder responder)
+        private void TriggerResponseFlushing(IResponse response, IResponder responder)
         {
-            Responding?.Invoke(this, responder, response);
+            ResponseFlushing?.Invoke(this, responder, response);
         }
 
         BamConf _conf;

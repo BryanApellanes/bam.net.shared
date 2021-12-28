@@ -12,7 +12,7 @@ namespace Bam.Net.ServiceProxy.Secure
         public SecureServiceProxyInvocationRequestArguments(ClientSessionInfo clientSessionInfo, IApiKeyResolver apiKeyResolver, IApiEncryptionProvider apiEncryptionProvider, ServiceProxyInvocationRequest serviceProxyInvokeRequest) : base(serviceProxyInvokeRequest)
         {
             this.ApiKeyResolver = apiKeyResolver;
-            this.ApiEncryptionProvider = ApiEncryptionProvider;
+            this.ApiEncryptionProvider = apiEncryptionProvider;
             this.ClientSessionInfo = clientSessionInfo;
         }
 
@@ -46,7 +46,7 @@ namespace Bam.Net.ServiceProxy.Secure
         }
 
         /// <summary>
-        /// Sets the content of the specified request message to the encrypted cipher of the invocation request.  Additionally, applies encrypted validation token headers.
+        /// Sets the content of the specified request message to the cipher of the invocation request.  Additionally, applies encrypted validation token headers.
         /// </summary>
         /// <param name="requestMessage"></param>
         public override void WriteArgumentContent(HttpRequestMessage requestMessage)

@@ -9,6 +9,7 @@ namespace Bam.Net.ServiceProxy.Secure
 {
     public interface ISecureChannelSessionManager
     {
+        void SetSessionKey(IHttpContext httpContext, SetSessionKeyRequest setSessionKeyRequest);
 
         SecureChannelSession GetSecureChannelSessionForContext(IHttpContext httpContext, Instant clientNow = null);
 
@@ -17,5 +18,7 @@ namespace Bam.Net.ServiceProxy.Secure
         SecureChannelSession CreateSecureChannelSession(IResponse response, ServiceProxyServerRepository repository, Instant clientNow);
 
         SecureChannelSession RetrieveSecureChannelSession(string sessionIdentifier, ServiceProxyServerRepository repository);
+
+        void EndSecureChannelSession(string sessionIdentifier, ServiceProxyServerRepository repository);
     }
 }

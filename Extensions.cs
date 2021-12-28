@@ -29,6 +29,7 @@ using Bam.Net.Testing.Data;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.CodeAnalysis;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Bson;
 using Newtonsoft.Json.Linq;
 using ParameterInfo = System.Reflection.ParameterInfo;
 
@@ -2157,6 +2158,29 @@ namespace Bam.Net
         public static string ToJson(this object value, JsonSerializerSettings settings)
         {
             return JsonConvert.SerializeObject(value, settings);
+        }
+
+        public static byte[] ToBson(this object value)
+        {
+            MemoryStream memoryStream = new MemoryStream();
+            using(BsonDataWriter writer = new BsonDataWriter(memoryStream))
+            {
+                JsonSerializer jsonSerializer = new JsonSerializer();
+                jsonSerializer.Serialize(writer, value);
+            }
+
+            return memoryStream.ToArray();
+        }
+
+        public static T FromBson<T>(this byte[] data)
+        {
+            MemoryStream memoryStream = new MemoryStream(data);
+            using(BsonDataReader reader = new BsonDataReader(memoryStream))
+            {
+                JsonSerializer jsonSerializer = new JsonSerializer();
+
+                return jsonSerializer.Deserialize<T>(reader);
+            }
         }
 
         public static bool HasExtension(this FileInfo file, string dotExtension)

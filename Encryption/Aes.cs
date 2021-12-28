@@ -20,7 +20,7 @@ namespace Bam.Net.Encryption
         /// <returns></returns>
         public static string Encrypt(string value)
         {
-            return Encrypt(value, AesKeyVectorPair.AppKey);
+            return Encrypt(value, AesKeyVectorPair.SystemKey);
         }
 
         /// <summary>
@@ -103,7 +103,7 @@ namespace Bam.Net.Encryption
         /// <returns></returns>
         public static string Decrypt(string base64EncodedValue)
         {
-            return Decrypt(base64EncodedValue, AesKeyVectorPair.AppKey);
+            return Decrypt(base64EncodedValue, AesKeyVectorPair.SystemKey);
         }
 
         /// <summary>

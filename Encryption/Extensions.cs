@@ -96,13 +96,13 @@ namespace Bam.Net.Encryption
             return DecryptWithPrivateKey(base64EncodedCipher, keys.Private, encoding);
         }
 
-        public static string DecryptWithPrivateKey(this string base64EncodedCipher, AsymmetricKeyParameter key, Encoding encoding = null, IAsymmetricBlockCipher e = null)
+        public static string DecryptWithPrivateKey(this string base64EncodedCipher, AsymmetricKeyParameter privateKey, Encoding encoding = null, IAsymmetricBlockCipher engine = null)
         {
-            byte[] decrypted = GetPrivateKeyDecryptedBytes(base64EncodedCipher, key, encoding, e);
+            byte[] decrypted = GetPrivateKeyDecryptedBytes(base64EncodedCipher, privateKey, encoding, engine);
             return encoding.GetString(decrypted);
         }
 
-        public static byte[] GetPrivateKeyDecryptedBytes(string base64EncodedCipher, AsymmetricKeyParameter key, Encoding encoding, IAsymmetricBlockCipher e)
+        public static byte[] GetPrivateKeyDecryptedBytes(string base64EncodedCipher, AsymmetricKeyParameter privateKey, Encoding encoding, IAsymmetricBlockCipher e)
         {
             if (encoding == null)
             {
@@ -110,7 +110,7 @@ namespace Bam.Net.Encryption
             }
 
             byte[] encrypted = Convert.FromBase64String(base64EncodedCipher);
-            byte[] decrypted = DecryptWithPrivateKey(encrypted, key, e);
+            byte[] decrypted = DecryptWithPrivateKey(encrypted, privateKey, e);
             return decrypted;
         }
 

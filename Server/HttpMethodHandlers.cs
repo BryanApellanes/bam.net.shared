@@ -6,6 +6,9 @@ using System.Text;
 
 namespace Bam.Net.Server
 {
+    /// <summary>
+    /// A collection of handlers keyed by HttpMethod.
+    /// </summary>
     public class HttpMethodHandlers
     {
         public HttpMethodHandlers()
