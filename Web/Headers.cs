@@ -14,6 +14,11 @@ namespace Bam.Net.Web
         public static string ProcessLocalIdentifier => "X-Bam-Process-Local-Id";
 
         /// <summary>
+        /// Gets the header value that describes the current process using Bam.Net.CoreServices.ApplicationRegistration.Data.ProcessDescriptor.Current.ToString();
+        /// </summary>
+        public static string ProcessDescriptor => "X-Bam-Process-Descriptor";
+
+        /// <summary>
         /// Gets the current process mode as reported by ProcessMode.Current.Mode.
         /// </summary>
         public static string ProcessMode => "X-Bam-Process-Mode";

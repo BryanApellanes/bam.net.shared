@@ -11,7 +11,7 @@ namespace Bam.Net.ServiceProxy.Secure
         {
         }
 
-        public SecureChannelException(SecureChannelMessage secureChannelMessage) : base(secureChannelMessage.Message)
+        public SecureChannelException(SecureChannelResponseMessage secureChannelMessage) : base(secureChannelMessage.Message)
         { 
         }
     }

@@ -96,19 +96,21 @@ namespace Bam.Net.CoreServices.AssemblyManagement.Data
         public virtual List<ProcessRuntimeDescriptor> ProcessRuntimeDescriptors { get; set; }
         
         /// <summary>
-        /// The name of the assembly file as reported by Assembly.GetFileInfo().Name
+        /// Gets or sets the name of the assembly file as reported by Assembly.GetFileInfo().Name
         /// (where GetFileInfo() is the extension method Bam.Net.Extensions.GetFileInfo(Assembly assembly)
         /// which returns a FileInfo instance representing the specified assembly)
         /// </summary>
         [CompositeKey]
         public string Name { get; set; }
+
         /// <summary>
-        /// Sha256 of the file content
+        /// Gets or sets the Sha256 of the file content.
         /// </summary>
         [CompositeKey]
         public string FileHash { get; set; }
+
         /// <summary>
-        /// The full name of the assembly as reported by Assembly.FullName
+        /// Gets or sets the full name of the assembly as reported by Assembly.FullName.
         /// </summary>
         [CompositeKey]
         public string AssemblyFullName { get; set; }

@@ -122,7 +122,7 @@ namespace Bam.Net.Server
         }
 
         [Inject]
-        public ISecureChannelSessionManager SecureChannelSessionManager { get; set; }
+        public ISecureChannelSessionDataManager SecureChannelSessionDataManager { get; set; }
 
         [Inject]
         public IApplicationServiceRegistryResolver ApplicationServiceRegistryResolver { get; set; }

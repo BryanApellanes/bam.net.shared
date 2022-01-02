@@ -33,7 +33,7 @@ namespace Bam.Net.Server.ServiceProxy
 
         public ServiceProxyInvocation(WebServiceProxyDescriptors webServiceProxyDescriptors, string className, string methodName, IHttpContext context = null)
         {
-            this.WebServiceProxyDescriptors = webServiceProxyDescriptors ?? new WebServiceProxyDescriptors { WebServiceRegistry = WebServiceRegistry.ForApplicationServiceRegistry(ApplicationServiceRegistry.ForProcess()) };
+            this.WebServiceProxyDescriptors = webServiceProxyDescriptors ?? new WebServiceProxyDescriptors { WebServiceRegistry = Services.WebServiceRegistry.ForApplicationServiceRegistry(ApplicationServiceRegistry.ForProcess()) };
             this.Context = context ?? new HttpContextWrapper();
             this.ClassName = className;
             this.MethodName = methodName;
@@ -45,7 +45,7 @@ namespace Bam.Net.Server.ServiceProxy
         {
             ServiceProxyInvocation request = new ServiceProxyInvocation()
             {
-                ServiceRegistry = serviceRegistry,
+                WebServiceRegistry = serviceRegistry,
                 MethodName = method.Name,
                 MethodInfo = method,
                 Arguments = arguments,
@@ -99,7 +99,7 @@ namespace Bam.Net.Server.ServiceProxy
         }
 
         ServiceRegistry _serviceRegistry;
-        public ServiceRegistry ServiceRegistry
+        public ServiceRegistry WebServiceRegistry
         {
             get
             {
@@ -126,7 +126,7 @@ namespace Bam.Net.Server.ServiceProxy
             {
                 if (_targetType == null && !string.IsNullOrWhiteSpace(ClassName))
                 {
-                    InvocationTarget = ServiceRegistry.Get(ClassName, out _targetType);
+                    InvocationTarget = WebServiceRegistry.Get(ClassName, out _targetType);
                 }
 
                 return _targetType;
@@ -141,7 +141,7 @@ namespace Bam.Net.Server.ServiceProxy
             {
                 if (_invocationTarget == null)
                 {
-                    _invocationTarget = ServiceRegistry.Get(ClassName);
+                    _invocationTarget = WebServiceRegistry.Get(ClassName);
                 }
                 return _invocationTarget;
             }
@@ -509,7 +509,7 @@ namespace Bam.Net.Server.ServiceProxy
             object result = target;
             if (target is IHasServiceRegistry hasServiceRegistry)
             {
-                hasServiceRegistry.ServiceRegistry = ServiceRegistry;
+                hasServiceRegistry.ServiceRegistry = WebServiceRegistry;
                 OnServiceRegsitrySet(target);
                 result = hasServiceRegistry;
             }

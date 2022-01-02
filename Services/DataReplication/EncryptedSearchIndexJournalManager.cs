@@ -11,11 +11,11 @@ namespace Bam.Net.Services.DataReplication
     public class EncryptedSearchIndexJournalManager: JournalManager
     {
         public EncryptedSearchIndexJournalManager(IKeyValueStore publicKeyValueStore, Journal journal, ISequenceProvider sequenceProvider, ITypeConverter typeConverter, ILogger logger = null)
-            : this(publicKeyValueStore, journal, KeySet.ForApplication, sequenceProvider, typeConverter, logger)
+            : this(publicKeyValueStore, journal, Bam.Net.Encryption.Data.Files.KeySetFile.ForApplication, sequenceProvider, typeConverter, logger)
         {
         }
 
-        public EncryptedSearchIndexJournalManager(IKeyValueStore publicKeyValueStore, Journal journal, KeySet keySet, ISequenceProvider sequenceProvider, ITypeConverter typeConverter, ILogger logger = null)
+        public EncryptedSearchIndexJournalManager(IKeyValueStore publicKeyValueStore, Journal journal, IKeySet keySet, ISequenceProvider sequenceProvider, ITypeConverter typeConverter, ILogger logger = null)
             : base(sequenceProvider, new EncryptedJournalEntryValueFlusher(keySet), new EncryptedJournalEntryValueLoader(keySet), typeConverter, logger)
         {
             Journal = Journal;
@@ -29,7 +29,7 @@ namespace Bam.Net.Services.DataReplication
             journal.Loader = Loader;
         }
 
-        public KeySet KeySet { get; }
+        public IKeySet KeySet { get; }
 
         public EncryptedSearchIndex EncryptedSearchIndex { get; set; }
     }

@@ -9,13 +9,13 @@ namespace Bam.Net
     {
         public IHttpContext HttpContext { get; set; }
 
-        public CustomTransformer<TDecoded, TEncoded> CustomEncoder { get; set; }
+        public CustomTransformer<TDecoded, TEncoded> CustomTransformer { get; set; }
 
         public Func<IHttpContext, TEncoded, TDecoded> Untransformer { get; set; }
 
         public object Clone()
         {
-            object clone = new CustomUntransformer<TEncoded, TDecoded>() { CustomEncoder = CustomEncoder };
+            object clone = new CustomUntransformer<TEncoded, TDecoded>() { CustomTransformer = CustomTransformer };
             clone.CopyProperties(this);
             clone.CopyEventHandlers(this);
             return clone;
@@ -23,7 +23,7 @@ namespace Bam.Net
 
         public object Clone(IHttpContext context)
         {
-            CustomUntransformer<TEncoded, TDecoded> clone = new CustomUntransformer<TEncoded, TDecoded>() { CustomEncoder = CustomEncoder };
+            CustomUntransformer<TEncoded, TDecoded> clone = new CustomUntransformer<TEncoded, TDecoded>() { CustomTransformer = CustomTransformer };
             clone.CopyProperties(this);
             clone.CopyEventHandlers(this);
             clone.HttpContext = context;
@@ -42,7 +42,7 @@ namespace Bam.Net
 
         public IValueTransformer<TDecoded, TEncoded> GetTransformer()
         {
-            return (IValueTransformer<TDecoded, TEncoded>)this.CustomEncoder;
+            return (IValueTransformer<TDecoded, TEncoded>)this.CustomTransformer;
         }
     }
 }

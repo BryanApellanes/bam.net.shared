@@ -1,6 +1,6 @@
 ﻿using Bam.Net;
-using Bam.Net.Server.ServiceProxy.Data;
 using Bam.Net.ServiceProxy;
+using Bam.Net.ServiceProxy.Data;
 using Bam.Net.ServiceProxy.Secure;
 using Bam.Net.Services;
 using System;
@@ -19,7 +19,7 @@ namespace Bam.Net.Encryption
         public AesTransformer AesEncoder { get; internal set; }
 
         [Inject]
-        public ISecureChannelSessionManager SecureChannelSessionManager { get; set; }
+        public ISecureChannelSessionDataManager SecureChannelSessionDataManager { get; set; }
 
         public IHttpContext HttpContext { get; set; }
         public object Clone()
@@ -46,9 +46,9 @@ namespace Bam.Net.Encryption
 
         public string Untransform(byte[] cipherBytes)
         {
-            SecureChannelSession session = SecureChannelSessionManager.GetSecureChannelSessionForContext(HttpContext);
+            SecureChannelSession session = SecureChannelSessionDataManager.GetSecureChannelSessionForContextAsync(HttpContext).Result;
 
-            ClientSessionInfo clientSessionInfo = session.ToClientSessionInfo();
+            ClientSession clientSessionInfo = session.GetClientSession();
             return clientSessionInfo.GetPlainText(cipherBytes);
         }
 

@@ -104,6 +104,7 @@ namespace Bam.Net.Services
             {
                 Configurer = configure;
             }
+
             ApplicationServiceRegistry appRegistry = new ApplicationServiceRegistry();
             appRegistry.CombineWith(CoreClientServiceRegistryContainer.Current);
             appRegistry

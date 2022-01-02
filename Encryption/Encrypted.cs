@@ -14,8 +14,6 @@ namespace Bam.Net.Encryption
 {
     public class Encrypted
     {
-        protected static readonly string DefaultIV = Convert.ToBase64String(new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 });
-
         protected static readonly int DefaultSaltLength = 8;
 
         public Encrypted()

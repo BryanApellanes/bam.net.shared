@@ -93,24 +93,28 @@ namespace Bam.Net.Encryption
 
         public static string DecryptWithPrivateKey(this string base64EncodedCipher, AsymmetricCipherKeyPair keys, Encoding encoding = null)
         {
-            return DecryptWithPrivateKey(base64EncodedCipher, keys.Private, encoding);
+            return DecryptWithPrivateKey(base64EncodedCipher, keys.Private, encoding, false);
+        }
+
+        public static string DecryptWithPrivateKey(this string base64EncodedCipher, AsymmetricKeyParameter privateKey, Encoding encoding = null, bool usePkcsPadding = false)
+        {
+            return DecryptWithPrivateKey(base64EncodedCipher, privateKey, encoding, Rsa.GetRsaEngine(usePkcsPadding));
         }
 
         public static string DecryptWithPrivateKey(this string base64EncodedCipher, AsymmetricKeyParameter privateKey, Encoding encoding = null, IAsymmetricBlockCipher engine = null)
         {
-            byte[] decrypted = GetPrivateKeyDecryptedBytes(base64EncodedCipher, privateKey, encoding, engine);
-            return encoding.GetString(decrypted);
-        }
-
-        public static byte[] GetPrivateKeyDecryptedBytes(string base64EncodedCipher, AsymmetricKeyParameter privateKey, Encoding encoding, IAsymmetricBlockCipher e)
-        {
+            byte[] decrypted = GetPrivateKeyDecryptedBytes(base64EncodedCipher, privateKey, engine);
             if (encoding == null)
             {
                 encoding = Encoding.UTF8;
             }
+            return encoding.GetString(decrypted);
+        }
 
+        public static byte[] GetPrivateKeyDecryptedBytes(this string base64EncodedCipher, AsymmetricKeyParameter privateKey, IAsymmetricBlockCipher engine)
+        {
             byte[] encrypted = Convert.FromBase64String(base64EncodedCipher);
-            byte[] decrypted = DecryptWithPrivateKey(encrypted, privateKey, e);
+            byte[] decrypted = DecryptWithPrivateKey(encrypted, privateKey, engine);
             return decrypted;
         }
 
@@ -148,10 +152,9 @@ namespace Bam.Net.Encryption
             return AsymmetricEncrypt(plainData, keyPair.Public);
         }
 
-        public static byte[] AsymmetricEncrypt(this byte[] plainData, AsymmetricKeyParameter key)
+        public static byte[] AsymmetricEncrypt(this byte[] plainData, AsymmetricKeyParameter key, bool usePkcsPadding = false)
         {
-            RsaEngine e = new RsaEngine();
-            return AsymmetricEncrypt(plainData, key, e);
+            return AsymmetricEncrypt(plainData, key, Rsa.GetRsaEngine(usePkcsPadding));
         }
 
         public static byte[] AsymmetricEncrypt(this byte[] plainData, AsymmetricKeyParameter key, IAsymmetricBlockCipher e)
@@ -174,22 +177,22 @@ namespace Bam.Net.Encryption
             return output.ToArray();
         }
 
-        public static byte[] DecryptWithPrivateKey(this byte[] byteArrayCipher, AsymmetricKeyParameter key, IAsymmetricBlockCipher e = null)
+        public static byte[] DecryptWithPrivateKey(this byte[] byteArrayCipher, AsymmetricKeyParameter key, IAsymmetricBlockCipher engine = null)
         {
-            if (e == null)
+            if (engine == null)
             {
-                e = new RsaEngine();
+                engine = new RsaEngine();
             }
 
-            e.Init(false, key);
+            engine.Init(false, key);
 
-            int blockSize = e.GetInputBlockSize();
+            int blockSize = engine.GetInputBlockSize();
 
             List<byte> output = new List<byte>();
             for (int chunkPosition = 0; chunkPosition < byteArrayCipher.Length; chunkPosition += blockSize)
             {
                 int chunkSize = Math.Min(blockSize, byteArrayCipher.Length - (chunkPosition * blockSize));
-                output.AddRange(e.ProcessBlock(byteArrayCipher, chunkPosition, chunkSize));
+                output.AddRange(engine.ProcessBlock(byteArrayCipher, chunkPosition, chunkSize));
             }
 
             return output.ToArray();

@@ -9,8 +9,7 @@ namespace Bam.Net
         IValueUntransformer<TTransformed, TUntransformed> GetUntransformer();
 
         /// <summary>
-        /// When implemented in a derived class, encodes the specified value using
-        /// the appropriate encoding implementation.
+        /// When implemented in a derived class, transforms the specified value.
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>

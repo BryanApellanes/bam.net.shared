@@ -233,7 +233,7 @@ namespace Bam.Net.CoreServices
                 try
                 {
                     ServiceRegistryLoaderAttribute loaderAttr = method.GetCustomAttributeOfType<ServiceRegistryLoaderAttribute>();
-                    if(loaderAttr.ProcessModes.Contains(Bam.Net.ProcessMode.Current.Mode))
+                    if (loaderAttr.ProcessModes.Contains(Bam.Net.ProcessMode.Current.Mode))
                     {
                         string registryName = loaderAttr.RegistryName ?? $"{type.Namespace}.{type.Name}.{method.Name}";
                         string description = loaderAttr.Description ?? registryName;

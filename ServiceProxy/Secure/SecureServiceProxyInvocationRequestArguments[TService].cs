@@ -9,7 +9,7 @@ namespace Bam.Net.ServiceProxy.Secure
 {
     public class SecureServiceProxyInvocationRequestArguments<TService> : ServiceProxyInvocationRequestArguments<TService>
     {
-        public SecureServiceProxyInvocationRequestArguments(ClientSessionInfo clientSessionInfo, IApiKeyResolver apiKeyResolver, IApiEncryptionProvider apiEncryptionProvider, ServiceProxyInvocationRequest serviceProxyInvokeRequest) : base(serviceProxyInvokeRequest)
+        public SecureServiceProxyInvocationRequestArguments(ClientSession clientSessionInfo, IApiKeyResolver apiKeyResolver, IApiEncryptionProvider apiEncryptionProvider, ServiceProxyInvocationRequest serviceProxyInvokeRequest) : base(serviceProxyInvokeRequest)
         {
             this.ApiKeyResolver = apiKeyResolver;
             this.ApiEncryptionProvider = apiEncryptionProvider;
@@ -19,7 +19,7 @@ namespace Bam.Net.ServiceProxy.Secure
         public IApiKeyResolver ApiKeyResolver { get; set; }
         public IApiEncryptionProvider ApiEncryptionProvider { get; set; }
 
-        public ClientSessionInfo ClientSessionInfo { get; set; }
+        public ClientSession ClientSessionInfo { get; set; }
 
         protected internal bool TypeRequiresApiKey
         {
@@ -39,10 +39,10 @@ namespace Bam.Net.ServiceProxy.Secure
 
         public void SetKeyToken(HttpRequestMessage requestMessage)
         {
-            if(TypeRequiresApiKey || MethodRequiresApiKey)
+            if (TypeRequiresApiKey || MethodRequiresApiKey)
             {
                 ApiKeyResolver.SetKeyToken(requestMessage, ApiArgumentEncoder.GetStringToHash(typeof(TService).Name, MethodInfo.Name, GetJsonArgsMember()));
-            }            
+            }
         }
 
         /// <summary>

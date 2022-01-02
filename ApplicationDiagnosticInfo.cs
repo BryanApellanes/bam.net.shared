@@ -15,7 +15,7 @@ namespace Bam.Net
 {
     /// <summary>
     /// Diagnostic information about the current
-    /// application process and thread
+    /// application process and thread.
     /// </summary>
     [Serializable]
     public partial class ApplicationDiagnosticInfo

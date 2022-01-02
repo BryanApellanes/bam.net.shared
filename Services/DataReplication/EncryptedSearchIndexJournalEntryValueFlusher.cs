@@ -11,16 +11,16 @@ namespace Bam.Net.Services.DataReplication
 {
     public class EncryptedSearchIndexJournalEntryValueFlusher : IJournalEntryValueFlusher
     {
-        public EncryptedSearchIndexJournalEntryValueFlusher(IKeyValueStore publicKeyValueStore, KeySet keyset = null, ILogger logger = null)
+        public EncryptedSearchIndexJournalEntryValueFlusher(IKeyValueStore publicKeyValueStore, IKeySet keyset = null, ILogger logger = null)
         {
             Logger = logger ?? Log.Default;
-            KeySet = keyset ?? KeySet.ForApplication;
+            KeySet = keyset ?? Bam.Net.Encryption.Data.Files.KeySetFile.ForApplication;
             PrivateKeyValueStore = new FileSystemKeyValueStore(Logger);
             EncryptedSearchIndex = new EncryptedSearchIndex(publicKeyValueStore, PrivateKeyValueStore, KeySet, logger);
         }
 
         public ILogger Logger { get; set; }
-        public KeySet KeySet { get; }
+        public IKeySet KeySet { get; }
         public FileSystemKeyValueStore PrivateKeyValueStore { get; internal set; }
         public EncryptedSearchIndex EncryptedSearchIndex { get; }
 

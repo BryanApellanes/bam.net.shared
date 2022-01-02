@@ -14,7 +14,7 @@ namespace Bam.Net.Encryption
         }
 
         public Encoding Encoding { get; set; }
-        public ClientSessionInfo ClientSessionInfo { get; set; }
+        public ClientSession ClientSessionInfo { get; set; }
 
         /// <summary>
         /// Converts the specified base 64 encoded cipher to plain text.

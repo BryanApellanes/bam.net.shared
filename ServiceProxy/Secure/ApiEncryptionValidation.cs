@@ -14,7 +14,7 @@ using Bam.Net.Web;
 using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using Bam.Net.Server.ServiceProxy.Data;
+using Bam.Net.ServiceProxy.Data;
 
 namespace Bam.Net.ServiceProxy.Secure
 {
@@ -24,17 +24,17 @@ namespace Bam.Net.ServiceProxy.Secure
     /// </summary>
     internal class ApiEncryptionValidation // TODO: move this implementation to ApiEncryptionProvider 
     {
-        public static void SetEncryptedValidationTokenHeaders(HttpRequestMessage request, string plainPostString, string publicKeyPem)
+/*        public static void SetEncryptedValidationTokenHeaders(HttpRequestMessage request, string plainPostString, string publicKeyPem)
         {
             SetEncryptedValidationTokenHeaders(request.Headers, plainPostString, publicKeyPem);
-        }
+        }*/
         
-        public static void SetEncryptedValidationTokenHeaders(HttpRequestHeaders headers, string plainPostString, string publicKeyPem)
+/*        public static void SetEncryptedValidationTokenHeaders(HttpRequestHeaders headers, string plainPostString, string publicKeyPem)
         {
             EncryptedValidationToken token = CreateEncryptedValidationToken(plainPostString, publicKeyPem);
             headers.Add(Headers.Nonce, token.NonceCipher);
             headers.Add(Headers.ValidationToken, token.HashCipher);
-        }
+        }*/
 
         public static EncryptedValidationToken ReadEncryptedValidationToken(NameValueCollection headers)
         {
@@ -109,6 +109,7 @@ namespace Bam.Net.ServiceProxy.Secure
             Args.ThrowIfNull(session, "session");
             Args.ThrowIfNull(token, "token");
 
+            //return new ValidationToken(plainPost)
             return ValidateEncryptedToken(session, token.HashCipher, token.NonceCipher, plainPost, usePkcsPadding);
         }
 
@@ -122,7 +123,7 @@ namespace Bam.Net.ServiceProxy.Secure
             EncryptedTokenValidationStatus result = ValidateNonce(nonce, offset);
             if (result == EncryptedTokenValidationStatus.Success)
             {
-                result = ValidateHash(nonce, hash, plainPost);
+                result = ValidateHash(plainPost, nonce, hash);
             }
 
             return result;
@@ -137,13 +138,13 @@ namespace Bam.Net.ServiceProxy.Secure
             EncryptedTokenValidationStatus encryptedTokenValidationStatus = ValidateNonce(nonce, offset);
             if(encryptedTokenValidationStatus == EncryptedTokenValidationStatus.Success)
             {
-                encryptedTokenValidationStatus = ValidateHash(nonce, hash, plainPost);
+                encryptedTokenValidationStatus = ValidateHash(plainPost, nonce, hash);
             }
 
             return encryptedTokenValidationStatus;
         }
 
-        public static EncryptedTokenValidationStatus ValidateHash(string nonce, string hash, string plainPost)
+        public static EncryptedTokenValidationStatus ValidateHash(string plainPost, string nonce, string hash)
         {
             string kvpFormat = "{0}:{1}";
             string checkHash = kvpFormat._Format(nonce, plainPost).Sha256();
@@ -163,19 +164,10 @@ namespace Bam.Net.ServiceProxy.Secure
         /// <param name="nonce"></param>
         /// <param name="offset"></param>
         /// <returns></returns>
+        [Obsolete("Use ApiEncryptionProvider.ValidateNonce instead")]
         public static EncryptedTokenValidationStatus ValidateNonce(string nonce, int offset)
         {
-            EncryptedTokenValidationStatus result = EncryptedTokenValidationStatus.Success;
-            Instant requestInstant = Instant.FromString(nonce);
-            Instant currentInstant = new Instant();
-
-            int difference = currentInstant.DiffInMilliseconds(requestInstant);
-            difference = difference - offset;
-            if (TimeSpan.FromMilliseconds(difference).TotalMinutes > 3)
-            {
-                result = EncryptedTokenValidationStatus.NonceFailed;
-            }
-            return result;
+            return new ApiEncryptionProvider(null).ValidateNonce(nonce, offset);
         }
     }
 }

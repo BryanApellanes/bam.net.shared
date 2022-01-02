@@ -8,7 +8,7 @@ namespace Bam.Net.Encryption
     public class AesBase64Transformer : ValueTransformer<string, string>
     {
         public Encoding Encoding { get; set; }
-        public ClientSessionInfo ClientSessionInfo { get; set; }
+        public ClientSession ClientSessionInfo { get; set; }
 
         public override string Untransform(string base64Cipher)
         {

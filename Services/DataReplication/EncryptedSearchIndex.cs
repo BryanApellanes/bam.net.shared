@@ -12,21 +12,21 @@ namespace Bam.Net.Services.DataReplication
 {
     public class EncryptedSearchIndex
     {
-        public EncryptedSearchIndex(IKeyValueStore publicKeyValueStore, KeySet keySet = null, ILogger logger = null)
+        public EncryptedSearchIndex(IKeyValueStore publicKeyValueStore, IKeySet keySet = null, ILogger logger = null)
            : this(publicKeyValueStore, new FileSystemKeyValueStore(logger), keySet, logger)
         { }
 
-        public EncryptedSearchIndex(IKeyValueStore publicKeyValueStore, IKeyValueStore privateKeyValueStore, KeySet keySet = null, ILogger logger = null)
+        public EncryptedSearchIndex(IKeyValueStore publicKeyValueStore, IKeyValueStore privateKeyValueStore, IKeySet keySet = null, ILogger logger = null)
         {
             PublicKeyValueStore = publicKeyValueStore;
             PrivateKeyValueStore = privateKeyValueStore;
-            KeySet = keySet ?? KeySet.ForApplication;
+            KeySet = keySet ?? Bam.Net.Encryption.Data.Files.KeySetFile.ForApplication;
             HmacAlgorithm = HashAlgorithms.SHA256;
             Logger = logger ?? Log.Default;
         }
 
         public HashAlgorithms HmacAlgorithm { get; set; }
-        public KeySet KeySet { get; set; }
+        public IKeySet KeySet { get; set; }
         public Encoding Encoding { get; set; }
         public ILogger Logger { get; set; }
 
@@ -61,7 +61,7 @@ namespace Bam.Net.Services.DataReplication
 
         public string Retrieve(string key)
         {
-            string secret = KeySet.GetAesKey();
+            string secret = KeySet.GetSecret();
             string keyHmac = key.HmacHexString(secret, HmacAlgorithm, Encoding);
             string kvpCipher = PublicKeyValueStore.Get(keyHmac);
             KeyValuePair<string, string> kvp = DecipherKeyValuePair(kvpCipher);
@@ -85,7 +85,7 @@ namespace Bam.Net.Services.DataReplication
         {
             try
             {
-                string secret = KeySet.GetAesKey();
+                string secret = KeySet.GetSecret();
                 string keyHmac = key.HmacHexString(secret, HmacAlgorithm, Encoding);
                 string valueHmac = value.HmacHexString(secret, HmacAlgorithm, Encoding);
                 // localstore(hmac(key), hmac(value))
@@ -127,7 +127,7 @@ namespace Bam.Net.Services.DataReplication
         /// <returns></returns>
         protected string[] Search(string feature)
         {
-            string secret = KeySet.GetAesKey();
+            string secret = KeySet.GetSecret();
             string featureHmac = feature.HmacHexString(secret, HmacAlgorithm, Encoding);            
             return PrivateKeyValueStore.Get(featureHmac).DelimitSplit("\r\n"); // should be a new line delimited list of key hmacs            
         }

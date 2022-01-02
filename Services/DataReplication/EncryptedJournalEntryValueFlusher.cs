@@ -15,15 +15,15 @@ namespace Bam.Net.Services.DataReplication
     /// <seealso cref="Bam.Net.Services.DataReplication.IJournalEntryValueFlusher" />
     public class EncryptedJournalEntryValueFlusher : IJournalEntryValueFlusher
     {
-        public EncryptedJournalEntryValueFlusher() : this(KeySet.ForApplication)
+        public EncryptedJournalEntryValueFlusher() : this(Bam.Net.Encryption.Data.Files.KeySetFile.ForApplication)
         { }
 
-        public EncryptedJournalEntryValueFlusher(KeySet keySet)
+        public EncryptedJournalEntryValueFlusher(IKeySet keySet)
         {
             KeySet = keySet;
         }
 
-        public KeySet KeySet { get; set; }
+        public IKeySet KeySet { get; set; }
 
         public FileInfo Flush(Journal journal, JournalEntry entry)
         {

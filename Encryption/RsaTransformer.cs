@@ -14,7 +14,7 @@ namespace Bam.Net.Encryption
         }
 
         public Encoding Encoding { get; set; }
-        public ClientSessionInfo ClientSessionInfo { get; set; }
+        public ClientSession ClientSessionInfo { get; set; }
 
         public override string Untransform(byte[] cipherBytes)
         {

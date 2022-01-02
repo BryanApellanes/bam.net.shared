@@ -1,5 +1,5 @@
-﻿using Bam.Net.Server.ServiceProxy.Data;
-using Bam.Net.ServiceProxy;
+﻿using Bam.Net.ServiceProxy;
+using Bam.Net.ServiceProxy.Data;
 using Bam.Net.ServiceProxy.Secure;
 using Bam.Net.Services;
 using Org.BouncyCastle.Crypto;
@@ -12,7 +12,7 @@ namespace Bam.Net.Encryption
     public class RsaBase64Untransformer : IValueUntransformer<string, string>, IRequiresHttpContext, ICloneable, IContextCloneable
     {
         [Inject]
-        public ISecureChannelSessionManager SecureChannelSessionManager { get; set; }
+        public ISecureChannelSessionDataManager SecureChannelSessionManager { get; set; }
 
         public Encoding Encoding { get; set; }
         public IHttpContext HttpContext { get; set; }
@@ -43,7 +43,7 @@ namespace Bam.Net.Encryption
         {
             byte[] cipherBytes = base64Cipher.FromBase64();
 
-            SecureChannelSession session = SecureChannelSessionManager.GetSecureChannelSessionForContext(HttpContext);
+            SecureChannelSession session = SecureChannelSessionManager.GetSecureChannelSessionForContextAsync(HttpContext).Result;
 
             AsymmetricCipherKeyPair keyPair = session.AsymmetricKey.ToKeyPair();
             byte[] decryptedBytes = cipherBytes.DecryptWithPrivateKey(keyPair.Private);

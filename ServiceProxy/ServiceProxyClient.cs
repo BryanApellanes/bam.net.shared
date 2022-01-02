@@ -305,6 +305,7 @@ namespace Bam.Net.ServiceProxy
             request.Headers.Add("User-Agent", UserAgent);
             request.Headers.Add(Web.Headers.ProcessMode, ProcessMode.Current.Mode.ToString());
             request.Headers.Add(Web.Headers.ProcessLocalIdentifier, Bam.Net.CoreServices.ApplicationRegistration.Data.ProcessDescriptor.LocalIdentifier);
+            request.Headers.Add(Web.Headers.ProcessDescriptor, Bam.Net.CoreServices.ApplicationRegistration.Data.ProcessDescriptor.Current.ToString());
             Headers.Keys.Where(k => !k.Equals("User-Agent")).Each(key =>
             {
                 request.Headers.Add(key, Headers[key]);

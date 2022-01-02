@@ -23,17 +23,17 @@ namespace Bam.Net.Encryption
 
         public static string Encrypt(string value)
         {
-            return RsaKeyPair.Default.EncryptWithPublicKey(value);
+            return RsaKeyFile.Default.EncryptWithPublicKey(value);
         }
 
         public static string Decrypt(string cipherText)
         {
-            return RsaKeyPair.Default.DecryptWithPrivateKey(cipherText);
+            return RsaKeyFile.Default.DecryptWithPrivateKey(cipherText);
         }
 
         public static string GetPublicKey()
         {
-            return RsaKeyPair.Default.PublicKeyXml;
+            return RsaKeyFile.Default.PublicKeyXml;
         }
 
         public static AsymmetricCipherKeyPair GenerateKeyPair(RsaKeyLength size)

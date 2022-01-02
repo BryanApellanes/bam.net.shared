@@ -12,7 +12,7 @@ namespace Bam.Net.Encryption
             this.RsaByteDecoder = new RsaByteUntransformer() { RsaByteEncoder = this };
         }
 
-        public ClientSessionInfo ClientSessionInfo { get; set; }
+        public ClientSession ClientSessionInfo { get; set; }
 
         public RsaByteUntransformer RsaByteDecoder { get; set; }
 

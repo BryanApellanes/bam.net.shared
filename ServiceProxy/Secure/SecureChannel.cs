@@ -23,7 +23,7 @@ using Org.BouncyCastle.Math;
 using Org.BouncyCastle.Crypto.Engines;
 using Bam.Net.Configuration;
 using Bam.Net.CoreServices;
-using Bam.Net.Server.ServiceProxy.Data;
+using Bam.Net.ServiceProxy.Data;
 
 namespace Bam.Net.ServiceProxy.Secure
 {
@@ -36,7 +36,7 @@ namespace Bam.Net.ServiceProxy.Secure
     {
         public SecureChannel()
         {
-            this.SecureChannelSessionManager = new SecureChannelSessionManager();
+            this.SecureChannelSessionDataManager = new SecureChannelSessionDataManager();
         }
 
         [Exclude]
@@ -62,14 +62,14 @@ namespace Bam.Net.ServiceProxy.Secure
             }
         }
 
-        ISecureChannelSessionManager _secureChannelSessionManager;
-        protected ISecureChannelSessionManager SecureChannelSessionManager 
+        ISecureChannelSessionDataManager _secureChannelSessionManager;
+        protected ISecureChannelSessionDataManager SecureChannelSessionDataManager 
         {
             get
             {
                 if(_secureChannelSessionManager == null)
                 {
-                    _secureChannelSessionManager = ServiceRegistry.Get<ISecureChannelSessionManager>();
+                    _secureChannelSessionManager = ServiceRegistry.Get<ISecureChannelSessionDataManager>();
                 }
                 return _secureChannelSessionManager;
             }
@@ -79,17 +79,21 @@ namespace Bam.Net.ServiceProxy.Secure
             }
         }
 
+        public async Task<ClientSession> StartSessionAsync()
+        {
+            return await Task.Run(() => StartSession(new Instant()).Data);
+        }
 
         /// <summary>
-        /// Establish a secure session
+        /// Establish a secure channel session.
         /// </summary>
         /// <returns></returns>
-        public SecureChannelMessage<ClientSessionInfo> StartSession(Instant instant)
+        public SecureChannelResponseMessage<ClientSession> StartSession(Instant instant)
         {
-            SecureChannelSession secureChannelSession = SecureChannelSessionManager.GetSecureChannelSessionForContext(HttpContext, instant);
-            ClientSessionInfo clientSessionInfo = secureChannelSession.ToClientSessionInfo();
+            SecureChannelSession secureChannelSession = SecureChannelSessionDataManager.GetSecureChannelSessionForContextAsync(HttpContext, instant).Result;
+            ClientSession clientSessionInfo = secureChannelSession.GetClientSession();
 
-            return new SecureChannelMessage<ClientSessionInfo>(clientSessionInfo);
+            return new SecureChannelResponseMessage<ClientSession>(clientSessionInfo);
         }
 
         public void EndSession(string sessionIdentifier)
@@ -99,20 +103,20 @@ namespace Bam.Net.ServiceProxy.Secure
             Log.AddEntry("EndSession: Session {0} was deleted", sessionIdentifier);
         }
 
-        public SecureChannelMessage SetSessionKey(SetSessionKeyRequest setSessionKeyRequest)
+        public SecureChannelResponseMessage SetSessionKey(SetSessionKeyRequest setSessionKeyRequest)
         {
-            SecureChannelMessage result = new SecureChannelMessage(true);
+            SecureChannelResponseMessage response = new SecureChannelResponseMessage(true);
             try
             {
-                SecureChannelSessionManager.SetSessionKey(HttpContext, setSessionKeyRequest);
-                result.Success = true;
+                SecureChannelSessionDataManager.SetSessionKeyAsync(HttpContext, setSessionKeyRequest);
+                response.Success = true;
             }
             catch (Exception ex)
             {
-                result = new SecureChannelMessage(ex);
+                response = new SecureChannelResponseMessage(ex);
             }
 
-            return result;
+            return response;
         }
 
         IApiKeyResolver _apiKeyResolver;

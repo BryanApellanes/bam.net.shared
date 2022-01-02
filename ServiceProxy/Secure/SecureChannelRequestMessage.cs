@@ -22,12 +22,12 @@ namespace Bam.Net.ServiceProxy.Secure
         public string MethodName { get; set; }
         public string JsonArgs { get; set; }
 
-        public StringContent GetSymetricCipherContent(ClientSessionInfo clientSessionInfo)
+        public StringContent GetSymetricCipherContent(ClientSession clientSessionInfo)
         {
             return new StringContent(GetSymetricCipher(clientSessionInfo), Encoding.UTF8, SymetricCipherMediaType);
         }
 
-        public StringContent GetAsymetricCipherContent(ClientSessionInfo clientSessionInfo)
+        public StringContent GetAsymetricCipherContent(ClientSession clientSessionInfo)
         {
             return new StringContent(GetAsymetricCipher(clientSessionInfo), Encoding.UTF8, AsymetricCipherMediaType);
         }
@@ -37,7 +37,7 @@ namespace Bam.Net.ServiceProxy.Secure
         /// </summary>
         /// <param name="clientSessionInfo"></param>
         /// <returns></returns>
-        public string GetSymetricCipher(ClientSessionInfo clientSessionInfo)
+        public string GetSymetricCipher(ClientSession clientSessionInfo)
         {
             return clientSessionInfo.GetSymetricCipher(this.ToJson());
         }
@@ -47,12 +47,12 @@ namespace Bam.Net.ServiceProxy.Secure
         /// </summary>
         /// <param name="clientSessionInfo"></param>
         /// <returns></returns>
-        public string GetAsymetricCipher(ClientSessionInfo clientSessionInfo)
+        public string GetAsymetricCipher(ClientSession clientSessionInfo)
         {
             return clientSessionInfo.GetAsymetricCipher(this.ToJson());
         }
 
-        public void SetEncryptedValidationTokenHeaders(IApiEncryptionProvider encryptionProvider, ClientSessionInfo clientSessionInfo, HttpRequestMessage requestMessage)
+        public void SetEncryptedValidationTokenHeaders(IApiEncryptionProvider encryptionProvider, ClientSession clientSessionInfo, HttpRequestMessage requestMessage)
         {
             encryptionProvider.SetEncryptedValidationTokenHeaders(requestMessage, this.ToJson(), clientSessionInfo.PublicKey);
         }

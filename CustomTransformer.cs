@@ -9,13 +9,13 @@ namespace Bam.Net
     {
         public CustomTransformer()
         {
-            this.CustomUntransformer = new CustomUntransformer<TEncoded, TDecoded>() { CustomEncoder = this };
+            this.CustomUntransformer = new CustomUntransformer<TEncoded, TDecoded>() { CustomTransformer = this };
         }
 
         public CustomTransformer(Func<TDecoded, TEncoded> encoder, Func<IHttpContext, TEncoded, TDecoded> decoder)
         {
             this.Encoder = encoder;
-            this.CustomUntransformer = new CustomUntransformer<TEncoded, TDecoded>() { CustomEncoder = this, Untransformer = decoder };
+            this.CustomUntransformer = new CustomUntransformer<TEncoded, TDecoded>() { CustomTransformer = this, Untransformer = decoder };
         }
 
         public CustomUntransformer<TEncoded, TDecoded> CustomUntransformer { get; internal set; }

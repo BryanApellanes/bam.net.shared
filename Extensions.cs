@@ -2905,8 +2905,8 @@ namespace Bam.Net
         }
 
         /// <summary>
-        /// Drops the specified number of characters from the end of the 
-        /// string toTruncate and returns the result
+        /// Removes the specified number of characters from the end of the 
+        /// string and returns the result.
         /// </summary>
         /// <param name="toTruncate"></param>
         /// <param name="count"></param>
@@ -2914,14 +2914,16 @@ namespace Bam.Net
         public static string Truncate(this string toTruncate, int count)
         {
             if (count > toTruncate.Length)
-                return "";
+            {
+                return string.Empty;
+            }
 
             return toTruncate.Substring(0, toTruncate.Length - count);
         }
 
         /// <summary>
-        /// Drop the specified number of characters from the beginning of the
-        /// string toTruncate and returns the result
+        /// Removes the specified number of characters from the beginning of the
+        /// string and returns the result.
         /// </summary>
         /// <param name="toTruncate"></param>
         /// <param name="count"></param>
@@ -2929,7 +2931,9 @@ namespace Bam.Net
         public static string TruncateFront(this string toTruncate, int count)
         {
             if (count > toTruncate.Length)
-                return "";
+            {
+                return string.Empty;
+            }
 
             return toTruncate.Substring(count, toTruncate.Length - count);
         }

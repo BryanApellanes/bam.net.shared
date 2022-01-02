@@ -1,6 +1,0 @@
-﻿#TypeAssembly: ./bam.net.core.dll # only necessary for external assemblies
-SchemaName: ServiceProxyServer
-WriteSourceTo: ./Generated_Dao
-FromNameSpace: Bam.Net.Server.ServiceProxy.Data
-ToNameSpace: Bam.Net.Server.ServiceProxy.Data.Dao
-UseInheritanceSchema: false

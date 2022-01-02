@@ -36,6 +36,7 @@ namespace Bam.Net.ServiceProxy
             List<ValidationFailures> failures = new List<ValidationFailures>();
             List<string> messages = new List<string>();
 
+            // TODO: update ValidateEncryptedToken to read input from context.request.inputstream or whatever is available.
             //ValidateEncryptedToken(context, input, failures, messages);
             ValidateClassName(failures, messages);
             ValidateTargetType(failures, messages);

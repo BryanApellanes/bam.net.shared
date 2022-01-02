@@ -17,6 +17,7 @@ namespace Bam.Net.Server.ServiceProxy
 
         protected override IHttpResponse HandleContext(IHttpContext context)
         {
+            // See ServiceProxyResponder.SendProxyCode
             throw new NotImplementedException();
         }
     }

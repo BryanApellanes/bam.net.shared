@@ -22,15 +22,20 @@ namespace Bam.Net.Encryption
         public Decrypted(Encrypted value)
             : base(value.Cipher, value.Key, value.IV)
         {
+            this.SaltLength = value.SaltLength;
             Decrypt();
         }
 
-        public Decrypted(string base64Cipher, string b64Key, string iv = null)
+        public Decrypted(string base64Cipher, string b64Key, string iv)
         {
-            iv = iv ?? Convert.ToBase64String(new SecureRandom().GenerateSeed(16));
             this.Base64Cipher = base64Cipher;
             this.Base64Key = b64Key;
             this.Base64IV = iv;
+        }
+
+        public Decrypted(string base64Cipher, AesKeyVectorPair aesKeyVectorPair) 
+            : this(base64Cipher.FromBase64(), aesKeyVectorPair.Key.FromBase64(), aesKeyVectorPair.IV.FromBase64())
+        { 
         }
 
         public static implicit operator string(Decrypted dec)

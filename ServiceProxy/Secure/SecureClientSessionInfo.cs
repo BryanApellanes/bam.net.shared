@@ -11,7 +11,7 @@ namespace Bam.Net.ServiceProxy.Secure
     [Obsolete("Use SecureChannelSession instead")]
     public class SecureClientSessionInfo
     {
-        public ClientSessionInfo ClientSessionInfo { get; set; }
+        public ClientSession ClientSessionInfo { get; set; }
 
         [Obsolete("Use SecureSessionId instead.")]
         public Cookie SecureSessionCookie { get; set; }

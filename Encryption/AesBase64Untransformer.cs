@@ -1,5 +1,5 @@
-﻿using Bam.Net.Server.ServiceProxy.Data;
-using Bam.Net.ServiceProxy;
+﻿using Bam.Net.ServiceProxy;
+using Bam.Net.ServiceProxy.Data;
 using Bam.Net.ServiceProxy.Secure;
 using Bam.Net.Services;
 using System;
@@ -11,7 +11,7 @@ namespace Bam.Net.Encryption
     public class AesBase64Untransformer : IValueUntransformer<string, string>, IRequiresHttpContext, ICloneable, IContextCloneable
     {
         [Inject]
-        public ISecureChannelSessionManager SecureChannelSessionManager { get; set; }
+        public ISecureChannelSessionDataManager SecureChannelSessionDataManager { get; set; }
 
         public Encoding Encoding { get; set; }
         public IHttpContext HttpContext { get; set; }
@@ -41,9 +41,9 @@ namespace Bam.Net.Encryption
         public string Untransform(string base64EncodedCipher)
         {
             byte[] cipherBytes = base64EncodedCipher.FromBase64();
-            SecureChannelSession session = SecureChannelSessionManager.GetSecureChannelSessionForContext(HttpContext);
+            SecureChannelSession session = SecureChannelSessionDataManager.GetSecureChannelSessionForContextAsync(HttpContext).Result;
 
-            ClientSessionInfo clientSessionInfo = session.ToClientSessionInfo();
+            ClientSession clientSessionInfo = session.GetClientSession();
             return clientSessionInfo.GetPlainText(cipherBytes);
         }
 
