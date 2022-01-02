@@ -31,58 +31,6 @@ namespace Bam.Net.Encryption.Data.Dao
 		}
 
 
-	public class ApplicationKeySetQueryContext
-	{
-			public ApplicationKeySetCollection Where(WhereDelegate<ApplicationKeySetColumns> where, Database db = null)
-			{
-				return Bam.Net.Encryption.Data.Dao.ApplicationKeySet.Where(where, db);
-			}
-		   
-			public ApplicationKeySetCollection Where(WhereDelegate<ApplicationKeySetColumns> where, OrderBy<ApplicationKeySetColumns> orderBy = null, Database db = null)
-			{
-				return Bam.Net.Encryption.Data.Dao.ApplicationKeySet.Where(where, orderBy, db);
-			}
-
-			public ApplicationKeySet OneWhere(WhereDelegate<ApplicationKeySetColumns> where, Database db = null)
-			{
-				return Bam.Net.Encryption.Data.Dao.ApplicationKeySet.OneWhere(where, db);
-			}
-
-			public static ApplicationKeySet GetOneWhere(WhereDelegate<ApplicationKeySetColumns> where, Database db = null)
-			{
-				return Bam.Net.Encryption.Data.Dao.ApplicationKeySet.GetOneWhere(where, db);
-			}
-		
-			public ApplicationKeySet FirstOneWhere(WhereDelegate<ApplicationKeySetColumns> where, Database db = null)
-			{
-				return Bam.Net.Encryption.Data.Dao.ApplicationKeySet.FirstOneWhere(where, db);
-			}
-
-			public ApplicationKeySetCollection Top(int count, WhereDelegate<ApplicationKeySetColumns> where, Database db = null)
-			{
-				return Bam.Net.Encryption.Data.Dao.ApplicationKeySet.Top(count, where, db);
-			}
-
-			public ApplicationKeySetCollection Top(int count, WhereDelegate<ApplicationKeySetColumns> where, OrderBy<ApplicationKeySetColumns> orderBy, Database db = null)
-			{
-				return Bam.Net.Encryption.Data.Dao.ApplicationKeySet.Top(count, where, orderBy, db);
-			}
-
-			public long Count(WhereDelegate<ApplicationKeySetColumns> where, Database db = null)
-			{
-				return Bam.Net.Encryption.Data.Dao.ApplicationKeySet.Count(where, db);
-			}
-	}
-
-	static ApplicationKeySetQueryContext _applicationKeySets;
-	static object _applicationKeySetsLock = new object();
-	public static ApplicationKeySetQueryContext ApplicationKeySets
-	{
-		get
-		{
-			return _applicationKeySetsLock.DoubleCheckLock<ApplicationKeySetQueryContext>(ref _applicationKeySets, () => new ApplicationKeySetQueryContext());
-		}
-	}
 	public class ClientKeySetQueryContext
 	{
 			public ClientKeySetCollection Where(WhereDelegate<ClientKeySetColumns> where, Database db = null)

@@ -21,6 +21,12 @@ namespace Bam.Net.Encryption
             SetKeyAndIv();
         }
 
+        public AesKeyVectorPair(string base64EncodedKey, string base64EncdoedIV)
+        {
+            this.Key = base64EncodedKey;
+            this.IV = base64EncdoedIV;
+        }
+
         static readonly object _aesLock = new object();
         static volatile AesKeyVectorPair _key;
 

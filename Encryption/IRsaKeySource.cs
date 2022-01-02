@@ -4,8 +4,8 @@ using System.Text;
 
 namespace Bam.Net.Encryption
 {
-    public interface IApplicationKeySet
+    public interface IRsaKeySource
     {
-        string ApplicationName { get; set; }
+        RsaPublicPrivateKeyPair GetRsaKey();
     }
 }

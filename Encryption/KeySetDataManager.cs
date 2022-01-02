@@ -1,5 +1,8 @@
-﻿using Bam.Net.Encryption.Data;
+﻿using Bam.Net.Data;
+using Bam.Net.Data.Repositories;
+using Bam.Net.Encryption.Data;
 using Bam.Net.Encryption.Data.Dao.Repository;
+//using Bam.Net.Encryption.Data.Dao.Repository;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -12,6 +15,16 @@ namespace Bam.Net.Encryption
         public KeySetDataManager()
         {
             this.EncryptionDataRepository = new EncryptionDataRepository();
+        }
+
+        public KeySetDataManager(Database database)
+        {
+            this.EncryptionDataRepository = new EncryptionDataRepository() { Database = database };
+        }
+
+        public KeySetDataManager(EncryptionDataRepository repository)
+        {
+            this.EncryptionDataRepository = repository;
         }
 
         public EncryptionDataRepository EncryptionDataRepository { get; }
@@ -47,8 +60,9 @@ namespace Bam.Net.Encryption
 
         public Task<IAesKeyExchange> GetKeyExchangeAsync(string clientKeySetIdentifier)
         {
-            ClientKeySet clientKeySet = EncryptionDataRepository.GetOneClientKeySetWhere(query => query.Identifier == clientKeySetIdentifier);
-            return GetKeyExchangeAsync(clientKeySet);
+            throw new NotImplementedException();
+            //ClientKeySet clientKeySet = EncryptionDataRepository.GetOneClientKeySetWhere(query => query.Identifier == clientKeySetIdentifier);
+            //return GetKeyExchangeAsync(clientKeySet);
         }
 
         public Task<ISecretExchange> GetSecretExchangeAsync(IServerKeySet serverKeys)
@@ -58,8 +72,9 @@ namespace Bam.Net.Encryption
 
         public Task<ISecretExchange> GetSecretExchangeAsync(string serverKeySetIdentifier)
         {
-            ServerKeySet serverKeySet = EncryptionDataRepository.GetOneServerKeySetWhere(query => query.Identifier == serverKeySetIdentifier);
-            return GetSecretExchangeAsync(serverKeySet);
+            throw new NotImplementedException();
+            //ServerKeySet serverKeySet = EncryptionDataRepository.GetOneServerKeySetWhere(query => query.Identifier == serverKeySetIdentifier);
+            //return GetSecretExchangeAsync(serverKeySet);
         }
     }
 }

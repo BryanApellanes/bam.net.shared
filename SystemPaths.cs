@@ -18,14 +18,14 @@ namespace Bam.Net
             Root = BamHome.Path;
             Public = BamHome.PublicPath;
             SystemDrive = BamHome.SystemRoot;
-            Apps = BamHome.Apps;
+            Apps = BamHome.AppsPath;
             Local = BamHome.Local;
-            Content = BamHome.Content;
-            Conf = BamHome.Config;
+            Content = BamHome.ContentPath;
+            Conf = BamHome.ConfigPath;
             Generated = BamProfile.GeneratedPath;
             Proxies = BamProfile.ProxiesPath;
             Logs = BamProfile.LogsPath;
-            Tools = BamHome.Tools;
+            Tools = BamHome.ToolsPath;
         }
 
         public static SystemPaths Get(IDataDirectoryProvider dataDirectoryProvider)

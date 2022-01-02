@@ -4,8 +4,8 @@ using System.Text;
 
 namespace Bam.Net.Encryption
 {
-    public interface IApplicationKeySet
+    public interface IAesKeySource
     {
-        string ApplicationName { get; set; }
+        AesKeyVectorPair GetAesKey();
     }
 }

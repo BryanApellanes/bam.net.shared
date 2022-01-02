@@ -103,6 +103,20 @@ namespace Bam.Net.Encryption.Data.Dao
         }
     }
 
+    // property:ApplicationName, columnName: ApplicationName	
+    [Bam.Net.Data.Column(Name="ApplicationName", DbDataType="VarChar", MaxLength="4000", AllowNull=true)]
+    public string ApplicationName
+    {
+        get
+        {
+            return GetStringValue("ApplicationName");
+        }
+        set
+        {
+            SetValue("ApplicationName", value);
+        }
+    }
+
     // property:MachineName, columnName: MachineName	
     [Bam.Net.Data.Column(Name="MachineName", DbDataType="VarChar", MaxLength="4000", AllowNull=true)]
     public string MachineName
@@ -142,20 +156,6 @@ namespace Bam.Net.Encryption.Data.Dao
         set
         {
             SetValue("ClientHostName", value);
-        }
-    }
-
-    // property:ApplicationName, columnName: ApplicationName	
-    [Bam.Net.Data.Column(Name="ApplicationName", DbDataType="VarChar", MaxLength="4000", AllowNull=true)]
-    public string ApplicationName
-    {
-        get
-        {
-            return GetStringValue("ApplicationName");
-        }
-        set
-        {
-            SetValue("ApplicationName", value);
         }
     }
 

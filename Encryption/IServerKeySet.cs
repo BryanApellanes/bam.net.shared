@@ -4,12 +4,9 @@ using System.Text;
 
 namespace Bam.Net.Encryption
 {
-    public interface IServerKeySet
+    public interface IServerKeySet : IApplicationKeySet, IKeySet, ICommunicationKeySet
     {
         string Identifier { get; }
-        string RsaKey { get; }
-        string AesKey { get; }
-        string AesIV { get; }
 
         string Secret { get; }
 

@@ -5,14 +5,13 @@ using System.Text;
 
 namespace Bam.Net.Encryption
 {
-    public class KeyExchange : IAesKeyExchange
+    public class AesKeyExchange : IAesKeyExchange
     {
-        public KeyExchange(IKeySet keySet)
+        public AesKeyExchange(IClientKeySet keySet)
         {
-            AsymmetricCipherKeyPair asymmetricCipherKeyPair = keySet.GetAsymmetricKeys();
-            this.PublicKey = asymmetricCipherKeyPair.PublicKeyToPem();
-            this.AesKeyCipher = keySet.AesKey.EncryptWithPublicKey(asymmetricCipherKeyPair.Public);
-            this.AesIVCipher = keySet.AesKey.EncryptWithPublicKey(asymmetricCipherKeyPair.Public);
+            this.PublicKey = keySet.PublicKey;
+            this.AesKeyCipher = keySet.AesKey.EncryptWithPublicKey(keySet.PublicKey);
+            this.AesIVCipher = keySet.AesKey.EncryptWithPublicKey(keySet.PublicKey);
         }
 
         public string PublicKey
@@ -33,13 +32,13 @@ namespace Bam.Net.Encryption
             set;
         }
 
-        public string Sender
+        public string Client
         {
             get;
             set;
         }
 
-        public string Receiver
+        public string Server
         {
             get;
             set;

@@ -145,17 +145,17 @@ namespace Bam.Net.Encryption.Data.Dao
         }
     }
 
-    // property:ApplicationName, columnName: ApplicationName	
-    [Bam.Net.Data.Column(Name="ApplicationName", DbDataType="VarChar", MaxLength="4000", AllowNull=true)]
-    public string ApplicationName
+    // property:PublicKey, columnName: PublicKey	
+    [Bam.Net.Data.Column(Name="PublicKey", DbDataType="VarChar", MaxLength="4000", AllowNull=true)]
+    public string PublicKey
     {
         get
         {
-            return GetStringValue("ApplicationName");
+            return GetStringValue("PublicKey");
         }
         set
         {
-            SetValue("ApplicationName", value);
+            SetValue("PublicKey", value);
         }
     }
 
@@ -170,20 +170,6 @@ namespace Bam.Net.Encryption.Data.Dao
         set
         {
             SetValue("Identifier", value);
-        }
-    }
-
-    // property:RsaKey, columnName: RsaKey	
-    [Bam.Net.Data.Column(Name="RsaKey", DbDataType="VarChar", MaxLength="4000", AllowNull=true)]
-    public string RsaKey
-    {
-        get
-        {
-            return GetStringValue("RsaKey");
-        }
-        set
-        {
-            SetValue("RsaKey", value);
         }
     }
 
@@ -215,17 +201,17 @@ namespace Bam.Net.Encryption.Data.Dao
         }
     }
 
-    // property:Secret, columnName: Secret	
-    [Bam.Net.Data.Column(Name="Secret", DbDataType="VarChar", MaxLength="4000", AllowNull=true)]
-    public string Secret
+    // property:ApplicationName, columnName: ApplicationName	
+    [Bam.Net.Data.Column(Name="ApplicationName", DbDataType="VarChar", MaxLength="4000", AllowNull=true)]
+    public string ApplicationName
     {
         get
         {
-            return GetStringValue("Secret");
+            return GetStringValue("ApplicationName");
         }
         set
         {
-            SetValue("Secret", value);
+            SetValue("ApplicationName", value);
         }
     }
 

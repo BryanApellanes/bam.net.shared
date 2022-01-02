@@ -25,9 +25,6 @@ namespace Bam.Net.Encryption.Data.Dao.Repository
 			BaseNamespace = "Bam.Net.Encryption.Data";			
 
 			
-			AddType<Bam.Net.Encryption.Data.ApplicationKeySet>();
-			
-			
 			AddType<Bam.Net.Encryption.Data.ClientKeySet>();
 			
 			
@@ -48,126 +45,6 @@ namespace Bam.Net.Encryption.Data.Dao.Repository
                 base.AddType(type);
                 DaoAssembly = typeof(EncryptionDataRepository).Assembly;
             }
-        }
-
-		
-		/// <summary>
-		/// Set one entry matching the specified filter.  If none exists 
-		/// one is created; success depends on the nullability
-		/// of the specified columns.
-		/// </summary>
-		public void SetOneApplicationKeySetWhere(WhereDelegate<ApplicationKeySetColumns> where)
-		{
-			Bam.Net.Encryption.Data.Dao.ApplicationKeySet.SetOneWhere(where, Database);
-		}
-
-		/// <summary>
-		/// Set one entry matching the specified filter.  If none exists 
-		/// one is created; success depends on the nullability
-		/// of the specified columns.
-		/// </summary>
-		public void SetOneApplicationKeySetWhere(WhereDelegate<ApplicationKeySetColumns> where, out Bam.Net.Encryption.Data.ApplicationKeySet result)
-		{
-			Bam.Net.Encryption.Data.Dao.ApplicationKeySet.SetOneWhere(where, out Bam.Net.Encryption.Data.Dao.ApplicationKeySet daoResult, Database);
-			result = daoResult.CopyAs<Bam.Net.Encryption.Data.ApplicationKeySet>();
-		}
-
-		/// <summary>
-		/// Get one entry matching the specified filter.  If none exists 
-		/// one is created; success depends on the nullability
-		/// of the specified columns.
-		/// </summary>
-		/// <param name="where"></param>
-		public Bam.Net.Encryption.Data.ApplicationKeySet GetOneApplicationKeySetWhere(WhereDelegate<ApplicationKeySetColumns> where)
-		{
-			Type wrapperType = GetWrapperType<Bam.Net.Encryption.Data.ApplicationKeySet>();
-			return (Bam.Net.Encryption.Data.ApplicationKeySet)Bam.Net.Encryption.Data.Dao.ApplicationKeySet.GetOneWhere(where, Database)?.CopyAs(wrapperType, this);
-		}
-
-		/// <summary>
-		/// Execute a query that should return only one result.  If no result is found null is returned.  If more
-		/// than one result is returned a MultipleEntriesFoundException is thrown.  This method is most commonly used to retrieve a
-		/// single ApplicationKeySet instance by its Id/Key value
-		/// </summary>
-		/// <param name="where">A WhereDelegate that receives a ApplicationKeySetColumns 
-		/// and returns a IQueryFilter which is the result of any comparisons
-		/// between ApplicationKeySetColumns and other values
-		/// </param>
-		public Bam.Net.Encryption.Data.ApplicationKeySet OneApplicationKeySetWhere(WhereDelegate<ApplicationKeySetColumns> where)
-        {
-            Type wrapperType = GetWrapperType<Bam.Net.Encryption.Data.ApplicationKeySet>();
-            return (Bam.Net.Encryption.Data.ApplicationKeySet)Bam.Net.Encryption.Data.Dao.ApplicationKeySet.OneWhere(where, Database)?.CopyAs(wrapperType, this);
-        }
-
-		/// <summary>
-		/// Execute a query and return the results. 
-		/// </summary>
-		/// <param name="where">A WhereDelegate that receives a Bam.Net.Encryption.Data.ApplicationKeySetColumns 
-		/// and returns a IQueryFilter which is the result of any comparisons
-		/// between Bam.Net.Encryption.Data.ApplicationKeySetColumns and other values
-		/// </param>
-		public IEnumerable<Bam.Net.Encryption.Data.ApplicationKeySet> ApplicationKeySetsWhere(WhereDelegate<ApplicationKeySetColumns> where, OrderBy<ApplicationKeySetColumns> orderBy = null)
-        {
-            return Wrap<Bam.Net.Encryption.Data.ApplicationKeySet>(Bam.Net.Encryption.Data.Dao.ApplicationKeySet.Where(where, orderBy, Database));
-        }
-		
-		/// <summary>
-		/// Execute a query and return the specified number
-		/// of values. This method issues a sql TOP clause so only the 
-		/// specified number of values will be returned.
-		/// </summary>
-		/// <param name="count">The number of values to return.
-		/// This value is used in the sql query so no more than this 
-		/// number of values will be returned by the database.
-		/// </param>
-		/// <param name="where">A WhereDelegate that receives a ApplicationKeySetColumns 
-		/// and returns a IQueryFilter which is the result of any comparisons
-		/// between ApplicationKeySetColumns and other values
-		/// </param>
-		public IEnumerable<Bam.Net.Encryption.Data.ApplicationKeySet> TopApplicationKeySetsWhere(int count, WhereDelegate<ApplicationKeySetColumns> where)
-        {
-            return Wrap<Bam.Net.Encryption.Data.ApplicationKeySet>(Bam.Net.Encryption.Data.Dao.ApplicationKeySet.Top(count, where, Database));
-        }
-
-        public IEnumerable<Bam.Net.Encryption.Data.ApplicationKeySet> TopApplicationKeySetsWhere(int count, WhereDelegate<ApplicationKeySetColumns> where, OrderBy<ApplicationKeySetColumns> orderBy)
-        {
-            return Wrap<Bam.Net.Encryption.Data.ApplicationKeySet>(Bam.Net.Encryption.Data.Dao.ApplicationKeySet.Top(count, where, orderBy, Database));
-        }
-                                
-		/// <summary>
-		/// Return the count of ApplicationKeySets
-		/// </summary>
-		public long CountApplicationKeySets()
-        {
-            return Bam.Net.Encryption.Data.Dao.ApplicationKeySet.Count(Database);
-        }
-
-		/// <summary>
-		/// Execute a query and return the number of results
-		/// </summary>
-		/// <param name="where">A WhereDelegate that receives a ApplicationKeySetColumns 
-		/// and returns a IQueryFilter which is the result of any comparisons
-		/// between ApplicationKeySetColumns and other values
-		/// </param>
-        public long CountApplicationKeySetsWhere(WhereDelegate<ApplicationKeySetColumns> where)
-        {
-            return Bam.Net.Encryption.Data.Dao.ApplicationKeySet.Count(where, Database);
-        }
-        
-        public async Task BatchQueryApplicationKeySets(int batchSize, WhereDelegate<ApplicationKeySetColumns> where, Action<IEnumerable<Bam.Net.Encryption.Data.ApplicationKeySet>> batchProcessor)
-        {
-            await Bam.Net.Encryption.Data.Dao.ApplicationKeySet.BatchQuery(batchSize, where, (batch) =>
-            {
-				batchProcessor(Wrap<Bam.Net.Encryption.Data.ApplicationKeySet>(batch));
-            }, Database);
-        }
-		
-        public async Task BatchAllApplicationKeySets(int batchSize, Action<IEnumerable<Bam.Net.Encryption.Data.ApplicationKeySet>> batchProcessor)
-        {
-            await Bam.Net.Encryption.Data.Dao.ApplicationKeySet.BatchAll(batchSize, (batch) =>
-            {
-				batchProcessor(Wrap<Bam.Net.Encryption.Data.ApplicationKeySet>(batch));
-            }, Database);
         }
 
 		

@@ -64,18 +64,18 @@ namespace Bam.Net
         /// <summary>
         /// The path where third party tools are found, including sysinternals and opencover.
         /// </summary>
-        public static string Tools => System.IO.Path.Combine(ToolsSegments);
+        public static string ToolsPath => System.IO.Path.Combine(ToolsSegments);
         public static string[] ToolsSegments => new List<string>() {Path, "bin", "tools"}.ToArray();
         
-        public static string Tests => System.IO.Path.Combine(TestsSegments);
+        public static string TestsPath => System.IO.Path.Combine(TestsSegments);
 
         public static string[] TestsSegments => new List<string>() {UserHome, ".bam", "tests"}.ToArray();
 
-        public static string Content => System.IO.Path.Combine(ContentSegments);
+        public static string ContentPath => System.IO.Path.Combine(ContentSegments);
 
         public static string[] ContentSegments => new List<string>(PathSegments) {"content"}.ToArray();
 
-        public static string Apps => System.IO.Path.Combine(AppsSegments);
+        public static string AppsPath => System.IO.Path.Combine(AppsSegments);
 
         public static string[] AppsSegments => new List<string>(ContentSegments) {"apps"}.ToArray();
 
@@ -83,14 +83,15 @@ namespace Bam.Net
 
         public static string[] SvcScriptsSrcSegments => new List<string>(PathSegments) {"svc", "scripts"}.ToArray();
 
-        public static string Config => System.IO.Path.Combine(ConfigSegments);
+        public static string ConfigPath => System.IO.Path.Combine(ConfigSegments);
 
         public static string[] ConfigSegments => new List<string>(PathSegments) {"config"}.ToArray();
 
         public static string DataPath => System.IO.Path.Combine(DataSegments);
 
         public static string[] DataSegments => new List<string>(PathSegments) {"data"}.ToArray();
-        public static string Recipes => System.IO.Path.Combine(RecipeSegments);
+        
+        public static string RecipesPath => System.IO.Path.Combine(RecipeSegments);
         public static string[] RecipeSegments => new List<string>(PathSegments) {"recipes"}.ToArray();
     }
 }

@@ -46,10 +46,10 @@ namespace Bam.Net.Encryption.Data.Dao
         public ServerKeySetColumns Id => new ServerKeySetColumns("Id");
         public ServerKeySetColumns Uuid => new ServerKeySetColumns("Uuid");
         public ServerKeySetColumns Cuid => new ServerKeySetColumns("Cuid");
+        public ServerKeySetColumns ApplicationName => new ServerKeySetColumns("ApplicationName");
         public ServerKeySetColumns MachineName => new ServerKeySetColumns("MachineName");
         public ServerKeySetColumns ServerHostName => new ServerKeySetColumns("ServerHostName");
         public ServerKeySetColumns ClientHostName => new ServerKeySetColumns("ClientHostName");
-        public ServerKeySetColumns ApplicationName => new ServerKeySetColumns("ApplicationName");
         public ServerKeySetColumns Identifier => new ServerKeySetColumns("Identifier");
         public ServerKeySetColumns RsaKey => new ServerKeySetColumns("RsaKey");
         public ServerKeySetColumns AesKey => new ServerKeySetColumns("AesKey");

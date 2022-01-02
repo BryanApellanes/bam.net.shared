@@ -12,6 +12,9 @@ using Org.BouncyCastle.Security;
 
 namespace Bam.Net.Encryption
 {
+    /// <summary>
+    /// A salted encryption cipher.
+    /// </summary>
     public class Encrypted
     {
         protected static readonly int DefaultSaltLength = 8;

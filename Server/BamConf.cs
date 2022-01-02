@@ -532,7 +532,7 @@ namespace Bam.Net.Server
 
         public static BamConf Load()
         {
-            return Load(DefaultConfiguration.GetAppSetting(ContentRootConfigKey, BamHome.Content));
+            return Load(DefaultConfiguration.GetAppSetting(ContentRootConfigKey, BamHome.ContentPath));
         }
 
         /// <summary>

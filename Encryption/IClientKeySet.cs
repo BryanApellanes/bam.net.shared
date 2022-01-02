@@ -4,13 +4,12 @@ using System.Text;
 
 namespace Bam.Net.Encryption
 {
-    public interface IClientKeySet
+    public interface IClientKeySet : ICommunicationKeySet
     {
         /// <summary>
         /// Gets a value that uniquely identifies this client key set.
         /// </summary>
         string Identifier { get; }
-        string ServerHostName { get; }
 
         string PublicKey { get; }
         string AesKey { get; }

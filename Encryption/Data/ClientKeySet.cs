@@ -10,9 +10,9 @@ namespace Bam.Net.Encryption.Data
     /// Represents a key set for the current process or host to use
     /// in communication as the client.
     /// </summary>
-    public class ClientKeySet : ApplicationKeySet, IClientKeySet
+    public class ClientKeySet : KeyedAuditRepoData, IApplicationKeySet, IClientKeySet, IAesKeySource, ICommunicationKeySet
     {
-        public ClientKeySet() : base(RsaKeyLength._2048, true)
+        public ClientKeySet() 
         {
             this.MachineName = Environment.MachineName;
             this.ClientHostName = Dns.GetHostName();
@@ -33,22 +33,24 @@ namespace Bam.Net.Encryption.Data
         [CompositeKey]
         public string ServerHostName { get; set; }
 
-        string _publicKeyPem;
-        public string PublicKey
+        [CompositeKey]
+        public string PublicKey { get; set; }
+
+        public string Identifier { get; set; }
+
+        public string AesKey { get; set; }
+
+        public string AesIV { get; set; }
+        public string ApplicationName { get; set; }
+
+        public AesKeyVectorPair GetAesKey()
         {
-            get
-            {
-                if (string.IsNullOrEmpty(_publicKeyPem))
-                {
-                    _publicKeyPem = RsaKey.FromPem().PublicKeyToPem();
-                }
-                return _publicKeyPem;
-            }
+            return new AesKeyVectorPair(AesKey, AesIV);
         }
 
         public IAesKeyExchange GetKeyExchange()
         {
-            return new KeyExchange(this);
+            return new AesKeyExchange(this);
         }
     }
 }

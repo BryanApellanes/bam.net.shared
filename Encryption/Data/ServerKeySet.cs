@@ -10,13 +10,16 @@ namespace Bam.Net.Encryption.Data
     /// Represents a key set for the current process or host to use 
     /// in communication as the server.
     /// </summary>
-    public class ServerKeySet : ApplicationKeySet, IServerKeySet
+    public class ServerKeySet : KeySet, IServerKeySet, IRsaKeySource
     {
-        public ServerKeySet() : base(RsaKeyLength._2048, true)
+        public ServerKeySet() 
         {
             this.MachineName = Environment.MachineName;
             this.ServerHostName = Dns.GetHostName();
         }
+
+        [CompositeKey]
+        public string ApplicationName { get; set; }
 
         /// <summary>
         /// Gets or sets the name of the machine that instantiated this keyset.
@@ -32,6 +35,11 @@ namespace Bam.Net.Encryption.Data
 
         [CompositeKey]
         public string ClientHostName { get; set; }
+
+        public RsaPublicPrivateKeyPair GetRsaKey()
+        {
+            return new RsaPublicPrivateKeyPair(RsaKey) { RsaKeyLength = RsaKeyLength };
+        }
 
         public ISecretExchange GetSecretExchange()
         {

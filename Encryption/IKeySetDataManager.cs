@@ -1,4 +1,4 @@
-﻿using Bam.Net.Encryption.Data.Dao.Repository;
+﻿//using Bam.Net.Encryption.Data.Dao.Repository;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -8,7 +8,7 @@ namespace Bam.Net.Encryption
 {
     public interface IKeySetDataManager
     { 
-        EncryptionDataRepository EncryptionDataRepository { get; }
+        //EncryptionDataRepository EncryptionDataRepository { get; }
 
         Task<IServerKeySet> CreateServerKeySetAsync(string clientHostName);
         

@@ -17,12 +17,12 @@ namespace Bam.Net
         /// <summary>
         /// Resolves {Paths.Apps}/{AppName}
         /// </summary>
-        public static string AppRoot => Path.Combine(BamHome.Apps, AppName());
+        public static string AppRoot => Path.Combine(BamHome.AppsPath, AppName());
 
         /// <summary>
         /// Resolves {BamHome.Content}/apps/{AppName}
         /// </summary>
-        public static string Content => Path.Combine(BamHome.Content, "apps", AppName());
+        public static string Content => Path.Combine(BamHome.ContentPath, "apps", AppName());
 
         /// <summary>
         /// Resolves {AppPaths.AppRoot}/services

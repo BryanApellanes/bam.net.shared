@@ -35,7 +35,7 @@ namespace Bam.Net.Server
         public const string CommonFolder = "common";
         
         static string contentRootConfigKey = "ContentRoot";
-        static readonly string defaultRoot = BamHome.Content;
+        static readonly string defaultRoot = BamHome.ContentPath;
         public const string IncludeFileName = "include.js";
         public const string LayoutFileExtension = ".layout";
         public const string HostAppMapFile = "hostAppMaps.json";

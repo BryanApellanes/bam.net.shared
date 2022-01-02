@@ -71,7 +71,7 @@ namespace Bam.Net.Services.Clients
 
         private static ServiceRegistry GetServiceRegistry(CoreClient coreClient)        
         {
-            string contentRoot = DefaultConfiguration.GetAppSetting("ContentRoot", BamHome.Content);
+            string contentRoot = DefaultConfiguration.GetAppSetting("ContentRoot", BamHome.ContentPath);
             
             // TODO: do something with this information
             string organization = DefaultConfiguration.GetAppSetting("Organization", "PUBLIC");
