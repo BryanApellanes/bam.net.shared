@@ -18,6 +18,14 @@ namespace Bam.Net.Encryption.Data
             this.ClientHostName = Dns.GetHostName();
         }
 
+        public ClientKeySet(bool initialize): this()
+        {
+            if (initialize)
+            {
+                Initialize();
+            }
+        }
+
         /// <summary>
         /// Gets or sets the name of the machine that instantiated this keyset.
         /// </summary>
@@ -33,8 +41,20 @@ namespace Bam.Net.Encryption.Data
         [CompositeKey]
         public string ServerHostName { get; set; }
 
+        string _publicKey;
         [CompositeKey]
-        public string PublicKey { get; set; }
+        public string PublicKey
+        {
+            get
+            {
+                return _publicKey;
+            }
+            set
+            {
+                _publicKey = value;
+                SetIdentifier();
+            }
+        }
 
         public string Identifier { get; set; }
 
@@ -43,14 +63,49 @@ namespace Bam.Net.Encryption.Data
         public string AesIV { get; set; }
         public string ApplicationName { get; set; }
 
+        public void Initialize()
+        {
+            EnsureAesKey();
+        }
+
         public AesKeyVectorPair GetAesKey()
         {
+            EnsureAesKey();
             return new AesKeyVectorPair(AesKey, AesIV);
+        }
+
+        public bool GetIsInitialized()
+        {
+            return !string.IsNullOrEmpty(AesKey) && !string.IsNullOrEmpty(AesIV);
         }
 
         public IAesKeyExchange GetKeyExchange()
         {
+            EnsureAesKey();
             return new AesKeyExchange(this);
+        }
+
+        protected void EnsureAesKey()
+        {
+            if (!GetIsInitialized())
+            {
+                SetAesKey();
+            }
+        }
+
+        protected void SetAesKey()
+        {
+            AesKeyVectorPair aesKeyVectorPair = new AesKeyVectorPair();
+            AesKey = aesKeyVectorPair.Key;
+            AesIV = aesKeyVectorPair.IV;
+        }
+
+        protected void SetIdentifier()
+        {
+            if (!string.IsNullOrEmpty(PublicKey))
+            {
+                this.Identifier = KeySet.GetIdentifier(PublicKey);
+            }
         }
     }
 }

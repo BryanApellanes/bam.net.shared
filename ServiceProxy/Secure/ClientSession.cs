@@ -59,7 +59,7 @@ namespace Bam.Net.ServiceProxy.Secure
         /// <summary>
         /// The key for the current session.
         /// </summary>
-        protected internal string SessionKey
+        protected internal string AesKey
         {
             get;
             set;
@@ -68,7 +68,7 @@ namespace Bam.Net.ServiceProxy.Secure
         /// <summary>
         /// The initialization vector for the current session
         /// </summary>
-        protected internal string SessionIV
+        protected internal string AesIV
         {
             get;
             set;
@@ -97,27 +97,27 @@ namespace Bam.Net.ServiceProxy.Secure
         /// <returns></returns>
         public string GetSymetricCipher(string plainText)
         {
-            Encrypted encrypted = new Encrypted(plainText, SessionKey, SessionIV);
+            Encrypted encrypted = new Encrypted(plainText, AesKey, AesIV);
             return encrypted.Base64Cipher;
         }
 
         public byte[] GetSymetricCipherBytes(string plainText)
         {
-            Encrypted encrypted = new Encrypted(plainText, SessionKey, SessionIV);
+            Encrypted encrypted = new Encrypted(plainText, AesKey, AesIV);
             return encrypted.Cipher;
         }
 
         public string GetPlainText(byte[] cipherBytes)
         {
             string base64Cipher = Convert.ToBase64String(cipherBytes);
-            Decrypted decrypted = new Decrypted(base64Cipher, SessionKey, SessionIV);
+            Decrypted decrypted = new Decrypted(base64Cipher, AesKey, AesIV);
             return decrypted.Value;
         }
 
         public byte[] GetPlainBytes(byte[] cipherBytes, Encoding encoding = null)
         {
             string base64Cipher = Convert.ToBase64String(cipherBytes);
-            Decrypted decrypted = new Decrypted(base64Cipher, SessionKey, SessionIV);
+            Decrypted decrypted = new Decrypted(base64Cipher, AesKey, AesIV);
             encoding = encoding ?? Encoding.UTF8;
             return encoding.GetBytes(decrypted.Value);
         }
@@ -165,8 +165,8 @@ namespace Bam.Net.ServiceProxy.Secure
         protected internal AesKeyVectorPair InitializeSessionKey()
         {
             AesKeyVectorPair kvp = new AesKeyVectorPair();
-            SessionKey = kvp.Key;
-            SessionIV = kvp.IV;
+            AesKey = kvp.Key;
+            AesIV = kvp.IV;
             return kvp;
         }
     }

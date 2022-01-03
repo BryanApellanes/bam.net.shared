@@ -9,9 +9,17 @@ namespace Bam.Net.Encryption
     {
         public AesKeyExchange(IClientKeySet keySet)
         {
+            this.Identifier = keySet.Identifier;
             this.PublicKey = keySet.PublicKey;
             this.AesKeyCipher = keySet.AesKey.EncryptWithPublicKey(keySet.PublicKey);
-            this.AesIVCipher = keySet.AesKey.EncryptWithPublicKey(keySet.PublicKey);
+            this.AesIVCipher = keySet.AesIV.EncryptWithPublicKey(keySet.PublicKey);
+            this.ClientHostName = keySet.ClientHostName;
+            this.ServerHostName = keySet.ServerHostName;
+        }
+
+        public string Identifier
+        {
+            get;
         }
 
         public string PublicKey
@@ -32,13 +40,13 @@ namespace Bam.Net.Encryption
             set;
         }
 
-        public string Client
+        public string ClientHostName
         {
             get;
             set;
         }
 
-        public string Server
+        public string ServerHostName
         {
             get;
             set;

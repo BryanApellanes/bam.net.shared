@@ -6,17 +6,19 @@ namespace Bam.Net.Encryption
 {
     public interface IAesKeyExchange
     {
-        /// <summary>
-        /// Gets or sets the sender.  This should be the host name of the client that 
-        /// generated the aes key.
-        /// </summary>
-        string Client { get; set; }
+        string Identifier { get; }
 
         /// <summary>
-        /// Gets or sets the receiver.  This should be the host name of the server that has
+        /// Gets or sets the sender.  This is the host name of the client that 
+        /// generated the aes key.
+        /// </summary>
+        string ClientHostName { get; set; }
+
+        /// <summary>
+        /// Gets or sets the receiver.  This is the host name of the server that has
         /// the private key used to decrypt the aes key.
         /// </summary>
-        string Server { get; set; }
+        string ServerHostName { get; set; }
 
         string PublicKey { get; set; }
         string AesKeyCipher { get; set; }

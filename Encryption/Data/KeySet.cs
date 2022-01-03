@@ -12,20 +12,26 @@ namespace Bam.Net.Encryption.Data
     {
         public KeySet() 
         {
-            this.RsaKeyLength = RsaKeyLength._2048;
+            this.Identifier = $"uninitialized_".RandomLetters(8);
+            this.RsaKeyLength = RsaKeyLength._2048;            
         }
         
         public KeySet(RsaKeyLength keyLength = RsaKeyLength._2048)
         {
+            this.Identifier = $"uninitialized_".RandomLetters(8);
             this.RsaKeyLength = keyLength;
         }
 
-        public KeySet(RsaKeyLength keyLength, bool init = false) : this(keyLength)
+        public KeySet(RsaKeyLength keyLength, bool initializeRsa = false, bool initializeAes = false) : this(keyLength)
         {
             this.Identifier = $"uninitialized_".RandomLetters(8);
-            if (init)
+            if (initializeRsa)
             {
-                Init();
+                InitializeRsaKey();
+            }
+            if (initializeAes)
+            {
+                InitializeAesKey();
             }
         }
 
@@ -113,16 +119,24 @@ namespace Bam.Net.Encryption.Data
             return _asymmetricCipherKeyPair;
         }
 
-        protected void Init()
+        public void InitializeRsaKey()
         {
             AsymmetricCipherKeyPair rsaKeyPair = Rsa.GenerateKeyPair(RsaKeyLength);
-            Identifier = $"keyset_{rsaKeyPair.PublicKeyToPem().Sha256()}";
+            Identifier = GetIdentifier(rsaKeyPair.PublicKeyToPem());
 
             RsaKey = rsaKeyPair.ToPem();
+        }
 
+        public void InitializeAesKey()
+        {
             AesKeyVectorPair akvp = new AesKeyVectorPair();
             AesKey = akvp.Key;
             AesIV = akvp.IV;
+        }
+
+        protected internal static string GetIdentifier(string publicKey)
+        {
+            return $"keyset_{publicKey.Sha256()}";
         }
     }
 }

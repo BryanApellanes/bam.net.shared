@@ -162,8 +162,8 @@ namespace Bam.Net.ServiceProxy.Data
             {
                 ClientIdentifier = Identifier,
                 PublicKey = GetPublicKey(),
-                SessionIV = SymmetricIV.DecryptWithPrivateKey(AsymmetricCipherKeyPair, Encoding.UTF8),
-                SessionKey = SymmetricKey.DecryptWithPrivateKey(AsymmetricCipherKeyPair, Encoding.UTF8),
+                AesIV = SymmetricIV.DecryptWithPrivateKey(AsymmetricCipherKeyPair, Encoding.UTF8),
+                AesKey = SymmetricKey.DecryptWithPrivateKey(AsymmetricCipherKeyPair, Encoding.UTF8),
             };
         }
 

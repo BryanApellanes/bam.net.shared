@@ -2,7 +2,8 @@
 using Bam.Net.Data.Repositories;
 using Bam.Net.Encryption.Data;
 using Bam.Net.Encryption.Data.Dao.Repository;
-//using Bam.Net.Encryption.Data.Dao.Repository;
+using Bam.Net.Services;
+using Org.BouncyCastle.Crypto;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -15,11 +16,13 @@ namespace Bam.Net.Encryption
         public KeySetDataManager()
         {
             this.EncryptionDataRepository = new EncryptionDataRepository();
+            this.ApplicationNameProvider = ProcessApplicationNameProvider.Current;
         }
 
         public KeySetDataManager(Database database)
         {
             this.EncryptionDataRepository = new EncryptionDataRepository() { Database = database };
+            this.ApplicationNameProvider = ProcessApplicationNameProvider.Current;
         }
 
         public KeySetDataManager(EncryptionDataRepository repository)
@@ -27,54 +30,70 @@ namespace Bam.Net.Encryption
             this.EncryptionDataRepository = repository;
         }
 
+        [Inject]
         public EncryptionDataRepository EncryptionDataRepository { get; }
 
-        public async Task<IClientKeySet> CreateClientKeySetAsync(string serverHostName)
-        {
-            ClientKeySet clientKeySet = new ClientKeySet() { ServerHostName = serverHostName };
-            return await EncryptionDataRepository.SaveAsync(clientKeySet);
-        }
-
-        public async Task<IAesKeyExchange> CreateKeyExchangeAsync(string serverHostName)
-        {
-            IClientKeySet clientKeySet = await CreateClientKeySetAsync(serverHostName);
-            return clientKeySet.GetKeyExchange();
-        }
+        [Inject]
+        public IApplicationNameProvider ApplicationNameProvider { get; set; }
 
         public async Task<IServerKeySet> CreateServerKeySetAsync(string clientHostName)
         {
-            ServerKeySet serverKeySet = new ServerKeySet() { ClientHostName = clientHostName };
+            ServerKeySet serverKeySet = new ServerKeySet()
+            {
+                ApplicationName = ApplicationNameProvider.GetApplicationName(),
+                ClientHostName = clientHostName
+            };
+
             return await EncryptionDataRepository.SaveAsync(serverKeySet);
         }
 
-        public async Task<ISecretExchange> CreateSecretExchangeAsync(string clientHostName)
+        public async Task<IClientKeySet> CreateClientKeySetForServerKeySetAsync(IServerKeySet serverKeySet)
         {
-            IServerKeySet serverKeySet = await CreateServerKeySetAsync(clientHostName);
-            return serverKeySet.GetSecretExchange();
+            ClientKeySet clientKeySet = new ClientKeySet(false);
+            clientKeySet.ServerHostName = serverKeySet.ServerHostName;
+            clientKeySet.ClientHostName = serverKeySet.ClientHostName;
+            clientKeySet.PublicKey = serverKeySet.GetAsymmetricKeys().PublicKeyToPem();
+            
+            return await EncryptionDataRepository.SaveAsync(clientKeySet);
         }
 
-        public Task<IAesKeyExchange> GetKeyExchangeAsync(IClientKeySet serverKeys)
+        public Task<IAesKeyExchange> CreateAesKeyExchangeAsync(IClientKeySet clientKeySet)
         {
-            return Task.FromResult(serverKeys.GetKeyExchange());
+            return Task.FromResult(clientKeySet.GetKeyExchange());
         }
 
-        public Task<IAesKeyExchange> GetKeyExchangeAsync(string clientKeySetIdentifier)
+        public async Task<IServerKeySet> SetServerAesKeyAsync(IAesKeyExchange keyExchange)
+        {
+            ServerKeySet serverKeySet = EncryptionDataRepository.OneServerKeySetWhere(query => query.Identifier == keyExchange.Identifier);
+            AsymmetricCipherKeyPair rsaKeyPair = serverKeySet.GetAsymmetricKeys();
+            serverKeySet.AesKey = keyExchange.AesKeyCipher.DecryptWithPrivateKey(rsaKeyPair);
+            serverKeySet.AesIV = keyExchange.AesIVCipher.DecryptWithPrivateKey(rsaKeyPair);
+            return await EncryptionDataRepository.SaveAsync(serverKeySet);
+        }
+
+        public Task<IServerKeySet> RetrieveServerKeySetForPublicKeyAsync(string publicKey)
         {
             throw new NotImplementedException();
-            //ClientKeySet clientKeySet = EncryptionDataRepository.GetOneClientKeySetWhere(query => query.Identifier == clientKeySetIdentifier);
-            //return GetKeyExchangeAsync(clientKeySet);
         }
 
         public Task<ISecretExchange> GetSecretExchangeAsync(IServerKeySet serverKeys)
         {
-            return Task.FromResult(serverKeys.GetSecretExchange());
+            throw new NotImplementedException();
         }
 
-        public Task<ISecretExchange> GetSecretExchangeAsync(string serverKeySetIdentifier)
+        public Task<IServerKeySet> RetrieveServerKeySet(string identifier)
         {
             throw new NotImplementedException();
-            //ServerKeySet serverKeySet = EncryptionDataRepository.GetOneServerKeySetWhere(query => query.Identifier == serverKeySetIdentifier);
-            //return GetSecretExchangeAsync(serverKeySet);
+        }
+
+        public Task<IClientKeySet> RetrieveClientKeySetForPublicKeyAsync(string publicKey)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IClientKeySet> RetrieveClientKeySet(string identifier)
+        {
+            throw new NotImplementedException();
         }
     }
 }

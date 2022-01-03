@@ -12,7 +12,7 @@ namespace Bam.Net.Encryption.Data
     /// </summary>
     public class ServerKeySet : KeySet, IServerKeySet, IRsaKeySource
     {
-        public ServerKeySet() 
+        public ServerKeySet() : base(RsaKeyLength._2048, true, false)
         {
             this.MachineName = Environment.MachineName;
             this.ServerHostName = Dns.GetHostName();

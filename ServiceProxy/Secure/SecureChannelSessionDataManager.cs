@@ -13,6 +13,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using Bam.Net.Application;
+using Bam.Net.Encryption;
 
 namespace Bam.Net.ServiceProxy.Secure
 {
@@ -28,6 +29,9 @@ namespace Bam.Net.ServiceProxy.Secure
 
         [Inject]
         public ServiceProxyDataRepository ServiceProxyDataRepository { get; set; }
+
+        [Inject]
+        public KeySetDataManager KeySetDataManager { get; set; }
 
         public int SessionExpirationMinutes
         {
@@ -45,6 +49,7 @@ namespace Bam.Net.ServiceProxy.Secure
                 secureChannelSession.Server = httpContext?.Request?.Url?.Authority;
                 secureChannelSession.Client = GetSecureChannelSessionClientDescriptor(httpContext.Request);
                 secureChannelSession = await ServiceProxyDataRepository.SaveAsync(secureChannelSession);
+                // TODO: create/save serverkeyset using keysetdatamanager
             }
             else
             {

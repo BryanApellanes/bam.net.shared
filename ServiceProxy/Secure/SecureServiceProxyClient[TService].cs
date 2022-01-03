@@ -227,7 +227,7 @@ namespace Bam.Net.ServiceProxy.Secure
                 SecureChannelResponseMessage<string> result = responseString.FromJson<SecureChannelResponseMessage<string>>();
                 if (result.Success)
                 {
-                    Decrypted decrypted = new Decrypted(result.Data, ClientSession.SessionKey, ClientSession.SessionIV);
+                    Decrypted decrypted = new Decrypted(result.Data, ClientSession.AesKey, ClientSession.AesIV);
                     return decrypted.Value;
                 }
                 else
