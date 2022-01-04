@@ -7,5 +7,5 @@ Reorganize this namespace/folder into
 - ServiceProxy/Encryption
 - ServiceProxy/Encryption/Data
 
-See also [Bam.Net.Server](../Server/ServiceProxy/NOTES.md)
+See also [Bam.Net.Server](../Server/ServiceProxy/NOTES.md) and [Bam.Net.ServiceProxy.Secure](./Secure/NOTES.md)
 	
