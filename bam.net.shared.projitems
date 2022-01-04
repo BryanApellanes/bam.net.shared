@@ -2298,7 +2298,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\Secure\DefaultConfigurationApiKeyProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\Secure\EncryptedTokenValidationStatus.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\Secure\EncryptedValidationToken.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\Secure\EncryptionValidationTokenNotFoundException.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\Secure\EncryptedValidationTokenNotFoundException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\Secure\IApiKeyProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\Secure\IApiKeyResolver.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\Secure\SecureChannel.cs" />
@@ -3204,6 +3204,7 @@
     <None Include="$(MSBuildThisFileDirectory)Messaging\messaging.db.js" />
     <None Include="$(MSBuildThisFileDirectory)Server\README.md" />
     <None Include="$(MSBuildThisFileDirectory)ServiceProxy\Data\DaoRepoGenerationConfig.yaml" />
+    <None Include="$(MSBuildThisFileDirectory)ServiceProxy\Secure\NOTES.md" />
     <None Include="$(MSBuildThisFileDirectory)Services\AsyncCallback\regen_asyncecallback_dao.cmd" />
     <None Include="$(MSBuildThisFileDirectory)Services\Hosts\README.md" />
     <None Include="$(MSBuildThisFileDirectory)Services\OpenApi\OpenApi.sqlite" />

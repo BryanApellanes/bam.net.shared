@@ -58,7 +58,7 @@ namespace Bam.Net.ServiceProxy.Secure
                 HashCipher = headers[Headers.ValidationToken]
             };
             Args.ThrowIfNull(encryptedValidationToken.NonceCipher, Headers.Nonce);
-            Args.ThrowIf<EncryptionValidationTokenNotFoundException>
+            Args.ThrowIf<EncryptedValidationTokenNotFoundException>
                 (
                     string.IsNullOrEmpty(encryptedValidationToken.HashCipher),
                     "Header was not found: {0}",
