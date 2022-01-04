@@ -1,5 +1,4 @@
 ﻿using Bam.Net.Data;
-using Bam.Net.Data.Repositories;
 using Bam.Net.Encryption.Data;
 using Bam.Net.Encryption.Data.Dao.Repository;
 using Bam.Net.Services;
@@ -11,27 +10,22 @@ using System.Threading.Tasks;
 
 namespace Bam.Net.Encryption
 {
-    public class KeySetDataManager : IKeySetDataManager
+    public class ServerKeySetDataManager : IServerKeySetDataManager
     {
-        public KeySetDataManager()
+        public ServerKeySetDataManager()
         {
             this.EncryptionDataRepository = new EncryptionDataRepository();
             this.ApplicationNameProvider = ProcessApplicationNameProvider.Current;
         }
 
-        public KeySetDataManager(Database database)
+        public ServerKeySetDataManager(Database database)
         {
             this.EncryptionDataRepository = new EncryptionDataRepository() { Database = database };
             this.ApplicationNameProvider = ProcessApplicationNameProvider.Current;
         }
 
-        public KeySetDataManager(EncryptionDataRepository repository)
-        {
-            this.EncryptionDataRepository = repository;
-        }
-
         [Inject]
-        public EncryptionDataRepository EncryptionDataRepository { get; }
+        public EncryptionDataRepository EncryptionDataRepository { get; set; }
 
         [Inject]
         public IApplicationNameProvider ApplicationNameProvider { get; set; }
@@ -53,21 +47,9 @@ namespace Bam.Net.Encryption
             clientKeySet.ServerHostName = serverKeySet.ServerHostName;
             clientKeySet.ClientHostName = serverKeySet.ClientHostName;
             clientKeySet.PublicKey = serverKeySet.GetAsymmetricKeys().PublicKeyToPem();
-            
+
             return await EncryptionDataRepository.SaveAsync(clientKeySet);
         }
-
-        public Task<IClientKeySet> SaveClientKeySet(IClientKeySet clientKeySet)
-        {
-            //ClientKeySet clientKeySet = new ClientKeySet
-            throw new NotImplementedException();
-        }
-
-        public Task<IAesKeyExchange> CreateAesKeyExchangeAsync(IClientKeySet clientKeySet)
-        {
-            return Task.FromResult(clientKeySet.GetKeyExchange());
-        }
-
         public async Task<IServerKeySet> SetServerAesKeyAsync(IAesKeyExchange keyExchange)
         {
             ServerKeySet serverKeySet = EncryptionDataRepository.OneServerKeySetWhere(query => query.Identifier == keyExchange.Identifier);
@@ -77,29 +59,19 @@ namespace Bam.Net.Encryption
             return await EncryptionDataRepository.SaveAsync(serverKeySet);
         }
 
-        public Task<IServerKeySet> RetrieveServerKeySetForPublicKeyAsync(string publicKey)
-        {
-            string identifier = KeySet.GetIdentifier(publicKey);
-            return RetrieveServerKeySetAsync(identifier);
-        }
-
         public Task<IServerKeySet> RetrieveServerKeySetAsync(string identifier)
         {
             ServerKeySet serverKeySet = EncryptionDataRepository.OneServerKeySetWhere(query => query.Identifier == identifier);
             return Task.FromResult((IServerKeySet)serverKeySet);
         }
 
+        public Task<IServerKeySet> RetrieveServerKeySetForPublicKeyAsync(string publicKey)
+        {
+            string identifier = KeySet.GetIdentifier(publicKey);
+            return RetrieveServerKeySetAsync(identifier);
+        }
+
         public Task<ISecretExchange> GetSecretExchangeAsync(IServerKeySet serverKeys)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IClientKeySet> RetrieveClientKeySetForPublicKeyAsync(string publicKey)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IClientKeySet> RetrieveClientKeySetAsync(string identifier)
         {
             throw new NotImplementedException();
         }

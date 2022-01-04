@@ -31,7 +31,7 @@ namespace Bam.Net.ServiceProxy.Secure
         public ServiceProxyDataRepository ServiceProxyDataRepository { get; set; }
 
         [Inject]
-        public KeySetDataManager KeySetDataManager { get; set; }
+        public IServerKeySetDataManager ServerKeySetDataManager { get; set; }
 
         public int SessionExpirationMinutes
         {

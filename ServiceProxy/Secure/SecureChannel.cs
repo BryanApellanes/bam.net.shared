@@ -91,7 +91,7 @@ namespace Bam.Net.ServiceProxy.Secure
         public SecureChannelResponseMessage<ClientSession> StartSession(Instant instant)
         {
             SecureChannelSession secureChannelSession = SecureChannelSessionDataManager.GetSecureChannelSessionForContextAsync(HttpContext, instant).Result;
-            ClientSession clientSessionInfo = secureChannelSession.GetClientSession();
+            ClientSession clientSessionInfo = secureChannelSession.GetClientSession(false);
 
             return new SecureChannelResponseMessage<ClientSession>(clientSessionInfo);
         }

@@ -6,9 +6,10 @@ using System.Threading.Tasks;
 
 namespace Bam.Net.Encryption
 {
-    public interface IKeySetDataManager
-    { 
+    public interface IServerKeySetDataManager
+    {
         EncryptionDataRepository EncryptionDataRepository { get; }
+        IApplicationNameProvider ApplicationNameProvider { get; }
 
         /// <summary>
         /// Creates a server key set for the current process to act as a server
@@ -26,22 +27,13 @@ namespace Bam.Net.Encryption
         /// <returns></returns>
         Task<IClientKeySet> CreateClientKeySetForServerKeySetAsync(IServerKeySet serverKeySet); // server side : send public key no aes key yet
 
-        Task<IClientKeySet> SaveClientKeySet(IClientKeySet clientKeySet); // client side: save the client key set for future retrieval
-
-        /// <summary>
-        /// Create an aes key exchange for the specified client key set.
-        /// </summary>
-        /// <param name="clientKeySet"></param>
-        /// <returns></returns>
-        Task<IAesKeyExchange> CreateAesKeyExchangeAsync(IClientKeySet clientKeySet); // client side: set the aes key and send exchange
-
         /// <summary>
         /// Set the server key set aes key and iv using the specified key exchange.
         /// </summary>
         /// <param name="keyExchange"></param>
         /// <returns></returns>
         Task<IServerKeySet> SetServerAesKeyAsync(IAesKeyExchange keyExchange); // server side: retrieve the server key set by the public key and set the aes key
-        
+
         /// <summary>
         /// Retrieves the server key set for the specified pem encoded public key.  May return null if
         /// the server key set was not created by the current process or on the current machine.
@@ -53,9 +45,5 @@ namespace Bam.Net.Encryption
         Task<IServerKeySet> RetrieveServerKeySetAsync(string identifier);
 
         Task<ISecretExchange> GetSecretExchangeAsync(IServerKeySet serverKeys); // server side: one time secret exchange
-
-        Task<IClientKeySet> RetrieveClientKeySetForPublicKeyAsync(string publicKey);
-
-        Task<IClientKeySet> RetrieveClientKeySetAsync(string identifier);
     }
 }
