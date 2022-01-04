@@ -11,8 +11,19 @@ namespace Bam.Net.Encryption
         /// </summary>
         string Identifier { get; }
 
+        /// <summary>
+        /// Gets or sets the pem encoded public key.
+        /// </summary>
         string PublicKey { get; }
+
+        /// <summary>
+        /// Gets or sets the aes key.
+        /// </summary>
         string AesKey { get; }
+
+        /// <summary>
+        /// Gets or sets the aes initialization vector.
+        /// </summary>
         string AesIV { get; }
 
         /// <summary>
@@ -21,6 +32,10 @@ namespace Bam.Net.Encryption
         /// <returns></returns>
         bool GetIsInitialized();
 
+        /// <summary>
+        /// Gets an aes key exchange for the current client key set.
+        /// </summary>
+        /// <returns></returns>
         IAesKeyExchange GetKeyExchange();
     }
 }

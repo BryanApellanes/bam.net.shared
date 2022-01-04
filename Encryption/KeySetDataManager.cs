@@ -57,6 +57,12 @@ namespace Bam.Net.Encryption
             return await EncryptionDataRepository.SaveAsync(clientKeySet);
         }
 
+        public Task<IClientKeySet> SaveClientKeySet(IClientKeySet clientKeySet)
+        {
+            //ClientKeySet clientKeySet = new ClientKeySet
+            throw new NotImplementedException();
+        }
+
         public Task<IAesKeyExchange> CreateAesKeyExchangeAsync(IClientKeySet clientKeySet)
         {
             return Task.FromResult(clientKeySet.GetKeyExchange());
@@ -73,15 +79,17 @@ namespace Bam.Net.Encryption
 
         public Task<IServerKeySet> RetrieveServerKeySetForPublicKeyAsync(string publicKey)
         {
-            throw new NotImplementedException();
+            string identifier = KeySet.GetIdentifier(publicKey);
+            return RetrieveServerKeySetAsync(identifier);
+        }
+
+        public Task<IServerKeySet> RetrieveServerKeySetAsync(string identifier)
+        {
+            ServerKeySet serverKeySet = EncryptionDataRepository.OneServerKeySetWhere(query => query.Identifier == identifier);
+            return Task.FromResult((IServerKeySet)serverKeySet);
         }
 
         public Task<ISecretExchange> GetSecretExchangeAsync(IServerKeySet serverKeys)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IServerKeySet> RetrieveServerKeySet(string identifier)
         {
             throw new NotImplementedException();
         }
@@ -91,7 +99,7 @@ namespace Bam.Net.Encryption
             throw new NotImplementedException();
         }
 
-        public Task<IClientKeySet> RetrieveClientKeySet(string identifier)
+        public Task<IClientKeySet> RetrieveClientKeySetAsync(string identifier)
         {
             throw new NotImplementedException();
         }

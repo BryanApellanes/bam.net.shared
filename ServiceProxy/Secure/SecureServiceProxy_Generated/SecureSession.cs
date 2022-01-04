@@ -238,7 +238,7 @@ namespace Bam.Net.ServiceProxy.Secure
 		}
 	}
 
-    Application _applicationOfApplicationId;
+/*    Application _applicationOfApplicationId;
 	public Application ApplicationOfApplicationId
 	{
 		get
@@ -249,7 +249,7 @@ namespace Bam.Net.ServiceProxy.Secure
 			}
 			return _applicationOfApplicationId;
 		}
-	}
+	}*/
 
 
 

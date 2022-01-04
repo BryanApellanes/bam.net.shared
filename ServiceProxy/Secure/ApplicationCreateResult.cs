@@ -22,11 +22,11 @@ namespace Bam.Net.ServiceProxy.Secure
             get;
             set;
         }
-
+/*
         public Application Application
         {
             get;
             set;
-        }
+        }*/
     }
 }

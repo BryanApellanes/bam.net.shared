@@ -6,6 +6,9 @@ namespace Bam.Net.Encryption
 {
     public interface IApplicationKeySet
     {
+        /// <summary>
+        /// Gets or set the application name.
+        /// </summary>
         string ApplicationName { get; set; }
     }
 }

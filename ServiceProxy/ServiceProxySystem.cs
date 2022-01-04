@@ -131,7 +131,7 @@ namespace Bam.Net.ServiceProxy
         }
 
         /// <summary>
-        /// Register the specified type as a ServiceProxy responder.
+        /// Register the specified type as a ServiceProxy invocation target.
         /// </summary>
         /// <param name="type"></param>
         public static void Register(Type type)
@@ -140,7 +140,7 @@ namespace Bam.Net.ServiceProxy
         }
 
         /// <summary>
-        /// Register the speicified generic type T as a ServiceProxy responder.
+        /// Register the speicified generic type T as a ServiceProxy invocation target.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         public static void Register<T>()

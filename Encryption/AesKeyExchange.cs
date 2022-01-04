@@ -17,35 +17,41 @@ namespace Bam.Net.Encryption
             this.ServerHostName = keySet.ServerHostName;
         }
 
+        /// <inheritdoc />
         public string Identifier
         {
             get;
         }
 
+        /// <inheritdoc />
         public string PublicKey
         {
             get;
             set;
         }
 
+        /// <inheritdoc />
         public string AesKeyCipher 
         {
             get;
             set;
         }
 
+        /// <inheritdoc />
         public string AesIVCipher 
         {
             get;
             set;
         }
 
+        /// <inheritdoc />
         public string ClientHostName
         {
             get;
             set;
         }
 
+        /// <inheritdoc />
         public string ServerHostName
         {
             get;

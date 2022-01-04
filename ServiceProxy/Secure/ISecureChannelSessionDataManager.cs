@@ -19,7 +19,9 @@ namespace Bam.Net.ServiceProxy.Secure
         Task<SecureChannelSession> GetSecureChannelSessionForContextAsync(IHttpContext httpContext, Instant clientNow = null);
 
         string GetSecureChannelSessionIdentifier(IRequest request);
+
         string GetSecureChannelSessionClientDescriptor(IRequest request);
+
         Task<SecureChannelSession> CreateSecureChannelSessionAsync(Instant clientNow);
 
         Task<SecureChannelSession> StartSecureChannelSessionAsync(IResponse response, Instant clientNow);

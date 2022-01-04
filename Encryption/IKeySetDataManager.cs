@@ -25,7 +25,9 @@ namespace Bam.Net.Encryption
         /// <param name="serverKeySet"></param>
         /// <returns></returns>
         Task<IClientKeySet> CreateClientKeySetForServerKeySetAsync(IServerKeySet serverKeySet); // server side : send public key no aes key yet
-        
+
+        Task<IClientKeySet> SaveClientKeySet(IClientKeySet clientKeySet); // client side: save the client key set for future retrieval
+
         /// <summary>
         /// Create an aes key exchange for the specified client key set.
         /// </summary>
@@ -40,14 +42,20 @@ namespace Bam.Net.Encryption
         /// <returns></returns>
         Task<IServerKeySet> SetServerAesKeyAsync(IAesKeyExchange keyExchange); // server side: retrieve the server key set by the public key and set the aes key
         
+        /// <summary>
+        /// Retrieves the server key set for the specified pem encoded public key.  May return null if
+        /// the server key set was not created by the current process or on the current machine.
+        /// </summary>
+        /// <param name="publicKey"></param>
+        /// <returns></returns>
         Task<IServerKeySet> RetrieveServerKeySetForPublicKeyAsync(string publicKey); // server side: retrieve server key set to enable secret exchange
 
-        Task<IServerKeySet> RetrieveServerKeySet(string identifier);
+        Task<IServerKeySet> RetrieveServerKeySetAsync(string identifier);
 
         Task<ISecretExchange> GetSecretExchangeAsync(IServerKeySet serverKeys); // server side: one time secret exchange
 
         Task<IClientKeySet> RetrieveClientKeySetForPublicKeyAsync(string publicKey);
 
-        Task<IClientKeySet> RetrieveClientKeySet(string identifier);
+        Task<IClientKeySet> RetrieveClientKeySetAsync(string identifier);
     }
 }

@@ -6,6 +6,9 @@ namespace Bam.Net.Encryption
 {
     public interface IAesKeyExchange
     {
+        /// <summary>
+        /// Gets the identifier.
+        /// </summary>
         string Identifier { get; }
 
         /// <summary>
@@ -20,8 +23,19 @@ namespace Bam.Net.Encryption
         /// </summary>
         string ServerHostName { get; set; }
 
+        /// <summary>
+        /// Gets or sets the pem encoded rsa public key.
+        /// </summary>
         string PublicKey { get; set; }
+
+        /// <summary>
+        /// Gets or sets the aes key encrypted with the public key.
+        /// </summary>
         string AesKeyCipher { get; set; }
+
+        /// <summary>
+        /// Gets or sets the aes initialization vector encrypted with the public key.
+        /// </summary>
         string AesIVCipher { get; set; }
     }
 }

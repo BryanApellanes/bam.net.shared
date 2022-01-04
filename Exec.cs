@@ -297,7 +297,7 @@ namespace Bam.Net
                 int suffix = 1;
                 while (_threads.ContainsKey(threadName))
                 {
-                    threadName = $"{threadName}_{suffix.ToString()}";
+                    threadName = $"{threadName}_{suffix}";
                     suffix++;
                 }
 
@@ -337,20 +337,20 @@ namespace Bam.Net
             }
         }
 
-		/// <summary>
-		/// Execute the specified action and return a TimeSpan
-		/// representing how much time it took to execute
-		/// </summary>
-		/// <param name="action"></param>
-		/// <returns></returns>
-		public static TimeSpan TimeExecution(this Action action)
+        /// <summary>
+        /// Execute the specified action and return a TimeSpan
+        /// that represents how much time it took to execute
+        /// </summary>
+        /// <param name="action"></param>
+        /// <returns></returns>
+        public static TimeSpan TimeExecution(this Action action)
 		{
 			return Time(action);
 		}
 
 		/// <summary>
 		/// Execute the specified action and return a TimeSpan
-		/// representing how much time it took to execute
+		/// that represents how much time it took to execute
 		/// </summary>
 		/// <param name="action"></param>
 		/// <returns></returns>
@@ -362,14 +362,14 @@ namespace Bam.Net
             return end.Subtract(start);
         }
 
-		/// <summary>
-		/// Execute the specified Func and return a TimeSpan
-		/// representing how much time it took to execute
-		/// </summary>
-		/// <typeparam name="TResult"></typeparam>
-		/// <param name="func"></param>
-		/// <param name="result"></param>
-		/// <returns></returns>
+        /// <summary>
+        /// Execute the specified Func and return a TimeSpan
+        /// that represents how much time it took to execute
+        /// </summary>
+        /// <typeparam name="TResult"></typeparam>
+        /// <param name="func"></param>
+        /// <param name="result"></param>
+        /// <returns></returns>
         public static TimeSpan Time<TResult>(this Func<TResult> func, out TResult result)
         {
             return func.TimeExecution(out result);
@@ -377,7 +377,7 @@ namespace Bam.Net
 
         /// <summary>
         /// Time the execution of the specified function returning a TimeSpan
-        /// instance representing the amount of time it took for the function
+        /// instance that represents the amount of time it took for the function
         /// to run
         /// </summary>
         /// <typeparam name="TResult"></typeparam>
@@ -394,7 +394,7 @@ namespace Bam.Net
 
         /// <summary>
         /// Execute the specified Func and return a TimeSpan
-        /// representing how much time it took to execute
+        /// that represents how much time it took to execute
         /// </summary>
         /// <typeparam name="TInput"></typeparam>
         /// <typeparam name="TResult"></typeparam>

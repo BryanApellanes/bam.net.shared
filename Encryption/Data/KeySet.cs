@@ -121,17 +121,23 @@ namespace Bam.Net.Encryption.Data
 
         public void InitializeRsaKey()
         {
-            AsymmetricCipherKeyPair rsaKeyPair = Rsa.GenerateKeyPair(RsaKeyLength);
-            Identifier = GetIdentifier(rsaKeyPair.PublicKeyToPem());
+            if (string.IsNullOrEmpty(RsaKey))
+            {
+                AsymmetricCipherKeyPair rsaKeyPair = Rsa.GenerateKeyPair(RsaKeyLength);
+                Identifier = GetIdentifier(rsaKeyPair.PublicKeyToPem());
 
-            RsaKey = rsaKeyPair.ToPem();
+                RsaKey = rsaKeyPair.ToPem();
+            }
         }
 
         public void InitializeAesKey()
         {
-            AesKeyVectorPair akvp = new AesKeyVectorPair();
-            AesKey = akvp.Key;
-            AesIV = akvp.IV;
+            if (string.IsNullOrEmpty(AesKey) || string.IsNullOrEmpty(AesIV))
+            {
+                AesKeyVectorPair akvp = new AesKeyVectorPair();
+                AesKey = akvp.Key;
+                AesIV = akvp.IV;
+            }
         }
 
         protected internal static string GetIdentifier(string publicKey)

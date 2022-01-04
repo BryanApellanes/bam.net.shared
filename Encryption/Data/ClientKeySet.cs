@@ -32,16 +32,16 @@ namespace Bam.Net.Encryption.Data
         [CompositeKey]
         public string MachineName { get; set; }
 
-        /// <summary>
-        /// Gets or sets the dns hostname name of the machine that instantiated this keyset.
-        /// </summary>
+        /// <inheritdoc />
         [CompositeKey]
         public string ClientHostName { get; set; }
 
+        /// <inheritdoc />
         [CompositeKey]
         public string ServerHostName { get; set; }
 
         string _publicKey;
+        /// <inheritdoc />
         [CompositeKey]
         public string PublicKey
         {
@@ -56,24 +56,37 @@ namespace Bam.Net.Encryption.Data
             }
         }
 
+        /// <inheritdoc />
         public string Identifier { get; set; }
 
+        /// <inheritdoc />
         public string AesKey { get; set; }
 
+        /// <inheritdoc />
         public string AesIV { get; set; }
+
+        /// <inheritdoc />
         public string ApplicationName { get; set; }
 
+        /// <summary>
+        /// Sets the aes key and initialization vector if they are not yet set.
+        /// </summary>
         public void Initialize()
         {
             EnsureAesKey();
         }
 
+        /// <inheritdoc />
         public AesKeyVectorPair GetAesKey()
         {
             EnsureAesKey();
             return new AesKeyVectorPair(AesKey, AesIV);
         }
 
+        /// <summary>
+        /// Gets a vlaue
+        /// </summary>
+        /// <returns></returns>
         public bool GetIsInitialized()
         {
             return !string.IsNullOrEmpty(AesKey) && !string.IsNullOrEmpty(AesIV);

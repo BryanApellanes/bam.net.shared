@@ -36,7 +36,7 @@ namespace Bam.Net.ServiceProxy
             string host = request?.Url?.Host;
             string userHostAddress = request?.UserHostAddress;
             string fromHeader = request?.Headers[Headers.ApplicationName];
-            string unknown = ServiceProxy.Secure.Application.Unknown.Name;            
+            string unknown = Bam.Net.CoreServices.ApplicationRegistration.Data.Application.Unknown.Name;            
             return withHost ? $"{fromHeader.Or(unknown)}@{host.Or("localhost")}({userHostAddress})": fromHeader.Or(unknown);
         }
 
