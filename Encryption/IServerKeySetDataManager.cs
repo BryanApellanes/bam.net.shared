@@ -8,12 +8,20 @@ namespace Bam.Net.Encryption
 {
     public interface IServerKeySetDataManager
     {
+        /// <summary>
+        /// Gets the encryption data repository.
+        /// </summary>
         EncryptionDataRepository EncryptionDataRepository { get; }
+
+        /// <summary>
+        /// Gets the application name provider.
+        /// </summary>
         IApplicationNameProvider ApplicationNameProvider { get; }
 
         /// <summary>
         /// Creates a server key set for the current process to act as a server
-        /// to the the specified client.
+        /// to the the specified client and whose rsa key is initialized but aes key 
+        /// and initialization vector are not.
         /// </summary>
         /// <param name="clientHostName"></param>
         /// <returns></returns>
@@ -42,8 +50,18 @@ namespace Bam.Net.Encryption
         /// <returns></returns>
         Task<IServerKeySet> RetrieveServerKeySetForPublicKeyAsync(string publicKey); // server side: retrieve server key set to enable secret exchange
 
+        /// <summary>
+        /// Retrieves the server key set for the specified identifier.
+        /// </summary>
+        /// <param name="identifier"></param>
+        /// <returns></returns>
         Task<IServerKeySet> RetrieveServerKeySetAsync(string identifier);
 
+        /// <summary>
+        /// Gets a secret exchange for the specified server key set.
+        /// </summary>
+        /// <param name="serverKeys"></param>
+        /// <returns></returns>
         Task<ISecretExchange> GetSecretExchangeAsync(IServerKeySet serverKeys); // server side: one time secret exchange
     }
 }

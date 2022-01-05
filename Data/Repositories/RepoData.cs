@@ -14,10 +14,10 @@ namespace Bam.Net.Data.Repositories
 	public abstract class RepoData
 	{
         /// <summary>
-        /// The identifier for the current instance.  This should be
+        /// Gets or sets the identifier for the current instance.  This should be
         /// considered a "local" id, meaning it identifies the instance
         /// from the current repository of the current process.  This value
-        /// may be different for the same instance in a different process.
+        /// may be different for the same instance in a different process or repository.
         /// For universal identity use Uuid.
         /// </summary>
         [Key]

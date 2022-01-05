@@ -36,6 +36,10 @@ namespace Bam.Net.Encryption.Data
         [CompositeKey]
         public string ClientHostName { get; set; }
 
+        /// <summary>
+        /// Gets the rsa key for the current server keyset.
+        /// </summary>
+        /// <returns></returns>
         public RsaPublicPrivateKeyPair GetRsaKey()
         {
             return new RsaPublicPrivateKeyPair(RsaKey) { RsaKeyLength = RsaKeyLength };

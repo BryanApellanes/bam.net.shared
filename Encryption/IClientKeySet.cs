@@ -33,6 +33,11 @@ namespace Bam.Net.Encryption
         bool GetIsInitialized();
 
         /// <summary>
+        /// Ensures that the aes key and initialization vector are set.
+        /// </summary>
+        void Initialize();
+
+        /// <summary>
         /// Gets an aes key exchange for the current client key set.
         /// </summary>
         /// <returns></returns>

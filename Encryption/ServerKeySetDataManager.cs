@@ -24,12 +24,15 @@ namespace Bam.Net.Encryption
             this.ApplicationNameProvider = ProcessApplicationNameProvider.Current;
         }
 
+        /// <inheritdoc />
         [Inject]
         public EncryptionDataRepository EncryptionDataRepository { get; set; }
 
+        /// <inheritdoc />
         [Inject]
         public IApplicationNameProvider ApplicationNameProvider { get; set; }
 
+        /// <inheritdoc />
         public async Task<IServerKeySet> CreateServerKeySetAsync(string clientHostName)
         {
             ServerKeySet serverKeySet = new ServerKeySet()
@@ -41,6 +44,7 @@ namespace Bam.Net.Encryption
             return await EncryptionDataRepository.SaveAsync(serverKeySet);
         }
 
+        /// <inheritdoc />
         public async Task<IClientKeySet> CreateClientKeySetForServerKeySetAsync(IServerKeySet serverKeySet)
         {
             ClientKeySet clientKeySet = new ClientKeySet(false);
@@ -50,6 +54,7 @@ namespace Bam.Net.Encryption
 
             return await EncryptionDataRepository.SaveAsync(clientKeySet);
         }
+
         public async Task<IServerKeySet> SetServerAesKeyAsync(IAesKeyExchange keyExchange)
         {
             ServerKeySet serverKeySet = EncryptionDataRepository.OneServerKeySetWhere(query => query.Identifier == keyExchange.Identifier);
@@ -73,7 +78,7 @@ namespace Bam.Net.Encryption
 
         public Task<ISecretExchange> GetSecretExchangeAsync(IServerKeySet serverKeys)
         {
-            throw new NotImplementedException();
+            return Task.FromResult(serverKeys.GetSecretExchange());
         }
     }
 }

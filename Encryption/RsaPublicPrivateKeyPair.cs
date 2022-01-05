@@ -54,7 +54,7 @@ namespace Bam.Net.Encryption
         public string PublicKeyPem { get; set; }
 
         /// <summary>
-        /// Gets a base 64 encoded ciper for the specified plain text.
+        /// Gets a base 64 encoded cipher for the specified plain text.
         /// </summary>
         /// <param name="plainText"></param>
         /// <returns></returns>

@@ -641,6 +641,22 @@ namespace Bam.Net
             return result;
         }
 
+        /// <summary>
+        /// Copies the specified object as the specified generic repo data type.  The 
+        /// new value has an Id of 0 so attempts to save it in a DaoRepository results
+        /// in a new entry rather than an attempted update.
+        /// </summary>
+        /// <typeparam name="TRepoData"></typeparam>
+        /// <param name="source"></param>
+        /// <returns></returns>
+        public static TRepoData CopyAsNew<TRepoData>(this object source) where TRepoData : RepoData, new()
+        {
+            TRepoData result = new TRepoData();
+            result.CopyProperties(source);
+            result.Id = 0;
+            return result;
+        }
+
         public static IEnumerable<object> CopyAs(this IEnumerable enumerable, Type type, params object[] ctorParams)
         {
             foreach (object o in enumerable)

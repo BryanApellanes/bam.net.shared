@@ -46,7 +46,22 @@ namespace Bam.Net.Encryption.Data
 
         public string AesIV { get; set; }
 
-        public string Secret { get; set; }
+        string _secret;
+        public string Secret
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(_secret))
+                {
+                    _secret = Secure.RandomString();
+                }
+                return _secret;
+            }
+            set
+            {
+                _secret = value;
+            }
+        }
 
         public string GetSecret()
         {

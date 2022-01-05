@@ -1,4 +1,5 @@
 ﻿using Bam.Net.Data;
+using Bam.Net.Encryption.Data;
 using Bam.Net.Encryption.Data.Dao.Repository;
 using Bam.Net.Services;
 using System;
@@ -28,14 +29,33 @@ namespace Bam.Net.Encryption
         [Inject]
         public IApplicationNameProvider ApplicationNameProvider { get; set; }
 
-        public Task<IAesKeyExchange> CreateAesKeyExchangeAsync(IClientKeySet clientKeySet)
+        public async Task<IAesKeyExchange> CreateAesKeyExchangeAsync(IClientKeySet clientKeySet)
         {
-            return Task.FromResult(clientKeySet.GetKeyExchange());
+            if (!clientKeySet.GetIsInitialized())
+            {
+                clientKeySet.Initialize();
+            }
+
+            if (!(await RetrieveClientKeySetAsync(clientKeySet.Identifier) is ClientKeySet existingClientKeySet))
+            {
+                ClientKeySet copy = clientKeySet.CopyAsNew<ClientKeySet>();
+
+                clientKeySet = await SaveClientKeySetAsync(copy);
+            }
+            else
+            {
+                existingClientKeySet.PublicKey = clientKeySet.PublicKey;
+                existingClientKeySet.AesKey = clientKeySet.AesKey;
+                existingClientKeySet.AesIV = clientKeySet.AesIV;
+                clientKeySet = await SaveClientKeySetAsync(existingClientKeySet);
+            }
+
+            return clientKeySet.GetKeyExchange();
         }
 
         public Task<IClientKeySet> RetrieveClientKeySetAsync(string identifier)
         {
-            throw new NotImplementedException();
+            return Task.FromResult((IClientKeySet)EncryptionDataRepository.OneClientKeySetWhere(query => query.Identifier == identifier));
         }
 
         public Task<IClientKeySet> RetrieveClientKeySetForPublicKeyAsync(string publicKey)
@@ -43,9 +63,10 @@ namespace Bam.Net.Encryption
             throw new NotImplementedException();
         }
 
-        public Task<IClientKeySet> SaveClientKeySet(IClientKeySet clientKeySet)
+        public async Task<IClientKeySet> SaveClientKeySetAsync(IClientKeySet clientKeySet)
         {
-            throw new NotImplementedException();
+            ClientKeySet toSave = clientKeySet.CopyAs<ClientKeySet>();
+            return await EncryptionDataRepository.SaveAsync(toSave);
         }
     }
 }

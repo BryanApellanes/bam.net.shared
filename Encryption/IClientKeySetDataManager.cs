@@ -12,7 +12,7 @@ namespace Bam.Net.Encryption
 
         IApplicationNameProvider ApplicationNameProvider { get; }
 
-        Task<IClientKeySet> SaveClientKeySet(IClientKeySet clientKeySet); // client side: save the client key set for future retrieval
+        Task<IClientKeySet> SaveClientKeySetAsync(IClientKeySet clientKeySet); // client side: save the client key set for future retrieval
 
         /// <summary>
         /// Create an aes key exchange for the specified client key set.
