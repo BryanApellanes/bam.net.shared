@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Bam.Net
 {
-    public class CustomUntransformer<TEncoded, TDecoded> : IValueUntransformer<TEncoded, TDecoded>, IRequiresHttpContext, ICloneable, IContextCloneable
+    public class CustomReverseTransformer<TEncoded, TDecoded> : IValueReverseTransformer<TEncoded, TDecoded>, IRequiresHttpContext, ICloneable, IContextCloneable
     {
         public IHttpContext HttpContext { get; set; }
 
@@ -15,7 +15,7 @@ namespace Bam.Net
 
         public object Clone()
         {
-            object clone = new CustomUntransformer<TEncoded, TDecoded>() { CustomTransformer = CustomTransformer };
+            object clone = new CustomReverseTransformer<TEncoded, TDecoded>() { CustomTransformer = CustomTransformer };
             clone.CopyProperties(this);
             clone.CopyEventHandlers(this);
             return clone;
@@ -23,7 +23,7 @@ namespace Bam.Net
 
         public object Clone(IHttpContext context)
         {
-            CustomUntransformer<TEncoded, TDecoded> clone = new CustomUntransformer<TEncoded, TDecoded>() { CustomTransformer = CustomTransformer };
+            CustomReverseTransformer<TEncoded, TDecoded> clone = new CustomReverseTransformer<TEncoded, TDecoded>() { CustomTransformer = CustomTransformer };
             clone.CopyProperties(this);
             clone.CopyEventHandlers(this);
             clone.HttpContext = context;
@@ -35,7 +35,7 @@ namespace Bam.Net
             return Clone(HttpContext);
         }
 
-        public TDecoded Untransform(TEncoded encoded)
+        public TDecoded ReverseTransform(TEncoded encoded)
         {
             return Untransformer(HttpContext, encoded);
         }

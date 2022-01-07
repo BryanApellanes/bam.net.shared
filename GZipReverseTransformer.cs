@@ -4,10 +4,10 @@ using System.Text;
 
 namespace Bam.Net
 {
-    public class GZipUntransformer : IValueUntransformer<byte[], string>
+    public class GZipReverseTransformer : IValueReverseTransformer<byte[], string>
     {
         public Encoding Encoding { get; set; }
-        public string Untransform(byte[] encoded)
+        public string ReverseTransform(byte[] encoded)
         {
             byte[] unzipped = encoded.GUnzip();
             return Encoding.GetString(unzipped);

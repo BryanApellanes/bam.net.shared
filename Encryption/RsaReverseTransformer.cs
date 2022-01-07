@@ -1,4 +1,5 @@
-﻿using Bam.Net.ServiceProxy;
+﻿using Bam.Net.ServiceProxy.Data.Dao.Repository;
+using Bam.Net.ServiceProxy;
 using Bam.Net.ServiceProxy.Data;
 using Bam.Net.ServiceProxy.Secure;
 using Bam.Net.Services;
@@ -9,23 +10,22 @@ using System.Text;
 
 namespace Bam.Net.Encryption
 {
-    public class RsaByteUntransformer : IValueUntransformer<byte[], byte[]>, IRequiresHttpContext, ICloneable, IContextCloneable
+    public class RsaReverseTransformer : IValueReverseTransformer<byte[], string>, IRequiresHttpContext, ICloneable, IContextCloneable
     {
-        public RsaByteUntransformer()
+        public RsaReverseTransformer()
         {
-            this.RsaByteEncoder = new RsaByteTransformer() { RsaByteDecoder = this };
+            this.Encoding = Encoding.UTF8;
         }
 
         [Inject]
         public ISecureChannelSessionDataManager SecureChannelSessionManager { get; set; }
 
-        public RsaByteTransformer RsaByteEncoder { get; set; }
-
+        public Encoding Encoding { get; set; }
         public IHttpContext HttpContext { get; set; }
 
         public object Clone()
         {
-            object clone = new RsaUntransformer();
+            object clone = new RsaReverseTransformer();
             clone.CopyProperties(this);
             clone.CopyEventHandlers(this);
             return clone;
@@ -33,7 +33,7 @@ namespace Bam.Net.Encryption
 
         public object Clone(IHttpContext context)
         {
-            RsaUntransformer clone = new RsaUntransformer();
+            RsaReverseTransformer clone = new RsaReverseTransformer();
             clone.CopyProperties(this);
             clone.CopyEventHandlers(this);
             clone.HttpContext = context;
@@ -45,18 +45,18 @@ namespace Bam.Net.Encryption
             return Clone(HttpContext);
         }
 
-        public byte[] Untransform(byte[] cipherBytes)
+        public virtual string ReverseTransform(byte[] cipherBytes)
         {
             SecureChannelSession session = SecureChannelSessionManager.GetSecureChannelSessionForContextAsync(HttpContext).Result;
 
             AsymmetricCipherKeyPair keyPair = session.AsymmetricKey.ToKeyPair();
             byte[] decryptedBytes = cipherBytes.DecryptWithPrivateKey(keyPair.Private);
-            return decryptedBytes;
+            return Encoding.GetString(decryptedBytes);
         }
 
-        public IValueTransformer<byte[], byte[]> GetTransformer()
+        public virtual IValueTransformer<string, byte[]> GetTransformer()
         {
-            return this.RsaByteEncoder;
+            return new RsaTransformer();
         }
     }
 }

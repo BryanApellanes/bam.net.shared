@@ -45,14 +45,14 @@ namespace Bam.Net.Encryption
         }
 
         /// <inheritdoc />
-        public async Task<IClientKeySet> CreateClientKeySetForServerKeySetAsync(IServerKeySet serverKeySet)
+        public Task<IClientKeySet> CreateClientKeySetForServerKeySetAsync(IServerKeySet serverKeySet)
         {
-            ClientKeySet clientKeySet = new ClientKeySet(false);
-            clientKeySet.ServerHostName = serverKeySet.ServerHostName;
-            clientKeySet.ClientHostName = serverKeySet.ClientHostName;
-            clientKeySet.PublicKey = serverKeySet.GetAsymmetricKeys().PublicKeyToPem();
-
-            return await EncryptionDataRepository.SaveAsync(clientKeySet);
+            return Task.FromResult((IClientKeySet)new ClientKeySet(false)
+            {
+                ServerHostName = serverKeySet.ServerHostName,
+                ClientHostName = serverKeySet.ClientHostName,
+                PublicKey = serverKeySet.GetAsymmetricKeys().PublicKeyToPem()
+            });
         }
 
         public async Task<IServerKeySet> SetServerAesKeyAsync(IAesKeyExchange keyExchange)

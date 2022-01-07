@@ -9,9 +9,9 @@ using System.Text;
 
 namespace Bam.Net.Encryption
 {
-    public class AesUntransformer : IValueUntransformer<byte[], string>, IRequiresHttpContext, ICloneable, IContextCloneable
+    public class AesReverseTransformer : IValueReverseTransformer<byte[], string>, IRequiresHttpContext, ICloneable, IContextCloneable
     {
-        public AesUntransformer()
+        public AesReverseTransformer()
         {
             this.AesEncoder = new AesTransformer() { AesDecoder = this };
         }
@@ -24,7 +24,7 @@ namespace Bam.Net.Encryption
         public IHttpContext HttpContext { get; set; }
         public object Clone()
         {
-            object clone = new AesUntransformer() { AesEncoder = AesEncoder };
+            object clone = new AesReverseTransformer() { AesEncoder = AesEncoder };
             clone.CopyProperties(this);
             clone.CopyEventHandlers(this);
             return clone;
@@ -32,7 +32,7 @@ namespace Bam.Net.Encryption
 
         public object Clone(IHttpContext context)
         {
-            AesUntransformer clone = new AesUntransformer();
+            AesReverseTransformer clone = new AesReverseTransformer();
             clone.CopyProperties(this);
             clone.CopyEventHandlers(this);
             clone.HttpContext = context;
@@ -44,7 +44,7 @@ namespace Bam.Net.Encryption
             return Clone(HttpContext);
         }
 
-        public string Untransform(byte[] cipherBytes)
+        public string ReverseTransform(byte[] cipherBytes)
         {
             SecureChannelSession session = SecureChannelSessionDataManager.GetSecureChannelSessionForContextAsync(HttpContext).Result;
 

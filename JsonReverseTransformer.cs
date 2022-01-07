@@ -4,9 +4,9 @@ using System.Text;
 
 namespace Bam.Net
 {
-    public class JsonUntransformer<TUntransformed> : IValueUntransformer<string, TUntransformed>
+    public class JsonReverseTransformer<TUntransformed> : IValueReverseTransformer<string, TUntransformed>
     {
-        public TUntransformed Untransform(string encoded)
+        public TUntransformed ReverseTransform(string encoded)
         {
             return encoded.FromJson<TUntransformed>();
         }

@@ -10,6 +10,12 @@ namespace Bam.Net.Encryption
 
         string Secret { get; }
 
+        bool GetIsRsaInitialized();
+        bool GetIsAesInitialized();
+
+        void InitializeRsaKey();
+        void InitializeAesKey();
+
         ISecretExchange GetSecretExchange();
     }
 }

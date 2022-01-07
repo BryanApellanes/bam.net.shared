@@ -4,16 +4,16 @@ using System.Text;
 
 namespace Bam.Net
 {
-    public class GZipBase64Untransformer : IValueUntransformer<string, string>
+    public class GZipBase64ReverseTransformer : IValueReverseTransformer<string, string>
     {
-        public GZipBase64Untransformer()
+        public GZipBase64ReverseTransformer()
         {
             this.Encoding = Encoding.UTF8;
         }
 
         public Encoding Encoding { get; set; }
 
-        public string Untransform(string base64EncodedZippedBytes)
+        public string ReverseTransform(string base64EncodedZippedBytes)
         {
             byte[] zippedBytes = base64EncodedZippedBytes.FromBase64();
             byte[] unzippedBytes = zippedBytes.GUnzip();

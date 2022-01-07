@@ -5,16 +5,16 @@ using System.Text;
 
 namespace Bam.Net
 {
-    public class JsonByteUntransformer<TData> : IValueUntransformer<byte[], TData>
+    public class JsonByteReverseTransformer<TData> : IValueReverseTransformer<byte[], TData>
     {
-        public JsonByteUntransformer()
+        public JsonByteReverseTransformer()
         {
             this.Encoding = Encoding.UTF8;
         }
 
         public Encoding Encoding { get; set; }
 
-        public TData Untransform(byte[] encoded)
+        public TData ReverseTransform(byte[] encoded)
         {
             string json = Encoding.GetString(encoded);
             return json.FromJson<TData>();

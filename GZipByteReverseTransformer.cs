@@ -5,20 +5,20 @@ using System.Text;
 
 namespace Bam.Net
 {
-    public class GZipByteUntransformer : IValueUntransformer<byte[], byte[]>, IRequiresHttpContext, ICloneable, IContextCloneable
+    public class GZipByteReverseTransformer : IValueReverseTransformer<byte[], byte[]>, IRequiresHttpContext, ICloneable, IContextCloneable
     {
-        public GZipByteUntransformer()
+        public GZipByteReverseTransformer()
         {
-            this.GZipByteEncoder = new GZipByteTransformer() { GZipByteDecoder = this };
+            this.GZipByteTransformer = new GZipByteTransformer() { GZipByteReverseTransformer = this };
         }
 
         public IHttpContext HttpContext { get; set; }
 
-        public GZipByteTransformer GZipByteEncoder { get; set; }
+        public GZipByteTransformer GZipByteTransformer { get; set; }
 
         public object Clone()
         {
-            object clone = new GZipByteUntransformer() { GZipByteEncoder = GZipByteEncoder };
+            object clone = new GZipByteReverseTransformer() { GZipByteTransformer = GZipByteTransformer };
             clone.CopyProperties(this);
             clone.CopyEventHandlers(this);
             return clone;
@@ -26,7 +26,7 @@ namespace Bam.Net
 
         public object Clone(IHttpContext context)
         {
-            GZipByteUntransformer clone = new GZipByteUntransformer() { GZipByteEncoder = GZipByteEncoder };
+            GZipByteReverseTransformer clone = new GZipByteReverseTransformer() { GZipByteTransformer = GZipByteTransformer };
             clone.CopyProperties(this);
             clone.CopyEventHandlers(this);
             clone.HttpContext = context;
@@ -38,14 +38,14 @@ namespace Bam.Net
             return Clone(HttpContext);
         }
 
-        public byte[] Untransform(byte[] encoded)
+        public byte[] ReverseTransform(byte[] encoded)
         {
             return encoded.GUnzip();
         }
 
         public IValueTransformer<byte[], byte[]> GetTransformer()
         {
-            return this.GZipByteEncoder;
+            return this.GZipByteTransformer;
         }
     }
 }

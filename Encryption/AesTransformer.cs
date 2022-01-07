@@ -9,14 +9,14 @@ namespace Bam.Net.Encryption
     {
         public AesTransformer()
         {
-            this.AesDecoder = new AesUntransformer() { AesEncoder = this } ;
+            this.AesDecoder = new AesReverseTransformer() { AesEncoder = this } ;
         }
 
-        public AesUntransformer AesDecoder { get; internal set; }
+        public AesReverseTransformer AesDecoder { get; internal set; }
         public ClientSession ClientSessionInfo { get; set; }
         public override string Untransform(byte[] cipherBytes)
         {
-            return GetUntransformer().Untransform(cipherBytes);
+            return GetUntransformer().ReverseTransform(cipherBytes);
         }
 
         public override byte[] Transform(string plainText)
@@ -24,7 +24,7 @@ namespace Bam.Net.Encryption
             return ClientSessionInfo.GetSymetricCipherBytes(plainText);
         }
 
-        public override IValueUntransformer<byte[], string> GetUntransformer()
+        public override IValueReverseTransformer<byte[], string> GetUntransformer()
         {
             return this.AesDecoder;
         }

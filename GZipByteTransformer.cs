@@ -8,14 +8,14 @@ namespace Bam.Net
     {
         public GZipByteTransformer()
         {
-            this.GZipByteDecoder = new GZipByteUntransformer() { GZipByteEncoder = this };
+            this.GZipByteReverseTransformer = new GZipByteReverseTransformer() { GZipByteTransformer = this };
         }
 
-        public GZipByteUntransformer GZipByteDecoder { get; set; }
+        public GZipByteReverseTransformer GZipByteReverseTransformer { get; set; }
 
         public override byte[] Untransform(byte[] output)
         {
-            return GetUntransformer().Untransform(output);
+            return GetUntransformer().ReverseTransform(output);
         }
 
         public override byte[] Transform(byte[] input)
@@ -23,9 +23,9 @@ namespace Bam.Net
             return input.GZip();
         }
 
-        public override IValueUntransformer<byte[], byte[]> GetUntransformer()
+        public override IValueReverseTransformer<byte[], byte[]> GetUntransformer()
         {
-            return this.GZipByteDecoder;
+            return this.GZipByteReverseTransformer;
         }
     }
 }

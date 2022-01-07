@@ -12,7 +12,7 @@ namespace Bam.Net.Encryption
 
         public override string Untransform(string base64Cipher)
         {
-            return GetUntransformer().Untransform(base64Cipher);
+            return GetUntransformer().ReverseTransform(base64Cipher);
         }
 
         public override string Transform(string plainText)
@@ -20,7 +20,7 @@ namespace Bam.Net.Encryption
             return ClientSessionInfo.GetSymetricCipher(plainText);
         }
 
-        public override IValueUntransformer<string, string> GetUntransformer()
+        public override IValueReverseTransformer<string, string> GetUntransformer()
         {
             throw new NotImplementedException();
         }

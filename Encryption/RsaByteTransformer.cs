@@ -9,16 +9,16 @@ namespace Bam.Net.Encryption
     {
         public RsaByteTransformer()
         {
-            this.RsaByteDecoder = new RsaByteUntransformer() { RsaByteEncoder = this };
+            this.RsaByteDecoder = new RsaByteReverseTransformer() { RsaByteEncoder = this };
         }
 
         public ClientSession ClientSessionInfo { get; set; }
 
-        public RsaByteUntransformer RsaByteDecoder { get; set; }
+        public RsaByteReverseTransformer RsaByteDecoder { get; set; }
 
         public override byte[] Untransform(byte[] cipherBytes)
         {
-            return GetUntransformer().Untransform(cipherBytes);
+            return GetUntransformer().ReverseTransform(cipherBytes);
         }
 
         public override byte[] Transform(byte[] plainData)
@@ -28,7 +28,7 @@ namespace Bam.Net.Encryption
             return ClientSessionInfo.GetAsymetricCipherBytes(plainData);
         }
 
-        public override IValueUntransformer<byte[], byte[]> GetUntransformer()
+        public override IValueReverseTransformer<byte[], byte[]> GetUntransformer()
         {
             return this.RsaByteDecoder;
         }

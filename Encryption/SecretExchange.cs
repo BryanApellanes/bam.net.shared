@@ -7,13 +7,13 @@ namespace Bam.Net.Encryption
     public class SecretExchange : ISecretExchange
     {
         /// <inheritdoc />
-        public string KeySetIdentifier { get; set; }
+        public string Identifier { get; set; }
 
         /// <inheritdoc />
-        public string Sender { get; set; }
+        public string ServerHostName { get; set; }
         
         /// <inheritdoc />
-        public string Receiver { get; set; }
+        public string ClientHostName { get; set; }
 
         /// <inheritdoc />
         public string SecretCipher { get; set; }

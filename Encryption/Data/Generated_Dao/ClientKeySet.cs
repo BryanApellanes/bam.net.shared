@@ -215,6 +215,20 @@ namespace Bam.Net.Encryption.Data.Dao
         }
     }
 
+    // property:Secret, columnName: Secret	
+    [Bam.Net.Data.Column(Name="Secret", DbDataType="VarChar", MaxLength="4000", AllowNull=true)]
+    public string Secret
+    {
+        get
+        {
+            return GetStringValue("Secret");
+        }
+        set
+        {
+            SetValue("Secret", value);
+        }
+    }
+
     // property:Key, columnName: Key	
     [Bam.Net.Data.Column(Name="Key", DbDataType="BigInt", MaxLength="19", AllowNull=true)]
     public ulong? Key

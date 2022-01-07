@@ -68,6 +68,8 @@ namespace Bam.Net.Encryption.Data
         /// <inheritdoc />
         public string ApplicationName { get; set; }
 
+        public string Secret { get; set; }
+
         /// <summary>
         /// Sets the aes key and initialization vector if they are not yet set.
         /// </summary>
@@ -119,6 +121,16 @@ namespace Bam.Net.Encryption.Data
             {
                 this.Identifier = KeySet.GetIdentifier(PublicKey);
             }
+        }
+
+        public string Encrypt(string value)
+        {
+            return Aes.Encrypt(value, GetAesKey());
+        }
+
+        public string Decrypt(string base64EncodedCipher)
+        {
+            return Aes.Decrypt(base64EncodedCipher, GetAesKey());
         }
     }
 }

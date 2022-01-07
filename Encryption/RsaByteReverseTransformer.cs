@@ -9,17 +9,23 @@ using System.Text;
 
 namespace Bam.Net.Encryption
 {
-    public class RsaBase64Untransformer : IValueUntransformer<string, string>, IRequiresHttpContext, ICloneable, IContextCloneable
+    public class RsaByteReverseTransformer : IValueReverseTransformer<byte[], byte[]>, IRequiresHttpContext, ICloneable, IContextCloneable
     {
+        public RsaByteReverseTransformer()
+        {
+            this.RsaByteEncoder = new RsaByteTransformer() { RsaByteDecoder = this };
+        }
+
         [Inject]
         public ISecureChannelSessionDataManager SecureChannelSessionManager { get; set; }
 
-        public Encoding Encoding { get; set; }
+        public RsaByteTransformer RsaByteEncoder { get; set; }
+
         public IHttpContext HttpContext { get; set; }
 
         public object Clone()
         {
-            object clone = new RsaBase64Untransformer();
+            object clone = new RsaReverseTransformer();
             clone.CopyProperties(this);
             clone.CopyEventHandlers(this);
             return clone;
@@ -27,7 +33,7 @@ namespace Bam.Net.Encryption
 
         public object Clone(IHttpContext context)
         {
-            RsaBase64Untransformer clone = new RsaBase64Untransformer();
+            RsaReverseTransformer clone = new RsaReverseTransformer();
             clone.CopyProperties(this);
             clone.CopyEventHandlers(this);
             clone.HttpContext = context;
@@ -39,20 +45,18 @@ namespace Bam.Net.Encryption
             return Clone(HttpContext);
         }
 
-        public string Untransform(string base64Cipher)
+        public byte[] ReverseTransform(byte[] cipherBytes)
         {
-            byte[] cipherBytes = base64Cipher.FromBase64();
-
             SecureChannelSession session = SecureChannelSessionManager.GetSecureChannelSessionForContextAsync(HttpContext).Result;
 
             AsymmetricCipherKeyPair keyPair = session.AsymmetricKey.ToKeyPair();
             byte[] decryptedBytes = cipherBytes.DecryptWithPrivateKey(keyPair.Private);
-            return Encoding.GetString(decryptedBytes);
+            return decryptedBytes;
         }
 
-        public IValueTransformer<string, string> GetTransformer()
+        public IValueTransformer<byte[], byte[]> GetTransformer()
         {
-            return new RsaBase64Transformer();
+            return this.RsaByteEncoder;
         }
     }
 }

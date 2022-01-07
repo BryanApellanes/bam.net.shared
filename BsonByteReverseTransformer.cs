@@ -4,9 +4,9 @@ using System.Text;
 
 namespace Bam.Net
 {
-    public class BsonByteUntransformer<TData> : IValueUntransformer<byte[], TData>
+    public class BsonByteReverseTransformer<TData> : IValueReverseTransformer<byte[], TData>
     {
-        public TData Untransform(byte[] encoded)
+        public TData ReverseTransform(byte[] encoded)
         {
             return encoded.FromBson<TData>();
         }

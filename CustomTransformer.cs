@@ -9,22 +9,22 @@ namespace Bam.Net
     {
         public CustomTransformer()
         {
-            this.CustomUntransformer = new CustomUntransformer<TEncoded, TDecoded>() { CustomTransformer = this };
+            this.CustomUntransformer = new CustomReverseTransformer<TEncoded, TDecoded>() { CustomTransformer = this };
         }
 
         public CustomTransformer(Func<TDecoded, TEncoded> encoder, Func<IHttpContext, TEncoded, TDecoded> decoder)
         {
             this.Encoder = encoder;
-            this.CustomUntransformer = new CustomUntransformer<TEncoded, TDecoded>() { CustomTransformer = this, Untransformer = decoder };
+            this.CustomUntransformer = new CustomReverseTransformer<TEncoded, TDecoded>() { CustomTransformer = this, Untransformer = decoder };
         }
 
-        public CustomUntransformer<TEncoded, TDecoded> CustomUntransformer { get; internal set; }
+        public CustomReverseTransformer<TEncoded, TDecoded> CustomUntransformer { get; internal set; }
 
         public Func<TDecoded, TEncoded> Encoder { get; set; }
 
         public override TDecoded Untransform(TEncoded output)
         {
-            return GetUntransformer().Untransform(output);
+            return GetUntransformer().ReverseTransform(output);
         }
 
         public override TEncoded Transform(TDecoded input)
@@ -32,9 +32,9 @@ namespace Bam.Net
             return Encoder(input);
         }
 
-        public override IValueUntransformer<TEncoded, TDecoded> GetUntransformer()
+        public override IValueReverseTransformer<TEncoded, TDecoded> GetUntransformer()
         {
-            return (IValueUntransformer<TEncoded, TDecoded>)this.CustomUntransformer;
+            return (IValueReverseTransformer<TEncoded, TDecoded>)this.CustomUntransformer;
         }
     }
 }

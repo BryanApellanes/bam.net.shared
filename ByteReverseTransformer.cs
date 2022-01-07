@@ -5,15 +5,15 @@ using System.Text;
 
 namespace Bam.Net
 {
-    public class ByteUntransformer : IValueUntransformer<byte[], byte[]>, IRequiresHttpContext, ICloneable, IContextCloneable
+    public class ByteReverseTransformer : IValueReverseTransformer<byte[], byte[]>, IRequiresHttpContext, ICloneable, IContextCloneable
     {
-        public ByteUntransformer()
+        public ByteReverseTransformer()
         {
             this.Untransformer = (b) => new byte[] { }; // noop
             this.ByteTransformer = new ByteTransformer() { ByteDecoder = this };
         }
 
-        public ByteUntransformer(Func<byte[], byte[]> decoder) : this()
+        public ByteReverseTransformer(Func<byte[], byte[]> decoder) : this()
         {
             this.Untransformer = decoder;
         }
@@ -26,7 +26,7 @@ namespace Bam.Net
 
         public object Clone()
         {
-            object clone = new ByteUntransformer() { ByteTransformer = this.ByteTransformer };
+            object clone = new ByteReverseTransformer() { ByteTransformer = this.ByteTransformer };
             clone.CopyProperties(this);
             clone.CopyEventHandlers(this);
             return clone;
@@ -34,7 +34,7 @@ namespace Bam.Net
 
         public object Clone(IHttpContext context)
         {
-            ByteUntransformer clone = new ByteUntransformer() { ByteTransformer = this.ByteTransformer };
+            ByteReverseTransformer clone = new ByteReverseTransformer() { ByteTransformer = this.ByteTransformer };
             clone.CopyProperties(this);
             clone.CopyEventHandlers(this);
             clone.HttpContext = context;
@@ -48,7 +48,7 @@ namespace Bam.Net
 
         public Func<byte[], byte[]> Untransformer { get; set; }
 
-        public byte[] Untransform(byte[] transformed)
+        public byte[] ReverseTransform(byte[] transformed)
         {
             return Untransformer(transformed);
         }

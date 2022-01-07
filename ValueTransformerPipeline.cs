@@ -7,10 +7,10 @@ namespace Bam.Net
 {
     public class ValueTransformerPipeline<TData> : ICollection<IValueTransformer<byte[], byte[]>>, IValueTransformer<TData, string>
     {
-        readonly List<IValueTransformer<byte[], byte[]>> _encoders;
+        readonly List<IValueTransformer<byte[], byte[]>> _transformers;
         public ValueTransformerPipeline()
         {
-            this._encoders = new List<IValueTransformer<byte[], byte[]>>();
+            this._transformers = new List<IValueTransformer<byte[], byte[]>>();
         }
 
         /// <summary>
@@ -25,34 +25,34 @@ namespace Bam.Net
 
         public bool IsReadOnly => false;
 
-        public int Count => _encoders.Count;
+        public int Count => _transformers.Count;
 
         public IValueTransformer<byte[], byte[]> this[int index]
         {
             get
             {
-                return this._encoders[index];
+                return this._transformers[index];
             }
         }
 
         public void Add(IValueTransformer<byte[], byte[]> item)
         {
-            this._encoders.Add(item);
+            this._transformers.Add(item);
         }
 
         public void Clear()
         {
-            this._encoders.Clear();
+            this._transformers.Clear();
         }
 
         public bool Contains(IValueTransformer<byte[], byte[]> item)
         {
-            return this._encoders.Contains(item);
+            return this._transformers.Contains(item);
         }
 
         public void CopyTo(IValueTransformer<byte[], byte[]>[] array, int arrayIndex)
         {
-            this._encoders.CopyTo(array, arrayIndex);
+            this._transformers.CopyTo(array, arrayIndex);
         }
 
         public virtual string Transform(TData value)
@@ -60,34 +60,34 @@ namespace Bam.Net
             byte[] converted = BeforeTransformConverter.ConvertObjectToBytes(value);
             byte[] data = converted;
 
-            foreach(IValueTransformer<byte[], byte[]> encoder in this._encoders)
+            foreach(IValueTransformer<byte[], byte[]> transformer in this._transformers)
             {
-                data = encoder.Transform(data);
+                data = transformer.Transform(data);
             }
 
             return AfterTransformConverter.ConvertBytesToString(data);
         }
 
-        public IValueUntransformer<string, TData> GetUntransformer()
+        public IValueReverseTransformer<string, TData> GetUntransformer()
         {
-            ValueUntransformerPipeline<TData> decoder = new ValueUntransformerPipeline<TData>();
-            decoder.BeforeDecodeConverter = this.AfterTransformConverter;
-            decoder.AfterDecodeConverter = this.BeforeTransformConverter;
-            foreach(IValueTransformer<byte[], byte[]> encoder in this._encoders)
+            ValueReverseTransformerPipeline<TData> untransformer = new ValueReverseTransformerPipeline<TData>();
+            untransformer.BeforeDecodeConverter = this.AfterTransformConverter;
+            untransformer.AfterDecodeConverter = this.BeforeTransformConverter;
+            foreach(IValueTransformer<byte[], byte[]> encoder in this._transformers)
             {
-                decoder.Add(encoder.GetUntransformer());
+                untransformer.Add(encoder.GetUntransformer());
             }
-            return decoder;
+            return untransformer;
         }
 
         public IEnumerator<IValueTransformer<byte[], byte[]>> GetEnumerator()
         {
-            return this._encoders.GetEnumerator();
+            return this._transformers.GetEnumerator();
         }
 
         public bool Remove(IValueTransformer<byte[], byte[]> item)
         {
-            return this._encoders.Remove(item);
+            return this._transformers.Remove(item);
         }
 
         IEnumerator IEnumerable.GetEnumerator()

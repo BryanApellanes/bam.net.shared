@@ -4,27 +4,30 @@ using System.Text;
 
 namespace Bam.Net.Encryption
 {
+    /// <summary>
+    /// Provides a way for a server to securely share a secret with a client.
+    /// </summary>
     public interface ISecretExchange
     {
         /// <summary>
         /// Gets or sets the identifier for the aes key
         /// used to decrypt the secret.
         /// </summary>
-        string KeySetIdentifier { get; set; }
+        string Identifier { get; set; }
 
         /// <summary>
-        /// Gets or sets the sender (server) host name.
+        /// Gets or sets the server host name who is the sender of the secret.
         /// </summary>
-        string Sender { get; set; }
+        string ServerHostName { get; set; }
 
         /// <summary>
-        /// Gets or sets the receiver (client) host name.
+        /// Gets or sets the client host name who is the receiver of the secret.
         /// </summary>
-        string Receiver { get; set; }
+        string ClientHostName { get; set; }
 
         /// <summary>
         /// Gets or sets the secret encrypted with the aes key 
-        /// of the specified KeySetIdentifier.
+        /// of the keyset with the same identifier.
         /// </summary>
         string SecretCipher { get; set; }
     }

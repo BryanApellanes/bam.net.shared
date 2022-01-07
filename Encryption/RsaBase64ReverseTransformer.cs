@@ -1,5 +1,4 @@
-﻿using Bam.Net.ServiceProxy.Data.Dao.Repository;
-using Bam.Net.ServiceProxy;
+﻿using Bam.Net.ServiceProxy;
 using Bam.Net.ServiceProxy.Data;
 using Bam.Net.ServiceProxy.Secure;
 using Bam.Net.Services;
@@ -10,13 +9,8 @@ using System.Text;
 
 namespace Bam.Net.Encryption
 {
-    public class RsaUntransformer : IValueUntransformer<byte[], string>, IRequiresHttpContext, ICloneable, IContextCloneable
+    public class RsaBase64ReverseTransformer : IValueReverseTransformer<string, string>, IRequiresHttpContext, ICloneable, IContextCloneable
     {
-        public RsaUntransformer()
-        {
-            this.Encoding = Encoding.UTF8;
-        }
-
         [Inject]
         public ISecureChannelSessionDataManager SecureChannelSessionManager { get; set; }
 
@@ -25,7 +19,7 @@ namespace Bam.Net.Encryption
 
         public object Clone()
         {
-            object clone = new RsaUntransformer();
+            object clone = new RsaBase64ReverseTransformer();
             clone.CopyProperties(this);
             clone.CopyEventHandlers(this);
             return clone;
@@ -33,7 +27,7 @@ namespace Bam.Net.Encryption
 
         public object Clone(IHttpContext context)
         {
-            RsaUntransformer clone = new RsaUntransformer();
+            RsaBase64ReverseTransformer clone = new RsaBase64ReverseTransformer();
             clone.CopyProperties(this);
             clone.CopyEventHandlers(this);
             clone.HttpContext = context;
@@ -45,8 +39,10 @@ namespace Bam.Net.Encryption
             return Clone(HttpContext);
         }
 
-        public virtual string Untransform(byte[] cipherBytes)
+        public string ReverseTransform(string base64Cipher)
         {
+            byte[] cipherBytes = base64Cipher.FromBase64();
+
             SecureChannelSession session = SecureChannelSessionManager.GetSecureChannelSessionForContextAsync(HttpContext).Result;
 
             AsymmetricCipherKeyPair keyPair = session.AsymmetricKey.ToKeyPair();
@@ -54,9 +50,9 @@ namespace Bam.Net.Encryption
             return Encoding.GetString(decryptedBytes);
         }
 
-        public virtual IValueTransformer<string, byte[]> GetTransformer()
+        public IValueTransformer<string, string> GetTransformer()
         {
-            return new RsaTransformer();
+            return new RsaBase64Transformer();
         }
     }
 }

@@ -36,19 +36,7 @@ namespace Bam.Net.Encryption
                 clientKeySet.Initialize();
             }
 
-            if (!(await RetrieveClientKeySetAsync(clientKeySet.Identifier) is ClientKeySet existingClientKeySet))
-            {
-                ClientKeySet copy = clientKeySet.CopyAsNew<ClientKeySet>();
-
-                clientKeySet = await SaveClientKeySetAsync(copy);
-            }
-            else
-            {
-                existingClientKeySet.PublicKey = clientKeySet.PublicKey;
-                existingClientKeySet.AesKey = clientKeySet.AesKey;
-                existingClientKeySet.AesIV = clientKeySet.AesIV;
-                clientKeySet = await SaveClientKeySetAsync(existingClientKeySet);
-            }
+            clientKeySet = await SaveClientKeySetAsync(clientKeySet);
 
             return clientKeySet.GetKeyExchange();
         }
@@ -60,13 +48,34 @@ namespace Bam.Net.Encryption
 
         public Task<IClientKeySet> RetrieveClientKeySetForPublicKeyAsync(string publicKey)
         {
-            throw new NotImplementedException();
+            string identifier = KeySet.GetIdentifier(publicKey);
+            return RetrieveClientKeySetAsync(identifier);
         }
 
         public async Task<IClientKeySet> SaveClientKeySetAsync(IClientKeySet clientKeySet)
         {
-            ClientKeySet toSave = clientKeySet.CopyAs<ClientKeySet>();
-            return await EncryptionDataRepository.SaveAsync(toSave);
+            if (!(await RetrieveClientKeySetAsync(clientKeySet.Identifier) is ClientKeySet existingClientKeySet))
+            {
+                ClientKeySet copy = clientKeySet.CopyAsNew<ClientKeySet>();
+
+                clientKeySet = await EncryptionDataRepository.SaveAsync(copy);
+            }
+            else
+            {
+                existingClientKeySet.PublicKey = clientKeySet.PublicKey;
+                existingClientKeySet.AesKey = clientKeySet.AesKey;
+                existingClientKeySet.AesIV = clientKeySet.AesIV;
+                clientKeySet = await EncryptionDataRepository.SaveAsync(existingClientKeySet);
+            }
+
+            return clientKeySet;
+        }
+
+        public async Task<IClientKeySet> SetSecret(ISecretExchange secretExchange)
+        {
+            ClientKeySet clientKeySet = EncryptionDataRepository.OneClientKeySetWhere(where => where.Identifier == secretExchange.Identifier);
+            clientKeySet.Secret = clientKeySet.Decrypt(secretExchange.SecretCipher);
+            return await EncryptionDataRepository.SaveAsync(clientKeySet);
         }
     }
 }

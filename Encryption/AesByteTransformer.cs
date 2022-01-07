@@ -11,17 +11,22 @@ namespace Bam.Net.Encryption
     {
         public AesByteTransformer(Func<AesKeyVectorPair> keyProvider)
         {
-            this.AesByteUntransformer = new AesByteUntransformer(this);
+            this.AesByteUntransformer = new AesByteReverseTransformer(this);
+            this.KeyProvider = keyProvider;
         }
 
-        AesByteUntransformer _aesByteUntransformer;
-        public AesByteUntransformer AesByteUntransformer 
+        public AesByteTransformer(IAesKeySource aesKeySource) : this(() => aesKeySource.GetAesKey())
+        { 
+        }
+
+        AesByteReverseTransformer _aesByteUntransformer;
+        public AesByteReverseTransformer AesByteUntransformer 
         {
             get
             {
                 if (this._aesByteUntransformer == null)
                 {
-                    this._aesByteUntransformer = new AesByteUntransformer(this);
+                    this._aesByteUntransformer = new AesByteReverseTransformer(this);
                 }
 
                 return this._aesByteUntransformer;
@@ -37,7 +42,7 @@ namespace Bam.Net.Encryption
 
         public override byte[] Untransform(byte[] cipherBytes)
         {
-            return GetUntransformer().Untransform(cipherBytes);
+            return GetUntransformer().ReverseTransform(cipherBytes);
         }
 
         public override byte[] Transform(byte[] plainData)
@@ -48,7 +53,7 @@ namespace Bam.Net.Encryption
             return Aes.EncryptBytes(plainData, aesKey.Key, aesKey.IV);
         }
 
-        public override IValueUntransformer<byte[], byte[]> GetUntransformer()
+        public override IValueReverseTransformer<byte[], byte[]> GetUntransformer()
         {
             return this.AesByteUntransformer;
         }

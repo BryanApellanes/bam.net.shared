@@ -36,6 +36,16 @@ namespace Bam.Net.Encryption.Data
         [CompositeKey]
         public string ClientHostName { get; set; }
 
+        public bool GetIsAesInitialized()
+        {
+            return !string.IsNullOrEmpty(AesKey) && !string.IsNullOrEmpty(AesIV);
+        }
+
+        public bool GetIsRsaInitialized()
+        {
+            return !string.IsNullOrEmpty(RsaKey);
+        }
+
         /// <summary>
         /// Gets the rsa key for the current server keyset.
         /// </summary>
@@ -50,11 +60,16 @@ namespace Bam.Net.Encryption.Data
             // Only send if the current machine created this key set.
             if (MachineName.Equals(Environment.MachineName)) 
             {
+                if (!GetIsAesInitialized())
+                {
+                    InitializeAesKey();
+                }
+
                 return new SecretExchange
                 {
-                    KeySetIdentifier = this.Identifier,
-                    Sender = ServerHostName,
-                    Receiver = ClientHostName,
+                    Identifier = this.Identifier,
+                    ServerHostName = ServerHostName,
+                    ClientHostName = ClientHostName,
                     SecretCipher = Encrypt(Secret)
                 };
             }

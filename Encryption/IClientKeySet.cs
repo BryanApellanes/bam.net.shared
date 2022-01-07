@@ -26,8 +26,14 @@ namespace Bam.Net.Encryption
         /// </summary>
         string AesIV { get; }
 
+        string Secret { get; }
+
+        string Encrypt(string value);
+
+        string Decrypt(string base64EncodedValue);
+
         /// <summary>
-        /// Gets a value indicating whether the AesKey and AesIV are not blank.
+        /// Gets a value indicating whether the aes key and initializaiton vector are not blank.
         /// </summary>
         /// <returns></returns>
         bool GetIsInitialized();

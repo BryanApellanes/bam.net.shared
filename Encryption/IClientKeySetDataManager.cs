@@ -21,9 +21,10 @@ namespace Bam.Net.Encryption
         /// <returns></returns>
         Task<IAesKeyExchange> CreateAesKeyExchangeAsync(IClientKeySet clientKeySet); // client side: set the aes key and send exchange
 
-
         Task<IClientKeySet> RetrieveClientKeySetForPublicKeyAsync(string publicKey); // client side
 
         Task<IClientKeySet> RetrieveClientKeySetAsync(string identifier); // client side
+
+        Task<IClientKeySet> SetSecret(ISecretExchange secretExchange);
     }
 }

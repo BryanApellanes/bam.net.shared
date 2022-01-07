@@ -50,7 +50,7 @@ namespace Bam.Net.Encryption
 
         string PrivateKeyDecrypt(string cipher, IAsymmetricBlockCipher engine = null);
 
-        AesKeyVectorPair GetAesKeyVectorPair();
+        AesKeyVectorPair GetAesKey();
 
         AsymmetricCipherKeyPair GetAsymmetricKeys();        
 

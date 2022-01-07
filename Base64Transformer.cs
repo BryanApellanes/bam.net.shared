@@ -16,9 +16,9 @@ namespace Bam.Net
             return input.ToBase64();
         }
 
-        public override IValueUntransformer<string, byte[]> GetUntransformer()
+        public override IValueReverseTransformer<string, byte[]> GetUntransformer()
         {
-            return new Base64Untransformer();
+            return new Base64ReverseTransformer();
         }
     }
 }

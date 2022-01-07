@@ -8,7 +8,7 @@ using System.Text;
 
 namespace Bam.Net.Encryption.Data
 {
-    public class KeySet : KeyedAuditRepoData, IKeySet
+    public class KeySet : KeyedAuditRepoData, IKeySet, IAesKeySource
     {
         public KeySet() 
         {
@@ -71,12 +71,12 @@ namespace Bam.Net.Encryption.Data
         /// <inheritdoc />
         public string Encrypt(string value)
         {
-            return Aes.Encrypt(value, GetAesKeyVectorPair());
+            return Aes.Encrypt(value, GetAesKey());
         }
 
         public string Decrypt(string base64EncodedValue)
         {
-            return Aes.Decrypt(base64EncodedValue, GetAesKeyVectorPair());
+            return Aes.Decrypt(base64EncodedValue, GetAesKey());
         }
 
         public string AsymmetricEncrypt(string plainText, IAsymmetricBlockCipher engine = null)
@@ -114,7 +114,7 @@ namespace Bam.Net.Encryption.Data
         }
 
         AesKeyVectorPair _aesKeyVectorPair;
-        public AesKeyVectorPair GetAesKeyVectorPair()
+        public AesKeyVectorPair GetAesKey()
         {
             if (_aesKeyVectorPair == null)
             {
@@ -125,6 +125,10 @@ namespace Bam.Net.Encryption.Data
         }
 
         AsymmetricCipherKeyPair _asymmetricCipherKeyPair;
+        /// <summary>
+        /// Gets the rsa key pair, generating it if necessary.
+        /// </summary>
+        /// <returns></returns>
         public AsymmetricCipherKeyPair GetAsymmetricKeys()
         {
             if (_asymmetricCipherKeyPair == null)

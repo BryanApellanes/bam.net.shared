@@ -4,16 +4,16 @@ using System.Text;
 
 namespace Bam.Net
 {
-    public class Base64Untransformer : IValueUntransformer<string, byte[]>
+    public class Base64ReverseTransformer : IValueReverseTransformer<string, byte[]>
     {
-        public byte[] Untransform(string encoded)
+        public byte[] ReverseTransform(string encoded)
         {
             return encoded.FromBase64();
         }
 
         public IValueTransformer<byte[], string> GetTransformer()
         {
-            return (IValueTransformer<byte[], string>)new Base64Transformer();
+            return new Base64Transformer();
         }
     }
 }

@@ -54,6 +54,7 @@ namespace Bam.Net.Encryption.Data.Dao
         public ClientKeySetColumns AesKey => new ClientKeySetColumns("AesKey");
         public ClientKeySetColumns AesIV => new ClientKeySetColumns("AesIV");
         public ClientKeySetColumns ApplicationName => new ClientKeySetColumns("ApplicationName");
+        public ClientKeySetColumns Secret => new ClientKeySetColumns("Secret");
         public ClientKeySetColumns Key => new ClientKeySetColumns("Key");
         public ClientKeySetColumns CompositeKeyId => new ClientKeySetColumns("CompositeKeyId");
         public ClientKeySetColumns CompositeKey => new ClientKeySetColumns("CompositeKey");

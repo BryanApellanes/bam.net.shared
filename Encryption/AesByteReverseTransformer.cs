@@ -8,15 +8,15 @@ using System.Text;
 
 namespace Bam.Net.Encryption
 {
-    public class AesByteUntransformer : IValueUntransformer<byte[], byte[]>, IRequiresHttpContext, ICloneable, IContextCloneable
+    public class AesByteReverseTransformer : IValueReverseTransformer<byte[], byte[]>, IRequiresHttpContext, ICloneable, IContextCloneable
     {
-        public AesByteUntransformer(AesByteTransformer aesByteTransformer)
+        public AesByteReverseTransformer(AesByteTransformer aesByteTransformer)
         {
             this.Encoding = Encoding.UTF8;
             this.AesByteTransformer = aesByteTransformer;
         }
 
-        public AesByteUntransformer(AesKeyVectorPair aesKeyVectorPair)
+        public AesByteReverseTransformer(AesKeyVectorPair aesKeyVectorPair)
         {
             this.Encoding = Encoding.UTF8;
             this.KeyProvider = () => aesKeyVectorPair;
@@ -54,7 +54,7 @@ namespace Bam.Net.Encryption
 
         public object Clone()
         {
-            object clone = new AesByteUntransformer(AesByteTransformer);
+            object clone = new AesByteReverseTransformer(AesByteTransformer);
             clone.CopyProperties(this);
             clone.CopyEventHandlers(this);
             return clone;
@@ -62,7 +62,7 @@ namespace Bam.Net.Encryption
 
         public object Clone(IHttpContext context)
         {
-            AesUntransformer clone = new AesUntransformer();
+            AesReverseTransformer clone = new AesReverseTransformer();
             clone.CopyProperties(this);
             clone.CopyEventHandlers(this);
             clone.HttpContext = context;
@@ -74,7 +74,7 @@ namespace Bam.Net.Encryption
             return Clone(HttpContext);
         }
 
-        public byte[] Untransform(byte[] cipherBytes)
+        public byte[] ReverseTransform(byte[] cipherBytes)
         {
             Args.ThrowIfNull(KeyProvider, nameof(KeyProvider));
             AesKeyVectorPair aesKeyVectorPair = KeyProvider();

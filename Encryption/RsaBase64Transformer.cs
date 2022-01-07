@@ -23,7 +23,7 @@ namespace Bam.Net.Encryption
         /// <returns></returns>
         public override string Untransform(string base64Cipher)
         {
-            return GetUntransformer().Untransform(base64Cipher);
+            return GetUntransformer().ReverseTransform(base64Cipher);
         }
 
         /// <summary>
@@ -38,9 +38,9 @@ namespace Bam.Net.Encryption
             return ClientSessionInfo.GetAsymetricCipher(plainText, Encoding);
         }
 
-        public override IValueUntransformer<string, string> GetUntransformer()
+        public override IValueReverseTransformer<string, string> GetUntransformer()
         {
-            return new RsaBase64Untransformer();
+            return new RsaBase64ReverseTransformer();
         }
     }
 }
