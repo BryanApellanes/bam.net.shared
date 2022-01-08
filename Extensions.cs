@@ -1633,8 +1633,8 @@ namespace Bam.Net
 
         /// <summary>
         /// Iterate backwards over the specified array (IEnumerable).
-        /// This will allow one to remove the current element without
-        /// causing an exception.
+        /// Allows one to remove the current element of each iteration, 
+        /// if necessary, without causing an exception.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="arr"></param>
@@ -1646,8 +1646,8 @@ namespace Bam.Net
 
         /// <summary>
         /// Iterate backwards over the specified array (IEnumerable).
-        /// This will allow one to remove the current element without
-        /// causing an exception.
+        /// Allows one to remove the current element of each iteration, 
+        /// if necessary, without causing an exception.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="arr"></param>
@@ -1666,8 +1666,8 @@ namespace Bam.Net
 
         /// <summary>
         /// Iterate backwards over the specified array (IEnumerable).
-        /// This will allow one to remove the current element without
-        /// causing an exception.
+        /// Allows one to remove the current element of each iteration, 
+        /// if necessary, without causing an exception.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="arr"></param>
@@ -1679,8 +1679,8 @@ namespace Bam.Net
 
         /// <summary>
         /// Iterate backwards over the specified array (IEnumerable).
-        /// This will allow one to remove the current element without
-        /// causing an exception.
+        /// Allows one to remove the current element of each iteration, 
+        /// if necessary, without causing an exception.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="arr"></param>
@@ -1703,8 +1703,8 @@ namespace Bam.Net
 
         /// <summary>
         /// Iterate backwards over the specified array (IEnumerable).
-        /// This will allow one to remove the current element without
-        /// causing an exception.
+        /// Allows one to remove the current element of each iteration, 
+        /// if necessary, without causing an exception.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="arr"></param>
@@ -1715,8 +1715,8 @@ namespace Bam.Net
 
         /// <summary>
         /// Iterate backwards over the specified array (IEnumerable).
-        /// This will allow one to remove the current element without
-        /// causing an exception.
+        /// Allows one to remove the current element of each iteration, 
+        /// if necessary, without causing an exception.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="arr"></param>

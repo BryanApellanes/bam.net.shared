@@ -15,7 +15,7 @@ namespace Bam.Net
 
         public override string Untransform(string base64GZipData)
         {
-            return GetUntransformer().ReverseTransform(base64GZipData);
+            return GetReverseTransformer().ReverseTransform(base64GZipData);
         }
 
         public override string Transform(string inputText)
@@ -24,7 +24,7 @@ namespace Bam.Net
             return Convert.ToBase64String(zippedBytes);
         }
 
-        public override IValueReverseTransformer<string, string> GetUntransformer()
+        public override IValueReverseTransformer<string, string> GetReverseTransformer()
         {
             return new GZipBase64ReverseTransformer();
         }

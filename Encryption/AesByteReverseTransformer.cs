@@ -79,10 +79,7 @@ namespace Bam.Net.Encryption
             Args.ThrowIfNull(KeyProvider, nameof(KeyProvider));
             AesKeyVectorPair aesKeyVectorPair = KeyProvider();
 
-            string base64Cipher = Convert.ToBase64String(cipherBytes);
-            Decrypted decrypted = new Decrypted(base64Cipher, aesKeyVectorPair);
-            
-            return Encoding.GetBytes(decrypted.Value);
+            return Aes.DecryptBytes(cipherBytes, aesKeyVectorPair.Key, aesKeyVectorPair.IV);
         }
 
         public IValueTransformer<byte[], byte[]> GetTransformer()

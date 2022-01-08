@@ -24,7 +24,7 @@ namespace Bam.Net
 
         public override TDecoded Untransform(TEncoded output)
         {
-            return GetUntransformer().ReverseTransform(output);
+            return GetReverseTransformer().ReverseTransform(output);
         }
 
         public override TEncoded Transform(TDecoded input)
@@ -32,7 +32,7 @@ namespace Bam.Net
             return Encoder(input);
         }
 
-        public override IValueReverseTransformer<TEncoded, TDecoded> GetUntransformer()
+        public override IValueReverseTransformer<TEncoded, TDecoded> GetReverseTransformer()
         {
             return (IValueReverseTransformer<TEncoded, TDecoded>)this.CustomUntransformer;
         }

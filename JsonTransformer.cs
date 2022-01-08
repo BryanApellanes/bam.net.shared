@@ -12,7 +12,7 @@ namespace Bam.Net
 
         public override TInput Untransform(string output)
         {
-            return GetUntransformer().ReverseTransform(output);
+            return GetReverseTransformer().ReverseTransform(output);
         }
 
         public override string Transform(TInput value)
@@ -20,7 +20,7 @@ namespace Bam.Net
             return value.ToJson();
         }
 
-        public override IValueReverseTransformer<string, TInput> GetUntransformer()
+        public override IValueReverseTransformer<string, TInput> GetReverseTransformer()
         {
             return new JsonReverseTransformer<TInput>();
         }

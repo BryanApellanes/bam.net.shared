@@ -7,18 +7,18 @@ namespace Bam.Net
 {
     public class GZipByteReverseTransformer : IValueReverseTransformer<byte[], byte[]>, IRequiresHttpContext, ICloneable, IContextCloneable
     {
-        public GZipByteReverseTransformer()
+        public GZipByteReverseTransformer(GZipByteTransformer gZipByteTransformer)
         {
-            this.GZipByteTransformer = new GZipByteTransformer() { GZipByteReverseTransformer = this };
+            this.GZipByteTransformer = gZipByteTransformer;
         }
 
         public IHttpContext HttpContext { get; set; }
 
-        public GZipByteTransformer GZipByteTransformer { get; set; }
+        public GZipByteTransformer GZipByteTransformer { get; }
 
         public object Clone()
         {
-            object clone = new GZipByteReverseTransformer() { GZipByteTransformer = GZipByteTransformer };
+            object clone = new GZipByteReverseTransformer(GZipByteTransformer);
             clone.CopyProperties(this);
             clone.CopyEventHandlers(this);
             return clone;
@@ -26,7 +26,7 @@ namespace Bam.Net
 
         public object Clone(IHttpContext context)
         {
-            GZipByteReverseTransformer clone = new GZipByteReverseTransformer() { GZipByteTransformer = GZipByteTransformer };
+            GZipByteReverseTransformer clone = new GZipByteReverseTransformer(GZipByteTransformer);
             clone.CopyProperties(this);
             clone.CopyEventHandlers(this);
             clone.HttpContext = context;
@@ -38,9 +38,9 @@ namespace Bam.Net
             return Clone(HttpContext);
         }
 
-        public byte[] ReverseTransform(byte[] encoded)
+        public byte[] ReverseTransform(byte[] transformed)
         {
-            return encoded.GUnzip();
+            return transformed.GUnzip();
         }
 
         public IValueTransformer<byte[], byte[]> GetTransformer()

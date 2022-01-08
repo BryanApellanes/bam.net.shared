@@ -68,15 +68,12 @@ namespace Bam.Net
             return AfterTransformConverter.ConvertBytesToString(data);
         }
 
-        public IValueReverseTransformer<string, TData> GetUntransformer()
+        public IValueReverseTransformer<string, TData> GetReverseTransformer()
         {
             ValueReverseTransformerPipeline<TData> untransformer = new ValueReverseTransformerPipeline<TData>();
             untransformer.BeforeDecodeConverter = this.AfterTransformConverter;
             untransformer.AfterDecodeConverter = this.BeforeTransformConverter;
-            foreach(IValueTransformer<byte[], byte[]> encoder in this._transformers)
-            {
-                untransformer.Add(encoder.GetUntransformer());
-            }
+            this._transformers.BackwardsEach(transformer => untransformer.Add(transformer.GetReverseTransformer()));
             return untransformer;
         }
 

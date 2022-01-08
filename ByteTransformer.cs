@@ -23,7 +23,7 @@ namespace Bam.Net
 
         public override byte[] Untransform(byte[] output)
         {
-            return GetUntransformer().ReverseTransform(output);
+            return GetReverseTransformer().ReverseTransform(output);
         }
 
         public override byte[] Transform(byte[] input)
@@ -31,7 +31,7 @@ namespace Bam.Net
             return Transformer(input);
         }
 
-        public override IValueReverseTransformer<byte[], byte[]> GetUntransformer()
+        public override IValueReverseTransformer<byte[], byte[]> GetReverseTransformer()
         {
             return this.ByteDecoder;
         }

@@ -18,7 +18,7 @@ namespace Bam.Net.Encryption
 
         public override string Untransform(byte[] cipherBytes)
         {
-            return GetUntransformer().ReverseTransform(cipherBytes);
+            return GetReverseTransformer().ReverseTransform(cipherBytes);
         }
 
         public override byte[] Transform(string plainText)
@@ -28,7 +28,7 @@ namespace Bam.Net.Encryption
             return ClientSessionInfo.GetAsymetricCipherBytes(plainText, Encoding);
         }
 
-        public override IValueReverseTransformer<byte[], string> GetUntransformer()
+        public override IValueReverseTransformer<byte[], string> GetReverseTransformer()
         {
             return new RsaReverseTransformer();
         }

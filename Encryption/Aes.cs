@@ -126,6 +126,13 @@ namespace Bam.Net.Encryption
         /// <returns></returns>
         public static string Decrypt(string base64EndoedCipher, string base64EncodedKey, string base64EncodedIV)
         {
+            byte[] encData = Convert.FromBase64String(base64EndoedCipher);
+            byte[] retBytes = DecryptBytes(encData, base64EncodedKey, base64EncodedIV);
+            return Encoding.UTF8.GetString(retBytes.ToArray());
+        }
+
+        public static byte[] DecryptBytes(byte[] encData, string base64EncodedKey, string base64EncodedIV)
+        {
             AesManaged aes = new AesManaged
             {
                 IV = Convert.FromBase64String(base64EncodedIV),
@@ -134,10 +141,9 @@ namespace Bam.Net.Encryption
 
             ICryptoTransform decryptor = aes.CreateDecryptor();
 
-            byte[] encData = Convert.FromBase64String(base64EndoedCipher);
             using (MemoryStream decryptBuffer = new MemoryStream(encData))
             {
-                using(CryptoStream decryptStream = new CryptoStream(decryptBuffer, decryptor, CryptoStreamMode.Read))
+                using (CryptoStream decryptStream = new CryptoStream(decryptBuffer, decryptor, CryptoStreamMode.Read))
                 {
                     byte[] decrypted = new byte[encData.Length];
 
@@ -151,11 +157,11 @@ namespace Bam.Net.Encryption
                     {
                         if (b == 0)
                             break;
-                        
-                        retBytes.Add(b);                        
+
+                        retBytes.Add(b);
                     }
 
-                    return Encoding.UTF8.GetString(retBytes.ToArray());
+                    return retBytes.ToArray();
                 }
             }
         }

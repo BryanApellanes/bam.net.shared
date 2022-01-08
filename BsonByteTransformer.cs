@@ -8,7 +8,7 @@ namespace Bam.Net
     {
         public override TData Untransform(byte[] output)
         {
-            return GetUntransformer().ReverseTransform(output);
+            return GetReverseTransformer().ReverseTransform(output);
         }
 
         public override byte[] Transform(TData input)
@@ -16,7 +16,7 @@ namespace Bam.Net
             return input.ToBson();
         }
 
-        public override IValueReverseTransformer<byte[], TData> GetUntransformer()
+        public override IValueReverseTransformer<byte[], TData> GetReverseTransformer()
         {
             return new BsonByteReverseTransformer<TData>();
         }
