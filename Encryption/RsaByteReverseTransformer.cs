@@ -11,13 +11,17 @@ namespace Bam.Net.Encryption
 {
     public class RsaByteReverseTransformer : IValueReverseTransformer<byte[], byte[]>, IRequiresHttpContext, ICloneable, IContextCloneable
     {
-        public RsaByteReverseTransformer()
+        public RsaByteReverseTransformer(Func<RsaPublicPrivateKeyPair> keyProvider)
         {
-            this.RsaByteEncoder = new RsaByteTransformer() { RsaByteDecoder = this };
+            this.KeyProvider = keyProvider;
+        }
+        public RsaByteReverseTransformer(RsaByteTransformer rsaByteReverseTransformer)
+        {
+            this.RsaByteEncoder = rsaByteReverseTransformer;
+            this.KeyProvider = rsaByteReverseTransformer.KeyProvider;
         }
 
-        [Inject]
-        public ISecureChannelSessionDataManager SecureChannelSessionManager { get; set; }
+        public Func<RsaPublicPrivateKeyPair> KeyProvider { get; set; }
 
         public RsaByteTransformer RsaByteEncoder { get; set; }
 
@@ -25,7 +29,7 @@ namespace Bam.Net.Encryption
 
         public object Clone()
         {
-            object clone = new RsaReverseTransformer();
+            object clone = new RsaByteReverseTransformer(RsaByteEncoder);
             clone.CopyProperties(this);
             clone.CopyEventHandlers(this);
             return clone;
@@ -33,7 +37,7 @@ namespace Bam.Net.Encryption
 
         public object Clone(IHttpContext context)
         {
-            RsaReverseTransformer clone = new RsaReverseTransformer();
+            RsaByteReverseTransformer clone = new RsaByteReverseTransformer(RsaByteEncoder);
             clone.CopyProperties(this);
             clone.CopyEventHandlers(this);
             clone.HttpContext = context;
@@ -47,11 +51,9 @@ namespace Bam.Net.Encryption
 
         public byte[] ReverseTransform(byte[] cipherBytes)
         {
-            SecureChannelSession session = SecureChannelSessionManager.GetSecureChannelSessionForContextAsync(HttpContext).Result;
+            RsaPublicPrivateKeyPair rsaKey = KeyProvider();
 
-            AsymmetricCipherKeyPair keyPair = session.AsymmetricKey.ToKeyPair();
-            byte[] decryptedBytes = cipherBytes.DecryptWithPrivateKey(keyPair.Private);
-            return decryptedBytes;
+            return rsaKey.DecryptBytes(cipherBytes);
         }
 
         public IValueTransformer<byte[], byte[]> GetTransformer()

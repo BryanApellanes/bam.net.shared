@@ -109,9 +109,9 @@ namespace Bam.Net.Encryption
         /// Gets a Base64 encoded value representing the cypher of the specified
         /// value using the current key.
         /// </summary>
-        public string Encrypt(string value)
+        public string Encrypt(string plainText)
         {
-            return Aes.Encrypt(value, this);
+            return Aes.Encrypt(plainText, this);
         }
 
         /// <summary>
@@ -122,6 +122,16 @@ namespace Bam.Net.Encryption
         public string Decrypt(string base64EncodedCipher)
         {
             return Aes.Decrypt(base64EncodedCipher, this);
+        }
+
+        public byte[] EncryptBytes(byte[] data)
+        {
+            return Aes.EncryptBytes(data, this.Key, this.IV);
+        }
+
+        public byte[] DecryptBytes(byte[] cipherData)
+        {
+            return Aes.DecryptBytes(cipherData, this.Key, this.IV);
         }
     }
 }

@@ -8,20 +8,33 @@ namespace Bam.Net.Encryption
 {
     public class RsaBase64Transformer : ValueTransformer<string, string>
     {
-        public RsaBase64Transformer()
+        public RsaBase64Transformer(Func<RsaPublicPrivateKeyPair> keyProvider)
         {
-            Encoding = Encoding.UTF8;
+            this.Encoding = Encoding.UTF8;
+            this.KeyProvider = keyProvider;
+            this.RsaBase64ReverseTransformer = new RsaBase64ReverseTransformer(this);
         }
 
+        public RsaBase64Transformer(IRsaKeySource rsaKeySource) : this(() => rsaKeySource.GetRsaKey())
+        {
+        }
+
+        public RsaBase64Transformer(RsaPublicPrivateKeyPair rsaPublicPrivateKeyPair) : this(() => rsaPublicPrivateKeyPair)
+        { 
+        }
+
+        protected RsaBase64ReverseTransformer RsaBase64ReverseTransformer { get; set; }
+
         public Encoding Encoding { get; set; }
-        public ClientSession ClientSessionInfo { get; set; }
+
+        public Func<RsaPublicPrivateKeyPair> KeyProvider { get; set; }
 
         /// <summary>
         /// Converts the specified base 64 encoded cipher to plain text.
         /// </summary>
         /// <param name="base64Cipher"></param>
         /// <returns></returns>
-        public override string Untransform(string base64Cipher)
+        public override string ReverseTransform(string base64Cipher)
         {
             return GetReverseTransformer().ReverseTransform(base64Cipher);
         }
@@ -33,14 +46,13 @@ namespace Bam.Net.Encryption
         /// <returns></returns>
         public override string Transform(string plainText)
         {
-            Args.ThrowIfNull(ClientSessionInfo, $"{nameof(ClientSessionInfo)} not set");
-
-            return ClientSessionInfo.GetAsymetricCipher(plainText, Encoding);
+            RsaPublicPrivateKeyPair rsaKey = KeyProvider();
+            return rsaKey.Encrypt(plainText, Encoding);
         }
 
         public override IValueReverseTransformer<string, string> GetReverseTransformer()
         {
-            return new RsaBase64ReverseTransformer();
+            return this.RsaBase64ReverseTransformer;
         }
     }
 }

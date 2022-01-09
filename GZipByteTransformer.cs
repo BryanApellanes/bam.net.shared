@@ -13,7 +13,7 @@ namespace Bam.Net
 
         public GZipByteReverseTransformer GZipByteReverseTransformer { get; }
 
-        public override byte[] Untransform(byte[] tranformed)
+        public override byte[] ReverseTransform(byte[] tranformed)
         {
             return GetReverseTransformer().ReverseTransform(tranformed);
         }

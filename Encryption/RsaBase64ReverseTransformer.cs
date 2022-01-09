@@ -11,15 +11,20 @@ namespace Bam.Net.Encryption
 {
     public class RsaBase64ReverseTransformer : IValueReverseTransformer<string, string>, IRequiresHttpContext, ICloneable, IContextCloneable
     {
-        [Inject]
-        public ISecureChannelSessionDataManager SecureChannelSessionManager { get; set; }
+        public RsaBase64ReverseTransformer(RsaBase64Transformer transformer)
+        {
+            this.RsaBase64Transformer = transformer;
+            this.KeyProvider = transformer.KeyProvider;
+        }
 
+        protected RsaBase64Transformer RsaBase64Transformer { get; set; }
+        public Func<RsaPublicPrivateKeyPair> KeyProvider { get; set; }
         public Encoding Encoding { get; set; }
         public IHttpContext HttpContext { get; set; }
 
         public object Clone()
         {
-            object clone = new RsaBase64ReverseTransformer();
+            object clone = new RsaBase64ReverseTransformer(RsaBase64Transformer);
             clone.CopyProperties(this);
             clone.CopyEventHandlers(this);
             return clone;
@@ -27,7 +32,7 @@ namespace Bam.Net.Encryption
 
         public object Clone(IHttpContext context)
         {
-            RsaBase64ReverseTransformer clone = new RsaBase64ReverseTransformer();
+            RsaBase64ReverseTransformer clone = new RsaBase64ReverseTransformer(RsaBase64Transformer);
             clone.CopyProperties(this);
             clone.CopyEventHandlers(this);
             clone.HttpContext = context;
@@ -41,18 +46,13 @@ namespace Bam.Net.Encryption
 
         public string ReverseTransform(string base64Cipher)
         {
-            byte[] cipherBytes = base64Cipher.FromBase64();
-
-            SecureChannelSession session = SecureChannelSessionManager.GetSecureChannelSessionForContextAsync(HttpContext).Result;
-
-            AsymmetricCipherKeyPair keyPair = session.AsymmetricKey.ToKeyPair();
-            byte[] decryptedBytes = cipherBytes.DecryptWithPrivateKey(keyPair.Private);
-            return Encoding.GetString(decryptedBytes);
+            RsaPublicPrivateKeyPair rsaKey = KeyProvider();
+            return rsaKey.Decrypt(base64Cipher, Encoding);
         }
 
         public IValueTransformer<string, string> GetTransformer()
         {
-            return new RsaBase64Transformer();
+            return this.RsaBase64Transformer;
         }
     }
 }

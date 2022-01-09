@@ -13,7 +13,7 @@ namespace Bam.Net
 
         public Encoding Encoding { get; set; }
 
-        public override string Untransform(string base64GZipData)
+        public override string ReverseTransform(string base64GZipData)
         {
             return GetReverseTransformer().ReverseTransform(base64GZipData);
         }

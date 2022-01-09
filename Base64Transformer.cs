@@ -6,7 +6,7 @@ namespace Bam.Net
 {
     public class Base64Transformer : ValueTransformer<byte[], string>
     {
-        public override byte[] Untransform(string output)
+        public override byte[] ReverseTransform(string output)
         {
             return output.FromBase64();
         }

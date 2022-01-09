@@ -124,11 +124,11 @@ namespace Bam.Net.Encryption
         /// <param name="base64EncodedKey">The base64 encoded key.</param>
         /// <param name="base64EncodedIV">The base64 encoded iv.</param>
         /// <returns></returns>
-        public static string Decrypt(string base64EndoedCipher, string base64EncodedKey, string base64EncodedIV)
+        public static string Decrypt(string base64EndoedCipher, string base64EncodedKey, string base64EncodedIV, Encoding encoding = null)
         {
             byte[] encData = Convert.FromBase64String(base64EndoedCipher);
             byte[] retBytes = DecryptBytes(encData, base64EncodedKey, base64EncodedIV);
-            return Encoding.UTF8.GetString(retBytes.ToArray());
+            return (encoding ?? Encoding.UTF8).GetString(retBytes.ToArray());
         }
 
         public static byte[] DecryptBytes(byte[] encData, string base64EncodedKey, string base64EncodedIV)

@@ -22,7 +22,7 @@ namespace Bam.Net
 
         public Func<TDecoded, TEncoded> Encoder { get; set; }
 
-        public override TDecoded Untransform(TEncoded output)
+        public override TDecoded ReverseTransform(TEncoded output)
         {
             return GetReverseTransformer().ReverseTransform(output);
         }

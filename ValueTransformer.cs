@@ -14,7 +14,7 @@ namespace Bam.Net
 
         public abstract TOutput Transform(TInput input);
 
-        public abstract TInput Untransform(TOutput output);
+        public abstract TInput ReverseTransform(TOutput output);
 
         public abstract IValueReverseTransformer<TOutput, TInput> GetReverseTransformer();
 

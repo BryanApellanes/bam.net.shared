@@ -12,15 +12,9 @@ namespace Bam.Net.Encryption
     {
         public AesByteReverseTransformer(AesByteTransformer aesByteTransformer)
         {
-            this.Encoding = Encoding.UTF8;
             this.AesByteTransformer = aesByteTransformer;
         }
 
-        public AesByteReverseTransformer(AesKeyVectorPair aesKeyVectorPair)
-        {
-            this.Encoding = Encoding.UTF8;
-            this.KeyProvider = () => aesKeyVectorPair;
-        }
 
         Func<AesKeyVectorPair> _keyProvider;
         public Func<AesKeyVectorPair> KeyProvider 
@@ -42,14 +36,12 @@ namespace Bam.Net.Encryption
             }
         }
 
-        public Encoding Encoding { get; set; }
-
         public IHttpContext HttpContext { get; set; }
 
-        public AesByteTransformer AesByteTransformer 
+        protected AesByteTransformer AesByteTransformer 
         {
             get;
-            internal set;
+            set;
         }
 
         public object Clone()
@@ -62,7 +54,7 @@ namespace Bam.Net.Encryption
 
         public object Clone(IHttpContext context)
         {
-            AesReverseTransformer clone = new AesReverseTransformer();
+            AesByteReverseTransformer clone = new AesByteReverseTransformer(AesByteTransformer);
             clone.CopyProperties(this);
             clone.CopyEventHandlers(this);
             clone.HttpContext = context;
@@ -79,7 +71,7 @@ namespace Bam.Net.Encryption
             Args.ThrowIfNull(KeyProvider, nameof(KeyProvider));
             AesKeyVectorPair aesKeyVectorPair = KeyProvider();
 
-            return Aes.DecryptBytes(cipherBytes, aesKeyVectorPair.Key, aesKeyVectorPair.IV);
+            return aesKeyVectorPair.DecryptBytes(cipherBytes);
         }
 
         public IValueTransformer<byte[], byte[]> GetTransformer()

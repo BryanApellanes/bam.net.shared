@@ -217,24 +217,6 @@ namespace Bam.Net
                 throw new ExpectationFailedException(expected.ToString(), actual.ToString(), ShouldHtmlEncodeExceptions);
             }
         }
-
-        public static void ReferenceEquals(object one, object two)
-        {
-            ReferenceEquals(one, two, string.Empty);
-        }
-
-        public static void ReferenceEquals(object one, object two, string failureMessage)
-        {
-            if (!object.ReferenceEquals(one, two))
-            {
-                if (string.IsNullOrWhiteSpace(failureMessage))
-                {
-                    throw new ExpectationFailedException("References weren't equal");
-                }
-
-                throw new ExpectationFailedException(failureMessage, ShouldHtmlEncodeExceptions);
-            }
-        }
         
         public static void IsEqualTo(this int actual, int expected, string failureMessage = "")
         {
@@ -255,7 +237,7 @@ namespace Bam.Net
                 }
             }
         }
-        
+                        
         public static void IsEqualTo(this long actual, long expected)
         {
             AreEqual(expected, actual);

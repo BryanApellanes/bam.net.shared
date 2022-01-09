@@ -10,7 +10,7 @@ namespace Bam.Net
         {
         }
 
-        public override TInput Untransform(string output)
+        public override TInput ReverseTransform(string output)
         {
             return GetReverseTransformer().ReverseTransform(output);
         }

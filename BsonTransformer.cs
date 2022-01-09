@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Bam.Net
+﻿namespace Bam.Net
 {
-    public class BsonByteTransformer<TData> : ValueTransformer<TData, byte[]>
+    public class BsonTransformer<TData> : ValueTransformer<TData, byte[]>
     {
-        public override TData Untransform(byte[] output)
+        public override TData ReverseTransform(byte[] output)
         {
             return GetReverseTransformer().ReverseTransform(output);
         }
@@ -18,7 +14,7 @@ namespace Bam.Net
 
         public override IValueReverseTransformer<byte[], TData> GetReverseTransformer()
         {
-            return new BsonByteReverseTransformer<TData>();
+            return new BsonReverseTransformer<TData>();
         }
     }
 }

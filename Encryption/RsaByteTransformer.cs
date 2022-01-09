@@ -7,30 +7,39 @@ namespace Bam.Net.Encryption
 {
     public class RsaByteTransformer : ValueTransformer<byte[], byte[]>
     {
-        public RsaByteTransformer()
+        public RsaByteTransformer(Func<RsaPublicPrivateKeyPair> keyProvider)
         {
-            this.RsaByteDecoder = new RsaByteReverseTransformer() { RsaByteEncoder = this };
+            this.KeyProvider = keyProvider;
+            this.RsaByteReverseTransformer = new RsaByteReverseTransformer(this);
         }
 
-        public ClientSession ClientSessionInfo { get; set; }
+        public RsaByteTransformer(RsaPublicPrivateKeyPair rsaPublicPrivateKeyPair) : this(() => rsaPublicPrivateKeyPair)
+        { 
+        }
 
-        public RsaByteReverseTransformer RsaByteDecoder { get; set; }
+        public RsaByteTransformer(IRsaKeySource rsaKeySource) : this(() => rsaKeySource.GetRsaKey())
+        { 
+        }
 
-        public override byte[] Untransform(byte[] cipherBytes)
+        public Func<RsaPublicPrivateKeyPair> KeyProvider { get; set; }
+
+        public RsaByteReverseTransformer RsaByteReverseTransformer { get; set; }
+
+        public override byte[] ReverseTransform(byte[] cipherBytes)
         {
             return GetReverseTransformer().ReverseTransform(cipherBytes);
         }
 
         public override byte[] Transform(byte[] plainData)
         {
-            Args.ThrowIfNull(ClientSessionInfo, $"{nameof(ClientSessionInfo)} not set");
-
-            return ClientSessionInfo.GetAsymetricCipherBytes(plainData);
+            Args.ThrowIfNull(KeyProvider, "KeyProvider");
+            RsaPublicPrivateKeyPair rsaKey = KeyProvider();
+            return rsaKey.EncryptBytes(plainData);
         }
 
         public override IValueReverseTransformer<byte[], byte[]> GetReverseTransformer()
         {
-            return this.RsaByteDecoder;
+            return this.RsaByteReverseTransformer;
         }
     }
 }

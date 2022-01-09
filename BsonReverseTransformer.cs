@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Bam.Net
 {
-    public class BsonByteReverseTransformer<TData> : IValueReverseTransformer<byte[], TData>
+    public class BsonReverseTransformer<TData> : IValueReverseTransformer<byte[], TData>
     {
         public TData ReverseTransform(byte[] encoded)
         {
@@ -13,7 +13,7 @@ namespace Bam.Net
 
         public IValueTransformer<TData, byte[]> GetTransformer()
         {
-            return new BsonByteTransformer<TData>();
+            return new BsonTransformer<TData>();
         }
     }
 }

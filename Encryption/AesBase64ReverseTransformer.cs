@@ -10,15 +10,23 @@ namespace Bam.Net.Encryption
 {
     public class AesBase64ReverseTransformer : IValueReverseTransformer<string, string>, IRequiresHttpContext, ICloneable, IContextCloneable
     {
-        [Inject]
-        public ISecureChannelSessionDataManager SecureChannelSessionDataManager { get; set; }
+        public AesBase64ReverseTransformer(AesBase64Transformer aesBase64Transformer, Encoding encoding = null)
+        {
+            this.AesBase64Transformer = aesBase64Transformer;
+            this.KeyProvider = aesBase64Transformer.KeyProvider;
+            this.Encoding = encoding ?? Encoding.UTF8;
+        }
+
+        protected AesBase64Transformer AesBase64Transformer { get; set; }
+
+        public Func<AesKeyVectorPair> KeyProvider { get; set; }
 
         public Encoding Encoding { get; set; }
         public IHttpContext HttpContext { get; set; }
 
         public object Clone()
         {
-            object clone = new RsaBase64ReverseTransformer();
+            object clone = new AesBase64ReverseTransformer(this.AesBase64Transformer, Encoding);
             clone.CopyProperties(this);
             clone.CopyEventHandlers(this);
             return clone;
@@ -26,7 +34,7 @@ namespace Bam.Net.Encryption
 
         public object Clone(IHttpContext context)
         {
-            RsaBase64ReverseTransformer clone = new RsaBase64ReverseTransformer();
+            AesBase64ReverseTransformer clone = new AesBase64ReverseTransformer(this.AesBase64Transformer, Encoding);
             clone.CopyProperties(this);
             clone.CopyEventHandlers(this);
             clone.HttpContext = context;
@@ -40,16 +48,16 @@ namespace Bam.Net.Encryption
 
         public string ReverseTransform(string base64EncodedCipher)
         {
-            byte[] cipherBytes = base64EncodedCipher.FromBase64();
-            SecureChannelSession session = SecureChannelSessionDataManager.GetSecureChannelSessionForContextAsync(HttpContext).Result;
+            AesKeyVectorPair aesKeyVectorPair = KeyProvider();
+            byte[] cipherBytes = Convert.FromBase64String(base64EncodedCipher);
+            byte[] decipheredBytes = aesKeyVectorPair.DecryptBytes(cipherBytes);
 
-            ClientSession clientSessionInfo = session.GetClientSession();
-            return clientSessionInfo.GetPlainText(cipherBytes);
+            return Encoding.GetString(decipheredBytes);
         }
 
         public IValueTransformer<string, string> GetTransformer()
         {
-            return new AesBase64Transformer();
+            return this.AesBase64Transformer;
         }
     }
 }

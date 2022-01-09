@@ -9,13 +9,13 @@ namespace Bam.Net
     {
         public ByteReverseTransformer()
         {
-            this.Untransformer = (b) => new byte[] { }; // noop
-            this.ByteTransformer = new ByteTransformer() { ByteDecoder = this };
+            this.ReverseTransformer = (b) => new byte[] { }; // noop
+            this.ByteTransformer = new ByteTransformer() { ByteReverseTransformer = this };
         }
 
         public ByteReverseTransformer(Func<byte[], byte[]> decoder) : this()
         {
-            this.Untransformer = decoder;
+            this.ReverseTransformer = decoder;
         }
 
         public Encoding Encoding { get; set; }
@@ -46,11 +46,11 @@ namespace Bam.Net
             return Clone(HttpContext);
         }
 
-        public Func<byte[], byte[]> Untransformer { get; set; }
+        public Func<byte[], byte[]> ReverseTransformer { get; set; }
 
         public byte[] ReverseTransform(byte[] transformed)
         {
-            return Untransformer(transformed);
+            return ReverseTransformer(transformed);
         }
 
         public IValueTransformer<byte[], byte[]> GetTransformer()

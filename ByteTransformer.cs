@@ -9,7 +9,7 @@ namespace Bam.Net
         public ByteTransformer()
         {
             this.Transformer = (b) => new byte[] { }; // noop
-            this.ByteDecoder = new ByteReverseTransformer() { ByteTransformer = this };
+            this.ByteReverseTransformer = new ByteReverseTransformer() { ByteTransformer = this };
         }
 
         public ByteTransformer(Func<byte[], byte[]> encoder):this()
@@ -17,11 +17,11 @@ namespace Bam.Net
             this.Transformer = encoder;
         }
 
-        public ByteReverseTransformer ByteDecoder { get; internal set; }
+        public ByteReverseTransformer ByteReverseTransformer { get; internal set; }
 
         public Func<byte[], byte[]> Transformer { get; set; }
 
-        public override byte[] Untransform(byte[] output)
+        public override byte[] ReverseTransform(byte[] output)
         {
             return GetReverseTransformer().ReverseTransform(output);
         }
@@ -33,7 +33,7 @@ namespace Bam.Net
 
         public override IValueReverseTransformer<byte[], byte[]> GetReverseTransformer()
         {
-            return this.ByteDecoder;
+            return this.ByteReverseTransformer;
         }
     }
 }

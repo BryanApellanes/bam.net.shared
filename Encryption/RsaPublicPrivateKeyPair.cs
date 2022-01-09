@@ -10,7 +10,6 @@ namespace Bam.Net.Encryption
         public RsaPublicPrivateKeyPair(RsaKeyLength rsaKeyLength = RsaKeyLength._2048)
         {
             this.RsaKeyLength = rsaKeyLength;
-            this.Encoding = Encoding.UTF8;
             this.AsymmetricCipherKeyPair = Rsa.GenerateKeyPair(rsaKeyLength);
             this.Pem = AsymmetricCipherKeyPair.ToPem();
             this.PublicKeyPem = AsymmetricCipherKeyPair.PublicKeyToPem();
@@ -42,8 +41,6 @@ namespace Bam.Net.Encryption
             }
         }
 
-        public Encoding Encoding { get; set; }
-
         public RsaKeyLength RsaKeyLength { get; set; }
 
         /// <summary>
@@ -58,33 +55,60 @@ namespace Bam.Net.Encryption
         /// </summary>
         /// <param name="plainText"></param>
         /// <returns></returns>
-        public string Encrypt(string plainText)
+        public string Encrypt(string plainText, Encoding encoding = null)
         {
-            byte[] plainData = Encoding.GetBytes(plainText);
-            byte[] encrypted = Encrypt(plainData);
+            byte[] plainData = (encoding ?? Encoding.UTF8).GetBytes(plainText);
+            byte[] encrypted = EncryptBytes(plainData);
             return Convert.ToBase64String(encrypted);
         }
 
+        public string Decrypt(string base64Cipher, Encoding encoding = null)
+        {
+            byte[] cipherBytes = base64Cipher.FromBase64();
+            byte[] decrypted = DecryptBytes(cipherBytes);
+            return (encoding ?? Encoding.UTF8).GetString(decrypted);
+        }
+
         /// <summary>
-        /// Gets an encrypted byte array for the specified plain data.
+        /// Using the public key gets an encrypted byte array for the specified plain data.
+        /// </summary>
+        /// <param name="plainData">The data to encrypt.</param>
+        /// <param name="usePkcsPadding">A value indicating whether to use padding, the default is false.</param>
+        /// <returns></returns>
+        public byte[] EncryptBytes(byte[] plainData, bool usePkcsPadding)
+        {
+            return EncryptBytes(plainData, Rsa.GetRsaEngine(usePkcsPadding));
+        }
+
+        /// <summary>
+        /// Using the public key gets an encrypted byte array for the specified plain data.
         /// </summary>
         /// <param name="plainData"></param>
         /// <returns></returns>
-        public byte[] Encrypt(byte[] plainData)
+        public byte[] EncryptBytes(byte[] plainData, IAsymmetricBlockCipher engine = null)
         {
-            return plainData.GetPublicKeyEncryptedBytes(_asymmetricCipherKeyPair.Public);
+            return plainData.GetPublicKeyEncryptedBytes(_asymmetricCipherKeyPair.Public, engine);
+        }
+        
+        /// <summary>
+        /// Using the private key, gets an unencrypted byte array for the specified cipher.
+        /// </summary>
+        /// <param name="cipherBytes">The data to decrypt.</param>
+        /// <param name="usePkcsPadding">A value indicating whether the cipher is pkcs padded.</param>
+        /// <returns></returns>
+        public byte[] DecryptBytes(byte[] cipherBytes, bool usePkcsPadding)
+        {
+            return DecryptBytes(cipherBytes, Rsa.GetRsaEngine(usePkcsPadding));
         }
 
-        public string Decrypt(string base64Cipher)
+        /// <summary>
+        /// Using the private key, gets an unencrypted byte array for the specified cipher.
+        /// </summary>
+        /// <param name="cipherBytes"></param>
+        /// <returns></returns>
+        public byte[] DecryptBytes(byte[] cipherBytes, IAsymmetricBlockCipher engine = null)
         {
-            byte[] cipherBytes = base64Cipher.FromBase64();
-            byte[] decrypted = Decrypt(cipherBytes);
-            return Encoding.GetString(decrypted);
-        }
-
-        public byte[] Decrypt(byte[] cipherBytes)
-        {
-            return cipherBytes.DecryptWithPrivateKey(AsymmetricCipherKeyPair.Private);
+            return cipherBytes.DecryptWithPrivateKey(AsymmetricCipherKeyPair.Private, engine);
         }
 
     }

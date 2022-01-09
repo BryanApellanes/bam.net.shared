@@ -429,11 +429,13 @@
     <Compile Include="$(MSBuildThisFileDirectory)Breve\JavaClassicFormat.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Breve\JavaFormat.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Breve\Languages.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)BsonByteReverseTransformer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)BsonByteTransformer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)BsonReverseTransformer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)BsonTransformer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)BsonValueConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ByteReverseTransformer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ByteReverseTransformerPipeline.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ByteTransformer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ByteTransformerPipeline.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Caching\Cache.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Caching\CacheEvictionEventArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Caching\CacheItem.cs" />
@@ -480,8 +482,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\AesBase64Transformer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\AesByteReverseTransformer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\AesByteTransformer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Encryption\AesReverseTransformer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Encryption\AesTransformer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\ClientKeySetDataManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\Data\ClientKeySet.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\Data\Files\KeySetFile.cs" />
@@ -522,7 +522,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\RsaByteReverseTransformer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\RsaByteTransformer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\RsaPublicPrivateKeyPair.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Encryption\RsaReverseTransformer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\SecretExchange.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\ServerKeySetDataManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GZipBase64ReverseTransformer.cs" />
@@ -552,7 +551,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\Secure\ValidationToken.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\SessionKeyNotSetException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ValueTransformer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Encryption\RsaTransformer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IValueReveseTransformer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IValueTransformer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)JsonTransformer.cs" />
@@ -854,8 +852,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\ServiceProxyInvocationRequestArguments[TService].cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\ServiceProxyInvocationRequest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\ServiceProxyInvocationRequest[TService].cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ValueReverseTransformerPipeline.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ValueTransformerPipeline.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\WebServiceProxyDescriptors.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\Catalog\CatalogRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\Catalog\CatalogService.cs" />

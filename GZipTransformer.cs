@@ -13,7 +13,7 @@ namespace Bam.Net
 
         public Encoding Encoding { get; set; }
 
-        public override string Untransform(byte[] output)
+        public override string ReverseTransform(byte[] output)
         {
             return GetReverseTransformer().ReverseTransform(output);
         }
