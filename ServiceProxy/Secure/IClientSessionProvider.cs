@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace Bam.Net.ServiceProxy.Secure
+namespace Bam.Net.ServiceProxy.Encryption
 {
     public interface IClientSessionProvider
     {

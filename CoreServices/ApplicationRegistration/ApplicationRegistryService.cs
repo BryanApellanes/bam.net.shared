@@ -13,7 +13,7 @@ using Bam.Net.Logging;
 using Bam.Net.Server;
 using Bam.Net.Server.ServiceProxy;
 using Bam.Net.ServiceProxy;
-using Bam.Net.ServiceProxy.Secure;
+using Bam.Net.ServiceProxy.Encryption;
 using Bam.Net.UserAccounts;
 using Bam.Net.Web;
 
@@ -80,7 +80,7 @@ namespace Bam.Net.CoreServices
                 throw new ApplicationNameNotSpecifiedException();
             }
             CoreServices.ApplicationRegistration.Data.Application app = CompositeRepository.Query<CoreServices.ApplicationRegistration.Data.Application>(a => a.Name.Equals(base.ApplicationName)).FirstOrDefault();
-            if(app == null)
+            if (app == null)
             {
                 throw new InvalidOperationException("Application not registered");
             }

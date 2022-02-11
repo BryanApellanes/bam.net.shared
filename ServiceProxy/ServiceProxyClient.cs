@@ -112,7 +112,7 @@ namespace Bam.Net.ServiceProxy
         /// Fires the Posting event 
         /// </summary>
         /// <param name="args"></param>
-        protected void OnPosting(ServiceProxyInvocationRequestEventArgs args)
+        protected void OnPostStarted(ServiceProxyInvocationRequestEventArgs args)
         {
             if (PostStarted != null)
             {
@@ -134,7 +134,7 @@ namespace Bam.Net.ServiceProxy
         /// Fires the Got event
         /// </summary>
         /// <param name="args"></param>
-        protected void OnPosted(ServiceProxyInvocationRequestEventArgs args)
+        protected void OnPostComplete(ServiceProxyInvocationRequestEventArgs args)
         {
             if (PostComplete != null)
             {
@@ -238,7 +238,7 @@ namespace Bam.Net.ServiceProxy
             ServiceProxyInvocationRequestEventArgs args = new ServiceProxyInvocationRequestEventArgs(serviceProxyInvocationRequest);
             args.Client = this;
 
-            OnPosting(args);
+            OnPostStarted(args);
             string result = string.Empty;
             if (args.CancelInvoke)
             {
@@ -257,7 +257,7 @@ namespace Bam.Net.ServiceProxy
                     args.ResponseMessage = response;
                     result = await response.Content.ReadAsStringAsync();
                     response.EnsureSuccessStatusCode();
-                    OnPosted(args);
+                    OnPostComplete(args);
                 }
                 catch (Exception ex)
                 {

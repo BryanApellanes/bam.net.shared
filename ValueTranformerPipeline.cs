@@ -1,0 +1,44 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace Bam.Net
+{
+    public class ValueTranformerPipeline<TData> : IValueTransformer<TData, byte[]>
+    {
+        public ValueTranformerPipeline()
+        {
+            this.ByteTransformerPipeline = new ByteTransformerPipeline();
+        }
+
+        protected internal ByteTransformerPipeline ByteTransformerPipeline { get; set; }
+
+        public void Add(IValueTransformer<byte[], byte[]> transformer)
+        {
+            ByteTransformerPipeline.Add(transformer);
+        }
+
+        public void Remove(IValueTransformer<byte[], byte[]> transformer)
+        {
+            ByteTransformerPipeline.Remove(transformer);
+        }
+
+        public bool Contains(IValueTransformer<byte[], byte[]> transformer)
+        {
+            return ByteTransformerPipeline.Contains(transformer);
+        }
+
+        public IValueReverseTransformer<byte[], TData> GetReverseTransformer()
+        {
+            return new ValueReverseTransformerPipeline<TData>(this);
+        }
+
+        public byte[] Transform(TData value)
+        {
+            string json = value.ToJson();
+            byte[] utf8 = Encoding.UTF8.GetBytes(json);
+
+            return ByteTransformerPipeline.Transform(utf8);
+        }
+    }
+}

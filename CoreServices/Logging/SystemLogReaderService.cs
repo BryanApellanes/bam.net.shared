@@ -1,7 +1,7 @@
 ﻿using Bam.Net.CoreServices.Logging;
 using Bam.Net.Logging;
 using Bam.Net.ServiceProxy;
-using Bam.Net.ServiceProxy.Secure;
+using Bam.Net.ServiceProxy.Encryption;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -18,7 +18,7 @@ using Org.BouncyCastle.Crypto.Generators;
 using Org.BouncyCastle.Math;
 using Org.BouncyCastle.Crypto.Engines;
 
-namespace Bam.Net.ServiceProxy.Secure
+namespace Bam.Net.ServiceProxy.Encryption
 {
     [Serializable]
     public class SetSessionKeyRequest

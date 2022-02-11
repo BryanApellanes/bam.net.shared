@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace Bam.Net
 {
@@ -45,6 +42,13 @@ namespace Bam.Net
                 result = reverseTransformer.ReverseTransform(result);
             }
             return result;
+        }
+
+        public static ByteReverseTransformerPipeline For(ByteTransformerPipeline transformerPipeline)
+        {
+            ByteReverseTransformerPipeline reverseTransformerPipeline = new ByteReverseTransformerPipeline();
+            transformerPipeline.Transformers.BackwardsEach(transformer => reverseTransformerPipeline.Add(transformer.GetReverseTransformer()));
+            return reverseTransformerPipeline;
         }
     }
 }

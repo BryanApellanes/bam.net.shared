@@ -1,6 +1,6 @@
 using System;
 using Bam.Net.Server;
-using Bam.Net.ServiceProxy.Secure;
+using Bam.Net.ServiceProxy.Encryption;
 using Bam.Net;
 
 namespace Bam.Net.CoreServices

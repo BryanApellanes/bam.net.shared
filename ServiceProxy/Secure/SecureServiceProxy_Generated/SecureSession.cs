@@ -12,7 +12,7 @@ using Bam.Net;
 using Bam.Net.Data;
 using Bam.Net.Data.Qi;
 
-namespace Bam.Net.ServiceProxy.Secure
+namespace Bam.Net.ServiceProxy.Encryption
 {
 	// schema = SecureServiceProxy
 	// connection Name = SecureServiceProxy
@@ -245,7 +245,7 @@ namespace Bam.Net.ServiceProxy.Secure
 		{
 			if(_applicationOfApplicationId == null)
 			{
-				_applicationOfApplicationId = Bam.Net.ServiceProxy.Secure.Application.OneWhere(c => c.KeyColumn == this.ApplicationId, this.Database);
+				_applicationOfApplicationId = Bam.Net.ServiceProxy.Encryption.Application.OneWhere(c => c.KeyColumn == this.ApplicationId, this.Database);
 			}
 			return _applicationOfApplicationId;
 		}

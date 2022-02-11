@@ -2,7 +2,7 @@
 	Copyright © Bryan Apellanes 2015  
 */
 using System;
-namespace Bam.Net.ServiceProxy.Secure
+namespace Bam.Net.ServiceProxy.Encryption
 {
     public interface IApiKeyProvider
     {

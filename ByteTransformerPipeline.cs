@@ -36,9 +36,7 @@ namespace Bam.Net
 
         public IValueReverseTransformer<byte[], byte[]> GetReverseTransformer()
         {
-            ByteReverseTransformerPipeline reverseTransformerPipeline = new ByteReverseTransformerPipeline();
-            _transformers.BackwardsEach(transformer => reverseTransformerPipeline.Add(transformer.GetReverseTransformer()));
-            return reverseTransformerPipeline;
+            return ByteReverseTransformerPipeline.For(this);
         }
 
         public byte[] Transform(byte[] value)

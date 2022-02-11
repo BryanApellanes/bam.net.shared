@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Bam.Net.Configuration;
 
-namespace Bam.Net.ServiceProxy.Secure
+namespace Bam.Net.ServiceProxy.Encryption
 {
     /// <summary>
     /// A Serializable representation of an applications

@@ -3,7 +3,7 @@ using Bam.Net.Incubation;
 using Bam.Net.Logging;
 using Bam.Net.Server.PathHandlers;
 using Bam.Net.ServiceProxy;
-using Bam.Net.ServiceProxy.Secure;
+using Bam.Net.ServiceProxy.Encryption;
 using Bam.Net.Web;
 using System;
 using System.Collections.Generic;

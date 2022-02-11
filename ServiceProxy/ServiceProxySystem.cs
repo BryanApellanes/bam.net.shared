@@ -15,7 +15,7 @@ using System.Web;
 using System.Reflection;
 using System.IO;
 using System.Reflection.Metadata;
-using Bam.Net.ServiceProxy.Secure;
+using Bam.Net.ServiceProxy.Encryption;
 using Org.BouncyCastle.Security;
 
 namespace Bam.Net.ServiceProxy
@@ -377,7 +377,7 @@ namespace {0}
                 "System",
                 "Bam.Net.Configuration",
                 "Bam.Net.ServiceProxy",
-                "Bam.Net.ServiceProxy.Secure",
+                "Bam.Net.ServiceProxy.Encryption",
                 contractNamespace
             };
 

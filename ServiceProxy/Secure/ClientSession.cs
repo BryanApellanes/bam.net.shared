@@ -17,7 +17,7 @@ using Org.BouncyCastle.Crypto.Generators;
 using Org.BouncyCastle.Math;
 using Org.BouncyCastle.Crypto.Engines;
 
-namespace Bam.Net.ServiceProxy.Secure
+namespace Bam.Net.ServiceProxy.Encryption
 {
     public class ClientSession
     {
@@ -26,7 +26,7 @@ namespace Bam.Net.ServiceProxy.Secure
             this.ValidationAlgorithm = HashAlgorithms.SHA256;
         }
 
-        public string RemoteHostName
+        public string ServerHostName
         {
             get;
             set;
@@ -35,7 +35,7 @@ namespace Bam.Net.ServiceProxy.Secure
         /// <summary>
         /// The value of the session cookie.
         /// </summary>
-        public string ClientIdentifier
+        public string ClientSessionIdentifier
         {
             get;
             set;
@@ -147,19 +147,19 @@ namespace Bam.Net.ServiceProxy.Secure
         {
             if (obj is ClientSession info)
             {
-                return info.ClientIdentifier.Equals(ClientIdentifier) && info.PublicKey.Equals(PublicKey);
+                return info.ClientSessionIdentifier.Equals(ClientSessionIdentifier) && info.PublicKey.Equals(PublicKey);
             }
             return base.Equals(obj);
         }
 
         public override int GetHashCode()
         {
-            return this.GetHashCode(ClientIdentifier, PublicKey);
+            return this.GetHashCode(ClientSessionIdentifier, PublicKey);
         }
 
         public override string ToString()
         {
-            return $"ClientIdentifier={ClientIdentifier};PublicKey={PublicKey}";
+            return $"{nameof(ClientSessionIdentifier)}={ClientSessionIdentifier};{nameof(PublicKey)}={PublicKey}";
         }
 
         protected internal AesKeyVectorPair InitializeSessionKey()

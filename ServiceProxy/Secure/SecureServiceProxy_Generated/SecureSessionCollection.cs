@@ -5,7 +5,7 @@ using System.Data;
 using System.Data.Common;
 using Bam.Net.Data;
 
-namespace Bam.Net.ServiceProxy.Secure
+namespace Bam.Net.ServiceProxy.Encryption
 {
     public class SecureSessionCollection: DaoCollection<SecureSessionColumns, SecureSession>
     { 

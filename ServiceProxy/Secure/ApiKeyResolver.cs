@@ -14,7 +14,7 @@ using Bam.Net.Configuration;
 using System.Net.Http;
 using Bam.Net.Server.ServiceProxy;
 
-namespace Bam.Net.ServiceProxy.Secure
+namespace Bam.Net.ServiceProxy.Encryption
 {
     /// <summary>
     /// A class used to provide the functionality

@@ -1,6 +1,6 @@
 ﻿using Bam.Net.CommandLine;
 using Bam.Net.ServiceProxy;
-using Bam.Net.ServiceProxy.Secure;
+using Bam.Net.ServiceProxy.Encryption;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;

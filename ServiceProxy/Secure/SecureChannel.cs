@@ -25,7 +25,7 @@ using Bam.Net.Configuration;
 using Bam.Net.CoreServices;
 using Bam.Net.ServiceProxy.Data;
 
-namespace Bam.Net.ServiceProxy.Secure
+namespace Bam.Net.ServiceProxy.Encryption
 {
     /// <summary>
     /// A secure communication channel.  Provides 

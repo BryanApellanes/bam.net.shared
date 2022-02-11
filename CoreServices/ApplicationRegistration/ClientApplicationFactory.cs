@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Bam.Net.CoreServices.ApplicationRegistration.Data;
 using Bam.Net.ServiceProxy;
-using Bam.Net.ServiceProxy.Secure;
+using Bam.Net.ServiceProxy.Encryption;
 using Bam.Net.CoreServices.ApplicationRegistration.Data.Dao.Repository;
 
 namespace Bam.Net.CoreServices

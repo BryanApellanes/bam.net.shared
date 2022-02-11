@@ -17,7 +17,7 @@ using Newtonsoft.Json;
 using System.Xml.Serialization;
 using Bam.Net.Incubation;
 using Bam.Net.Configuration;
-using Bam.Net.ServiceProxy.Secure;
+using Bam.Net.ServiceProxy.Encryption;
 using YamlDotNet.Serialization;
 
 namespace Bam.Net.Server

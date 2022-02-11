@@ -7,7 +7,7 @@ using Bam.Net.Encryption;
 using Bam.Net.Incubation;
 using Bam.Net.Logging;
 using Bam.Net.ServiceProxy;
-using Bam.Net.ServiceProxy.Secure;
+using Bam.Net.ServiceProxy.Encryption;
 using Bam.Net.Services;
 using Bam.Net.Web;
 using Newtonsoft.Json;

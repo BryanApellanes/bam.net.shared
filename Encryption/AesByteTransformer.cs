@@ -1,5 +1,5 @@
 ﻿using Bam.Net.ServiceProxy.Data.Dao.Repository;
-using Bam.Net.ServiceProxy.Secure;
+using Bam.Net.ServiceProxy.Encryption;
 using Bam.Net.Services;
 using System;
 using System.Collections.Generic;

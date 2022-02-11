@@ -675,8 +675,8 @@ namespace Bam.Net.CommandLine
                 versionInfo.AppendFormat("Commit: AssemblyCommitAttribute not found on specified assembly: {0}\r\n",
                     assembly.Location);
             }
-            
-            OutLine(versionInfo.ToString(), ConsoleColor.Cyan);
+
+            Message.PrintLine(versionInfo.ToString(), ConsoleColor.Cyan);
         }
 
         public static void Usage(Assembly assembly)

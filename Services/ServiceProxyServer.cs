@@ -7,7 +7,7 @@ using Bam.Net.Logging;
 using Bam.Net.Server;
 using Bam.Net.CoreServices;
 using Bam.Net.ServiceProxy;
-using Bam.Net.ServiceProxy.Secure;
+using Bam.Net.ServiceProxy.Encryption;
 
 namespace Bam.Net.Services
 {

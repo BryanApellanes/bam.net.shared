@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Bam.Net.CoreServices;
-using Bam.Net.ServiceProxy.Secure;
+using Bam.Net.ServiceProxy.Encryption;
 using Bam.Net.CoreServices.Auth.Data;
 using Bam.Net.CoreServices.Auth.Data.Dao.Repository;
 using Bam.Net.CoreServices.Auth;

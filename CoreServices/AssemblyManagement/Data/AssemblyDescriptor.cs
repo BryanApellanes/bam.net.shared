@@ -26,7 +26,7 @@ namespace Bam.Net.CoreServices.AssemblyManagement.Data
             SetReferenceDescriptors(assembly);
         }
 
-        public AssemblyDescriptor Save(IRepository repo)
+        public new AssemblyDescriptor Save(IRepository repo)
         {
             Task.Run(() =>
             {

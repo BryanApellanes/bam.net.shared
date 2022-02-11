@@ -5,7 +5,7 @@ using System.Net.Http;
 using System.Reflection;
 using System.Text;
 
-namespace Bam.Net.ServiceProxy.Secure
+namespace Bam.Net.ServiceProxy.Encryption
 {
     public class SecureServiceProxyInvocationRequestArguments<TService> : ServiceProxyInvocationRequestArguments<TService>
     {

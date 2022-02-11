@@ -4,7 +4,7 @@ using System.Net.Http;
 using System.Text;
 using System.Text.Json.Serialization;
 
-namespace Bam.Net.ServiceProxy.Secure
+namespace Bam.Net.ServiceProxy.Encryption
 {
     public class SecureChannelRequestMessage
     {

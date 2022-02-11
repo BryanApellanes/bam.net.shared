@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Text;
 using Bam.Net.Data;
 
-namespace Bam.Net.ServiceProxy.Secure
+namespace Bam.Net.ServiceProxy.Encryption
 {
     public class SecureSessionColumns: QueryFilter<SecureSessionColumns>, IFilterToken
     {

@@ -11,7 +11,7 @@ using Bam.Net.Incubation;
 using Bam.Net.Logging;
 using Bam.Net.Server;
 using Bam.Net.ServiceProxy;
-using Bam.Net.ServiceProxy.Secure;
+using Bam.Net.ServiceProxy.Encryption;
 using Bam.Net.Services.AsyncCallback;
 using Bam.Net.Services.AsyncCallback.Data;
 using Bam.Net.Web;

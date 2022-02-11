@@ -3,7 +3,7 @@
 */
 using Bam.Net.Encryption;
 using Bam.Net.Server.ServiceProxy;
-using Bam.Net.ServiceProxy.Secure;
+using Bam.Net.ServiceProxy.Encryption;
 using System;
 using System.Collections.Generic;
 using System.Linq;

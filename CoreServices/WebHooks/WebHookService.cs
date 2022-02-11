@@ -3,7 +3,7 @@ using Bam.Net.CoreServices.WebHooks.Data.Dao.Repository;
 using Bam.Net.Data;
 using Bam.Net.Data.Repositories;
 using Bam.Net.Server;
-using Bam.Net.ServiceProxy.Secure;
+using Bam.Net.ServiceProxy.Encryption;
 using Bam.Net.Web;
 using System;
 using System.Collections.Generic;

@@ -10,7 +10,7 @@ using Bam.Net.CoreServices;
 using Bam.Net.Incubation;
 using Bam.Net.Server.ServiceProxy;
 
-namespace Bam.Net.ServiceProxy.Secure
+namespace Bam.Net.ServiceProxy.Encryption
 {
     /// <summary>
     /// An ExecutionRequest that encrypts the result

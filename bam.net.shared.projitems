@@ -550,6 +550,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\Secure\SecureServiceProxy_Generated\SecureSessionColumns.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\Secure\ValidationToken.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\SessionKeyNotSetException.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ValueReverseTransformerPipeline.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ValueTranformerPipeline.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ValueTransformer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IValueReveseTransformer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IValueTransformer.cs" />

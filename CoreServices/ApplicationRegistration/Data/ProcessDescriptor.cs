@@ -50,6 +50,7 @@ namespace Bam.Net.CoreServices.ApplicationRegistration.Data
         {
             return this.ToString().GetHashCode();
         }
+
         public override bool Equals(object obj)
         {
             if(!(obj is ProcessDescriptor))

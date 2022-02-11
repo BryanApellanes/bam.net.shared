@@ -5,7 +5,7 @@ namespace Bam.Net.CoreServices
 {
     using Bam.Net.CoreServices.ApplicationRegistration.Data;
     using Server;
-    using ServiceProxySecure = ServiceProxy.Secure;
+    using ServiceProxySecure = ServiceProxy.Encryption;
     using Bam.Net.ServiceProxy;
     using Bam.Net.CoreServices.ApplicationRegistration.Data.Dao.Repository;
     using Bam.Net.CoreServices.Configuration;

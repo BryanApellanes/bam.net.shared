@@ -13,7 +13,7 @@ using Bam.Net.Yaml;
 using System.IO;
 using System.Reflection;
 using Bam.Net.ServiceProxy;
-using Bam.Net.ServiceProxy.Secure;
+using Bam.Net.ServiceProxy.Encryption;
 using Bam.Net.Web;
 using Bam.Net.Server.Renderers;
 using Bam.Net.Presentation.Html;

@@ -5,7 +5,7 @@ using System.Collections.Specialized;
 using System.Net.Http;
 using System.Text;
 
-namespace Bam.Net.ServiceProxy.Secure
+namespace Bam.Net.ServiceProxy.Encryption
 {
     public interface IApiEncryptionProvider
     {

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using Bam.Net.Configuration;
 using Bam.Net.ServiceProxy;
 
-namespace Bam.Net.ServiceProxy.Secure
+namespace Bam.Net.ServiceProxy.Encryption
 {
     /// <summary>
     /// A class used to retrieve an applications Api Key and 

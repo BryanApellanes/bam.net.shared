@@ -36,7 +36,7 @@ namespace Bam.Net.Data.Repositories.Handlebars
                 string writeSourceTo = TypeSchemaTempPathProvider(schema, typeSchema);
                 TryDeleteDaoTemp(writeSourceTo);
                 GenerateSource(writeSourceTo);
-                byte[] assembly = Compile(assemblyName, writeSourceTo);
+                byte[] assembly = CompileDaoAssembly(assemblyName, writeSourceTo);
                 GeneratedDaoAssemblyInfo info =
                     new GeneratedDaoAssemblyInfo(schema.Name, Assembly.Load(assembly), assembly)
                     {
@@ -84,7 +84,7 @@ namespace Bam.Net.Data.Repositories.Handlebars
             return result;
         }
 
-        private byte[] Compile(string assemblyNameToCreate, string sourcePath)
+        private byte[] CompileDaoAssembly(string assemblyNameToCreate, string sourcePath)
         {
             HashSet<string> references = GetReferenceAssemblies();
             RoslynCompiler compiler = new RoslynCompiler();

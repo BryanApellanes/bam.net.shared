@@ -4,7 +4,7 @@ using System.Collections.Specialized;
 using System.Net;
 using System.Net.Http;
 
-namespace Bam.Net.ServiceProxy.Secure
+namespace Bam.Net.ServiceProxy.Encryption
 {
     public interface IApiKeyResolver
     {

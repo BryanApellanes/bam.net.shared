@@ -1,7 +1,7 @@
 ﻿using Bam.Net.Data.Repositories;
 using Bam.Net.Encryption;
 using Bam.Net.ServiceProxy;
-using Bam.Net.ServiceProxy.Secure;
+using Bam.Net.ServiceProxy.Encryption;
 using Bam.Net.Web;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Security;
@@ -160,7 +160,7 @@ namespace Bam.Net.ServiceProxy.Data
             _ = TouchAsync();
             return new ClientSession
             {
-                ClientIdentifier = Identifier,
+                ClientSessionIdentifier = Identifier,
                 PublicKey = GetPublicKey(),
                 AesIV = SymmetricIV.DecryptWithPrivateKey(AsymmetricCipherKeyPair, Encoding.UTF8),
                 AesKey = SymmetricKey.DecryptWithPrivateKey(AsymmetricCipherKeyPair, Encoding.UTF8),

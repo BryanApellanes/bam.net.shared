@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 using Bam.Net.Application;
 using Bam.Net.Encryption;
 
-namespace Bam.Net.ServiceProxy.Secure
+namespace Bam.Net.ServiceProxy.Encryption
 {
     public class SecureChannelSessionDataManager : ISecureChannelSessionDataManager
     {

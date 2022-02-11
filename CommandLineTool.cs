@@ -255,8 +255,8 @@ namespace Bam.Net
                 {
                     ex = new ReflectionTypeLoadAggregateException(typeLoadEx);
                 }
-                OutLine(ex.Message);
-                OutLine(ex.StackTrace);
+                Message.PrintLine(ex.Message);
+                Message.PrintLine(ex.StackTrace);
                 throw;
             }
         }

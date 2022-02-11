@@ -8,7 +8,7 @@ using Bam.Net.CoreServices;
 using Bam.Net.Data.Repositories;
 using Bam.Net.Incubation;
 using Bam.Net.Server;
-using Bam.Net.ServiceProxy.Secure;
+using Bam.Net.ServiceProxy.Encryption;
 using Bam.Net.CoreServices.ServiceRegistration;
 using Bam.Net.CoreServices.ServiceRegistration.Data;
 using Bam.Net.CoreServices.ServiceRegistration.Data.Dao.Repository;

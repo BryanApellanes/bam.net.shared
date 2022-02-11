@@ -16,7 +16,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using Bam.Net.ServiceProxy.Data;
 
-namespace Bam.Net.ServiceProxy.Secure
+namespace Bam.Net.ServiceProxy.Encryption
 {
     /// <summary>
     /// Class used to set and validate encryption validation
@@ -71,7 +71,7 @@ namespace Bam.Net.ServiceProxy.Secure
         {
             //{Month}/{Day}/{Year};{Hour}.{Minute}.{Second}.{Millisecond}:{PostString}
             string nonce = instant.ToString();
-            string hash = $"{nonce}:{validatedString}".HashHexString(algorithm);
+            string hash = $"{nonce}:{validatedString}".HashHexString(algorithm);            
             string hashCipher = hash.EncryptWithPublicKey(publicKeyPem);
             string nonceCipher = nonce.EncryptWithPublicKey(publicKeyPem);
 

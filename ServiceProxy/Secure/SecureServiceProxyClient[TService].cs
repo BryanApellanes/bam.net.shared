@@ -25,7 +25,7 @@ using System.Net.Http;
 using System.Web;
 using Bam.Net.Services;
 
-namespace Bam.Net.ServiceProxy.Secure
+namespace Bam.Net.ServiceProxy.Encryption
 {
     /// <summary>
     /// A secure service proxy client that uses application level encryption
@@ -188,7 +188,7 @@ namespace Bam.Net.ServiceProxy.Secure
                 }
 
                 ClientSession = secureChannelMessage.Data;
-                ClientSession.RemoteHostName = BaseAddress;
+                ClientSession.ServerHostName = BaseAddress;
                 await SetSessionKeyAsync();
                 OnSessionStarted();
                 return ClientSession;
@@ -256,7 +256,7 @@ namespace Bam.Net.ServiceProxy.Secure
         {
             ServiceProxyInvocationRequestEventArgs args = new ServiceProxyInvocationRequestEventArgs(serviceProxyInvocationRequest);
             args.Client = this;
-            OnPosting(args);
+            OnPostStarted(args);
             string response = string.Empty;
             if (args.CancelInvoke)
             {
