@@ -17,7 +17,7 @@ namespace Bam.Net.ServiceProxy.Encryption
             Algorithm = HashAlgorithms.SHA256;
         }
 
-        public string NonceCipher
+        public string TimestampCipher
         {
             get;
             set;
@@ -35,7 +35,7 @@ namespace Bam.Net.ServiceProxy.Encryption
         {
             return new ValidationToken
             {
-                Nonce = secureChannelSession.DecryptWithPrivateKey(NonceCipher, usePkcsPadding),
+                Timestamp = secureChannelSession.DecryptWithPrivateKey(TimestampCipher, usePkcsPadding),
                 Hash = secureChannelSession.DecryptWithPrivateKey(HashCipher, usePkcsPadding),
                 Algorithm = Algorithm,
             };

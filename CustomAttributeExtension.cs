@@ -214,7 +214,7 @@ namespace Bam.Net
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="memberInfo"></param>
-        /// <param name="inherit"></param>
+        /// <param name="inherit">True to search the members inheritance chain.</param>
         /// <param name="attribute"></param>
         /// <param name="concreteAttribute">If true, must be the attribute specified and not an attribute that extends the specified attribute</param>
         /// <returns></returns>

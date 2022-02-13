@@ -40,10 +40,10 @@ namespace Bam.Net.ServiceProxy.Encryption
         {
             EncryptedValidationToken result = new EncryptedValidationToken
             {
-                NonceCipher = headers[Headers.Nonce],
+                TimestampCipher = headers[Headers.Timestamp],
                 HashCipher = headers[Headers.ValidationToken]
             };
-            Args.ThrowIfNull(result.NonceCipher, Headers.Nonce);
+            Args.ThrowIfNull(result.TimestampCipher, Headers.Timestamp);
             Args.ThrowIf<EncryptedValidationTokenNotFoundException>(
                 string.IsNullOrEmpty(result.HashCipher),  
                 "Header was not found: {0}",
@@ -75,7 +75,7 @@ namespace Bam.Net.ServiceProxy.Encryption
             string hashCipher = hash.EncryptWithPublicKey(publicKeyPem);
             string nonceCipher = nonce.EncryptWithPublicKey(publicKeyPem);
 
-            return new EncryptedValidationToken { HashCipher = hashCipher, NonceCipher = nonceCipher };
+            return new EncryptedValidationToken { HashCipher = hashCipher, TimestampCipher = nonceCipher };
         }
 
         public static EncryptedTokenValidationStatus ValidateEncryptedToken(IHttpContext context, string post)
@@ -101,7 +101,7 @@ namespace Bam.Net.ServiceProxy.Encryption
             Args.ThrowIfNull(session, "session");
             Args.ThrowIfNull(token, "token");
 
-            return ValidateEncryptedToken(session, token.HashCipher, token.NonceCipher, plainPost, usePkcsPadding);
+            return ValidateEncryptedToken(session, token.HashCipher, token.TimestampCipher, plainPost, usePkcsPadding);
         }
 
         public static EncryptedTokenValidationStatus ValidateEncryptedToken(SecureChannelSession session, EncryptedValidationToken token, string plainPost, bool usePkcsPadding = false)
@@ -110,7 +110,7 @@ namespace Bam.Net.ServiceProxy.Encryption
             Args.ThrowIfNull(token, "token");
 
             //return new ValidationToken(plainPost)
-            return ValidateEncryptedToken(session, token.HashCipher, token.NonceCipher, plainPost, usePkcsPadding);
+            return ValidateEncryptedToken(session, token.HashCipher, token.TimestampCipher, plainPost, usePkcsPadding);
         }
 
         public static EncryptedTokenValidationStatus ValidateEncryptedToken(SecureSession session, string hashCipher, string nonceCipher, string plainPost, bool usePkcsPadding = false)

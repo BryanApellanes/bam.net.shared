@@ -19,10 +19,12 @@ namespace Bam.Net.ServiceProxy
             
             this.MethodName = methodName;
             this.Arguments = arguments;
+
+            this.MethodUrlFormat = "{BaseAddress}ServiceProxy/Invoke/{ClassName}/{MethodName}?{QueryStringArguments}";
         }
 
         public virtual ServiceProxyClient ServiceProxyClient { get; set; }
-
+        public string MethodUrlFormat { get; set; }
         public string Cuid { get; internal set; }
 
         public Type ServiceType { get; set; }
@@ -74,7 +76,7 @@ namespace Bam.Net.ServiceProxy
                     // ServiceProxyClient and derivatives use HttpClient under the hood which 
                     // shouldn't have this limitation. Specifying this limit helps provide broader support
                     // in the future to display results in a browser when rendering responses natively as html.
-                    _verb = ServiceProxyClient.GetServiceProxyInvocationUrl(this)?.Length >= 2048 ? ServiceProxyVerbs.Post : ServiceProxyVerbs.Get; 
+                    _verb = GetInvocationUrl()?.Length >= 2048 ? ServiceProxyVerbs.Post : ServiceProxyVerbs.Get; 
                 }
                 return _verb;
             }
@@ -95,6 +97,17 @@ namespace Bam.Net.ServiceProxy
                 }
                 return _serviceProxyArguments;
             }
+        }
+
+        public virtual string GetInvocationUrl(bool includeQueryString = true, ServiceProxyClient serviceProxyClient = null)
+        {
+            return MethodUrlFormat.NamedFormat(new
+            {
+                BaseAddress = serviceProxyClient?.BaseAddress ?? BaseAddress,
+                ClassName,
+                MethodName,
+                QueryStringArguments = includeQueryString ? ServiceProxyInvocationRequestArguments?.QueryStringArguments: "",
+            });
         }
 
         public virtual ServiceProxyClient GetClient()

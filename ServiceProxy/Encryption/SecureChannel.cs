@@ -119,6 +119,7 @@ namespace Bam.Net.ServiceProxy.Encryption
             return response;
         }
 
+
         IApiKeyResolver _apiKeyResolver;
         object _apiKeyResolverSync = new object();
         public IApiKeyResolver ApiKeyResolver
@@ -142,16 +143,13 @@ namespace Bam.Net.ServiceProxy.Encryption
         static ServiceRegistry _serviceRegistry;
         static object _serviceRegistrySync = new object();
         /// <summary>
-        /// The incubator used for SecureChannel requests
+        /// The `ServiceRegistry` used for SecureChannel requests
         /// </summary>
         public ServiceRegistry ServiceRegistry
         {
             get
             {
-                return _serviceRegistrySync.DoubleCheckLock(ref _serviceRegistry, () =>
-                {
-                    return new ServiceRegistry();                    
-                });
+                return _serviceRegistrySync.DoubleCheckLock(ref _serviceRegistry, () => new ServiceRegistry());
             }
             set
             {

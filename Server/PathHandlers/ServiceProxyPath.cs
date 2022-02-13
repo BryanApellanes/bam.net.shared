@@ -24,6 +24,10 @@ namespace Bam.Net.Server.PathHandlers
         public new static ServiceProxyPath FromUri(Uri uri)
         {
             ServiceProxyPath serviceProxyPath = FromUri<ServiceProxyPath>(uri);
+            if (serviceProxyPath.Path.StartsWith("Invoke", StringComparison.InvariantCultureIgnoreCase))
+            {
+                serviceProxyPath.Path = serviceProxyPath.Path.TruncateFront("Invoke/".Length);
+            }
             serviceProxyPath.TypeIdentifier = serviceProxyPath.Path.ReadUntil('/', out string methodName);
             serviceProxyPath.MethodName = methodName;
             return serviceProxyPath;

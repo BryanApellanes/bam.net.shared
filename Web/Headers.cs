@@ -34,7 +34,7 @@ namespace Bam.Net.Web
 
         public static string Signature => "X-Bam-Signature";
 
-        public static string Nonce => "X-Bam-Timestamp";
+        public static string Timestamp => "X-Bam-Timestamp";
 
         public static string Padding => "X-Bam-Padding";
 

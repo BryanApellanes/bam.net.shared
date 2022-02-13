@@ -725,13 +725,5 @@ namespace Bam.Net.Server
                 Logger.AddEntry("{0}:{1} directory was not found", LogEventType.Warning, this.Name, serviceDir.FullName);
             }
         }
-
-/*        private LayoutModel GetLayoutModel(string appName)
-        {
-            AppConf conf = BamConf.AppConfigs.FirstOrDefault(c => c.Name.Equals(appName));
-            LayoutConf defaultLayoutConf = new LayoutConf(conf);
-            LayoutModel layoutModel = defaultLayoutConf.CreateLayoutModel();
-            return layoutModel;
-        }*/
     }
 }

@@ -39,8 +39,14 @@ namespace Bam.Net.ServiceProxy.Encryption
             this.Initialize();
         }
 
+        public bool EncryptAllRequests
+        {
+            get;
+            set;
+        }
+
         ISecureChannelSessionDataManager _secureChannelSessionManager;
-        object _secureChannelSessionManagerLock = new object();
+        readonly object _secureChannelSessionManagerLock = new object();
         [Inject]
         public ISecureChannelSessionDataManager SecureChannelSessionDataManager 
         {
@@ -175,7 +181,7 @@ namespace Bam.Net.ServiceProxy.Encryption
 
             try
             {
-                ServiceProxyInvocationRequest<SecureChannel> serviceProxyInvocationRequest = new ServiceProxyInvocationRequest<SecureChannel>(nameof(SecureChannel.StartSession), clientNow);
+                ServiceProxyInvocationRequest<SecureChannel> serviceProxyInvocationRequest = new ServiceProxyInvocationRequest<SecureChannel>(nameof(SecureChannel.StartSession), clientNow) { BaseAddress = this.BaseAddress };
                 HttpRequestMessage requestMessage = await CreateServiceProxyRequestMessageAsync(serviceProxyInvocationRequest);
                 HttpResponseMessage responseMessage = await HttpClient.SendAsync(requestMessage);
                 string responseString = await responseMessage.Content.ReadAsStringAsync();
@@ -205,7 +211,7 @@ namespace Bam.Net.ServiceProxy.Encryption
         protected async Task SetSessionKeyAsync()
         {
             SetSessionKeyRequest setSessionKeyRequest = ClientSession.CreateSetSessionKeyRequest();
-            ServiceProxyInvocationRequest<SecureChannel> serviceProxyInvocationRequest = new ServiceProxyInvocationRequest<SecureChannel>(nameof(SecureChannel.SetSessionKey), setSessionKeyRequest);
+            ServiceProxyInvocationRequest<SecureChannel> serviceProxyInvocationRequest = new ServiceProxyInvocationRequest<SecureChannel>(nameof(SecureChannel.SetSessionKey), setSessionKeyRequest) { BaseAddress = this.BaseAddress };
             HttpRequestMessage requestMessage = await CreateServiceProxyRequestMessageAsync(serviceProxyInvocationRequest);
             HttpResponseMessage responseMessage = await HttpClient.SendAsync(requestMessage);
             string responseString = await responseMessage.Content.ReadAsStringAsync();
@@ -266,7 +272,8 @@ namespace Bam.Net.ServiceProxy.Encryption
             {
                 try
                 {
-                    HttpRequestMessage requestMessage = await CreateServiceProxyRequestMessageAsync(serviceProxyInvocationRequest);
+                    SecureServiceProxyInvocationRequest secureServiceProxyInvocationRequest = serviceProxyInvocationRequest.CopyAs<SecureServiceProxyInvocationRequest>();
+                    HttpRequestMessage requestMessage = await CreateServiceProxyRequestMessageAsync(secureServiceProxyInvocationRequest);
                     SecureServiceProxyInvocationRequestArguments<TService> secureServiceProxyArguments = new SecureServiceProxyInvocationRequestArguments<TService>(ClientSession, ApiKeyResolver, ApiEncryptionProvider, serviceProxyInvocationRequest);
                     secureServiceProxyArguments.WriteArgumentContent(requestMessage);
                     secureServiceProxyArguments.SetKeyToken(requestMessage);
@@ -304,11 +311,17 @@ namespace Bam.Net.ServiceProxy.Encryption
                     }
                     ClientSession = await _startSessionTask;
                 }
+
+                if (ClientSession == null)
+                {
+                    throw new ArgumentNullException("Failed to start session");
+                }
             }
             catch (Exception ex)
             {
                 SessionStartException = ex;
             }
+            
             return ClientSession;
         }
     }

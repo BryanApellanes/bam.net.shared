@@ -14,6 +14,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Bam.Net.Application;
 using Bam.Net.Encryption;
+using Bam.Net.CoreServices.ApplicationRegistration.Data;
 
 namespace Bam.Net.ServiceProxy.Encryption
 {
@@ -23,6 +24,7 @@ namespace Bam.Net.ServiceProxy.Encryption
         {
             this.ApiConfig = apiConfig ?? new ApiConfig();
             this.ServiceProxyDataRepository = new ServiceProxyDataRepository();
+            this.ServerKeySetDataManager = new ServerKeySetDataManager();
         }
 
         public ApiConfig ApiConfig { get; }
@@ -49,7 +51,8 @@ namespace Bam.Net.ServiceProxy.Encryption
                 secureChannelSession.Server = httpContext?.Request?.Url?.Authority;
                 secureChannelSession.Client = GetSecureChannelSessionClientDescriptor(httpContext.Request);
                 secureChannelSession = await ServiceProxyDataRepository.SaveAsync(secureChannelSession);
-                // TODO: create/save serverkeyset using keysetdatamanager
+                ProcessDescriptor clientProcess = ProcessDescriptor.Parse(secureChannelSession.Client);
+                _ = ServerKeySetDataManager.CreateServerKeySetAsync(clientProcess.MachineName);
             }
             else
             {

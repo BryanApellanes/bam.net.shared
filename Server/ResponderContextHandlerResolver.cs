@@ -53,7 +53,7 @@ namespace Bam.Net.Server
         {
             try
             {
-                Args.ThrowIfNull(httpContext, "context");
+                Args.ThrowIfNull(httpContext, nameof(httpContext));
                 OnResolveHandlerStarted(httpContext);
                 Func<IHttpContext, ResponderContextHandler<TResponder>> requestHandlerFunc = ResolveHandler(httpContext.Request);
                 ResponderContextHandler<TResponder> requestHandler = requestHandlerFunc(httpContext);

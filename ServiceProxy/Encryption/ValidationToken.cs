@@ -15,20 +15,20 @@ namespace Bam.Net.ServiceProxy.Encryption
 
         public ValidationToken(string plainString, string nonce = null, HashAlgorithms hashAlgorithm = HashAlgorithms.SHA256)
         {
-            this.Nonce = nonce ?? new Instant().ToString();
+            this.Timestamp = nonce ?? new Instant().ToString();
             this.Algorithm = hashAlgorithm;
             this.Hash = GetHash(plainString);
         }
 
         public HashAlgorithms Algorithm { get; set; }
-        public string Nonce { get; set; }
+        public string Timestamp { get; set; }
         public string Hash { get; set; }
 
         public int AllowedOffsetMinutes { get; private set; }
 
         public string GetHash(string validatedString)
         {
-            return $"{Nonce}:{validatedString}".HashHexString(Algorithm);
+            return $"{Timestamp}:{validatedString}".HashHexString(Algorithm);
         }
 
         public EncryptedValidationToken Encrypt(string publicKeyPem)
@@ -36,7 +36,7 @@ namespace Bam.Net.ServiceProxy.Encryption
             return new EncryptedValidationToken
             {
                 HashCipher = Hash.EncryptWithPublicKey(publicKeyPem),
-                NonceCipher = Nonce.EncryptWithPublicKey(publicKeyPem),
+                TimestampCipher = Timestamp.EncryptWithPublicKey(publicKeyPem),
                 Algorithm = Algorithm,
             };
         }

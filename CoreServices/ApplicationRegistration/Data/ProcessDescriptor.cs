@@ -116,5 +116,27 @@ namespace Bam.Net.CoreServices.ApplicationRegistration.Data
         {
             return $"{MachineName}~{ProcessId}~{FilePath}~::{CommandLine}";
         }
+
+        public static ProcessDescriptor Parse(string processDescriptor)
+        {
+            string[] split = processDescriptor.Split('~');
+            if(split.Length >= 3)
+            {
+
+                ProcessDescriptor result = new ProcessDescriptor
+                {
+                    MachineName = split[0],
+                    ProcessId = int.Parse(split[1]),
+                    FilePath = split[2],
+                };
+
+                if(split.Length >= 4)
+                {
+                    result.CommandLine = split[3];
+                }
+                return result;
+            }
+            return new ProcessDescriptor();
+        }
     }
 }

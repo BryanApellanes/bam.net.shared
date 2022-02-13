@@ -32,7 +32,7 @@ using System.Collections.Concurrent;
 
 namespace Bam.Net.ServiceProxy.Encryption
 {
-    [Obsolete("Use Bam.Net.ServiceProxy.Encryption.Data.SecureChannelSession instead")]
+    [Obsolete("Use Bam.Net.ServiceProxy.Data.SecureChannelSession instead")]
     public partial class SecureSession
     {
         static ConcurrentDictionary<string, SecureSession> _secureSessions;

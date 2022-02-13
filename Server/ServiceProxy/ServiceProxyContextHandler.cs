@@ -56,16 +56,7 @@ namespace Bam.Net.Server.ServiceProxy
             HttpMethodHandlers = new HttpMethodHandlers();
             HttpMethodHandlers.SetHandler("Get", (context) =>
             {
-                IRequest request = context.Request;
-                WebServiceProxyDescriptors webServiceProxyDescriptors = GetWebServiceProxyDescriptors(request);
-
-                ServiceProxyPath serviceProxyPath = NamedPath as ServiceProxyPath;
-                if (serviceProxyPath == null)
-                {
-                    serviceProxyPath = ServiceProxyPath.FromUri(request.Url);
-                }
-
-                ServiceProxyInvocation serviceProxyInvocation = ServiceProxyInvocationResolver.ResolveServiceProxyInvocation(serviceProxyPath, webServiceProxyDescriptors, context);
+                ServiceProxyInvocation serviceProxyInvocation = ResolveServiceProxyInvocation(context);
 
                 bool success = serviceProxyInvocation.Execute(out object result);
                 if (success)
@@ -76,6 +67,10 @@ namespace Bam.Net.Server.ServiceProxy
                 return new HttpErrorResponse(serviceProxyInvocation.Exception) { StatusCode = 500 };
             });
 
+            HttpMethodHandlers.SetHandler("Post", (context) =>
+            {
+                throw new NotImplementedException();
+            });
             // POST read content type
             //   json unencrypted invocation request
             //      - read Uri to determine invoke target
@@ -158,6 +153,21 @@ namespace Bam.Net.Server.ServiceProxy
                     }
                 }
             }
+        }
+
+        private ServiceProxyInvocation ResolveServiceProxyInvocation(IHttpContext context)
+        {
+            IRequest request = context.Request;
+            WebServiceProxyDescriptors webServiceProxyDescriptors = GetWebServiceProxyDescriptors(request);
+
+            ServiceProxyPath serviceProxyPath = NamedPath as ServiceProxyPath;
+            if (serviceProxyPath == null)
+            {
+                serviceProxyPath = ServiceProxyPath.FromUri(request.Url);
+            }
+
+            ServiceProxyInvocation serviceProxyInvocation = ServiceProxyInvocationResolver.ResolveServiceProxyInvocation(serviceProxyPath, webServiceProxyDescriptors, context);
+            return serviceProxyInvocation;
         }
     }
 }

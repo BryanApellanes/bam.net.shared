@@ -54,10 +54,10 @@ namespace Bam.Net.ServiceProxy.Encryption
         {
             EncryptedValidationToken encryptedValidationToken = new EncryptedValidationToken
             {
-                NonceCipher = headers[Headers.Nonce],
+                TimestampCipher = headers[Headers.Timestamp],
                 HashCipher = headers[Headers.ValidationToken]
             };
-            Args.ThrowIfNull(encryptedValidationToken.NonceCipher, Headers.Nonce);
+            Args.ThrowIfNull(encryptedValidationToken.TimestampCipher, Headers.Timestamp);
             Args.ThrowIf<EncryptedValidationTokenNotFoundException>
                 (
                     string.IsNullOrEmpty(encryptedValidationToken.HashCipher),
@@ -78,7 +78,7 @@ namespace Bam.Net.ServiceProxy.Encryption
         {
             HttpRequestHeaders headers = request.Headers;
             EncryptedValidationToken token = CreateEncryptedValidationToken(plainPostString, publicKeyPem);
-            headers.Add(Headers.Nonce, token.NonceCipher);
+            headers.Add(Headers.Timestamp, token.TimestampCipher);
             headers.Add(Headers.ValidationToken, token.HashCipher);
         }
 
@@ -98,7 +98,7 @@ namespace Bam.Net.ServiceProxy.Encryption
         public EncryptedTokenValidationStatus ValidateEncryptedToken(SecureChannelSession session, EncryptedValidationToken encryptedToken, string plainPost, bool usePkcsPadding = false)
         {
             string hash = session.DecryptWithPrivateKey(encryptedToken.HashCipher, usePkcsPadding);
-            string nonce = session.DecryptWithPrivateKey(encryptedToken.NonceCipher, usePkcsPadding);
+            string nonce = session.DecryptWithPrivateKey(encryptedToken.TimestampCipher, usePkcsPadding);
             int offset = session.TimeOffset.Value;
             EncryptedTokenValidationStatus encryptedTokenValidationStatus = ValidateNonce(nonce, offset);
             if(encryptedTokenValidationStatus == EncryptedTokenValidationStatus.Success)
