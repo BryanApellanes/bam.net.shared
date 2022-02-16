@@ -26,8 +26,8 @@ namespace Bam.Net.ServiceProxy.Encryption
         }
 
         protected SecureChannelRequestMessageSymmetricEncryptor GetSymmetricEncryptor()
-        { 
-
+        {
+            throw new NotImplementedException();
         }
 
         protected ValueTransformerPipeline<SecureChannelRequestMessage> AsymmetricValueTransformer
