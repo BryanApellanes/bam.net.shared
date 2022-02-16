@@ -37,7 +37,7 @@ namespace Bam.Net.Services
                     ServiceSubdomains.Add(attr);
                 }
             }
-            SetApiKeyResolver(serviceRegistry, requireApiKeyResolver ? ApiKeyResolver.Default : null);
+            SetApiKeyResolver(serviceRegistry, requireApiKeyResolver ? ApiSigningKeyResolver.Default : null);
         }
 
         public override void Start()
@@ -57,9 +57,9 @@ namespace Bam.Net.Services
         public HashSet<ServiceSubdomainAttribute> ServiceSubdomains { get; set; }
         protected WebServiceRegistry ServiceRegistry { get; set; }
 
-        protected void SetApiKeyResolver(ServiceRegistry registry, IApiKeyResolver ifNull)
+        protected void SetApiKeyResolver(ServiceRegistry registry, IApiSigningKeyResolver ifNull)
         {
-            IApiKeyResolver apiKeyResolver = registry.Get(ifNull);
+            IApiSigningKeyResolver apiKeyResolver = registry.Get(ifNull);
             Responder.CommonSecureChannel.ApiKeyResolver = apiKeyResolver;
             Responder.AppSecureChannels.Values.Each(sc => sc.ApiKeyResolver = apiKeyResolver);
         }

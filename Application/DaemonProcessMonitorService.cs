@@ -13,7 +13,7 @@ using Bam.Net.ServiceProxy.Encryption;
 namespace Bam.Net.Application
 {
     [Serializable]
-    [ApiKeyRequired]
+    [ApiSigningKeyRequired]
     [Proxy("processMonitor")]
     public class DaemonProcessMonitorService : ProxyableService
     {

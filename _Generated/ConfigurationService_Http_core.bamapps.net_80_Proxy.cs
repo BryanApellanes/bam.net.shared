@@ -16,8 +16,8 @@ namespace Bam.Net.CoreServices
 	using Bam.Net.UserAccounts;
 
     
-		[ApiKeyRequired]
-    public class ConfigurationServiceClient: SecureServiceProxyClient<Bam.Net.CoreServices.Contracts.IConfigurationService>, Bam.Net.CoreServices.Contracts.IConfigurationService
+		[ApiSigningKeyRequired]
+    public class ConfigurationServiceClient: EncryptedServiceProxyClient<Bam.Net.CoreServices.Contracts.IConfigurationService>, Bam.Net.CoreServices.Contracts.IConfigurationService
     {
         public ConfigurationServiceClient(): base(DefaultConfiguration.GetAppSetting("ConfigurationServiceUrl", "http://core.bamapps.net/"))
         {
@@ -173,11 +173,11 @@ namespace Bam.Net.CoreServices
 			}
 		}
 
-		public IApiKeyResolver ApiKeyResolver 
+		public IApiSigningKeyResolver ApiKeyResolver 
 		{
 			get
 			{
-				return (IApiKeyResolver)_proxyClient.Property("ApiKeyResolver", false);
+				return (IApiSigningKeyResolver)_proxyClient.Property("ApiKeyResolver", false);
 			}
 			set
 			{

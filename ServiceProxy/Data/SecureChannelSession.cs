@@ -146,7 +146,7 @@ namespace Bam.Net.ServiceProxy.Data
             return this;
         }
 
-        public ClientSession GetClientSession(bool throwIfMissingKeys = true)
+        public ClientSessionInfo GetClientSession(bool throwIfMissingKeys = true)
         {
             if (throwIfMissingKeys && string.IsNullOrEmpty(AsymmetricKey))
             {
@@ -158,7 +158,7 @@ namespace Bam.Net.ServiceProxy.Data
             }
 
             _ = TouchAsync();
-            return new ClientSession
+            return new ClientSessionInfo
             {
                 ClientSessionIdentifier = Identifier,
                 PublicKey = GetPublicKey(),

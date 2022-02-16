@@ -79,7 +79,7 @@ namespace Bam.Net.ServiceProxy.Encryption
             }
         }
 
-        public async Task<ClientSession> StartSessionAsync()
+        public async Task<ClientSessionInfo> StartSessionAsync()
         {
             return await Task.Run(() => StartSession(new Instant()).Data);
         }
@@ -88,12 +88,12 @@ namespace Bam.Net.ServiceProxy.Encryption
         /// Establish a secure channel session.
         /// </summary>
         /// <returns></returns>
-        public SecureChannelResponseMessage<ClientSession> StartSession(Instant instant)
+        public SecureChannelResponseMessage<ClientSessionInfo> StartSession(Instant instant)
         {
             SecureChannelSession secureChannelSession = SecureChannelSessionDataManager.GetSecureChannelSessionForContextAsync(HttpContext, instant).Result;
-            ClientSession clientSessionInfo = secureChannelSession.GetClientSession(false);
+            ClientSessionInfo clientSessionInfo = secureChannelSession.GetClientSession(false);
 
-            return new SecureChannelResponseMessage<ClientSession>(clientSessionInfo);
+            return new SecureChannelResponseMessage<ClientSessionInfo>(clientSessionInfo);
         }
 
         public void EndSession(string sessionIdentifier)
@@ -120,13 +120,13 @@ namespace Bam.Net.ServiceProxy.Encryption
         }
 
 
-        IApiKeyResolver _apiKeyResolver;
+        IApiSigningKeyResolver _apiKeyResolver;
         object _apiKeyResolverSync = new object();
-        public IApiKeyResolver ApiKeyResolver
+        public IApiSigningKeyResolver ApiKeyResolver
         {
             get
             {
-                return _apiKeyResolverSync.DoubleCheckLock(ref _apiKeyResolver, () => new ApiKeyResolver());
+                return _apiKeyResolverSync.DoubleCheckLock(ref _apiKeyResolver, () => new ApiSigningKeyResolver());
             }
             set
             {

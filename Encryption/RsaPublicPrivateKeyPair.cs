@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Bam.Net.Encryption
 {
-    public class RsaPublicPrivateKeyPair
+    public class RsaPublicPrivateKeyPair : IRsaPublicKeySource
     {
         public RsaPublicPrivateKeyPair(RsaKeyLength rsaKeyLength = RsaKeyLength._2048)
         {
@@ -111,5 +111,9 @@ namespace Bam.Net.Encryption
             return cipherBytes.DecryptWithPrivateKey(AsymmetricCipherKeyPair.Private, engine);
         }
 
+        public RsaPublicKey GetRsaPublicKey()
+        {
+            return new RsaPublicKey(PublicKeyPem);
+        }
     }
 }

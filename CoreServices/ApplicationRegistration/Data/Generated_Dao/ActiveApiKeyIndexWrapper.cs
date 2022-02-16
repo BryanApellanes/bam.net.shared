@@ -16,7 +16,7 @@ namespace Bam.Net.CoreServices.ApplicationRegistration.Data.Wrappers
 {
 	// generated
 	[Serializable]
-	public class ActiveApiKeyIndexWrapper: Bam.Net.CoreServices.ApplicationRegistration.Data.ActiveApiKeyIndex, IHasUpdatedXrefCollectionProperties
+	public class ActiveApiKeyIndexWrapper: Bam.Net.CoreServices.ApplicationRegistration.Data.ActiveApiSigningKeyIndex, IHasUpdatedXrefCollectionProperties
 	{
 		public ActiveApiKeyIndexWrapper()
 		{

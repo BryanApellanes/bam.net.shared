@@ -1,5 +1,6 @@
 ﻿using Bam.Net.Configuration;
 using Bam.Net.Data;
+using Bam.Net.Encryption;
 using Bam.Net.Logging;
 using Bam.Net.ServiceProxy;
 using Bam.Net.Services;

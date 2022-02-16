@@ -69,13 +69,13 @@ namespace Bam.Net.Server.ServiceProxy
             set => _logger = value;
         }
 
-        IApiKeyResolver _apiKeyResolver;
+        IApiSigningKeyResolver _apiKeyResolver;
         readonly object _apiKeyResolverSync = new object();
-        public IApiKeyResolver ApiKeyResolver
+        public IApiSigningKeyResolver ApiKeyResolver
         {
             get
             {
-                return _apiKeyResolverSync.DoubleCheckLock(ref _apiKeyResolver, () => new ApiKeyResolver());
+                return _apiKeyResolverSync.DoubleCheckLock(ref _apiKeyResolver, () => new ApiSigningKeyResolver());
             }
             set => _apiKeyResolver = value;
         }

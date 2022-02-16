@@ -9,6 +9,7 @@ using Bam.Net.CoreServices.ApplicationRegistration.Data;
 using Bam.Net.CoreServices.ApplicationRegistration.Data.Dao.Repository;
 using Bam.Net.Data;
 using Bam.Net.Data.Repositories;
+using Bam.Net.Encryption;
 using Bam.Net.Logging;
 using Bam.Net.Server;
 using Bam.Net.Server.ServiceProxy;
@@ -22,10 +23,10 @@ namespace Bam.Net.CoreServices
     [Proxy("appRegistrationSvc")]
     [Encrypt]
     [ServiceSubdomain("appregistration")]
-    public partial class ApplicationRegistryService : ApplicationProxyableService, IApiKeyResolver, IApiKeyProvider, IApplicationNameProvider
+    public partial class ApplicationRegistryService : ApplicationProxyableService, IApiSigningKeyResolver, IApiSigningKeyProvider, IApplicationNameProvider
     {
         CacheManager _cacheManager;
-        ApiKeyResolver _apiKeyResolver;
+        ApiSigningKeyResolver _apiKeyResolver;
 
         protected ApplicationRegistryService() { }
 
@@ -36,7 +37,7 @@ namespace Bam.Net.CoreServices
             dataSettings.SetDatabases(this);
             CompositeRepository = new CompositeRepository(ApplicationRegistrationRepository, dataSettings);
             _cacheManager = new CacheManager(100000000);
-            _apiKeyResolver = new ApiKeyResolver(this, this);
+            _apiKeyResolver = new ApiSigningKeyResolver(this, this);
             AppConf = conf;
             DataSettings = dataSettings;
             Logger = logger;
@@ -72,8 +73,8 @@ namespace Bam.Net.CoreServices
             return Application?.ApiKeys.Select(k => k.ToKeyInfo()).ToArray();
         }*/
 
-        [ApiKeyRequired]
-        public virtual ApiKeyInfo AddApiKey()
+        [ApiSigningKeyRequired]
+        public virtual ApiSigningKeyInfo AddApiKey()
         {
             if (ApplicationName.Equals(ApplicationDiagnosticInfo.UnknownApplication))
             {
@@ -84,24 +85,24 @@ namespace Bam.Net.CoreServices
             {
                 throw new InvalidOperationException("Application not registered");
             }
-            AddApiKey(ApplicationRegistrationRepository, app, out CoreServices.ApplicationRegistration.Data.ApiKey key);
-            return new ApiKeyInfo { ApplicationClientId = key.ClientIdentifier, ApiKey = key.SharedSecret, ApplicationName = ApplicationName };
+            AddApiKey(ApplicationRegistrationRepository, app, out CoreServices.ApplicationRegistration.Data.ApiSigningKey key);
+            return new ApiSigningKeyInfo { ApplicationClientId = key.ClientIdentifier, ApiSigningKey = key.SharedSecret, ApplicationName = ApplicationName };
         }
 
-        [ApiKeyRequired]
-        public virtual ApiKeyInfo SetActiveApiKeyIndex(int index)
+        [ApiSigningKeyRequired]
+        public virtual ApiSigningKeyInfo SetActiveApiKeyIndex(int index)
         {
             return SetActiveApiKeyIndex(this, index);
         }
 
         [Local]
-        public virtual ApiKeyInfo SetActiveApiKeyIndex(IApplicationNameProvider nameProvider, int index)
+        public virtual ApiSigningKeyInfo SetActiveApiKeyIndex(IApplicationNameProvider nameProvider, int index)
         {
             string clientId = GetApplicationClientId(nameProvider);
-            ActiveApiKeyIndex apiKeyIndex = ApplicationRegistrationRepository.OneActiveApiKeyIndexWhere(c => c.ApplicationIdentifier == clientId);
+            ActiveApiSigningKeyIndex apiKeyIndex = ApplicationRegistrationRepository.OneActiveApiKeyIndexWhere(c => c.ApplicationIdentifier == clientId);
             if(apiKeyIndex == null)
             {
-                apiKeyIndex = new ActiveApiKeyIndex { ApplicationIdentifier = clientId };
+                apiKeyIndex = new ActiveApiSigningKeyIndex { ApplicationIdentifier = clientId };
             }
 
             if (Application?.ApiKeys.Count - 1 > index || index < 0)
@@ -110,9 +111,9 @@ namespace Bam.Net.CoreServices
             }
             apiKeyIndex.Value = index;
             ApplicationRegistrationRepository.Save(apiKeyIndex);
-            return new ApiKeyInfo()
+            return new ApiSigningKeyInfo()
             {
-                ApiKey = GetApplicationApiKey(clientId, index),
+                ApiSigningKey = GetApplicationApiKey(clientId, index),
                 ApplicationClientId = clientId
             };
         }
@@ -121,7 +122,7 @@ namespace Bam.Net.CoreServices
         public virtual int GetActiveApiKeyIndex(IApplicationNameProvider nameProvider)
         {
             string clientId = GetApplicationClientId(nameProvider);
-            ActiveApiKeyIndex apiKeyIndex = ApplicationRegistrationRepository.OneActiveApiKeyIndexWhere(c => c.ApplicationIdentifier == clientId);
+            ActiveApiSigningKeyIndex apiKeyIndex = ApplicationRegistrationRepository.OneActiveApiKeyIndexWhere(c => c.ApplicationIdentifier == clientId);
             if (apiKeyIndex != null)
             {
                 return apiKeyIndex.Value;
@@ -134,9 +135,9 @@ namespace Bam.Net.CoreServices
             return ApplicationName.Or(ApplicationDiagnosticInfo.UnknownApplication);
         }
         
-        public virtual ApiKeyInfo GetClientApiKeyInfo()
+        public virtual ApiSigningKeyInfo GetClientApiKeyInfo()
         {
-            return GetApiKeyInfo(this);
+            return GetApiSigningKeyInfo(this);
         }
 
         /// <summary>
@@ -217,17 +218,17 @@ namespace Bam.Net.CoreServices
         [Exclude]
         public string CreateKeyToken(string stringToHash)
         {
-            ApiKeyInfo apiKey = GetApiKeyInfo(this);
-            return $"{apiKey.ApiKey}:{stringToHash}".HashHexString(HashAlgorithm);
+            ApiSigningKeyInfo apiKey = GetApiSigningKeyInfo(this);
+            return $"{apiKey.ApiSigningKey}:{stringToHash}".HashHexString(HashAlgorithm);
         }
 
         [Exclude]
-        public ApiKeyInfo GetApiKeyInfo(IApplicationNameProvider nameProvider)
+        public ApiSigningKeyInfo GetApiSigningKeyInfo(IApplicationNameProvider nameProvider)
         {
             string clientId = GetApplicationClientId(nameProvider);
-            ApiKeyInfo info = new ApiKeyInfo()
+            ApiSigningKeyInfo info = new ApiSigningKeyInfo()
             {
-                ApiKey = GetApplicationApiKey(clientId, GetActiveApiKeyIndex(nameProvider)), 
+                ApiSigningKey = GetApplicationApiKey(clientId, GetActiveApiKeyIndex(nameProvider)), 
                 ApplicationClientId = clientId
             };
             return info;
@@ -348,13 +349,13 @@ namespace Bam.Net.CoreServices
 
         protected DataProvider DataSettings { get; set; }
 
-        protected internal ApiKeyInfo GenerateApiKeyInfo(CoreServices.ApplicationRegistration.Data.Application app)
+        protected internal ApiSigningKeyInfo GenerateApiKeyInfo(CoreServices.ApplicationRegistration.Data.Application app)
         {
-            ApiKeyInfo info = new ApiKeyInfo
+            ApiSigningKeyInfo info = new ApiSigningKeyInfo
             {
                 ApplicationNameProvider = new StaticApplicationNameProvider(app.Name),
                 ApplicationClientId = app.Cuid,
-                ApiKey = ServiceProxySystem.GenerateSecureRandomString()
+                ApiSigningKey = ServiceProxySystem.GenerateSecureRandomString()
             };
             return info;
         }
@@ -367,14 +368,14 @@ namespace Bam.Net.CoreServices
         /// <returns></returns>
         protected internal CoreServices.ApplicationRegistration.Data.Application AddApiKey(ApplicationRegistrationRepository repo, CoreServices.ApplicationRegistration.Data.Application app)
         {
-            CoreServices.ApplicationRegistration.Data.ApiKey ignore;
+            CoreServices.ApplicationRegistration.Data.ApiSigningKey ignore;
             return AddApiKey(repo, app, out ignore);
         }
 
-        protected internal CoreServices.ApplicationRegistration.Data.Application AddApiKey(ApplicationRegistrationRepository repo, CoreServices.ApplicationRegistration.Data.Application app, out CoreServices.ApplicationRegistration.Data.ApiKey key)
+        protected internal CoreServices.ApplicationRegistration.Data.Application AddApiKey(ApplicationRegistrationRepository repo, CoreServices.ApplicationRegistration.Data.Application app, out CoreServices.ApplicationRegistration.Data.ApiSigningKey key)
         {
-            ApiKeyInfo keyInfo = GenerateApiKeyInfo(app);
-            key = keyInfo.ToApiKey();
+            ApiSigningKeyInfo keyInfo = GenerateApiKeyInfo(app);
+            key = keyInfo.ToApiSigningKey();
             key.Created = DateTime.UtcNow;
             key.CreatedBy = CurrentUser.UserName;
             app.ApiKeys.Add(key);

@@ -18,7 +18,7 @@ namespace Bam.Net.CoreServices
 {
     [RoleRequired("/", "Admin")]
     [Proxy("fileSvc")]
-    [ApiKeyRequired]
+    [ApiSigningKeyRequired]
     [ServiceSubdomain("file")]
     public class FileService : ApplicationProxyableService, IFileService
     {

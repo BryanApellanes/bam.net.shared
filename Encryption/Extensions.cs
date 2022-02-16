@@ -85,6 +85,11 @@ namespace Bam.Net.Encryption
             return encrypted;
         }
 
+        public static byte[] GetPublicKeyEncryptedBytes(this byte[] plainData, string publicPemKey, IAsymmetricBlockCipher engine = null)
+        {
+            return GetPublicKeyEncryptedBytes(plainData, publicPemKey.ToKey(), engine);
+        }
+
         public static byte[] GetPublicKeyEncryptedBytes(this byte[] plainData, AsymmetricKeyParameter key, IAsymmetricBlockCipher engine = null)
         {
             byte[] encrypted = plainData.AsymmetricEncrypt(key, engine);

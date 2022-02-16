@@ -21,7 +21,7 @@ namespace Bam.Net.ServiceProxy
 
         HashSet<string> Methods { get; }
 
-        string GetArgumentsQueryString(ServiceProxyInvocationRequestArguments arguments);
+        string GetArgumentsQueryString(ServiceProxyInvocationRequestArgumentWriter arguments);
 
         Dictionary<string, object> GetNamedArguments(MethodInfo method, object[] arguments);
         Dictionary<string, object> GetNamedArguments(string methodName, object[] arguments);

@@ -14,6 +14,7 @@ using Bam.Net.Services.AsyncCallback.Data;
 using Bam.Net.Services.AsyncCallback.Data.Dao.Repository;
 using System.Threading;
 using Bam.Net.CoreServices.ApplicationRegistration.Data;
+using Bam.Net.Encryption;
 
 namespace Bam.Net.Services
 {

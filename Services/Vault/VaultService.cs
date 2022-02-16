@@ -9,7 +9,7 @@ using Bam.Net.ServiceProxy.Encryption;
 namespace Bam.Net.Services
 {
     [Proxy("vaultSvc")]
-    [ApiKeyRequired]
+    [ApiSigningKeyRequired]
     public class VaultService : AsyncProxyableService, IVaultService
     {
         public VaultService(VaultDatabase db)

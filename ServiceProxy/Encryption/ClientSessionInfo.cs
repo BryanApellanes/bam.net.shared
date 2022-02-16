@@ -19,9 +19,9 @@ using Org.BouncyCastle.Crypto.Engines;
 
 namespace Bam.Net.ServiceProxy.Encryption
 {
-    public class ClientSession
+    public class ClientSessionInfo : IAesKeySource, IRsaPublicKeySource
     {
-        public ClientSession()
+        public ClientSessionInfo()
         {
             this.ValidationAlgorithm = HashAlgorithms.SHA256;
         }
@@ -145,7 +145,7 @@ namespace Bam.Net.ServiceProxy.Encryption
 
         public override bool Equals(object obj)
         {
-            if (obj is ClientSession info)
+            if (obj is ClientSessionInfo info)
             {
                 return info.ClientSessionIdentifier.Equals(ClientSessionIdentifier) && info.PublicKey.Equals(PublicKey);
             }
@@ -168,6 +168,16 @@ namespace Bam.Net.ServiceProxy.Encryption
             AesKey = kvp.Key;
             AesIV = kvp.IV;
             return kvp;
+        }
+
+        public AesKeyVectorPair GetAesKey()
+        {
+            return new AesKeyVectorPair(AesKey, AesIV);
+        }
+
+        public RsaPublicKey GetRsaPublicKey()
+        {
+            return new RsaPublicKey(PublicKey);
         }
     }
 }

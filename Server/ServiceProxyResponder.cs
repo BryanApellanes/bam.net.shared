@@ -49,7 +49,7 @@ namespace Bam.Net.Server
             _clientProxyGenerators = new Dictionary<string, IClientProxyGenerator>();
             _requestHandlerResolver = new ResponderContextHandlerResolver<ServiceProxyResponder>(this);
             RendererFactory = new WebRendererFactory(logger);
-            ServiceProxyInvocationResolver = new ServiceProxyInvocationResolver();
+            ServiceProxyInvocationResolver = new ServiceProxyInvocationReader();
             ApplicationServiceSourceResolver = new ApplicationServiceSourceResolver();
             ApplicationServiceRegistryResolver = new ApplicationServiceRegistryResolver();
             ServiceCompilationExceptionReporter = new ServiceCompilationExceptionReporter();
@@ -106,7 +106,7 @@ namespace Bam.Net.Server
         }
 
         [Inject]
-        public IServiceProxyInvocationResolver ServiceProxyInvocationResolver { get; set; }
+        public IServiceProxyInvocationReader ServiceProxyInvocationResolver { get; set; }
 
         private IApplicationServiceSourceResolver _applicationServiceSourceResolver;
 

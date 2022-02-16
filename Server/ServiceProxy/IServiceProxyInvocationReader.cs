@@ -11,8 +11,8 @@ using System.Threading.Tasks;
 
 namespace Bam.Net.Server.ServiceProxy
 {
-    public interface IServiceProxyInvocationResolver
+    public interface IServiceProxyInvocationReader
     {
-        ServiceProxyInvocation ResolveServiceProxyInvocation(ServiceProxyPath serviceProxyPath, WebServiceProxyDescriptors webServiceProxyDescriptors, IHttpContext context);
+        ServiceProxyInvocation ReadServiceProxyInvocation(ServiceProxyPath serviceProxyPath, WebServiceProxyDescriptors webServiceProxyDescriptors, IHttpContext context);
     }
 }

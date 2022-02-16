@@ -20,46 +20,46 @@ namespace Bam.Net.ServiceProxy.Encryption
     /// A class used to provide the functionality
     /// of both an ApiKeyProvider and an ApplicationNameProvider
     /// </summary>
-    public partial class ApiKeyResolver : IApiKeyProvider, IApplicationNameProvider, IApiKeyResolver
+    public partial class ApiSigningKeyResolver : IApiSigningKeyProvider, IApplicationNameProvider, IApiSigningKeyResolver
     {
-        static ApiKeyResolver()
+        static ApiSigningKeyResolver()
         {
-            Default = new ApiKeyResolver();
+            Default = new ApiSigningKeyResolver();
         }
 
-        public ApiKeyResolver()
+        public ApiSigningKeyResolver()
         {
             ApiKeyProvider = DefaultConfigurationApiKeyProvider.Instance;
             ApplicationNameProvider = DefaultConfigurationApplicationNameProvider.Instance;
             HashAlgorithm = HashAlgorithms.SHA256;
         }
 
-        public ApiKeyResolver(IApiKeyProvider apiKeyProvider)
+        public ApiSigningKeyResolver(IApiSigningKeyProvider apiKeyProvider)
             : this()
         {
             ApiKeyProvider = apiKeyProvider;
         }
 
-        public ApiKeyResolver(IApplicationNameProvider nameProvider)
+        public ApiSigningKeyResolver(IApplicationNameProvider nameProvider)
             : this()
         {
             ApplicationNameProvider = nameProvider;
         }
 
-        public ApiKeyResolver(IApiKeyProvider apiKeyProvider, IApplicationNameProvider nameProvider) : this()
+        public ApiSigningKeyResolver(IApiSigningKeyProvider apiKeyProvider, IApplicationNameProvider nameProvider) : this()
         {
             ApiKeyProvider = apiKeyProvider;
             ApplicationNameProvider = nameProvider;
         }
 
-        public static ApiKeyResolver Default
+        public static ApiSigningKeyResolver Default
         {
             get;
         }
 
         public IApiArgumentEncoder ApiArgumentEncoder { get; set; }
 
-        public IApiKeyProvider ApiKeyProvider
+        public IApiSigningKeyProvider ApiKeyProvider
         {
             get;
             set;
@@ -75,9 +75,9 @@ namespace Bam.Net.ServiceProxy.Encryption
 
         #region IApiKeyProvider Members
 
-        public ApiKeyInfo GetApiKeyInfo(IApplicationNameProvider nameProvider)
+        public ApiSigningKeyInfo GetApiSigningKeyInfo(IApplicationNameProvider nameProvider)
         {
-            return ApiKeyProvider.GetApiKeyInfo(nameProvider);
+            return ApiKeyProvider.GetApiSigningKeyInfo(nameProvider);
         }
 
         public string GetApplicationApiKey(string applicationClientId, int index)
@@ -123,8 +123,8 @@ namespace Bam.Net.ServiceProxy.Encryption
 
         public string CreateKeyToken(string stringToHash)
         {
-            ApiKeyInfo apiKey = this.GetApiKeyInfo(this);
-            return $"{apiKey.ApiKey}:{stringToHash}".HmacHexString(apiKey.ApiKey, HashAlgorithm);
+            ApiSigningKeyInfo apiKey = this.GetApiSigningKeyInfo(this);
+            return $"{apiKey.ApiSigningKey}:{stringToHash}".HmacHexString(apiKey.ApiSigningKey, HashAlgorithm);
         }
 
         // TODO: fix this to use ServiceProxyInvocationRequest

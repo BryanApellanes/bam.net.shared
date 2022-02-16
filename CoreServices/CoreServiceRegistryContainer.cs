@@ -147,7 +147,7 @@ namespace Bam.Net.CoreServices
                 .For<EmailComposer>().Use(userMgr.EmailComposer)
                 .For<IApplicationNameProvider>().Use<ApplicationRegistryService>()
                 .For<ApplicationRegistryService>().Use<ApplicationRegistryService>()
-                .For<IApiKeyResolver>().Use<ApplicationRegistryService>()
+                .For<IApiSigningKeyResolver>().Use<ApplicationRegistryService>()
                 .For<ISmtpSettingsProvider>().Use(userMgr)
                 .For<UserRegistryService>().Use<UserRegistryService>()
                 .For<ConfigurationService>().Use(configSvc)

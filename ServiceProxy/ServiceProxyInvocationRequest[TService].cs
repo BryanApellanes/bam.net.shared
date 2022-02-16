@@ -25,14 +25,14 @@ namespace Bam.Net.ServiceProxy
             set;
         }
 
-        ServiceProxyInvocationRequestArguments<TService> _serviceProxyArguments;
-        public new ServiceProxyInvocationRequestArguments<TService> ServiceProxyInvocationRequestArguments
+        ServiceProxyInvocationRequestArgumentWriter<TService> _serviceProxyArguments;
+        public new ServiceProxyInvocationRequestArgumentWriter<TService> ServiceProxyInvocationRequestArguments
         {
             get
             {
                 if (_serviceProxyArguments == null)
                 {
-                    _serviceProxyArguments = new ServiceProxyInvocationRequestArguments<TService>(this);
+                    _serviceProxyArguments = new ServiceProxyInvocationRequestArgumentWriter<TService>(this);
                 }
                 return _serviceProxyArguments;                
             }

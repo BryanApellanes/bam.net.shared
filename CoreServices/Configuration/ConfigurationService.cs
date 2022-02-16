@@ -11,7 +11,7 @@ namespace Bam.Net.CoreServices
     using Bam.Net.CoreServices.Configuration;
 
     [Proxy("configSvc")]
-    [ServiceProxySecure.ApiKeyRequired]
+    [ServiceProxySecure.ApiSigningKeyRequired]
     [ServiceSubdomain("config")]
     public class ConfigurationService : ApplicationProxyableService, ICoreConfigurationProvider
     {

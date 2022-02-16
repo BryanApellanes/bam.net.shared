@@ -5,12 +5,12 @@ namespace Bam.Net
 {
     public class ValueReverseTransformerPipeline<TData> : IValueReverseTransformer<byte[], TData>
     {
-        public ValueReverseTransformerPipeline(ValueTranformerPipeline<TData> tranformerPipeline)
+        public ValueReverseTransformerPipeline(ValueTransformerPipeline<TData> tranformerPipeline)
         {
             this.TranformerPipeline = tranformerPipeline;
         }
 
-        public ValueTranformerPipeline<TData> TranformerPipeline { get; set; }
+        public ValueTransformerPipeline<TData> TranformerPipeline { get; set; }
 
         public IValueTransformer<TData, byte[]> GetTransformer()
         {

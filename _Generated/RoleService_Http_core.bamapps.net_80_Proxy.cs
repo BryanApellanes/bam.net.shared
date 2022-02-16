@@ -15,7 +15,7 @@ namespace Bam.Net.CoreServices
 	using Bam.Net.UserAccounts;
 
     
-    public class RoleServiceClient: SecureServiceProxyClient<Bam.Net.CoreServices.Contracts.IRoleService>, Bam.Net.CoreServices.Contracts.IRoleService
+    public class RoleServiceClient: EncryptedServiceProxyClient<Bam.Net.CoreServices.Contracts.IRoleService>, Bam.Net.CoreServices.Contracts.IRoleService
     {
         public RoleServiceClient(): base(DefaultConfiguration.GetAppSetting("RoleServiceUrl", "http://core.bamapps.net/"))
         {
@@ -181,11 +181,11 @@ namespace Bam.Net.CoreServices
 			}
 		}
 
-		public IApiKeyResolver ApiKeyResolver 
+		public IApiSigningKeyResolver ApiKeyResolver 
 		{
 			get
 			{
-				return (IApiKeyResolver)_proxyClient.Property("ApiKeyResolver", false);
+				return (IApiSigningKeyResolver)_proxyClient.Property("ApiKeyResolver", false);
 			}
 			set
 			{

@@ -15,11 +15,9 @@ namespace Bam.Net.ServiceProxy
     /// Encapsulates method and parameters for 
     /// a ServiceProxy call.
     /// </summary>
-    public class ServiceProxyInvocationRequestArguments
+    public class ServiceProxyInvocationRequestArgumentWriter
     {
-        public const string JsonMediaType = "application/json; charset=utf-8";
-
-        public ServiceProxyInvocationRequestArguments(ServiceProxyInvocationRequest invocationRequest, IApiArgumentEncoder apiArgumentEncoder = null)
+        public ServiceProxyInvocationRequestArgumentWriter(ServiceProxyInvocationRequest invocationRequest, IApiArgumentEncoder apiArgumentEncoder = null)
         {
             this.ServiceProxyInvocationRequest = invocationRequest;
             this.ServiceType = invocationRequest.ServiceType;
@@ -107,7 +105,7 @@ namespace Bam.Net.ServiceProxy
         public virtual void WriteArgumentContent(HttpRequestMessage requestMessage)
         {
             string jsonArgsMember = GetJsonArgsMember();
-            requestMessage.Content = new StringContent(jsonArgsMember, Encoding.UTF8, JsonMediaType);
+            requestMessage.Content = new StringContent(jsonArgsMember, Encoding.UTF8, ContentTypes.Json);
         }
 
         public virtual void WriteArgumentQueryString(HttpRequestMessage requestMessage)

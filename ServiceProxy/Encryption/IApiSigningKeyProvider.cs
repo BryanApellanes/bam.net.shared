@@ -4,9 +4,9 @@
 using System;
 namespace Bam.Net.ServiceProxy.Encryption
 {
-    public interface IApiKeyProvider
+    public interface IApiSigningKeyProvider
     {
-        ApiKeyInfo GetApiKeyInfo(IApplicationNameProvider nameProvider);
+        ApiSigningKeyInfo GetApiSigningKeyInfo(IApplicationNameProvider nameProvider);
         string GetApplicationApiKey(string applicationClientId, int index);
         string GetApplicationClientId(IApplicationNameProvider nameProvider);
         string GetCurrentApiKey();

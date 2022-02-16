@@ -8,6 +8,7 @@ using Bam.Net.Services.DataReplication.Data;
 using Bam.Net.Data.Repositories;
 using Bam.Net.CoreServices.ApplicationRegistration;
 using Bam.Net.Data;
+using Bam.Net.Encryption;
 
 namespace Bam.Net.Services.DataReplication
 {

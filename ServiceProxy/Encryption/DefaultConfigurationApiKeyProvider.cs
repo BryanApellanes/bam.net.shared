@@ -10,7 +10,7 @@ using Bam.Net.Configuration;
 
 namespace Bam.Net.ServiceProxy.Encryption
 {
-    public class DefaultConfigurationApiKeyProvider: ApiKeyProvider
+    public class DefaultConfigurationApiKeyProvider: ApiSigningKeyProvider
     {
         static DefaultConfigurationApiKeyProvider _defaultProvider;
         static object _sync = new object();

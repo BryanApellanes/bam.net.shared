@@ -4,9 +4,9 @@ using System.Text;
 
 namespace Bam.Net
 {
-    public class ValueTranformerPipeline<TData> : IValueTransformer<TData, byte[]>
+    public class ValueTransformerPipeline<TData> : IValueTransformer<TData, byte[]>
     {
-        public ValueTranformerPipeline()
+        public ValueTransformerPipeline()
         {
             this.ByteTransformerPipeline = new ByteTransformerPipeline();
         }

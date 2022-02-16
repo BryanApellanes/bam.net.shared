@@ -16,7 +16,7 @@ namespace Bam.Net.CoreServices
 	using Bam.Net.UserAccounts;
 
     
-    public class ApplicationRegistryServiceClient: SecureServiceProxyClient<Bam.Net.CoreServices.Contracts.IApplicationRegistryService>, Bam.Net.CoreServices.Contracts.IApplicationRegistryService
+    public class ApplicationRegistryServiceClient: EncryptedServiceProxyClient<Bam.Net.CoreServices.Contracts.IApplicationRegistryService>, Bam.Net.CoreServices.Contracts.IApplicationRegistryService
     {
         public ApplicationRegistryServiceClient(): base(DefaultConfiguration.GetAppSetting("ApplicationRegistrationServiceUrl", "http://core.bamapps.net/"))
         {
@@ -27,33 +27,33 @@ namespace Bam.Net.CoreServices
         }
         
         
-		[ApiKeyRequired]
-        public ApiKeyInfo[] ListApiKeys()
+		[ApiSigningKeyRequired]
+        public ApiSigningKeyInfo[] ListApiKeys()
         {
             object[] parameters = new object[] {  };
-            return InvokeServiceMethod<ApiKeyInfo[]>("ListApiKeys", parameters);
+            return InvokeServiceMethod<ApiSigningKeyInfo[]>("ListApiKeys", parameters);
         }
-		[ApiKeyRequired]
-        public ApiKeyInfo AddApiKey()
+		[ApiSigningKeyRequired]
+        public ApiSigningKeyInfo AddApiKey()
         {
             object[] parameters = new object[] {  };
-            return InvokeServiceMethod<ApiKeyInfo>("AddApiKey", parameters);
+            return InvokeServiceMethod<ApiSigningKeyInfo>("AddApiKey", parameters);
         }
-		[ApiKeyRequired]
-        public ApiKeyInfo SetActiveApiKeyIndex(System.Int32 index)
+		[ApiSigningKeyRequired]
+        public ApiSigningKeyInfo SetActiveApiKeyIndex(System.Int32 index)
         {
             object[] parameters = new object[] { index };
-            return InvokeServiceMethod<ApiKeyInfo>("SetActiveApiKeyIndex", parameters);
+            return InvokeServiceMethod<ApiSigningKeyInfo>("SetActiveApiKeyIndex", parameters);
         }
         public String GetApplicationName()
         {
             object[] parameters = new object[] {  };
             return InvokeServiceMethod<String>("GetApplicationName", parameters);
         }
-        public ApiKeyInfo GetClientApiKeyInfo()
+        public ApiSigningKeyInfo GetClientApiKeyInfo()
         {
             object[] parameters = new object[] {  };
-            return InvokeServiceMethod<ApiKeyInfo>("GetClientApiKeyInfo", parameters);
+            return InvokeServiceMethod<ApiSigningKeyInfo>("GetClientApiKeyInfo", parameters);
         }
         public CoreServiceResponse RegisterApplication(System.String applicationName)
         {
@@ -113,11 +113,11 @@ namespace Bam.Net.CoreServices.Contracts
     
         public interface IApplicationRegistryService
         {
-			ApiKeyInfo[] ListApiKeys();
-			ApiKeyInfo AddApiKey();
-			ApiKeyInfo SetActiveApiKeyIndex(System.Int32 index);
+			ApiSigningKeyInfo[] ListApiKeys();
+			ApiSigningKeyInfo AddApiKey();
+			ApiSigningKeyInfo SetActiveApiKeyIndex(System.Int32 index);
 			String GetApplicationName();
-			ApiKeyInfo GetClientApiKeyInfo();
+			ApiSigningKeyInfo GetClientApiKeyInfo();
 			CoreServiceResponse RegisterApplication(System.String applicationName);
 			CoreServiceResponse RegisterApplicationProcess(Bam.Net.CoreServices.ApplicationRegistration.Data.ProcessDescriptor descriptor);
 			CoreServiceResponse RegisterClient(Bam.Net.CoreServices.ApplicationRegistration.Data.Client client);
@@ -176,11 +176,11 @@ namespace Bam.Net.CoreServices
 			}
 		}
 
-		public IApiKeyResolver ApiKeyResolver 
+		public IApiSigningKeyResolver ApiKeyResolver 
 		{
 			get
 			{
-				return (IApiKeyResolver)_proxyClient.Property("ApiKeyResolver", false);
+				return (IApiSigningKeyResolver)_proxyClient.Property("ApiKeyResolver", false);
 			}
 			set
 			{
@@ -211,12 +211,12 @@ namespace Bam.Net.CoreServices
 			return _proxyClient.ListApiKeys();
 		}*/
 
-		public override ApiKeyInfo AddApiKey()
+		public override ApiSigningKeyInfo AddApiKey()
 		{
 			return _proxyClient.AddApiKey();
 		}
 
-		public override ApiKeyInfo SetActiveApiKeyIndex(System.Int32 index)
+		public override ApiSigningKeyInfo SetActiveApiKeyIndex(System.Int32 index)
 		{
 			return _proxyClient.SetActiveApiKeyIndex(index);
 		}
@@ -226,7 +226,7 @@ namespace Bam.Net.CoreServices
 			return _proxyClient.GetApplicationName();
 		}
 
-		public override ApiKeyInfo GetClientApiKeyInfo()
+		public override ApiSigningKeyInfo GetClientApiKeyInfo()
 		{
 			return _proxyClient.GetClientApiKeyInfo();
 		}

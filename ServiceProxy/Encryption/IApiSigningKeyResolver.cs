@@ -6,7 +6,7 @@ using System.Net.Http;
 
 namespace Bam.Net.ServiceProxy.Encryption
 {
-    public interface IApiKeyResolver
+    public interface IApiSigningKeyResolver
     {
         HashAlgorithms HashAlgorithm { get; set; }
         /// <summary>
@@ -16,7 +16,7 @@ namespace Bam.Net.ServiceProxy.Encryption
         /// <param name="stringToHash"></param>
         /// <returns></returns>
         string CreateKeyToken(string stringToHash);
-        ApiKeyInfo GetApiKeyInfo(IApplicationNameProvider nameProvider);
+        ApiSigningKeyInfo GetApiSigningKeyInfo(IApplicationNameProvider nameProvider);
         string GetApplicationApiKey(string applicationClientId, int index);
         string GetApplicationClientId(IApplicationNameProvider nameProvider);
         string GetApplicationName();

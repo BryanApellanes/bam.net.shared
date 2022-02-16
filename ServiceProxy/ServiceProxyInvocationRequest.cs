@@ -86,16 +86,16 @@ namespace Bam.Net.ServiceProxy
             }
         }
 
-        ServiceProxyInvocationRequestArguments _serviceProxyArguments;
-        public virtual ServiceProxyInvocationRequestArguments ServiceProxyInvocationRequestArguments
+        ServiceProxyInvocationRequestArgumentWriter _serviceProxyArgumentWriter;
+        public virtual ServiceProxyInvocationRequestArgumentWriter ServiceProxyInvocationRequestArgumentWriter
         {
             get
             {
-                if (_serviceProxyArguments == null)
+                if (_serviceProxyArgumentWriter == null)
                 {
-                    _serviceProxyArguments = new ServiceProxyInvocationRequestArguments(this);
+                    _serviceProxyArgumentWriter = new ServiceProxyInvocationRequestArgumentWriter(this);
                 }
-                return _serviceProxyArguments;
+                return _serviceProxyArgumentWriter;
             }
         }
 
@@ -106,7 +106,7 @@ namespace Bam.Net.ServiceProxy
                 BaseAddress = serviceProxyClient?.BaseAddress ?? BaseAddress,
                 ClassName,
                 MethodName,
-                QueryStringArguments = includeQueryString ? ServiceProxyInvocationRequestArguments?.QueryStringArguments: "",
+                QueryStringArguments = includeQueryString ? ServiceProxyInvocationRequestArgumentWriter?.QueryStringArguments: "",
             });
         }
 

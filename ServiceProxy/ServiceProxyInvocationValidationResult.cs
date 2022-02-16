@@ -73,7 +73,7 @@ namespace Bam.Net.ServiceProxy
 
         private void ValidateApiKeyToken(List<ValidationFailures> failures, List<string> messages)
         {
-            ApiKeyRequiredAttribute keyRequired;
+            ApiSigningKeyRequiredAttribute keyRequired;
             if (_toValidate.TargetType != null &&
                 _toValidate.MethodInfo != null &&
                 (
@@ -81,7 +81,7 @@ namespace Bam.Net.ServiceProxy
                     _toValidate.MethodInfo.HasCustomAttributeOfType(true, out keyRequired)
                 ))
             {
-                IApiKeyResolver resolver = _toValidate.ApiKeyResolver;
+                IApiSigningKeyResolver resolver = _toValidate.ApiKeyResolver;
                 if (!resolver.IsValidRequest(_toValidate))
                 {
                     failures.Add(ServiceProxy.ValidationFailures.InvalidApiKeyToken);

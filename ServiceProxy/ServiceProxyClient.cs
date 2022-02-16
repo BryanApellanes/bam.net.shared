@@ -246,9 +246,8 @@ namespace Bam.Net.ServiceProxy
             }
             else
             {
-                HttpRequestMessage request = await CreateServiceProxyRequestMessageAsync(serviceProxyInvocationRequest);
-                ServiceProxyInvocationRequestArguments serviceProxyArguments = serviceProxyInvocationRequest.ServiceProxyInvocationRequestArguments;
-                serviceProxyArguments.WriteArguments(request);
+                ServiceProxyInvocationRequestWriter serviceProxyInvocationRequestWriter = GetRequestWriter<ServiceProxyInvocationRequestWriter>();
+                HttpRequestMessage request = await serviceProxyInvocationRequestWriter.WriteRequestMessageAsync(serviceProxyInvocationRequest);
 
                 try
                 {
@@ -287,7 +286,7 @@ namespace Bam.Net.ServiceProxy
             }
             else
             {
-                HttpRequestMessage requestMessage = await CreateServiceProxyRequestMessageAsync(request);
+                HttpRequestMessage requestMessage = await CreateServiceProxyInvocationRequestMessageAsync(request);
                 HttpResponseMessage response = await HttpClient.SendAsync(requestMessage);
                 args.RequestMessage = requestMessage;
                 args.ResponseMessage = response;
@@ -298,7 +297,7 @@ namespace Bam.Net.ServiceProxy
             return result;
         }
 
-        public virtual Task<HttpRequestMessage> CreateServiceProxyRequestMessageAsync(ServiceProxyInvocationRequest serviceProxyInvocationRequest)
+        public virtual async Task<HttpRequestMessage> CreateServiceProxyInvocationRequestMessageAsync(ServiceProxyInvocationRequest serviceProxyInvocationRequest)
         {
             if (serviceProxyInvocationRequest == null)
             {
@@ -310,22 +309,16 @@ namespace Bam.Net.ServiceProxy
                 throw new ArgumentNullException("ServiceType not specified");
             }
 
-            string methodUrl = serviceProxyInvocationRequest.GetInvocationUrl();
-            return CreateServiceProxyRequestMessageAsync(serviceProxyInvocationRequest, methodUrl);
+            IServiceProxyInvocationRequestWriter requestWriter = GetRequestWriter<ServiceProxyInvocationRequestWriter>();
+
+            HttpRequestMessage httpRequestMessage = await requestWriter.WriteRequestMessageAsync(serviceProxyInvocationRequest);
+            Headers.Keys.Each(key => httpRequestMessage.Headers.Add(key, Headers[key]));
+            return httpRequestMessage;
         }
 
-        protected Task<HttpRequestMessage> CreateServiceProxyRequestMessageAsync(ServiceProxyInvocationRequest serviceProxyInvocationRequest, string methodUrl)
+        protected TWriter GetRequestWriter<TWriter>(params object[] ctorArgs) where TWriter: IServiceProxyInvocationRequestWriter
         {
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethods[serviceProxyInvocationRequest.Verb], methodUrl);
-            request.Headers.Add("User-Agent", UserAgent);
-            request.Headers.Add(Web.Headers.ProcessMode, ProcessMode.Current.Mode.ToString());
-            request.Headers.Add(Web.Headers.ProcessLocalIdentifier, Bam.Net.CoreServices.ApplicationRegistration.Data.ProcessDescriptor.LocalIdentifier);
-            request.Headers.Add(Web.Headers.ProcessDescriptor, Bam.Net.CoreServices.ApplicationRegistration.Data.ProcessDescriptor.Current.ToString());
-            Headers.Keys.Where(k => !k.Equals("User-Agent")).Each(key =>
-            {
-                request.Headers.Add(key, Headers[key]);
-            });
-            return Task.FromResult(request);
+            return (TWriter)typeof(TWriter).Construct(ctorArgs);
         }
 
         public abstract Task<string> InvokeServiceMethodAsync(string baseAddress, string className, string methodName, object[] arguments);

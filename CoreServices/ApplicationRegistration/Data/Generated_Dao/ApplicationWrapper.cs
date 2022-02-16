@@ -46,14 +46,14 @@ namespace Bam.Net.CoreServices.ApplicationRegistration.Data.Wrappers
 			}
 		}
 
-        System.Collections.Generic.List<Bam.Net.CoreServices.ApplicationRegistration.Data.ApiKey> _apiKeys;
-		public override System.Collections.Generic.List<Bam.Net.CoreServices.ApplicationRegistration.Data.ApiKey> ApiKeys
+        System.Collections.Generic.List<Bam.Net.CoreServices.ApplicationRegistration.Data.ApiSigningKey> _apiKeys;
+		public override System.Collections.Generic.List<Bam.Net.CoreServices.ApplicationRegistration.Data.ApiSigningKey> ApiKeys
 		{
 			get
 			{
 				if (_apiKeys == null)
 				{
-					_apiKeys = DaoRepository.ForeignKeyCollectionLoader<Bam.Net.CoreServices.ApplicationRegistration.Data.Application, Bam.Net.CoreServices.ApplicationRegistration.Data.ApiKey>(this).ToList();
+					_apiKeys = DaoRepository.ForeignKeyCollectionLoader<Bam.Net.CoreServices.ApplicationRegistration.Data.Application, Bam.Net.CoreServices.ApplicationRegistration.Data.ApiSigningKey>(this).ToList();
 				}
 				return _apiKeys;
 			}

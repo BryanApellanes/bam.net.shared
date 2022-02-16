@@ -11,19 +11,20 @@ using Bam.Net.Configuration;
 namespace Bam.Net.ServiceProxy.Encryption
 {
     /// <summary>
-    /// A Serializable representation of an applications
-    /// credentials.
+    /// A Serializable representation of an application signing key.
     /// </summary>
-    public class ApiKeyInfo
+    public class ApiSigningKeyInfo
     {
-        public ApiKeyInfo()
+        public ApiSigningKeyInfo()
         {
             this.ApplicationNameProvider = new DefaultConfigurationApplicationNameProvider();
         }
-        public ApiKeyInfo(IApplicationNameProvider nameProvider)
+
+        public ApiSigningKeyInfo(IApplicationNameProvider nameProvider)
         {
             ApplicationNameProvider = nameProvider;
         }
+
         protected internal IApplicationNameProvider ApplicationNameProvider
         {
             get;
@@ -55,30 +56,20 @@ namespace Bam.Net.ServiceProxy.Encryption
         /// <summary>
         /// The shared secret; keep this value private.
         /// </summary>
-        public string ApiKey
+        public string ApiSigningKey
         {
             get;
             set;
         }
 
-        public Bam.Net.CoreServices.ApplicationRegistration.Data.ApiKey ToApiKey()
+        public Bam.Net.CoreServices.ApplicationRegistration.Data.ApiSigningKey ToApiSigningKey()
         {
-            Bam.Net.CoreServices.ApplicationRegistration.Data.ApiKey key = new Bam.Net.CoreServices.ApplicationRegistration.Data.ApiKey()
+            Bam.Net.CoreServices.ApplicationRegistration.Data.ApiSigningKey key = new Bam.Net.CoreServices.ApplicationRegistration.Data.ApiSigningKey()
             {
                 ClientIdentifier = this.ApplicationClientId,
-                SharedSecret = this.ApiKey
+                SharedSecret = this.ApiSigningKey
             };
             return key;
         }
-
-/*        public ApiKeyInfo ToKeyInfo()
-        {
-            return new ApiKeyInfo
-            {
-                ApplicationClientId = ClientIdentifier,
-                ApiKey = SharedSecret,
-                ApplicationNameProvider = new StaticApplicationNameProvider(Application.Name)
-            };
-        }*/
     }
 }

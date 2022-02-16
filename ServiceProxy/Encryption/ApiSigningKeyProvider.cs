@@ -13,21 +13,21 @@ namespace Bam.Net.ServiceProxy.Encryption
 {
     /// <summary>
     /// A class used to retrieve an applications Api Key and 
-    /// client Id used in SecureServiceProxy sessions.
+    /// client Id used in EncryptedServiceProxy sessions.
     /// Implementers of this class need only implement the
     /// GetApplicationClientId and GetApplicationApiKey methods, 
     /// retrieving each from an appropriate location.  For example,
     /// the DefaultConfigurationApiKeyProvider retrieves this
     /// information from the web.config or app.config file.
     /// </summary>
-    public abstract class ApiKeyProvider : IApiKeyProvider
+    public abstract class ApiSigningKeyProvider : IApiSigningKeyProvider
     {
-        public ApiKeyInfo GetApiKeyInfo(IApplicationNameProvider nameProvider)
+        public ApiSigningKeyInfo GetApiSigningKeyInfo(IApplicationNameProvider nameProvider)
         {
             string clientId = GetApplicationClientId(nameProvider);
-            ApiKeyInfo info = new ApiKeyInfo()
+            ApiSigningKeyInfo info = new ApiSigningKeyInfo()
             {
-                ApiKey = GetApplicationApiKey(clientId, 0),
+                ApiSigningKey = GetApplicationApiKey(clientId, 0),
                 ApplicationClientId = clientId
             };
             return info;

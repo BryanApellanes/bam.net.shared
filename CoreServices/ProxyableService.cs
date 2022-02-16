@@ -17,6 +17,7 @@ using Bam.Net.Web;
 using U = Bam.Net.UserAccounts.Data;
 using Bam.Net.CoreServices.Diagnostic;
 using Bam.Net.Presentation;
+using Bam.Net.Encryption;
 
 namespace Bam.Net.CoreServices
 {

@@ -115,7 +115,7 @@ namespace Bam.Net.Services
                 .For<IIncludesResolver>().Use<IncludesResolver>()
                 .For<IViewModelProvider>().Use<DefaultViewModelProvider>()
                 .For<IPersistenceModelProvider>().Use<DefaultPersistenceModelProvider>()
-                .For<IServiceProxyInvocationResolver>().Use<ServiceProxyInvocationResolver>()
+                .For<IServiceProxyInvocationReader>().Use<ServiceProxyInvocationReader>()
                 .For<ApplicationModel>().Use<ApplicationModel>();
 
             configure(appRegistry);

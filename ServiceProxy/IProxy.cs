@@ -11,7 +11,7 @@ namespace Bam.Net.ServiceProxy
     {
         Type ProxiedType { get; }
         ServiceProxyClient Client { get; }
-        IApiKeyResolver ApiKeyResolver { get; set; }
+        IApiSigningKeyResolver ApiKeyResolver { get; set; }
         IApplicationNameProvider ClientApplicationNameProvider { get; set; }
         void SubscribeToClientEvent(string eventName, EventHandler handler);
     }

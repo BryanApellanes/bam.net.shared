@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 namespace Bam.Net.CoreServices
 {
     [Proxy("sysLogReader")]
-    [ApiKeyRequired]
+    [ApiSigningKeyRequired]
     [ServiceSubdomain("syslogreader")]
     public class SystemLogReaderService : ApplicationProxyableService, ILogReader
     {

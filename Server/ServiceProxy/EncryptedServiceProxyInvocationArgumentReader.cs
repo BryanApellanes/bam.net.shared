@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Bam.Net.Server.ServiceProxy
 {
-    public class SecureServiceProxyInvocationArgumentReader : ServiceProxyInvocationArgumentReader
+    public class EncryptedServiceProxyInvocationArgumentReader : ServiceProxyInvocationArgumentReader
     {
         public override ServiceProxyInvocationArgument[] ReadArguments(MethodInfo methodInfo, IRequest request)
         {

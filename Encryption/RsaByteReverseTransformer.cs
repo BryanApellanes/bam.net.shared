@@ -15,21 +15,22 @@ namespace Bam.Net.Encryption
         {
             this.KeyProvider = keyProvider;
         }
-        public RsaByteReverseTransformer(RsaByteTransformer rsaByteReverseTransformer)
+
+        public RsaByteReverseTransformer(RsaByteTransformer rsaByteReverseTransformer, Func<RsaPublicPrivateKeyPair> keyProvider)
         {
-            this.RsaByteEncoder = rsaByteReverseTransformer;
-            this.KeyProvider = rsaByteReverseTransformer.KeyProvider;
+            this.RsaByteTransformer = rsaByteReverseTransformer;
+            this.KeyProvider = keyProvider;
         }
 
         public Func<RsaPublicPrivateKeyPair> KeyProvider { get; set; }
 
-        public RsaByteTransformer RsaByteEncoder { get; set; }
+        public RsaByteTransformer RsaByteTransformer { get; set; }
 
         public IHttpContext HttpContext { get; set; }
 
         public object Clone()
         {
-            object clone = new RsaByteReverseTransformer(RsaByteEncoder);
+            object clone = new RsaByteReverseTransformer(RsaByteTransformer, KeyProvider);
             clone.CopyProperties(this);
             clone.CopyEventHandlers(this);
             return clone;
@@ -37,7 +38,7 @@ namespace Bam.Net.Encryption
 
         public object Clone(IHttpContext context)
         {
-            RsaByteReverseTransformer clone = new RsaByteReverseTransformer(RsaByteEncoder);
+            RsaByteReverseTransformer clone = new RsaByteReverseTransformer(RsaByteTransformer, KeyProvider);
             clone.CopyProperties(this);
             clone.CopyEventHandlers(this);
             clone.HttpContext = context;
@@ -58,7 +59,9 @@ namespace Bam.Net.Encryption
 
         public IValueTransformer<byte[], byte[]> GetTransformer()
         {
-            return this.RsaByteEncoder;
+            Args.ThrowIfNull(this.RsaByteTransformer);
+
+            return this.RsaByteTransformer;
         }
     }
 }

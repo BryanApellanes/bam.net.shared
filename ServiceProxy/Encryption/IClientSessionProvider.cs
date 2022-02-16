@@ -4,8 +4,8 @@ namespace Bam.Net.ServiceProxy.Encryption
 {
     public interface IClientSessionProvider
     {
-        Task<ClientSession> RetrieveClientSessionAsync(string sessionIdentifier);
+        Task<ClientSessionInfo> RetrieveClientSessionAsync(string sessionIdentifier);
 
-        Task<ClientSession> StartClientSessionAsync(Instant clientNow);
+        Task<ClientSessionInfo> StartClientSessionAsync(Instant clientNow);
     }
 }

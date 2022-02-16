@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Bam.Net.CoreServices.ApplicationRegistration.Data
 {
     [Serializable]
-    public class ActiveApiKeyIndex: AuditRepoData
+    public class ActiveApiSigningKeyIndex: AuditRepoData
     {
         public string ApplicationIdentifier { get; set; }
         public int Value { get; set; }

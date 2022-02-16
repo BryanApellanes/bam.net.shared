@@ -7,25 +7,25 @@ using System.Text;
 
 namespace Bam.Net.ServiceProxy.Encryption
 {
-    public class SecureServiceProxyInvocationRequestArguments<TService> : ServiceProxyInvocationRequestArguments<TService>
+    public class EncryptedServiceProxyInvocationRequestArgumentWriter<TService> : ServiceProxyInvocationRequestArgumentWriter<TService>
     {
-        public SecureServiceProxyInvocationRequestArguments(ClientSession clientSessionInfo, IApiKeyResolver apiKeyResolver, IApiEncryptionProvider apiEncryptionProvider, ServiceProxyInvocationRequest serviceProxyInvokeRequest) : base(serviceProxyInvokeRequest)
+        public EncryptedServiceProxyInvocationRequestArgumentWriter(ClientSessionInfo clientSessionInfo, IApiSigningKeyResolver apiKeyResolver, IApiEncryptionProvider apiEncryptionProvider, ServiceProxyInvocationRequest serviceProxyInvokeRequest) : base(serviceProxyInvokeRequest)
         {
             this.ApiKeyResolver = apiKeyResolver;
             this.ApiEncryptionProvider = apiEncryptionProvider;
             this.ClientSessionInfo = clientSessionInfo;
         }
 
-        public IApiKeyResolver ApiKeyResolver { get; set; }
+        public IApiSigningKeyResolver ApiKeyResolver { get; set; }
         public IApiEncryptionProvider ApiEncryptionProvider { get; set; }
 
-        public ClientSession ClientSessionInfo { get; set; }
+        public ClientSessionInfo ClientSessionInfo { get; set; }
 
         protected internal bool TypeRequiresApiKey
         {
             get
             {
-                return ServiceType.HasCustomAttributeOfType<ApiKeyRequiredAttribute>();
+                return ServiceType.HasCustomAttributeOfType<ApiSigningKeyRequiredAttribute>();
             }
         }
 
@@ -33,7 +33,7 @@ namespace Bam.Net.ServiceProxy.Encryption
         {
             get
             {
-                return MethodInfo.HasCustomAttributeOfType<ApiKeyRequiredAttribute>();
+                return MethodInfo.HasCustomAttributeOfType<ApiSigningKeyRequiredAttribute>();
             }
         }
 

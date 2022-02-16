@@ -29,10 +29,10 @@ namespace Bam.Net.Services.Clients
     /// A client to the core bam service server.
     /// </summary>
     /// <seealso cref="Bam.Net.Logging.Loggable" />
-    /// <seealso cref="Bam.Net.ServiceProxy.Encryption.IApiKeyResolver" />
-    /// <seealso cref="Bam.Net.ServiceProxy.Encryption.IApiKeyProvider" />
+    /// <seealso cref="Bam.Net.ServiceProxy.Encryption.IApiSigningKeyResolver" />
+    /// <seealso cref="Bam.Net.ServiceProxy.Encryption.IApiSigningKeyProvider" />
     /// <seealso cref="Bam.Net.IApplicationNameProvider" />
-    public partial class CoreClient: Loggable, IApiKeyResolver, IApiKeyProvider, IApplicationNameProvider
+    public partial class CoreClient: Loggable, IApiSigningKeyResolver, IApiSigningKeyProvider, IApplicationNameProvider
     {
         internal CoreClient(string organizationName, string applicationName, string workingDirectory = null, ILogger logger = null)
         {
@@ -155,8 +155,8 @@ namespace Bam.Net.Services.Clients
 
         public string CreateKeyToken(string stringToHash)
         {
-            ApiKeyInfo keyInfo = GetApiKeyInfo(this);
-            return $"{keyInfo.ApiKey}:{stringToHash}".HashHexString(HashAlgorithm);
+            ApiSigningKeyInfo keyInfo = GetApiSigningKeyInfo(this);
+            return $"{keyInfo.ApiSigningKey}:{stringToHash}".HashHexString(HashAlgorithm);
         }
 
         public bool IsValidRequest(ServiceProxyInvocation request)
@@ -210,14 +210,14 @@ namespace Bam.Net.Services.Clients
         public event EventHandler WroteApiKeyFile;
         #region IApiKeyProvider
 
-        ApiKeyInfo _apiKeyInfo;
-        public ApiKeyInfo GetApiKeyInfo(IApplicationNameProvider nameProvider)
+        ApiSigningKeyInfo _apiKeyInfo;
+        public ApiSigningKeyInfo GetApiSigningKeyInfo(IApplicationNameProvider nameProvider)
         {
             if (_apiKeyInfo == null)
             {
                 if (File.Exists(ApiKeyFilePath))
                 {
-                    _apiKeyInfo = ApiKeyFilePath.FromJsonFile<ApiKeyInfo>();
+                    _apiKeyInfo = ApiKeyFilePath.FromJsonFile<ApiSigningKeyInfo>();
                 }
                 else
                 {
@@ -233,22 +233,22 @@ namespace Bam.Net.Services.Clients
             return _apiKeyInfo;
         }
 
-        public ApiKeyInfo AddApiKey()
+        public ApiSigningKeyInfo AddApiKey()
         {
             return ApplicationRegistryService.AddApiKey();
         }
 
-        public ApiKeyInfo SetActiveApiKeyIndex(int index)
+        public ApiSigningKeyInfo SetActiveApiKeyIndex(int index)
         {
             return ApplicationRegistryService.SetActiveApiKeyIndex(index);
         }
 
         public string GetApplicationApiKey(string applicationClientId, int index) // index ignored in this implementation //TODO: take into account the index
         {
-            ApiKeyInfo key = GetApiKeyInfo(this);
+            ApiSigningKeyInfo key = GetApiSigningKeyInfo(this);
             if (key.ApplicationClientId.Equals(applicationClientId))
             {
-                return key.ApiKey;
+                return key.ApiSigningKey;
             }
             throw new NotSupportedException("Specified applicationClientId not supported");
         }
@@ -260,7 +260,7 @@ namespace Bam.Net.Services.Clients
 
         public string GetApplicationClientId(IApplicationNameProvider nameProvider)
         {
-            ApiKeyInfo key = GetApiKeyInfo(this);
+            ApiSigningKeyInfo key = GetApiSigningKeyInfo(this);
             if (key.ApplicationName.Equals(nameProvider.GetApplicationName()))
             {
                 return key.ApplicationClientId;
@@ -270,8 +270,8 @@ namespace Bam.Net.Services.Clients
 
         public string GetCurrentApiKey()
         {
-            ApiKeyInfo key = GetApiKeyInfo(this);
-            return key.ApiKey;
+            ApiSigningKeyInfo key = GetApiSigningKeyInfo(this);
+            return key.ApiSigningKey;
         }
         #endregion
 
@@ -304,10 +304,10 @@ namespace Bam.Net.Services.Clients
             throw new ApplicationException(response.Message);
         }
 
-        public ApiKeyInfo GetCurrentApplicationApiKeyInfo()
+        public ApiSigningKeyInfo GetCurrentApplicationApiKeyInfo()
         {
             RegisterApplicationProcess();
-            return ApiKeyFilePath.FromJsonFile<ApiKeyInfo>();
+            return ApiKeyFilePath.FromJsonFile<ApiSigningKeyInfo>();
         }
 
         public LoginResponse Login(string userName, string passHash)
@@ -334,9 +334,9 @@ namespace Bam.Net.Services.Clients
                     {
                         IsInitialized = true;
                         FireEvent(Initialized);
-                        ApiKeyInfo keyInfo = new ApiKeyInfo
+                        ApiSigningKeyInfo keyInfo = new ApiSigningKeyInfo
                         {
-                            ApiKey = appRegistrationResult.ApiKey,
+                            ApiSigningKey = appRegistrationResult.ApiKey,
                             ApplicationClientId = appRegistrationResult.ClientId,
                             ApplicationName = GetApplicationName()
                         };

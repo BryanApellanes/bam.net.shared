@@ -19,7 +19,7 @@ namespace Bam.Net.CoreServices.ApplicationRegistration.Data
         public virtual Organization Organization { get; set; }        
         public virtual List<HostDomain> HostDomains { get; set; }
         public virtual List<Machine> Machines { get; set; }
-        public virtual List<ApiKey> ApiKeys { get; set; }
+        public virtual List<ApiSigningKey> ApiKeys { get; set; }
         public virtual List<ProcessDescriptor> Instances { get; set; }
         public virtual List<Configuration> Configurations { get; set; }
         public virtual List<Client> Clients { get; set; }

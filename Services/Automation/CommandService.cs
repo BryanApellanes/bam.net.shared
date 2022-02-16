@@ -9,11 +9,12 @@ using System.Text;
 using System.Threading.Tasks;
 using Bam.Net.Services;
 using Bam.Net.Data.Repositories;
+using Bam.Net.Encryption;
 
 namespace Bam.Net.Services.Automation
 {
     [Encrypt]
-    [ApiKeyRequired]
+    [ApiSigningKeyRequired]
     [Proxy("commandSvc")]
     [ServiceSubdomain("command")]
     public class CommandService : AsyncProxyableService

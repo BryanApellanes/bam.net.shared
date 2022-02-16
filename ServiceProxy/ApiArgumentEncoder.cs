@@ -51,7 +51,7 @@ namespace Bam.Net.ServiceProxy
 
         public string GetStringToHash(ServiceProxyInvocationRequest request)
         {
-            return GetStringToHash(request.ClassName, request.MethodName, GetArgumentsQueryString(request.ServiceProxyInvocationRequestArguments));
+            return GetStringToHash(request.ClassName, request.MethodName, GetArgumentsQueryString(request.ServiceProxyInvocationRequestArgumentWriter));
         }
 
         public string GetStringToHash(string className, string methodName, string jsonArguments)
@@ -81,7 +81,7 @@ namespace Bam.Net.ServiceProxy
             }
         }
 
-        public string GetArgumentsQueryString(ServiceProxyInvocationRequestArguments requestArguments)
+        public string GetArgumentsQueryString(ServiceProxyInvocationRequestArgumentWriter requestArguments)
         {
             return ArgumentsToQueryString(requestArguments.NamedArguments);
         }

@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Bam.Net;
 using Bam.Net.Data;
 using Bam.Net.Incubation;
 using Bam.Net.Logging;
@@ -17,6 +16,7 @@ using System.IO;
 using System.Reflection.Metadata;
 using Bam.Net.ServiceProxy.Encryption;
 using Org.BouncyCastle.Security;
+using Bam.Net.Encryption;
 
 namespace Bam.Net.ServiceProxy
 {
@@ -305,12 +305,12 @@ namespace {0}
             }
         }
 
-        internal static string SecureClassFormat
+        internal static string EncryptedClassFormat
         {
             get
             {
                 return @"{0}
-    public class {1}Client: SecureServiceProxyClient<{2}.I{3}>, {2}.I{3}
+    public class {1}Client: EncryptedServiceProxyClient<{2}.I{3}>, {2}.I{3}
     {{
         public {1}Client(): base(DefaultConfiguration.GetAppSetting(""{3}Url"", ""{4}""))
         {{
@@ -402,7 +402,7 @@ namespace {0}
 
                     string methodParams = methodGenInfo.MethodSignature;
                     string wrapped = parameters.ToDelimited(p => p.Name.CamelCase()); // wrapped as object array
-                    string methodApiKeyRequired = method.HasCustomAttributeOfType<ApiKeyRequiredAttribute>() ? "\r\n\t\t[ApiKeyRequired]" : "";
+                    string methodApiKeyRequired = method.HasCustomAttributeOfType<ApiSigningKeyRequiredAttribute>() ? "\r\n\t\t[ApiKeyRequired]" : "";
                     methods.AppendFormat(MethodFormat, methodApiKeyRequired, returnType, method.Name, methodParams, wrapped, invoke);
                     interfaceMethods.AppendFormat(InterfaceMethodFormat, returnType, method.Name, methodParams);
                 }
@@ -414,8 +414,8 @@ namespace {0}
                     clientName = clientName.Truncate(6);
                 }
 
-                string classFormatToUse = type.HasCustomAttributeOfType<EncryptAttribute>() ? SecureClassFormat : ClassFormat;
-                string typeApiKeyRequired = type.HasCustomAttributeOfType<ApiKeyRequiredAttribute>() ? "\r\n\t\t[ApiKeyRequired]" : "";
+                string classFormatToUse = type.HasCustomAttributeOfType<EncryptAttribute>() ? EncryptedClassFormat : ClassFormat;
+                string typeApiKeyRequired = type.HasCustomAttributeOfType<ApiSigningKeyRequiredAttribute>() ? "\r\n\t\t[ApiKeyRequired]" : "";
                 classes.AppendFormat(classFormatToUse, typeApiKeyRequired, clientName, contractNamespace, serverName, defaultBaseAddress, methods.ToString());
                 interfaces.AppendFormat(InterfaceFormat, serverName, interfaceMethods.ToString());
             }
@@ -546,8 +546,8 @@ namespace {0}
             {
                 methodName = "secureInvoke";
             }
-            if(type.HasCustomAttributeOfType<ApiKeyRequiredAttribute>() ||
-                method.HasCustomAttributeOfType<ApiKeyRequiredAttribute>())
+            if(type.HasCustomAttributeOfType<ApiSigningKeyRequiredAttribute>() ||
+                method.HasCustomAttributeOfType<ApiSigningKeyRequiredAttribute>())
             {
                 builder.Append("\t\toptions = $.extend({}, {apiKeyRequired: true}, options);\r\n");
             }

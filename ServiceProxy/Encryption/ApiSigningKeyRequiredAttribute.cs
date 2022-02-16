@@ -1,6 +1,7 @@
 /*
 	Copyright © Bryan Apellanes 2015  
 */
+using Bam.Net.Encryption;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +16,7 @@ namespace Bam.Net.ServiceProxy.Encryption
     /// application level encryption.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
-    public class ApiKeyRequiredAttribute: EncryptAttribute
+    public class ApiSigningKeyRequiredAttribute: EncryptAttribute
     {
     }
 }

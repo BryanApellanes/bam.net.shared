@@ -16,17 +16,18 @@ namespace Bam.Net.Server.ServiceProxy
     /// <summary>
     /// Class used to resolve ServiceProxyInvocations from inbound requests.
     /// </summary>
-    public class ServiceProxyInvocationResolver : IServiceProxyInvocationResolver
+    public class ServiceProxyInvocationReader : IServiceProxyInvocationReader
     {
-        public ServiceProxyInvocationResolver(ILogger logger = null)
+        public ServiceProxyInvocationReader(ILogger logger = null)
         {
             this.Logger = logger;
             this.DefaultArgumentReader = new QueryStringServiceProxyInvocationArgumentReader();
             this.ArgumentReaders = new Dictionary<HttpMethodContentTypeKey, ServiceProxyInvocationArgumentReader>()
             {
                 { new HttpMethodContentTypeKey("GET"), DefaultArgumentReader },
-                { new HttpMethodContentTypeKey("POST", ServiceProxyInvocationRequestArguments.JsonMediaType), new InputStreamServiceProxyInvocationArgumentReader() },
-                { new HttpMethodContentTypeKey("POST", SecureChannelRequestMessage.SymetricCipherMediaType), new SecureServiceProxyInvocationArgumentReader() },
+                { new HttpMethodContentTypeKey("POST", ContentTypes.Json), new InputStreamServiceProxyInvocationArgumentReader() },
+                { new HttpMethodContentTypeKey("POST", ContentTypes.AsymmetricCipher), new EncryptedServiceProxyInvocationArgumentReader() },
+                { new HttpMethodContentTypeKey("POST", ContentTypes.SymmetricCipher), new EncryptedServiceProxyInvocationArgumentReader() },
             };
             // CREATE A CUSTOM ENCODING PIPELINE ARGUMENT READER
             // IMPLEMENT IValueTransformer that takes a list of encoding names,
@@ -60,7 +61,7 @@ namespace Bam.Net.Server.ServiceProxy
 
         public ILogger Logger { get; set; }
 
-        public ServiceProxyInvocation ResolveServiceProxyInvocation(ServiceProxyPath serviceProxyPath, WebServiceProxyDescriptors webServiceProxyDescriptors, IHttpContext context)
+        public ServiceProxyInvocation ReadServiceProxyInvocation(ServiceProxyPath serviceProxyPath, WebServiceProxyDescriptors webServiceProxyDescriptors, IHttpContext context)
         {
             IRequest request = context.Request;
             string className = serviceProxyPath.Path.ReadUntil('/', out string methodName);

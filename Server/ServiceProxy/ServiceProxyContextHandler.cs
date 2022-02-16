@@ -33,7 +33,7 @@ namespace Bam.Net.Server.ServiceProxy
             get => ServiceProxyResponder?.ApplicationNameResolver;
         }
 
-        protected IServiceProxyInvocationResolver ServiceProxyInvocationResolver
+        protected IServiceProxyInvocationReader ServiceProxyInvocationResolver
         {
             get => ServiceProxyResponder?.ServiceProxyInvocationResolver;
         }
@@ -166,7 +166,7 @@ namespace Bam.Net.Server.ServiceProxy
                 serviceProxyPath = ServiceProxyPath.FromUri(request.Url);
             }
 
-            ServiceProxyInvocation serviceProxyInvocation = ServiceProxyInvocationResolver.ResolveServiceProxyInvocation(serviceProxyPath, webServiceProxyDescriptors, context);
+            ServiceProxyInvocation serviceProxyInvocation = ServiceProxyInvocationResolver.ReadServiceProxyInvocation(serviceProxyPath, webServiceProxyDescriptors, context);
             return serviceProxyInvocation;
         }
     }

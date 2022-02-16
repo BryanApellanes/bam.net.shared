@@ -7,21 +7,30 @@ namespace Bam.Net.Encryption
 {
     public class RsaByteTransformer : ValueTransformer<byte[], byte[]>
     {
-        public RsaByteTransformer(Func<RsaPublicPrivateKeyPair> keyProvider)
+        public RsaByteTransformer(Func<RsaPublicKey> publicKeyProvider, Func<RsaPublicPrivateKeyPair> privateKeyProvider)
         {
-            this.KeyProvider = keyProvider;
-            this.RsaByteReverseTransformer = new RsaByteReverseTransformer(this);
+            this.KeyProvider = publicKeyProvider;
+            this.RsaByteReverseTransformer = new RsaByteReverseTransformer(this, privateKeyProvider);
         }
 
-        public RsaByteTransformer(RsaPublicPrivateKeyPair rsaPublicPrivateKeyPair) : this(() => rsaPublicPrivateKeyPair)
+        public RsaByteTransformer(RsaPublicPrivateKeyPair rsaPublicPrivateKeyPair) : this(() => rsaPublicPrivateKeyPair.GetRsaPublicKey(), () => rsaPublicPrivateKeyPair)
         { 
         }
 
-        public RsaByteTransformer(IRsaKeySource rsaKeySource) : this(() => rsaKeySource.GetRsaKey())
+        public RsaByteTransformer(IRsaPublicKeySource rsaKeySource, IRsaKeySource rsaPublicPrivateKeySource) : this(() => rsaKeySource.GetRsaPublicKey(), () => rsaPublicPrivateKeySource.GetRsaKey())
         { 
         }
 
-        public Func<RsaPublicPrivateKeyPair> KeyProvider { get; set; }
+        public RsaByteTransformer(Func<RsaPublicKey> publicKeyProvider)
+        {
+            this.KeyProvider = publicKeyProvider;
+        }
+
+        public RsaByteTransformer(IRsaPublicKeySource rsaPublicKeySource) : this(() => rsaPublicKeySource.GetRsaPublicKey())
+        {
+        }
+
+        public Func<RsaPublicKey> KeyProvider { get; set; }
 
         public RsaByteReverseTransformer RsaByteReverseTransformer { get; set; }
 
@@ -33,12 +42,13 @@ namespace Bam.Net.Encryption
         public override byte[] Transform(byte[] plainData)
         {
             Args.ThrowIfNull(KeyProvider, "KeyProvider");
-            RsaPublicPrivateKeyPair rsaKey = KeyProvider();
+            RsaPublicKey rsaKey = KeyProvider();
             return rsaKey.EncryptBytes(plainData);
         }
 
         public override IValueReverseTransformer<byte[], byte[]> GetReverseTransformer()
         {
+            Args.ThrowIfNull(this.RsaByteReverseTransformer);
             return this.RsaByteReverseTransformer;
         }
     }
