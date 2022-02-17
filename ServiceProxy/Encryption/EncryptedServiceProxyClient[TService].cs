@@ -269,8 +269,8 @@ namespace Bam.Net.ServiceProxy.Encryption
                     EncryptedServiceProxyInvocationRequest secureServiceProxyInvocationRequest = (serviceProxyInvocationRequest as EncryptedServiceProxyInvocationRequest) ?? serviceProxyInvocationRequest.CopyAs<EncryptedServiceProxyInvocationRequest>();
                     HttpRequestMessage requestMessage = await CreateServiceProxyInvocationRequestMessageAsync(secureServiceProxyInvocationRequest);
                     EncryptedServiceProxyInvocationRequestArgumentWriter<TService> secureServiceProxyArguments = new EncryptedServiceProxyInvocationRequestArgumentWriter<TService>(ClientSessionInfo, ApiSigningKeyResolver, ApiEncryptionProvider, serviceProxyInvocationRequest);
-                    secureServiceProxyArguments.WriteArgumentContent(requestMessage);
-                    secureServiceProxyArguments.SetKeyToken(requestMessage);
+                    //secureServiceProxyArguments.WriteArgumentContent(requestMessage);
+                    //secureServiceProxyArguments.SetKeyToken(requestMessage);
 
                     HttpResponseMessage responseMessage = await HttpClient.SendAsync(requestMessage);
                     args.RequestMessage = requestMessage;
@@ -299,7 +299,8 @@ namespace Bam.Net.ServiceProxy.Encryption
                 throw new ArgumentNullException("ServiceType not specified");
             }
 
-            IServiceProxyInvocationRequestWriter requestWriter = GetRequestWriter<EncryptedServiceProxyInvocationRequestWriter>();
+            EncryptedServiceProxyInvocationRequestWriter requestWriter = GetRequestWriter<EncryptedServiceProxyInvocationRequestWriter>();
+            requestWriter.ClientSessionInfo = this.ClientSessionInfo;
             HttpRequestMessage httpRequestMessage = await requestWriter.WriteRequestMessageAsync(serviceProxyInvocationRequest);
             Headers.Keys.Each(key => httpRequestMessage.Headers.Add(key, Headers[key]));
             return httpRequestMessage;

@@ -26,8 +26,8 @@ namespace Bam.Net.ServiceProxy
         public virtual async Task<HttpRequestMessage> WriteRequestMessageAsync(ServiceProxyInvocationRequest serviceProxyInvocationRequest)
         {
             HttpRequestMessage httpRequestMessage = await CreateServiceProxyInvocationRequestMessageAsync(serviceProxyInvocationRequest);
-            ServiceProxyInvocationRequestArgumentWriter serviceProxyArguments = serviceProxyInvocationRequest.ServiceProxyInvocationRequestArgumentWriter;
-            serviceProxyArguments.WriteArguments(httpRequestMessage);
+            ServiceProxyInvocationRequestArgumentWriter argumentWriter = serviceProxyInvocationRequest.ServiceProxyInvocationRequestArgumentWriter;
+            argumentWriter.WriteArguments(httpRequestMessage);
             return httpRequestMessage;
         }
 

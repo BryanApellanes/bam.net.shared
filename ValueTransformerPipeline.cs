@@ -28,7 +28,7 @@ namespace Bam.Net
             return ByteTransformerPipeline.Contains(transformer);
         }
 
-        public IValueReverseTransformer<byte[], TData> GetReverseTransformer()
+        public virtual IValueReverseTransformer<byte[], TData> GetReverseTransformer()
         {
             return new ValueReverseTransformerPipeline<TData>(this);
         }

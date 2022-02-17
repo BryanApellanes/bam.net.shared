@@ -48,7 +48,6 @@ namespace Bam.Net.ServiceProxy
             }
         }
 
-
         public string GetStringToHash(ServiceProxyInvocationRequest request)
         {
             return GetStringToHash(request.ClassName, request.MethodName, GetArgumentsQueryString(request.ServiceProxyInvocationRequestArgumentWriter));

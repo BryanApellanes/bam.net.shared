@@ -11,7 +11,6 @@ namespace Bam.Net
             this._reverseTransformers = new List<IValueReverseTransformer<byte[], byte[]>>();
         }
 
-
         public void Add(IValueReverseTransformer<byte[], byte[]> transformer)
         {
             _reverseTransformers.Add(transformer);

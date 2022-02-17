@@ -4,6 +4,11 @@ using System.Text;
 
 namespace Bam.Net.Encryption
 {
+    public interface IDecryptor<TData>
+    {
+        TData Decrypt(byte[] cipherData);
+    }
+
     public interface IDecryptor
     {
         string Decrypt(string cipher);

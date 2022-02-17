@@ -12,7 +12,7 @@ using Bam.Net.Configuration;
 namespace Bam.Net.Encryption
 {
     [Serializable]
-    public class AesKeyVectorPair
+    public class AesKeyVectorPair : IAesKeySource
     {
         public const string SystemKeyFileName = "bamkey.aes";
 
@@ -132,6 +132,11 @@ namespace Bam.Net.Encryption
         public byte[] DecryptBytes(byte[] cipherData)
         {
             return Aes.DecryptBytes(cipherData, this.Key, this.IV);
+        }
+
+        public AesKeyVectorPair GetAesKey()
+        {
+            return this;
         }
     }
 }

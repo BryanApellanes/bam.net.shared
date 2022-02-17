@@ -563,7 +563,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\Encryption\Partials\SecureSession.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\Encryption\SecureChannelException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\Encryption\EncryptedServiceProxyInvocationRequest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\Encryption\SecureChannelRequestMessageAsymmetricDecryptor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\Encryption\SecureChannelRequestMessageAsymmetricEncryptor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\Encryption\SecureChannelRequestMessageSymmetricDecryptor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\Encryption\SecureServiceProxy_Generated\SecureSession.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\Encryption\SecureServiceProxy_Generated\SecureSessionCollection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\Encryption\SecureServiceProxy_Generated\SecureSessionColumns.cs" />

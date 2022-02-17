@@ -8,6 +8,8 @@ namespace Bam.Net.ServiceProxy.Encryption
 {
     public class SecureChannelRequestMessage
     {
+        public SecureChannelRequestMessage() { }
+
         public SecureChannelRequestMessage(ServiceProxyInvocationRequest serviceProxyInvokeRequest)
         {
             this.ClassName = serviceProxyInvokeRequest.ClassName;

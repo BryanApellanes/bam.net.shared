@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 
 namespace Bam.Net.ServiceProxy.Encryption
@@ -18,22 +19,29 @@ namespace Bam.Net.ServiceProxy.Encryption
             };
         }
 
+        public ClientSessionInfo ClientSessionInfo { get; set; }
+
         public override void WriteArguments(HttpRequestMessage requestMessage)
         {
-            // use a ByteTransformerPipeline internally 
-            // use ByteArrayContent
-            base.WriteArguments(requestMessage); 
+            this.WriteArgumentContent(requestMessage);
+        }
+
+        public override void WriteArgumentContent(HttpRequestMessage requestMessage)
+        {
+            SecureChannelRequestMessage secureChannelRequestMessage = new SecureChannelRequestMessage(this.ServiceProxyInvocationRequest);
+            IEncryptor<SecureChannelRequestMessage> encryptor = GetEncryptor();
+            requestMessage.Content = new ByteArrayContent(encryptor.Encrypt(secureChannelRequestMessage));
+            requestMessage.Content.Headers.ContentType = GetContentType();
         }
 
         protected SecureChannelRequestMessageSymmetricEncryptor GetSymmetricEncryptor()
         {
-            throw new NotImplementedException();
+            return new SecureChannelRequestMessageSymmetricEncryptor(ClientSessionInfo);
         }
 
-        protected ValueTransformerPipeline<SecureChannelRequestMessage> AsymmetricValueTransformer
+        protected SecureChannelRequestMessageAsymmetricEncryptor GetAsymmetricEncryptor()
         {
-            get;
-            private set;
+            return new SecureChannelRequestMessageAsymmetricEncryptor(ClientSessionInfo);
         }
 
         protected Dictionary<EncryptionSchemes, string> EncryptionSchemesToContentTypes
@@ -42,7 +50,7 @@ namespace Bam.Net.ServiceProxy.Encryption
             private set;
         }
 
-        protected string GetContentType()
+        protected IEncryptor<SecureChannelRequestMessage> GetEncryptor()
         {
             EncryptAttribute encryptAttribute = this.ServiceType.GetCustomAttributeOfType<EncryptAttribute>(); ;
             if (encryptAttribute == null)
@@ -52,10 +60,34 @@ namespace Bam.Net.ServiceProxy.Encryption
 
             if (encryptAttribute != null)
             {
-                return EncryptionSchemesToContentTypes[encryptAttribute.EncryptionScheme];
+                switch (encryptAttribute.EncryptionScheme)
+                {
+                    case EncryptionSchemes.Invalid:
+                    case EncryptionSchemes.Symmetric:
+                        return GetSymmetricEncryptor();
+                    case EncryptionSchemes.Asymmetric:
+                    default:
+                        return GetAsymmetricEncryptor();
+                }
             }
-            
-            return ContentTypes.SymmetricCipher;
+
+            return GetSymmetricEncryptor();
+        }
+
+        protected MediaTypeHeaderValue GetContentType()
+        {
+            EncryptAttribute encryptAttribute = this.ServiceType.GetCustomAttributeOfType<EncryptAttribute>(); ;
+            if (encryptAttribute == null)
+            {
+                encryptAttribute = this.MethodInfo.GetCustomAttributeOfType<EncryptAttribute>();
+            }
+
+            if (encryptAttribute != null)
+            {
+                return new MediaTypeHeaderValue(EncryptionSchemesToContentTypes[encryptAttribute.EncryptionScheme]);
+            }
+
+            return new MediaTypeHeaderValue(ContentTypes.SymmetricCipher);
         }
     }
 }
