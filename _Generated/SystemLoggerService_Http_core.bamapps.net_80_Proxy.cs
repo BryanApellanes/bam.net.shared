@@ -16,7 +16,7 @@ namespace Bam.Net.CoreServices
 	using Bam.Net.UserAccounts;
 
     
-		[ApiSigningKeyRequired]
+		[ApiHmacKeyRequired]
     public class SystemLoggerServiceClient: EncryptedServiceProxyClient<Bam.Net.CoreServices.Contracts.ISystemLoggerService>, Bam.Net.CoreServices.Contracts.ISystemLoggerService
     {
         public SystemLoggerServiceClient(): base(DefaultConfiguration.GetAppSetting("SystemLoggerServiceUrl", "http://core.bamapps.net/"))
@@ -148,11 +148,11 @@ namespace Bam.Net.CoreServices
 			}
 		}
 
-		public IApiSigningKeyResolver ApiKeyResolver 
+		public IApiHmacKeyResolver ApiKeyResolver 
 		{
 			get
 			{
-				return (IApiSigningKeyResolver)_proxyClient.Property("ApiKeyResolver", false);
+				return (IApiHmacKeyResolver)_proxyClient.Property("ApiKeyResolver", false);
 			}
 			set
 			{

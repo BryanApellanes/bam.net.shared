@@ -14,7 +14,7 @@ using Bam.Net.CoreServices.ApplicationRegistration.Data.Dao.Repository;
 namespace Bam.Net.CoreServices
 {
     [Proxy("authSettingsSvc")]    
-    [ApiSigningKeyRequired]
+    [ApiHmacKeyRequired]
     [Authenticated]
     public class AuthSettingsService : ApplicationProxyableService
     {

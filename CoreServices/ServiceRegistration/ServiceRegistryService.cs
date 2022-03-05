@@ -29,7 +29,7 @@ namespace Bam.Net.CoreServices
     /// registering and retrieving services and their
     /// implementations.
     /// </summary>
-    [ApiSigningKeyRequired]
+    [ApiHmacKeyRequired]
     [Proxy("serviceRegistrySvc")]
     [ServiceSubdomain("svcregistry")]
     public class ServiceRegistryService : ApplicationProxyableService

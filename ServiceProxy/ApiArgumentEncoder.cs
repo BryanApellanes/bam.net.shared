@@ -48,16 +48,27 @@ namespace Bam.Net.ServiceProxy
             }
         }
 
-        public string GetStringToHash(ServiceProxyInvocationRequest request)
+        /// <summary>
+        /// Gets the string that is validated for the specified request.
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        public string GetValidationString(ServiceProxyInvocationRequest request)
         {
-            return GetStringToHash(request.ClassName, request.MethodName, GetArgumentsQueryString(request.ServiceProxyInvocationRequestArgumentWriter));
+            return GetValidationString(request.ClassName, request.MethodName, GetArgumentsQueryString(request.ServiceProxyInvocationRequestArgumentWriter));
         }
 
-        public string GetStringToHash(string className, string methodName, string jsonArguments)
+        /// <summary>
+        /// Gets the string that is validated for the specified request.
+        /// </summary>
+        /// <param name="className"></param>
+        /// <param name="methodName"></param>
+        /// <param name="jsonArguments"></param>
+        /// <returns></returns>
+        public string GetValidationString(string className, string methodName, string jsonArguments)
         {
             return string.Format("{0}.{1}.{2}", className, methodName, jsonArguments);
         }
-
 
         public string EncodeValue(object value)
         {

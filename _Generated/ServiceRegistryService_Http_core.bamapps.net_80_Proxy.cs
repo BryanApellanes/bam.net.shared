@@ -16,7 +16,7 @@ namespace Bam.Net.CoreServices
 	using Bam.Net.UserAccounts;
 
     
-		[ApiSigningKeyRequired]
+		[ApiHmacKeyRequired]
     public class ServiceRegistryServiceClient: EncryptedServiceProxyClient<Bam.Net.CoreServices.Contracts.IServiceRegistryService>, Bam.Net.CoreServices.Contracts.IServiceRegistryService
     {
         public ServiceRegistryServiceClient(): base(DefaultConfiguration.GetAppSetting("ServiceRegistryServiceUrl", "http://core.bamapps.net/"))
@@ -167,11 +167,11 @@ namespace Bam.Net.CoreServices
 			}
 		}
 
-		public IApiSigningKeyResolver ApiKeyResolver 
+		public IApiHmacKeyResolver ApiKeyResolver 
 		{
 			get
 			{
-				return (IApiSigningKeyResolver)_proxyClient.Property("ApiKeyResolver", false);
+				return (IApiHmacKeyResolver)_proxyClient.Property("ApiKeyResolver", false);
 			}
 			set
 			{

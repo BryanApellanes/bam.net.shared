@@ -6,7 +6,7 @@ using System.Net.Http;
 
 namespace Bam.Net.ServiceProxy.Encryption
 {
-    public interface IApiSigningKeyResolver
+    public interface IApiHmacKeyResolver
     {
         HashAlgorithms HashAlgorithm { get; set; }
         /// <summary>
@@ -15,21 +15,21 @@ namespace Bam.Net.ServiceProxy.Encryption
         /// </summary>
         /// <param name="stringToHash"></param>
         /// <returns></returns>
-        string CreateKeyToken(string stringToHash);
-        ApiSigningKeyInfo GetApiSigningKeyInfo(IApplicationNameProvider nameProvider);
-        string GetApplicationApiKey(string applicationClientId, int index);
+        string GetHmac(string stringToHash);
+        ApiHmacKeyInfo GetApiHmacKeyInfo(IApplicationNameProvider nameProvider);
+        string GetApplicationApiSigningKey(string applicationClientId, int index);
         string GetApplicationClientId(IApplicationNameProvider nameProvider);
         string GetApplicationName();
         string GetCurrentApiKey();
         bool IsValidRequest(ServiceProxyInvocation request);
         bool IsValidKeyToken(string stringToHash, string token);
 
-        void SetKeyToken(HttpRequestMessage request, string stringToHash);
+        void SetHmacHeader(HttpRequestMessage request, string stringToHash);
 
         [Obsolete("Use SetKeyToken(HttpRequestMessage) instead.")]
-        void SetKeyToken(NameValueCollection headers, string stringToHash);
+        void SetHmacHeader(NameValueCollection headers, string stringToHash);
 
         [Obsolete("Use SetKeyToken(HttpRequestMessage) instead.")]
-        void SetKeyToken(HttpWebRequest request, string stringToHash);
+        void SetHmacHeader(HttpWebRequest request, string stringToHash);
     }
 }

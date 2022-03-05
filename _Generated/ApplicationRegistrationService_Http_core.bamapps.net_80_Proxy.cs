@@ -27,33 +27,33 @@ namespace Bam.Net.CoreServices
         }
         
         
-		[ApiSigningKeyRequired]
-        public ApiSigningKeyInfo[] ListApiKeys()
+		[ApiHmacKeyRequired]
+        public ApiHmacKeyInfo[] ListApiKeys()
         {
             object[] parameters = new object[] {  };
-            return InvokeServiceMethod<ApiSigningKeyInfo[]>("ListApiKeys", parameters);
+            return InvokeServiceMethod<ApiHmacKeyInfo[]>("ListApiKeys", parameters);
         }
-		[ApiSigningKeyRequired]
-        public ApiSigningKeyInfo AddApiKey()
+		[ApiHmacKeyRequired]
+        public ApiHmacKeyInfo AddApiKey()
         {
             object[] parameters = new object[] {  };
-            return InvokeServiceMethod<ApiSigningKeyInfo>("AddApiKey", parameters);
+            return InvokeServiceMethod<ApiHmacKeyInfo>("AddApiKey", parameters);
         }
-		[ApiSigningKeyRequired]
-        public ApiSigningKeyInfo SetActiveApiKeyIndex(System.Int32 index)
+		[ApiHmacKeyRequired]
+        public ApiHmacKeyInfo SetActiveApiKeyIndex(System.Int32 index)
         {
             object[] parameters = new object[] { index };
-            return InvokeServiceMethod<ApiSigningKeyInfo>("SetActiveApiKeyIndex", parameters);
+            return InvokeServiceMethod<ApiHmacKeyInfo>("SetActiveApiKeyIndex", parameters);
         }
         public String GetApplicationName()
         {
             object[] parameters = new object[] {  };
             return InvokeServiceMethod<String>("GetApplicationName", parameters);
         }
-        public ApiSigningKeyInfo GetClientApiKeyInfo()
+        public ApiHmacKeyInfo GetClientApiKeyInfo()
         {
             object[] parameters = new object[] {  };
-            return InvokeServiceMethod<ApiSigningKeyInfo>("GetClientApiKeyInfo", parameters);
+            return InvokeServiceMethod<ApiHmacKeyInfo>("GetClientApiKeyInfo", parameters);
         }
         public CoreServiceResponse RegisterApplication(System.String applicationName)
         {
@@ -113,11 +113,11 @@ namespace Bam.Net.CoreServices.Contracts
     
         public interface IApplicationRegistryService
         {
-			ApiSigningKeyInfo[] ListApiKeys();
-			ApiSigningKeyInfo AddApiKey();
-			ApiSigningKeyInfo SetActiveApiKeyIndex(System.Int32 index);
+			ApiHmacKeyInfo[] ListApiKeys();
+			ApiHmacKeyInfo AddApiKey();
+			ApiHmacKeyInfo SetActiveApiKeyIndex(System.Int32 index);
 			String GetApplicationName();
-			ApiSigningKeyInfo GetClientApiKeyInfo();
+			ApiHmacKeyInfo GetClientApiKeyInfo();
 			CoreServiceResponse RegisterApplication(System.String applicationName);
 			CoreServiceResponse RegisterApplicationProcess(Bam.Net.CoreServices.ApplicationRegistration.Data.ProcessDescriptor descriptor);
 			CoreServiceResponse RegisterClient(Bam.Net.CoreServices.ApplicationRegistration.Data.Client client);
@@ -176,11 +176,11 @@ namespace Bam.Net.CoreServices
 			}
 		}
 
-		public IApiSigningKeyResolver ApiKeyResolver 
+		public IApiHmacKeyResolver ApiKeyResolver 
 		{
 			get
 			{
-				return (IApiSigningKeyResolver)_proxyClient.Property("ApiKeyResolver", false);
+				return (IApiHmacKeyResolver)_proxyClient.Property("ApiKeyResolver", false);
 			}
 			set
 			{
@@ -211,12 +211,12 @@ namespace Bam.Net.CoreServices
 			return _proxyClient.ListApiKeys();
 		}*/
 
-		public override ApiSigningKeyInfo AddApiKey()
+		public override ApiHmacKeyInfo AddApiKey()
 		{
 			return _proxyClient.AddApiKey();
 		}
 
-		public override ApiSigningKeyInfo SetActiveApiKeyIndex(System.Int32 index)
+		public override ApiHmacKeyInfo SetActiveApiKeyIndex(System.Int32 index)
 		{
 			return _proxyClient.SetActiveApiKeyIndex(index);
 		}
@@ -226,7 +226,7 @@ namespace Bam.Net.CoreServices
 			return _proxyClient.GetApplicationName();
 		}
 
-		public override ApiSigningKeyInfo GetClientApiKeyInfo()
+		public override ApiHmacKeyInfo GetClientApiKeyInfo()
 		{
 			return _proxyClient.GetClientApiKeyInfo();
 		}

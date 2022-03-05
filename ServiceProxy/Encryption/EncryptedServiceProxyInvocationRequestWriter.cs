@@ -8,6 +8,17 @@ namespace Bam.Net.ServiceProxy.Encryption
 {
     public class EncryptedServiceProxyInvocationRequestWriter : ServiceProxyInvocationRequestWriter
     {
+        public EncryptedServiceProxyInvocationRequestWriter(ClientSessionInfo clientSessionInfo, IApiHmacKeyResolver apiSigningKeyResolver, IApiValidationProvider apiValidationProvider)
+        {
+            this.ApiHmacKeyResolver = apiSigningKeyResolver;
+            this.ApiValidationProvider = apiValidationProvider;
+            this.ClientSessionInfo = clientSessionInfo;
+
+        }
+
+        public IApiHmacKeyResolver ApiHmacKeyResolver { get; set; }
+        public IApiValidationProvider ApiValidationProvider { get; set; }
+
         public ClientSessionInfo ClientSessionInfo { get; set; }
 
         public override Task<HttpRequestMessage> WriteRequestMessageAsync(ServiceProxyInvocationRequest serviceProxyInvocationRequest)
@@ -20,9 +31,16 @@ namespace Bam.Net.ServiceProxy.Encryption
         {
             HttpRequestMessage httpRequestMessage = await CreateServiceProxyInvocationRequestMessageAsync(serviceProxyInvocationRequest);
             EncryptedServiceProxyInvocationRequestArgumentWriter argumentWriter = serviceProxyInvocationRequest.ServiceProxyInvocationRequestArgumentWriter as EncryptedServiceProxyInvocationRequestArgumentWriter;
+
+            Args.ThrowIfNull(argumentWriter, nameof(serviceProxyInvocationRequest.ServiceProxyInvocationRequestArgumentWriter));
+
             argumentWriter.ClientSessionInfo = this.ClientSessionInfo;
-            argumentWriter.WriteArguments(httpRequestMessage);
             
+            SecureChannelRequestMessage secureChannelRequestMessage = new SecureChannelRequestMessage(serviceProxyInvocationRequest);
+            
+            EncryptedServiceProxyInvocationHttpRequestContext descriptor = argumentWriter.WriteEncryptedArgumentContent(httpRequestMessage, secureChannelRequestMessage);
+            //ApiSigningKeyResolver
+            //ApiSigningKeyResolver.SetSigningKeyToken(descriptor.HttpRequestMessage, descriptor.)
             return httpRequestMessage;
         }
     }

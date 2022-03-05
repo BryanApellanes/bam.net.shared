@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace Bam.Net.CoreServices.AccessControl
 {
     [Proxy("accessControlSvc")]
-    [ApiSigningKeyRequired]
+    [ApiHmacKeyRequired]
     [ServiceSubdomain("accesscontrol")]
     public class AccessControlService : AsyncProxyableService
     {

@@ -10,7 +10,7 @@ using Bam.Net.Configuration;
 
 namespace Bam.Net.ServiceProxy.Encryption
 {
-    public class DefaultConfigurationApiKeyProvider: ApiSigningKeyProvider
+    public class DefaultConfigurationApiKeyProvider: ApiHmacKeyProvider
     {
         static DefaultConfigurationApiKeyProvider _defaultProvider;
         static object _sync = new object();
@@ -27,7 +27,7 @@ namespace Bam.Net.ServiceProxy.Encryption
             return DefaultConfiguration.GetAppSetting("ClientId", true);
         }
 
-        public override string GetApplicationApiKey(string applicationClientId, int index)
+        public override string GetApplicationApiSigningKey(string applicationClientId, int index)
         {
             return DefaultConfiguration.GetAppSetting("ApiKey", true);
         }

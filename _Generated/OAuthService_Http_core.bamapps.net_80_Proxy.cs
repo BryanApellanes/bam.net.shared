@@ -127,11 +127,11 @@ namespace Bam.Net.CoreServices
 			}
 		}
 
-		public IApiSigningKeyResolver ApiKeyResolver 
+		public IApiHmacKeyResolver ApiKeyResolver 
 		{
 			get
 			{
-				return (IApiSigningKeyResolver)_proxyClient.Property("ApiKeyResolver", false);
+				return (IApiHmacKeyResolver)_proxyClient.Property("ApiKeyResolver", false);
 			}
 			set
 			{

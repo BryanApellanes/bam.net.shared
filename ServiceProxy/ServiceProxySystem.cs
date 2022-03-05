@@ -402,7 +402,7 @@ namespace {0}
 
                     string methodParams = methodGenInfo.MethodSignature;
                     string wrapped = parameters.ToDelimited(p => p.Name.CamelCase()); // wrapped as object array
-                    string methodApiKeyRequired = method.HasCustomAttributeOfType<ApiSigningKeyRequiredAttribute>() ? "\r\n\t\t[ApiKeyRequired]" : "";
+                    string methodApiKeyRequired = method.HasCustomAttributeOfType<ApiHmacKeyRequiredAttribute>() ? "\r\n\t\t[ApiKeyRequired]" : "";
                     methods.AppendFormat(MethodFormat, methodApiKeyRequired, returnType, method.Name, methodParams, wrapped, invoke);
                     interfaceMethods.AppendFormat(InterfaceMethodFormat, returnType, method.Name, methodParams);
                 }
@@ -415,7 +415,7 @@ namespace {0}
                 }
 
                 string classFormatToUse = type.HasCustomAttributeOfType<EncryptAttribute>() ? EncryptedClassFormat : ClassFormat;
-                string typeApiKeyRequired = type.HasCustomAttributeOfType<ApiSigningKeyRequiredAttribute>() ? "\r\n\t\t[ApiKeyRequired]" : "";
+                string typeApiKeyRequired = type.HasCustomAttributeOfType<ApiHmacKeyRequiredAttribute>() ? "\r\n\t\t[ApiHmacKeyRequired]" : "";
                 classes.AppendFormat(classFormatToUse, typeApiKeyRequired, clientName, contractNamespace, serverName, defaultBaseAddress, methods.ToString());
                 interfaces.AppendFormat(InterfaceFormat, serverName, interfaceMethods.ToString());
             }
@@ -546,8 +546,8 @@ namespace {0}
             {
                 methodName = "secureInvoke";
             }
-            if(type.HasCustomAttributeOfType<ApiSigningKeyRequiredAttribute>() ||
-                method.HasCustomAttributeOfType<ApiSigningKeyRequiredAttribute>())
+            if(type.HasCustomAttributeOfType<ApiHmacKeyRequiredAttribute>() ||
+                method.HasCustomAttributeOfType<ApiHmacKeyRequiredAttribute>())
             {
                 builder.Append("\t\toptions = $.extend({}, {apiKeyRequired: true}, options);\r\n");
             }

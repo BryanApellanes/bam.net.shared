@@ -120,9 +120,9 @@ namespace Bam.Net.ServiceProxy.Encryption
         }
 
 
-        IApiSigningKeyResolver _apiKeyResolver;
+        IApiHmacKeyResolver _apiKeyResolver;
         object _apiKeyResolverSync = new object();
-        public IApiSigningKeyResolver ApiKeyResolver
+        public IApiHmacKeyResolver ApiKeyResolver
         {
             get
             {

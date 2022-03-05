@@ -23,7 +23,7 @@ namespace Bam.Net.CoreServices
     [Proxy("appRegistrationSvc")]
     [Encrypt]
     [ServiceSubdomain("appregistration")]
-    public partial class ApplicationRegistryService : ApplicationProxyableService, IApiSigningKeyResolver, IApiSigningKeyProvider, IApplicationNameProvider
+    public partial class ApplicationRegistryService : ApplicationProxyableService, IApiHmacKeyResolver, IApiHmacKeyProvider, IApplicationNameProvider
     {
         CacheManager _cacheManager;
         ApiSigningKeyResolver _apiKeyResolver;
@@ -73,8 +73,8 @@ namespace Bam.Net.CoreServices
             return Application?.ApiKeys.Select(k => k.ToKeyInfo()).ToArray();
         }*/
 
-        [ApiSigningKeyRequired]
-        public virtual ApiSigningKeyInfo AddApiKey()
+        [ApiHmacKeyRequired]
+        public virtual ApiHmacKeyInfo AddApiKey()
         {
             if (ApplicationName.Equals(ApplicationDiagnosticInfo.UnknownApplication))
             {
@@ -85,18 +85,18 @@ namespace Bam.Net.CoreServices
             {
                 throw new InvalidOperationException("Application not registered");
             }
-            AddApiKey(ApplicationRegistrationRepository, app, out CoreServices.ApplicationRegistration.Data.ApiSigningKey key);
-            return new ApiSigningKeyInfo { ApplicationClientId = key.ClientIdentifier, ApiSigningKey = key.SharedSecret, ApplicationName = ApplicationName };
+            AddApiKey(ApplicationRegistrationRepository, app, out CoreServices.ApplicationRegistration.Data.ApiHmacKey key);
+            return new ApiHmacKeyInfo { ApplicationClientId = key.ClientIdentifier, ApiHmacKey = key.SharedSecret, ApplicationName = ApplicationName };
         }
 
-        [ApiSigningKeyRequired]
-        public virtual ApiSigningKeyInfo SetActiveApiKeyIndex(int index)
+        [ApiHmacKeyRequired]
+        public virtual ApiHmacKeyInfo SetActiveApiKeyIndex(int index)
         {
             return SetActiveApiKeyIndex(this, index);
         }
 
         [Local]
-        public virtual ApiSigningKeyInfo SetActiveApiKeyIndex(IApplicationNameProvider nameProvider, int index)
+        public virtual ApiHmacKeyInfo SetActiveApiKeyIndex(IApplicationNameProvider nameProvider, int index)
         {
             string clientId = GetApplicationClientId(nameProvider);
             ActiveApiSigningKeyIndex apiKeyIndex = ApplicationRegistrationRepository.OneActiveApiKeyIndexWhere(c => c.ApplicationIdentifier == clientId);
@@ -111,9 +111,9 @@ namespace Bam.Net.CoreServices
             }
             apiKeyIndex.Value = index;
             ApplicationRegistrationRepository.Save(apiKeyIndex);
-            return new ApiSigningKeyInfo()
+            return new ApiHmacKeyInfo()
             {
-                ApiSigningKey = GetApplicationApiKey(clientId, index),
+                ApiHmacKey = GetApplicationApiSigningKey(clientId, index),
                 ApplicationClientId = clientId
             };
         }
@@ -135,9 +135,9 @@ namespace Bam.Net.CoreServices
             return ApplicationName.Or(ApplicationDiagnosticInfo.UnknownApplication);
         }
         
-        public virtual ApiSigningKeyInfo GetClientApiKeyInfo()
+        public virtual ApiHmacKeyInfo GetClientApiKeyInfo()
         {
-            return GetApiSigningKeyInfo(this);
+            return GetApiHmacKeyInfo(this);
         }
 
         /// <summary>
@@ -216,26 +216,26 @@ namespace Bam.Net.CoreServices
         }
 
         [Exclude]
-        public string CreateKeyToken(string stringToHash)
+        public string GetHmac(string stringToHash)
         {
-            ApiSigningKeyInfo apiKey = GetApiSigningKeyInfo(this);
-            return $"{apiKey.ApiSigningKey}:{stringToHash}".HashHexString(HashAlgorithm);
+            ApiHmacKeyInfo apiKey = GetApiHmacKeyInfo(this);
+            return $"{apiKey.ApiHmacKey}:{stringToHash}".HashHexString(HashAlgorithm);
         }
 
         [Exclude]
-        public ApiSigningKeyInfo GetApiSigningKeyInfo(IApplicationNameProvider nameProvider)
+        public ApiHmacKeyInfo GetApiHmacKeyInfo(IApplicationNameProvider nameProvider)
         {
             string clientId = GetApplicationClientId(nameProvider);
-            ApiSigningKeyInfo info = new ApiSigningKeyInfo()
+            ApiHmacKeyInfo info = new ApiHmacKeyInfo()
             {
-                ApiSigningKey = GetApplicationApiKey(clientId, GetActiveApiKeyIndex(nameProvider)), 
+                ApiHmacKey = GetApplicationApiSigningKey(clientId, GetActiveApiKeyIndex(nameProvider)), 
                 ApplicationClientId = clientId
             };
             return info;
         }
 
         [Local]
-        public virtual string GetApplicationApiKey(string applicationClientId, int index)
+        public virtual string GetApplicationApiSigningKey(string applicationClientId, int index)
         {
             CoreServices.ApplicationRegistration.Data.Application app = ApplicationRegistrationRepository.OneApplicationWhere(c => c.Cuid == applicationClientId);
             if(app != null)
@@ -267,7 +267,7 @@ namespace Bam.Net.CoreServices
             string methodName = request.MethodName;
             string stringToHash = string.Empty;// ApiArgumentEncoder.GetStringToHash(className, methodName, request.ArgumentsAsJsonArrayOfJsonStrings);
 
-            string token = request.Context.Request.Headers[Headers.KeyToken];
+            string token = request.Context.Request.Headers[Headers.Hmac];
             bool result = false;
             if (!string.IsNullOrEmpty(token))
             {
@@ -280,26 +280,26 @@ namespace Bam.Net.CoreServices
         [Exclude]
         public bool IsValidKeyToken(string stringToHash, string token)
         {
-            string checkToken = CreateKeyToken(stringToHash);
+            string checkToken = GetHmac(stringToHash);
             return token.Equals(checkToken);
         }
 
         [Exclude]
-        public void SetKeyToken(HttpRequestMessage request, string stringToHash)
+        public void SetHmacHeader(HttpRequestMessage request, string stringToHash)
         {
-            throw new InvalidOperationException($"It isn't appropriate for this service to be used for this purpose: {nameof(ApplicationRegistryService)}.{nameof(ApplicationRegistryService.SetKeyToken)}");
+            throw new InvalidOperationException($"It isn't appropriate for this service to be used for this purpose: {nameof(ApplicationRegistryService)}.{nameof(ApplicationRegistryService.SetHmacHeader)}");
         }
 
         [Exclude]
-        public void SetKeyToken(NameValueCollection headers, string stringToHash)
+        public void SetHmacHeader(NameValueCollection headers, string stringToHash)
         {
-            throw new InvalidOperationException($"It isn't appropriate for this service to be used for this purpose: {nameof(ApplicationRegistryService)}.{nameof(ApplicationRegistryService.SetKeyToken)}");
+            throw new InvalidOperationException($"It isn't appropriate for this service to be used for this purpose: {nameof(ApplicationRegistryService)}.{nameof(ApplicationRegistryService.SetHmacHeader)}");
         }
 
         [Exclude]
-        public void SetKeyToken(HttpWebRequest request, string stringToHash)
+        public void SetHmacHeader(HttpWebRequest request, string stringToHash)
         {
-            throw new InvalidOperationException($"It isn't appropriate for this service to be used for this purpose: {nameof(ApplicationRegistryService)}.{nameof(ApplicationRegistryService.SetKeyToken)}");
+            throw new InvalidOperationException($"It isn't appropriate for this service to be used for this purpose: {nameof(ApplicationRegistryService)}.{nameof(ApplicationRegistryService.SetHmacHeader)}");
         }
 
         /// <summary>
@@ -349,13 +349,13 @@ namespace Bam.Net.CoreServices
 
         protected DataProvider DataSettings { get; set; }
 
-        protected internal ApiSigningKeyInfo GenerateApiKeyInfo(CoreServices.ApplicationRegistration.Data.Application app)
+        protected internal ApiHmacKeyInfo GenerateApiKeyInfo(CoreServices.ApplicationRegistration.Data.Application app)
         {
-            ApiSigningKeyInfo info = new ApiSigningKeyInfo
+            ApiHmacKeyInfo info = new ApiHmacKeyInfo
             {
                 ApplicationNameProvider = new StaticApplicationNameProvider(app.Name),
                 ApplicationClientId = app.Cuid,
-                ApiSigningKey = ServiceProxySystem.GenerateSecureRandomString()
+                ApiHmacKey = ServiceProxySystem.GenerateSecureRandomString()
             };
             return info;
         }
@@ -368,13 +368,13 @@ namespace Bam.Net.CoreServices
         /// <returns></returns>
         protected internal CoreServices.ApplicationRegistration.Data.Application AddApiKey(ApplicationRegistrationRepository repo, CoreServices.ApplicationRegistration.Data.Application app)
         {
-            CoreServices.ApplicationRegistration.Data.ApiSigningKey ignore;
+            CoreServices.ApplicationRegistration.Data.ApiHmacKey ignore;
             return AddApiKey(repo, app, out ignore);
         }
 
-        protected internal CoreServices.ApplicationRegistration.Data.Application AddApiKey(ApplicationRegistrationRepository repo, CoreServices.ApplicationRegistration.Data.Application app, out CoreServices.ApplicationRegistration.Data.ApiSigningKey key)
+        protected internal CoreServices.ApplicationRegistration.Data.Application AddApiKey(ApplicationRegistrationRepository repo, CoreServices.ApplicationRegistration.Data.Application app, out CoreServices.ApplicationRegistration.Data.ApiHmacKey key)
         {
-            ApiSigningKeyInfo keyInfo = GenerateApiKeyInfo(app);
+            ApiHmacKeyInfo keyInfo = GenerateApiKeyInfo(app);
             key = keyInfo.ToApiSigningKey();
             key.Created = DateTime.UtcNow;
             key.CreatedBy = CurrentUser.UserName;

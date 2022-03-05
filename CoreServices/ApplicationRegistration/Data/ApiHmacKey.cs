@@ -9,7 +9,7 @@ using Bam.Net.Data.Repositories;
 namespace Bam.Net.CoreServices.ApplicationRegistration.Data
 {
     [Serializable]
-    public class ApiSigningKey: KeyedAuditRepoData
+    public class ApiHmacKey: KeyedAuditRepoData
     {
         [CompositeKey]
         public ulong ApplicationKey { get; set; }

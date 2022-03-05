@@ -9,6 +9,7 @@ namespace Bam.Net.ServiceProxy
 {
     public class ServiceProxyInvocationRequest
     {
+        public ServiceProxyInvocationRequest() { }
         public ServiceProxyInvocationRequest(ServiceProxyClient serviceProxyClient, string className, string methodName, params object[] arguments)
         {
             this.Cuid = NCuid.Cuid.Generate();

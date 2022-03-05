@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using System.IO;
 using Bam.Net.Web;
 using Bam.Net.Presentation.Html;
-using Bam.Net;
 using Bam.Net.Logging;
 using Bam.Net.ServiceProxy;
 using Bam.Net.Presentation;

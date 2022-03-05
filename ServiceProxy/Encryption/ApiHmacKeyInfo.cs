@@ -13,14 +13,14 @@ namespace Bam.Net.ServiceProxy.Encryption
     /// <summary>
     /// A Serializable representation of an application signing key.
     /// </summary>
-    public class ApiSigningKeyInfo
+    public class ApiHmacKeyInfo
     {
-        public ApiSigningKeyInfo()
+        public ApiHmacKeyInfo()
         {
             this.ApplicationNameProvider = new DefaultConfigurationApplicationNameProvider();
         }
 
-        public ApiSigningKeyInfo(IApplicationNameProvider nameProvider)
+        public ApiHmacKeyInfo(IApplicationNameProvider nameProvider)
         {
             ApplicationNameProvider = nameProvider;
         }
@@ -56,18 +56,18 @@ namespace Bam.Net.ServiceProxy.Encryption
         /// <summary>
         /// The shared secret; keep this value private.
         /// </summary>
-        public string ApiSigningKey
+        public string ApiHmacKey
         {
             get;
             set;
         }
 
-        public Bam.Net.CoreServices.ApplicationRegistration.Data.ApiSigningKey ToApiSigningKey()
+        public Bam.Net.CoreServices.ApplicationRegistration.Data.ApiHmacKey ToApiSigningKey()
         {
-            Bam.Net.CoreServices.ApplicationRegistration.Data.ApiSigningKey key = new Bam.Net.CoreServices.ApplicationRegistration.Data.ApiSigningKey()
+            Bam.Net.CoreServices.ApplicationRegistration.Data.ApiHmacKey key = new Bam.Net.CoreServices.ApplicationRegistration.Data.ApiHmacKey()
             {
                 ClientIdentifier = this.ApplicationClientId,
-                SharedSecret = this.ApiSigningKey
+                SharedSecret = this.ApiHmacKey
             };
             return key;
         }

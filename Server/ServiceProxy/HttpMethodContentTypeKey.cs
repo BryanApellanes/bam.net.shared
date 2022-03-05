@@ -14,7 +14,14 @@ namespace Bam.Net.Server.ServiceProxy
 
         public HttpMethodContentTypeKey(string httpVerb, string contentType): this(httpVerb)
         {
-            this.ContentType = contentType;
+            if (!string.IsNullOrEmpty(contentType) && contentType.Contains("+"))
+            {
+                this.ContentType = contentType.ReadUntil('+');
+            }
+            else
+            {
+                this.ContentType = contentType;
+            }
         }
 
         public HttpMethodContentTypeKey(IRequest request):this(request.HttpMethod, request.ContentType)

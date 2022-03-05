@@ -46,7 +46,7 @@ namespace Bam.Net.ServiceProxy
             ValidateParameterCount(failures, messages);
             ValidateMethodRoles(context, failures, messages);
             ValidateClassRoles(context, failures, messages);
-            ValidateApiKeyToken(failures, messages);
+            ValidateApiSigningKeyToken(failures, messages);
             ValidateRequestFilters(context, failures, messages);
 
             ValidationFailures = failures.ToArray();
@@ -71,9 +71,9 @@ namespace Bam.Net.ServiceProxy
             }
         }
 
-        private void ValidateApiKeyToken(List<ValidationFailures> failures, List<string> messages)
+        private void ValidateApiSigningKeyToken(List<ValidationFailures> failures, List<string> messages)
         {
-            ApiSigningKeyRequiredAttribute keyRequired;
+            ApiHmacKeyRequiredAttribute keyRequired;
             if (_toValidate.TargetType != null &&
                 _toValidate.MethodInfo != null &&
                 (
@@ -81,11 +81,11 @@ namespace Bam.Net.ServiceProxy
                     _toValidate.MethodInfo.HasCustomAttributeOfType(true, out keyRequired)
                 ))
             {
-                IApiSigningKeyResolver resolver = _toValidate.ApiKeyResolver;
+                IApiHmacKeyResolver resolver = _toValidate.ApiKeyResolver;
                 if (!resolver.IsValidRequest(_toValidate))
                 {
                     failures.Add(ServiceProxy.ValidationFailures.InvalidApiKeyToken);
-                    messages.Add("ApiKeyValidation failed");
+                    messages.Add("ApiSigningKeyValidation failed");
                 }
             }
         }
@@ -193,7 +193,7 @@ namespace Bam.Net.ServiceProxy
             {
                 try
                 {
-                    EncryptedTokenValidationStatus tokenStatus = ApiEncryptionValidation.ValidateEncryptedToken(context, input);
+                    EncryptedTokenValidationStatus tokenStatus = ApiValidation.ValidateEncryptedToken(context, input);
                     switch (tokenStatus)
                     {
                         case EncryptedTokenValidationStatus.Unknown:

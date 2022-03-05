@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Bam.Net.CoreServices
 {
-    [ApiSigningKeyRequired]
+    [ApiHmacKeyRequired]
     [Proxy("credentialSvc")]
     [ServiceSubdomain("creds")]
     public class CredentialManagementService : ApplicationProxyableService, ICredentialManager

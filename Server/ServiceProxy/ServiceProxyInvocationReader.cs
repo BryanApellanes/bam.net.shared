@@ -25,9 +25,8 @@ namespace Bam.Net.Server.ServiceProxy
             this.ArgumentReaders = new Dictionary<HttpMethodContentTypeKey, ServiceProxyInvocationArgumentReader>()
             {
                 { new HttpMethodContentTypeKey("GET"), DefaultArgumentReader },
-                { new HttpMethodContentTypeKey("POST", ContentTypes.Json), new InputStreamServiceProxyInvocationArgumentReader() },
-                { new HttpMethodContentTypeKey("POST", ContentTypes.AsymmetricCipher), new EncryptedServiceProxyInvocationArgumentReader() },
-                { new HttpMethodContentTypeKey("POST", ContentTypes.SymmetricCipher), new EncryptedServiceProxyInvocationArgumentReader() },
+                { new HttpMethodContentTypeKey("POST", MediaTypes.Json), new InputStreamServiceProxyInvocationArgumentReader() },
+                { new HttpMethodContentTypeKey("POST", MediaTypes.BamPipeline), new EncryptedServiceProxyInvocationArgumentReader() },
             };
             // CREATE A CUSTOM ENCODING PIPELINE ARGUMENT READER
             // IMPLEMENT IValueTransformer that takes a list of encoding names,

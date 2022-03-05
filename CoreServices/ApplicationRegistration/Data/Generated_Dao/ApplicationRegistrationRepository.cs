@@ -28,7 +28,7 @@ namespace Bam.Net.CoreServices.ApplicationRegistration.Data.Dao.Repository
 			AddType<Bam.Net.CoreServices.ApplicationRegistration.Data.ActiveApiSigningKeyIndex>();
 			
 			
-			AddType<Bam.Net.CoreServices.ApplicationRegistration.Data.ApiSigningKey>();
+			AddType<Bam.Net.CoreServices.ApplicationRegistration.Data.ApiHmacKey>();
 			
 			
 			AddType<Bam.Net.CoreServices.ApplicationRegistration.Data.Application>();
@@ -222,10 +222,10 @@ namespace Bam.Net.CoreServices.ApplicationRegistration.Data.Dao.Repository
 		/// one is created; success depends on the nullability
 		/// of the specified columns.
 		/// </summary>
-		public void SetOneApiKeyWhere(WhereDelegate<ApiKeyColumns> where, out Bam.Net.CoreServices.ApplicationRegistration.Data.ApiSigningKey result)
+		public void SetOneApiKeyWhere(WhereDelegate<ApiKeyColumns> where, out Bam.Net.CoreServices.ApplicationRegistration.Data.ApiHmacKey result)
 		{
 			Bam.Net.CoreServices.ApplicationRegistration.Data.Dao.ApiKey.SetOneWhere(where, out Bam.Net.CoreServices.ApplicationRegistration.Data.Dao.ApiKey daoResult, Database);
-			result = daoResult.CopyAs<Bam.Net.CoreServices.ApplicationRegistration.Data.ApiSigningKey>();
+			result = daoResult.CopyAs<Bam.Net.CoreServices.ApplicationRegistration.Data.ApiHmacKey>();
 		}
 
 		/// <summary>
@@ -234,10 +234,10 @@ namespace Bam.Net.CoreServices.ApplicationRegistration.Data.Dao.Repository
 		/// of the specified columns.
 		/// </summary>
 		/// <param name="where"></param>
-		public Bam.Net.CoreServices.ApplicationRegistration.Data.ApiSigningKey GetOneApiKeyWhere(WhereDelegate<ApiKeyColumns> where)
+		public Bam.Net.CoreServices.ApplicationRegistration.Data.ApiHmacKey GetOneApiKeyWhere(WhereDelegate<ApiKeyColumns> where)
 		{
-			Type wrapperType = GetWrapperType<Bam.Net.CoreServices.ApplicationRegistration.Data.ApiSigningKey>();
-			return (Bam.Net.CoreServices.ApplicationRegistration.Data.ApiSigningKey)Bam.Net.CoreServices.ApplicationRegistration.Data.Dao.ApiKey.GetOneWhere(where, Database)?.CopyAs(wrapperType, this);
+			Type wrapperType = GetWrapperType<Bam.Net.CoreServices.ApplicationRegistration.Data.ApiHmacKey>();
+			return (Bam.Net.CoreServices.ApplicationRegistration.Data.ApiHmacKey)Bam.Net.CoreServices.ApplicationRegistration.Data.Dao.ApiKey.GetOneWhere(where, Database)?.CopyAs(wrapperType, this);
 		}
 
 		/// <summary>
@@ -249,10 +249,10 @@ namespace Bam.Net.CoreServices.ApplicationRegistration.Data.Dao.Repository
 		/// and returns a IQueryFilter which is the result of any comparisons
 		/// between ApiKeyColumns and other values
 		/// </param>
-		public Bam.Net.CoreServices.ApplicationRegistration.Data.ApiSigningKey OneApiKeyWhere(WhereDelegate<ApiKeyColumns> where)
+		public Bam.Net.CoreServices.ApplicationRegistration.Data.ApiHmacKey OneApiKeyWhere(WhereDelegate<ApiKeyColumns> where)
         {
-            Type wrapperType = GetWrapperType<Bam.Net.CoreServices.ApplicationRegistration.Data.ApiSigningKey>();
-            return (Bam.Net.CoreServices.ApplicationRegistration.Data.ApiSigningKey)Bam.Net.CoreServices.ApplicationRegistration.Data.Dao.ApiKey.OneWhere(where, Database)?.CopyAs(wrapperType, this);
+            Type wrapperType = GetWrapperType<Bam.Net.CoreServices.ApplicationRegistration.Data.ApiHmacKey>();
+            return (Bam.Net.CoreServices.ApplicationRegistration.Data.ApiHmacKey)Bam.Net.CoreServices.ApplicationRegistration.Data.Dao.ApiKey.OneWhere(where, Database)?.CopyAs(wrapperType, this);
         }
 
 		/// <summary>
@@ -262,9 +262,9 @@ namespace Bam.Net.CoreServices.ApplicationRegistration.Data.Dao.Repository
 		/// and returns a IQueryFilter which is the result of any comparisons
 		/// between Bam.Net.CoreServices.ApplicationRegistration.Data.ApiKeyColumns and other values
 		/// </param>
-		public IEnumerable<Bam.Net.CoreServices.ApplicationRegistration.Data.ApiSigningKey> ApiKeysWhere(WhereDelegate<ApiKeyColumns> where, OrderBy<ApiKeyColumns> orderBy = null)
+		public IEnumerable<Bam.Net.CoreServices.ApplicationRegistration.Data.ApiHmacKey> ApiKeysWhere(WhereDelegate<ApiKeyColumns> where, OrderBy<ApiKeyColumns> orderBy = null)
         {
-            return Wrap<Bam.Net.CoreServices.ApplicationRegistration.Data.ApiSigningKey>(Bam.Net.CoreServices.ApplicationRegistration.Data.Dao.ApiKey.Where(where, orderBy, Database));
+            return Wrap<Bam.Net.CoreServices.ApplicationRegistration.Data.ApiHmacKey>(Bam.Net.CoreServices.ApplicationRegistration.Data.Dao.ApiKey.Where(where, orderBy, Database));
         }
 		
 		/// <summary>
@@ -280,14 +280,14 @@ namespace Bam.Net.CoreServices.ApplicationRegistration.Data.Dao.Repository
 		/// and returns a IQueryFilter which is the result of any comparisons
 		/// between ApiKeyColumns and other values
 		/// </param>
-		public IEnumerable<Bam.Net.CoreServices.ApplicationRegistration.Data.ApiSigningKey> TopApiKeysWhere(int count, WhereDelegate<ApiKeyColumns> where)
+		public IEnumerable<Bam.Net.CoreServices.ApplicationRegistration.Data.ApiHmacKey> TopApiKeysWhere(int count, WhereDelegate<ApiKeyColumns> where)
         {
-            return Wrap<Bam.Net.CoreServices.ApplicationRegistration.Data.ApiSigningKey>(Bam.Net.CoreServices.ApplicationRegistration.Data.Dao.ApiKey.Top(count, where, Database));
+            return Wrap<Bam.Net.CoreServices.ApplicationRegistration.Data.ApiHmacKey>(Bam.Net.CoreServices.ApplicationRegistration.Data.Dao.ApiKey.Top(count, where, Database));
         }
 
-        public IEnumerable<Bam.Net.CoreServices.ApplicationRegistration.Data.ApiSigningKey> TopApiKeysWhere(int count, WhereDelegate<ApiKeyColumns> where, OrderBy<ApiKeyColumns> orderBy)
+        public IEnumerable<Bam.Net.CoreServices.ApplicationRegistration.Data.ApiHmacKey> TopApiKeysWhere(int count, WhereDelegate<ApiKeyColumns> where, OrderBy<ApiKeyColumns> orderBy)
         {
-            return Wrap<Bam.Net.CoreServices.ApplicationRegistration.Data.ApiSigningKey>(Bam.Net.CoreServices.ApplicationRegistration.Data.Dao.ApiKey.Top(count, where, orderBy, Database));
+            return Wrap<Bam.Net.CoreServices.ApplicationRegistration.Data.ApiHmacKey>(Bam.Net.CoreServices.ApplicationRegistration.Data.Dao.ApiKey.Top(count, where, orderBy, Database));
         }
                                 
 		/// <summary>
@@ -310,19 +310,19 @@ namespace Bam.Net.CoreServices.ApplicationRegistration.Data.Dao.Repository
             return Bam.Net.CoreServices.ApplicationRegistration.Data.Dao.ApiKey.Count(where, Database);
         }
         
-        public async Task BatchQueryApiKeys(int batchSize, WhereDelegate<ApiKeyColumns> where, Action<IEnumerable<Bam.Net.CoreServices.ApplicationRegistration.Data.ApiSigningKey>> batchProcessor)
+        public async Task BatchQueryApiKeys(int batchSize, WhereDelegate<ApiKeyColumns> where, Action<IEnumerable<Bam.Net.CoreServices.ApplicationRegistration.Data.ApiHmacKey>> batchProcessor)
         {
             await Bam.Net.CoreServices.ApplicationRegistration.Data.Dao.ApiKey.BatchQuery(batchSize, where, (batch) =>
             {
-				batchProcessor(Wrap<Bam.Net.CoreServices.ApplicationRegistration.Data.ApiSigningKey>(batch));
+				batchProcessor(Wrap<Bam.Net.CoreServices.ApplicationRegistration.Data.ApiHmacKey>(batch));
             }, Database);
         }
 		
-        public async Task BatchAllApiKeys(int batchSize, Action<IEnumerable<Bam.Net.CoreServices.ApplicationRegistration.Data.ApiSigningKey>> batchProcessor)
+        public async Task BatchAllApiKeys(int batchSize, Action<IEnumerable<Bam.Net.CoreServices.ApplicationRegistration.Data.ApiHmacKey>> batchProcessor)
         {
             await Bam.Net.CoreServices.ApplicationRegistration.Data.Dao.ApiKey.BatchAll(batchSize, (batch) =>
             {
-				batchProcessor(Wrap<Bam.Net.CoreServices.ApplicationRegistration.Data.ApiSigningKey>(batch));
+				batchProcessor(Wrap<Bam.Net.CoreServices.ApplicationRegistration.Data.ApiHmacKey>(batch));
             }, Database);
         }
 

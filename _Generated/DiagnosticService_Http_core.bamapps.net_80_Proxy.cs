@@ -16,7 +16,7 @@ namespace Bam.Net.CoreServices
 	using Bam.Net.UserAccounts;
 
     
-		[ApiSigningKeyRequired]
+		[ApiHmacKeyRequired]
     public class DiagnosticServiceClient: EncryptedServiceProxyClient<Bam.Net.CoreServices.Contracts.IDiagnosticService>, Bam.Net.CoreServices.Contracts.IDiagnosticService
     {
         public DiagnosticServiceClient(): base(DefaultConfiguration.GetAppSetting("DiagnosticServiceUrl", "http://core.bamapps.net/"))
@@ -131,11 +131,11 @@ namespace Bam.Net.CoreServices
 			}
 		}
 
-		public IApiSigningKeyResolver ApiKeyResolver 
+		public IApiHmacKeyResolver ApiKeyResolver 
 		{
 			get
 			{
-				return (IApiSigningKeyResolver)_proxyClient.Property("ApiKeyResolver", false);
+				return (IApiHmacKeyResolver)_proxyClient.Property("ApiKeyResolver", false);
 			}
 			set
 			{

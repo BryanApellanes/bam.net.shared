@@ -29,10 +29,10 @@ namespace Bam.Net.Services.Clients
     /// A client to the core bam service server.
     /// </summary>
     /// <seealso cref="Bam.Net.Logging.Loggable" />
-    /// <seealso cref="Bam.Net.ServiceProxy.Encryption.IApiSigningKeyResolver" />
-    /// <seealso cref="Bam.Net.ServiceProxy.Encryption.IApiSigningKeyProvider" />
+    /// <seealso cref="Bam.Net.ServiceProxy.Encryption.IApiHmacKeyResolver" />
+    /// <seealso cref="Bam.Net.ServiceProxy.Encryption.IApiHmacKeyProvider" />
     /// <seealso cref="Bam.Net.IApplicationNameProvider" />
-    public partial class CoreClient: Loggable, IApiSigningKeyResolver, IApiSigningKeyProvider, IApplicationNameProvider
+    public partial class CoreClient: Loggable, IApiHmacKeyResolver, IApiHmacKeyProvider, IApplicationNameProvider
     {
         internal CoreClient(string organizationName, string applicationName, string workingDirectory = null, ILogger logger = null)
         {
@@ -153,17 +153,17 @@ namespace Bam.Net.Services.Clients
 
         public IApiArgumentEncoder ApiArgumentEncoder { get; set; }
 
-        public string CreateKeyToken(string stringToHash)
+        public string GetHmac(string stringToHash)
         {
-            ApiSigningKeyInfo keyInfo = GetApiSigningKeyInfo(this);
-            return $"{keyInfo.ApiSigningKey}:{stringToHash}".HashHexString(HashAlgorithm);
+            ApiHmacKeyInfo keyInfo = GetApiHmacKeyInfo(this);
+            return $"{keyInfo.ApiHmacKey}:{stringToHash}".HashHexString(HashAlgorithm);
         }
 
         public bool IsValidRequest(ServiceProxyInvocation request)
         {
             Args.ThrowIfNull(request, "request");
-            string stringToHash = ApiArgumentEncoder.GetStringToHash(request.ClassName, request.MethodName, ApiArgumentEncoder.ArgumentsToJsonArgsMember(request.Arguments));
-            string token = request.Context.Request.Headers[Headers.KeyToken];
+            string stringToHash = ApiArgumentEncoder.GetValidationString(request.ClassName, request.MethodName, ApiArgumentEncoder.ArgumentsToJsonArgsMember(request.Arguments));
+            string token = request.Context.Request.Headers[Headers.Hmac];
             bool result = false;
             if (!string.IsNullOrEmpty(token))
             {
@@ -174,19 +174,19 @@ namespace Bam.Net.Services.Clients
 
         public bool IsValidKeyToken(string stringToHash, string token)
         {
-            string checkToken = CreateKeyToken(stringToHash);
+            string checkToken = GetHmac(stringToHash);
             return token.Equals(checkToken);
         }
 
-        public void SetKeyToken(HttpRequestMessage request, string stringToHash)
+        public void SetHmacHeader(HttpRequestMessage request, string stringToHash)
         {
-            request.Headers.Add(Headers.KeyToken, CreateKeyToken(stringToHash));
+            request.Headers.Add(Headers.Hmac, GetHmac(stringToHash));
         }
 
         [Obsolete("Use SetKeyToken(HttpRequestMessage) instead.")]
-        public void SetKeyToken(HttpWebRequest request, string stringToHash)
+        public void SetHmacHeader(HttpWebRequest request, string stringToHash)
         {
-            SetKeyToken(request.Headers, stringToHash);
+            SetHmacHeader(request.Headers, stringToHash);
         }
 
         /// <summary>
@@ -195,9 +195,9 @@ namespace Bam.Net.Services.Clients
         /// </summary>
         /// <param name="headers"></param>
         /// <param name="stringToHash"></param>
-        public void SetKeyToken(NameValueCollection headers, string stringToHash)
+        public void SetHmacHeader(NameValueCollection headers, string stringToHash)
         {
-            headers[Headers.KeyToken] = CreateKeyToken(stringToHash);
+            headers[Headers.Hmac] = GetHmac(stringToHash);
         }
         #endregion
         [Verbosity(VerbosityLevel.Warning, SenderMessageFormat = "ApiKeyFile {ApiKeyFilePath} was not found")]
@@ -210,14 +210,14 @@ namespace Bam.Net.Services.Clients
         public event EventHandler WroteApiKeyFile;
         #region IApiKeyProvider
 
-        ApiSigningKeyInfo _apiKeyInfo;
-        public ApiSigningKeyInfo GetApiSigningKeyInfo(IApplicationNameProvider nameProvider)
+        ApiHmacKeyInfo _apiKeyInfo;
+        public ApiHmacKeyInfo GetApiHmacKeyInfo(IApplicationNameProvider nameProvider)
         {
             if (_apiKeyInfo == null)
             {
                 if (File.Exists(ApiKeyFilePath))
                 {
-                    _apiKeyInfo = ApiKeyFilePath.FromJsonFile<ApiSigningKeyInfo>();
+                    _apiKeyInfo = ApiKeyFilePath.FromJsonFile<ApiHmacKeyInfo>();
                 }
                 else
                 {
@@ -233,22 +233,22 @@ namespace Bam.Net.Services.Clients
             return _apiKeyInfo;
         }
 
-        public ApiSigningKeyInfo AddApiKey()
+        public ApiHmacKeyInfo AddApiKey()
         {
             return ApplicationRegistryService.AddApiKey();
         }
 
-        public ApiSigningKeyInfo SetActiveApiKeyIndex(int index)
+        public ApiHmacKeyInfo SetActiveApiKeyIndex(int index)
         {
             return ApplicationRegistryService.SetActiveApiKeyIndex(index);
         }
 
-        public string GetApplicationApiKey(string applicationClientId, int index) // index ignored in this implementation //TODO: take into account the index
+        public string GetApplicationApiSigningKey(string applicationClientId, int index) // index ignored in this implementation //TODO: take into account the index
         {
-            ApiSigningKeyInfo key = GetApiSigningKeyInfo(this);
+            ApiHmacKeyInfo key = GetApiHmacKeyInfo(this);
             if (key.ApplicationClientId.Equals(applicationClientId))
             {
-                return key.ApiSigningKey;
+                return key.ApiHmacKey;
             }
             throw new NotSupportedException("Specified applicationClientId not supported");
         }
@@ -260,7 +260,7 @@ namespace Bam.Net.Services.Clients
 
         public string GetApplicationClientId(IApplicationNameProvider nameProvider)
         {
-            ApiSigningKeyInfo key = GetApiSigningKeyInfo(this);
+            ApiHmacKeyInfo key = GetApiHmacKeyInfo(this);
             if (key.ApplicationName.Equals(nameProvider.GetApplicationName()))
             {
                 return key.ApplicationClientId;
@@ -270,8 +270,8 @@ namespace Bam.Net.Services.Clients
 
         public string GetCurrentApiKey()
         {
-            ApiSigningKeyInfo key = GetApiSigningKeyInfo(this);
-            return key.ApiSigningKey;
+            ApiHmacKeyInfo key = GetApiHmacKeyInfo(this);
+            return key.ApiHmacKey;
         }
         #endregion
 
@@ -304,10 +304,10 @@ namespace Bam.Net.Services.Clients
             throw new ApplicationException(response.Message);
         }
 
-        public ApiSigningKeyInfo GetCurrentApplicationApiKeyInfo()
+        public ApiHmacKeyInfo GetCurrentApplicationApiKeyInfo()
         {
             RegisterApplicationProcess();
-            return ApiKeyFilePath.FromJsonFile<ApiSigningKeyInfo>();
+            return ApiKeyFilePath.FromJsonFile<ApiHmacKeyInfo>();
         }
 
         public LoginResponse Login(string userName, string passHash)
@@ -334,9 +334,9 @@ namespace Bam.Net.Services.Clients
                     {
                         IsInitialized = true;
                         FireEvent(Initialized);
-                        ApiSigningKeyInfo keyInfo = new ApiSigningKeyInfo
+                        ApiHmacKeyInfo keyInfo = new ApiHmacKeyInfo
                         {
-                            ApiSigningKey = appRegistrationResult.ApiKey,
+                            ApiHmacKey = appRegistrationResult.ApiKey,
                             ApplicationClientId = appRegistrationResult.ClientId,
                             ApplicationName = GetApplicationName()
                         };

@@ -17,7 +17,7 @@ namespace Bam.Net.CoreServices
 	using Bam.Net.UserAccounts;
 
     
-		[ApiSigningKeyRequired]
+		[ApiHmacKeyRequired]
     public class OAuthSettingsServiceClient: EncryptedServiceProxyClient<Bam.Net.CoreServices.Contracts.IOAuthSettingsService>, Bam.Net.CoreServices.Contracts.IOAuthSettingsService
     {
         public OAuthSettingsServiceClient(): base(DefaultConfiguration.GetAppSetting("OAuthSettingsServiceUrl", "http://core.bamapps.net/"))
@@ -145,11 +145,11 @@ namespace Bam.Net.CoreServices
 			}
 		}
 
-		public IApiSigningKeyResolver ApiKeyResolver 
+		public IApiHmacKeyResolver ApiKeyResolver 
 		{
 			get
 			{
-				return (IApiSigningKeyResolver)_proxyClient.Property("ApiKeyResolver", false);
+				return (IApiHmacKeyResolver)_proxyClient.Property("ApiKeyResolver", false);
 			}
 			set
 			{

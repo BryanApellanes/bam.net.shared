@@ -10,7 +10,7 @@ using System.Linq;
 
 namespace Bam.Net.Services.DataReplication
 {
-    [ApiSigningKeyRequired]
+    [ApiHmacKeyRequired]
     [Proxy("writeEventSvc")]
     public class WriteEventService : ApplicationProxyableService
     {

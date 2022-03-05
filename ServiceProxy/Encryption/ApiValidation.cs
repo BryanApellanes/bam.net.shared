@@ -22,7 +22,7 @@ namespace Bam.Net.ServiceProxy.Encryption
     /// Class used to set and validate encryption validation
     /// tokens.
     /// </summary>
-    internal class ApiEncryptionValidation // TODO: move this implementation to ApiEncryptionProvider 
+    internal class ApiValidation // TODO: move this implementation to ApiEncryptionProvider 
     {
 /*        public static void SetEncryptedValidationTokenHeaders(HttpRequestMessage request, string plainPostString, string publicKeyPem)
         {
@@ -164,10 +164,10 @@ namespace Bam.Net.ServiceProxy.Encryption
         /// <param name="nonce"></param>
         /// <param name="offset"></param>
         /// <returns></returns>
-        [Obsolete("Use ApiEncryptionProvider.ValidateNonce instead")]
+        [Obsolete("Use ApiValidationProvider.ValidateNonce instead")]
         public static EncryptedTokenValidationStatus ValidateNonce(string nonce, int offset)
         {
-            return new ApiEncryptionProvider(null).ValidateNonce(nonce, offset);
+            return new ApiValidationProvider(null).ValidateNonce(nonce, offset);
         }
     }
 }

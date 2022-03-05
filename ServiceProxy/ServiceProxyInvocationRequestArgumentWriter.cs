@@ -105,7 +105,7 @@ namespace Bam.Net.ServiceProxy
         public virtual void WriteArgumentContent(HttpRequestMessage requestMessage)
         {
             string jsonArgsMember = GetJsonArgsMember();
-            requestMessage.Content = new StringContent(jsonArgsMember, Encoding.UTF8, ContentTypes.Json);
+            requestMessage.Content = new StringContent(jsonArgsMember, Encoding.UTF8, MediaTypes.Json);
         }
 
         public virtual void WriteArgumentQueryString(HttpRequestMessage requestMessage)

@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 namespace Bam.Net.CoreServices.WebHooks
 {
     [Proxy("webHookSvc")]
-    [ApiSigningKeyRequired]
+    [ApiHmacKeyRequired]
     public class WebHookService : ApplicationProxyableService
     {
         public const string HashHeader = "X-BAM-WEBHOOK-SHA256";

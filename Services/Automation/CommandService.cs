@@ -14,7 +14,7 @@ using Bam.Net.Encryption;
 namespace Bam.Net.Services.Automation
 {
     [Encrypt]
-    [ApiSigningKeyRequired]
+    [ApiHmacKeyRequired]
     [Proxy("commandSvc")]
     [ServiceSubdomain("command")]
     public class CommandService : AsyncProxyableService

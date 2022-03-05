@@ -8,8 +8,8 @@ namespace Bam.Net.ServiceProxy
 {
     public interface IApiArgumentEncoder
     {
-        string GetStringToHash(ServiceProxyInvocationRequest request);
-        string GetStringToHash(string className, string methodName, string jsonArguments);
+        string GetValidationString(ServiceProxyInvocationRequest request);
+        string GetValidationString(string className, string methodName, string jsonArguments);
 
         string ArgumentsToJsonArgsMember(params object[] arguments);
 

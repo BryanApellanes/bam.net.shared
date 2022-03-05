@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace Bam.Net.ServiceProxy.Encryption
 {
-    public class ApiSigningKeyNotFoundException: Exception
+    public class ApiHmacKeyNotFoundException: Exception
     {
-        public ApiSigningKeyNotFoundException(string clientId)
+        public ApiHmacKeyNotFoundException(string clientId)
             : base("The key for the specified clientId ({0}) was not found"._Format(clientId))
         { }
     }

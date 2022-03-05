@@ -21,9 +21,14 @@ namespace Bam.Net
         {
             IValueReverseTransformer<byte[], byte[]> reverseTransformer = TranformerPipeline.ByteTransformerPipeline.GetReverseTransformer();
             byte[] utf8 = reverseTransformer.ReverseTransform(transformed);
-            string json = Encoding.UTF8.GetString(utf8);
+            string reversedString = Encoding.UTF8.GetString(utf8);
 
-            return json.FromJson<TData>();
+            return ConvertStringToData(reversedString);
+        }
+
+        public TData ConvertStringToData(string stringValue)
+        {
+            return stringValue.FromJson<TData>();
         }
     }
 }

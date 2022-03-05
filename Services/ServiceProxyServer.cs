@@ -57,9 +57,9 @@ namespace Bam.Net.Services
         public HashSet<ServiceSubdomainAttribute> ServiceSubdomains { get; set; }
         protected WebServiceRegistry ServiceRegistry { get; set; }
 
-        protected void SetApiKeyResolver(ServiceRegistry registry, IApiSigningKeyResolver ifNull)
+        protected void SetApiKeyResolver(ServiceRegistry registry, IApiHmacKeyResolver ifNull)
         {
-            IApiSigningKeyResolver apiKeyResolver = registry.Get(ifNull);
+            IApiHmacKeyResolver apiKeyResolver = registry.Get(ifNull);
             Responder.CommonSecureChannel.ApiKeyResolver = apiKeyResolver;
             Responder.AppSecureChannels.Values.Each(sc => sc.ApiKeyResolver = apiKeyResolver);
         }

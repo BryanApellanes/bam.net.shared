@@ -6,7 +6,7 @@ using Bam.Net;
 namespace Bam.Net.CoreServices
 {
     [Proxy("diagSvc")]
-    [ApiSigningKeyRequired]
+    [ApiHmacKeyRequired]
     public class DiagnosticService: ApplicationProxyableService 
     {
         protected DiagnosticService() { } // required for client proxy generation via ProxyFactory

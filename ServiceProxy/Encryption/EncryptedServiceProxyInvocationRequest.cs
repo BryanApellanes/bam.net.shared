@@ -6,6 +6,8 @@ namespace Bam.Net.ServiceProxy.Encryption
 {
     public class EncryptedServiceProxyInvocationRequest : ServiceProxyInvocationRequest
     {
+        public EncryptedServiceProxyInvocationRequest() { }
+
         public EncryptedServiceProxyInvocationRequest(ServiceProxyClient serviceProxyClient, string className, string methodName, params object[] arguments) : base(serviceProxyClient, className, methodName, arguments)
         {
         }

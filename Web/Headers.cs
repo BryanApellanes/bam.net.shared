@@ -19,7 +19,7 @@ namespace Bam.Net.Web
         public static string ProcessDescriptor => "X-Bam-Process-Descriptor";
 
         /// <summary>
-        /// Gets the current process mode as reported by ProcessMode.Current.Mode.
+        /// Gets the process mode as reported by ProcessMode.Current.Mode.
         /// </summary>
         public static string ProcessMode => "X-Bam-Process-Mode";
 
@@ -30,9 +30,10 @@ namespace Bam.Net.Web
         [Obsolete("Use SecureChannelSessionId instead")]
         public static string SecureSessionId => "X-Bam-Sps-Session-Id";
 
+        /// <summary>
+        /// Header used to hold the public key encrypted hash of the request body.
+        /// </summary>
         public static string ValidationToken => "X-Bam-Validation-Token";
-
-        public static string Signature => "X-Bam-Signature";
 
         public static string Timestamp => "X-Bam-Timestamp";
 
@@ -40,9 +41,9 @@ namespace Bam.Net.Web
 
         /// <summary>
         /// Header used to prove that the client knows the shared secret by using 
-        /// it to create a hash value that this header is set to.
+        /// it to create an hmac value that this header is set to.
         /// </summary>
-        public static string KeyToken => "X-Bam-Key-Token";
+        public static string Hmac => "X-Bam-Hmac";
 
         /// <summary>
         /// Header used to request a specific responder on the server

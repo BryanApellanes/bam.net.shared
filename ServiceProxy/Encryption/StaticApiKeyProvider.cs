@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Bam.Net.ServiceProxy.Encryption
 {
-    public class StaticApiKeyProvider: ApiSigningKeyProvider
+    public class StaticApiKeyProvider: ApiHmacKeyProvider
     {
         public StaticApiKeyProvider(string clientId, string apiKey)
         {
@@ -25,7 +25,7 @@ namespace Bam.Net.ServiceProxy.Encryption
             return ClientId;
         }
 
-        public override string GetApplicationApiKey(string applicationClientId, int index)
+        public override string GetApplicationApiSigningKey(string applicationClientId, int index)
         {
             return ApiKey;
         }

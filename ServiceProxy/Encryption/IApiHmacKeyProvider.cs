@@ -4,10 +4,10 @@
 using System;
 namespace Bam.Net.ServiceProxy.Encryption
 {
-    public interface IApiSigningKeyProvider
+    public interface IApiHmacKeyProvider
     {
-        ApiSigningKeyInfo GetApiSigningKeyInfo(IApplicationNameProvider nameProvider);
-        string GetApplicationApiKey(string applicationClientId, int index);
+        ApiHmacKeyInfo GetApiHmacKeyInfo(IApplicationNameProvider nameProvider);
+        string GetApplicationApiSigningKey(string applicationClientId, int index);
         string GetApplicationClientId(IApplicationNameProvider nameProvider);
         string GetCurrentApiKey();
     }

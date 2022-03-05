@@ -16,7 +16,7 @@ namespace Bam.Net.ServiceProxy.Encryption
     /// application level encryption.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
-    public class ApiSigningKeyRequiredAttribute: EncryptAttribute
+    public class ApiHmacKeyRequiredAttribute: EncryptAttribute
     {
     }
 }

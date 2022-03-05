@@ -35,10 +35,15 @@ namespace Bam.Net
 
         public byte[] Transform(TData value)
         {
-            string json = value.ToJson();
+            string json = ConvertDataToString(value);
             byte[] utf8 = Encoding.UTF8.GetBytes(json);
 
             return ByteTransformerPipeline.Transform(utf8);
+        }
+
+        public virtual string ConvertDataToString(TData value)
+        {
+            return value.ToJson();
         }
     }
 }

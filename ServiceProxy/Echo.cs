@@ -23,7 +23,7 @@ namespace Bam.Net.ServiceProxy
     /// <summary>
     /// Echo class that requires an api key
     /// </summary>
-    [ApiSigningKeyRequired]
+    [ApiHmacKeyRequired]
     public class ApiKeyRequiredEcho : Echo
     {
 

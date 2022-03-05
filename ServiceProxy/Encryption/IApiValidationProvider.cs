@@ -7,7 +7,7 @@ using System.Text;
 
 namespace Bam.Net.ServiceProxy.Encryption
 {
-    public interface IApiEncryptionProvider
+    public interface IApiValidationProvider
     {
         ISecureChannelSessionDataManager SecureChannelSessionDataManager { get; }
         void SetEncryptedValidationTokenHeaders(HttpRequestMessage request, string postString, string publicKey);

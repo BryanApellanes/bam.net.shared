@@ -9,9 +9,9 @@ using System.Text;
 
 namespace Bam.Net.ServiceProxy.Encryption
 {
-    public class ApiEncryptionProvider : IApiEncryptionProvider
+    public class ApiValidationProvider : IApiValidationProvider
     {
-        public ApiEncryptionProvider(ISecureChannelSessionDataManager secureChannelSessionManager)
+        public ApiValidationProvider(ISecureChannelSessionDataManager secureChannelSessionManager)
         {
             this.SecureChannelSessionDataManager = secureChannelSessionManager;
         }
@@ -20,12 +20,12 @@ namespace Bam.Net.ServiceProxy.Encryption
 
         public EncryptedValidationToken CreateEncryptedValidationToken(SecureChannelSession session, string postString)
         {
-            return ApiEncryptionValidation.CreateEncryptedValidationToken(postString, session);
+            return ApiValidation.CreateEncryptedValidationToken(postString, session);
         }
 
         public EncryptedValidationToken CreateEncryptedValidationToken(string postString, string publicKeyPem)
         {
-            return ApiEncryptionValidation.CreateEncryptedValidationToken(postString, publicKeyPem);
+            return ApiValidation.CreateEncryptedValidationToken(postString, publicKeyPem);
         }
 
         public EncryptedValidationToken CreateEncryptedValidationToken(Instant instant, string postString, string publicKeyPem, HashAlgorithms hashAlgorithm = HashAlgorithms.SHA256)

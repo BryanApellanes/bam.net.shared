@@ -18,9 +18,9 @@ namespace Bam.Net.ServiceProxy.Encryption
 {
     /// <summary>
     /// A class used to provide the functionality
-    /// of both an ApiKeyProvider and an ApplicationNameProvider
+    /// of both an ApiSigningKeyProvider and an ApplicationNameProvider
     /// </summary>
-    public partial class ApiSigningKeyResolver : IApiSigningKeyProvider, IApplicationNameProvider, IApiSigningKeyResolver
+    public partial class ApiSigningKeyResolver : IApiHmacKeyProvider, IApplicationNameProvider, IApiHmacKeyResolver
     {
         static ApiSigningKeyResolver()
         {
@@ -29,15 +29,15 @@ namespace Bam.Net.ServiceProxy.Encryption
 
         public ApiSigningKeyResolver()
         {
-            ApiKeyProvider = DefaultConfigurationApiKeyProvider.Instance;
+            ApiSigningKeyProvider = DefaultConfigurationApiKeyProvider.Instance;
             ApplicationNameProvider = DefaultConfigurationApplicationNameProvider.Instance;
             HashAlgorithm = HashAlgorithms.SHA256;
         }
 
-        public ApiSigningKeyResolver(IApiSigningKeyProvider apiKeyProvider)
+        public ApiSigningKeyResolver(IApiHmacKeyProvider apiKeyProvider)
             : this()
         {
-            ApiKeyProvider = apiKeyProvider;
+            ApiSigningKeyProvider = apiKeyProvider;
         }
 
         public ApiSigningKeyResolver(IApplicationNameProvider nameProvider)
@@ -46,9 +46,9 @@ namespace Bam.Net.ServiceProxy.Encryption
             ApplicationNameProvider = nameProvider;
         }
 
-        public ApiSigningKeyResolver(IApiSigningKeyProvider apiKeyProvider, IApplicationNameProvider nameProvider) : this()
+        public ApiSigningKeyResolver(IApiHmacKeyProvider apiKeyProvider, IApplicationNameProvider nameProvider) : this()
         {
-            ApiKeyProvider = apiKeyProvider;
+            ApiSigningKeyProvider = apiKeyProvider;
             ApplicationNameProvider = nameProvider;
         }
 
@@ -59,7 +59,7 @@ namespace Bam.Net.ServiceProxy.Encryption
 
         public IApiArgumentEncoder ApiArgumentEncoder { get; set; }
 
-        public IApiSigningKeyProvider ApiKeyProvider
+        public IApiHmacKeyProvider ApiSigningKeyProvider
         {
             get;
             set;
@@ -75,24 +75,24 @@ namespace Bam.Net.ServiceProxy.Encryption
 
         #region IApiKeyProvider Members
 
-        public ApiSigningKeyInfo GetApiSigningKeyInfo(IApplicationNameProvider nameProvider)
+        public ApiHmacKeyInfo GetApiHmacKeyInfo(IApplicationNameProvider nameProvider)
         {
-            return ApiKeyProvider.GetApiSigningKeyInfo(nameProvider);
+            return ApiSigningKeyProvider.GetApiHmacKeyInfo(nameProvider);
         }
 
-        public string GetApplicationApiKey(string applicationClientId, int index)
+        public string GetApplicationApiSigningKey(string applicationClientId, int index)
         {
-            return ApiKeyProvider.GetApplicationApiKey(applicationClientId, index);
+            return ApiSigningKeyProvider.GetApplicationApiSigningKey(applicationClientId, index);
         }
 
         public string GetApplicationClientId(IApplicationNameProvider nameProvider)
         {
-            return ApiKeyProvider.GetApplicationClientId(nameProvider);
+            return ApiSigningKeyProvider.GetApplicationClientId(nameProvider);
         }
 
         public string GetCurrentApiKey()
         {
-            return ApiKeyProvider.GetCurrentApiKey();
+            return ApiSigningKeyProvider.GetCurrentApiKey();
         }
 
         #endregion
@@ -106,25 +106,25 @@ namespace Bam.Net.ServiceProxy.Encryption
 
         #endregion
         
-        public void SetKeyToken(HttpRequestMessage request, string stringToHash)
+        public void SetHmacHeader(HttpRequestMessage request, string stringToHash)
         {
-            request.Headers.Add(Headers.KeyToken, CreateKeyToken(stringToHash));
+            request.Headers.Add(Headers.Hmac, GetHmac(stringToHash));
         }
 
-        public void SetKeyToken(HttpWebRequest request, string stringToHash)
+        public void SetHmacHeader(HttpWebRequest request, string stringToHash)
         {
-            SetKeyToken(request.Headers, stringToHash);
+            SetHmacHeader(request.Headers, stringToHash);
         }
        
-        public void SetKeyToken(NameValueCollection headers, string stringToHash)
+        public void SetHmacHeader(NameValueCollection headers, string stringToHash)
         {
-            headers[Headers.KeyToken] = CreateKeyToken(stringToHash);
+            headers[Headers.Hmac] = GetHmac(stringToHash);
         }
 
-        public string CreateKeyToken(string stringToHash)
+        public string GetHmac(string stringToHash)
         {
-            ApiSigningKeyInfo apiKey = this.GetApiSigningKeyInfo(this);
-            return $"{apiKey.ApiSigningKey}:{stringToHash}".HmacHexString(apiKey.ApiSigningKey, HashAlgorithm);
+            ApiHmacKeyInfo apiKey = this.GetApiHmacKeyInfo(this);
+            return stringToHash.HmacHexString(apiKey.ApiHmacKey, HashAlgorithm);
         }
 
         // TODO: fix this to use ServiceProxyInvocationRequest
@@ -134,9 +134,9 @@ namespace Bam.Net.ServiceProxy.Encryption
 			
             string className = request.ClassName;
             string methodName = request.MethodName;
-            string stringToHash = ApiArgumentEncoder.GetStringToHash(className, methodName, "");//, request.ArgumentsAsJsonArrayOfJsonStrings);
+            string stringToHash = ApiArgumentEncoder.GetValidationString(className, methodName, "");//, request.ArgumentsAsJsonArrayOfJsonStrings);
 
-            string token = request.Context.Request.Headers[Headers.KeyToken];
+            string token = request.Context.Request.Headers[Headers.Hmac];
             bool result = false;
             if (!string.IsNullOrEmpty(token))
             {
@@ -148,7 +148,7 @@ namespace Bam.Net.ServiceProxy.Encryption
         
         public bool IsValidKeyToken(string stringToHash, string token)
         {
-            string checkToken = CreateKeyToken(stringToHash);
+            string checkToken = GetHmac(stringToHash);
             return token.Equals(checkToken);
         }
     }
