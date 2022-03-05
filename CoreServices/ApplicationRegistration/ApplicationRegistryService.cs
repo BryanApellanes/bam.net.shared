@@ -26,7 +26,7 @@ namespace Bam.Net.CoreServices
     public partial class ApplicationRegistryService : ApplicationProxyableService, IApiHmacKeyResolver, IApiHmacKeyProvider, IApplicationNameProvider
     {
         CacheManager _cacheManager;
-        ApiSigningKeyResolver _apiKeyResolver;
+        ApiHmacKeyResolver _apiKeyResolver;
 
         protected ApplicationRegistryService() { }
 
@@ -37,7 +37,7 @@ namespace Bam.Net.CoreServices
             dataSettings.SetDatabases(this);
             CompositeRepository = new CompositeRepository(ApplicationRegistrationRepository, dataSettings);
             _cacheManager = new CacheManager(100000000);
-            _apiKeyResolver = new ApiSigningKeyResolver(this, this);
+            _apiKeyResolver = new ApiHmacKeyResolver(this, this);
             AppConf = conf;
             DataSettings = dataSettings;
             Logger = logger;

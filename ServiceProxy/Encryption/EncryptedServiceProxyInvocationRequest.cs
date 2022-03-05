@@ -12,19 +12,6 @@ namespace Bam.Net.ServiceProxy.Encryption
         {
         }
 
-        ServiceProxyInvocationRequestArgumentWriter _serviceProxyArgumentWriter;
-        public override ServiceProxyInvocationRequestArgumentWriter ServiceProxyInvocationRequestArgumentWriter
-        {
-            get
-            {
-                if (_serviceProxyArgumentWriter == null)
-                {
-                    _serviceProxyArgumentWriter = new EncryptedServiceProxyInvocationRequestArgumentWriter(this);
-                }
-                return _serviceProxyArgumentWriter;
-            }
-        }
-
         public override ServiceProxyVerbs Verb 
         {
             get { return ServiceProxyVerbs.Post; } // always POST

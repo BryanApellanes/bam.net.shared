@@ -30,15 +30,16 @@ namespace Bam.Net.ServiceProxy.Encryption
         public virtual async Task<HttpRequestMessage> WriteRequestMessageAsync(EncryptedServiceProxyInvocationRequest serviceProxyInvocationRequest)
         {
             HttpRequestMessage httpRequestMessage = await CreateServiceProxyInvocationRequestMessageAsync(serviceProxyInvocationRequest);
-            EncryptedServiceProxyInvocationRequestArgumentWriter argumentWriter = serviceProxyInvocationRequest.ServiceProxyInvocationRequestArgumentWriter as EncryptedServiceProxyInvocationRequestArgumentWriter;
-
-            Args.ThrowIfNull(argumentWriter, nameof(serviceProxyInvocationRequest.ServiceProxyInvocationRequestArgumentWriter));
-
-            argumentWriter.ClientSessionInfo = this.ClientSessionInfo;
-            
             SecureChannelRequestMessage secureChannelRequestMessage = new SecureChannelRequestMessage(serviceProxyInvocationRequest);
-            
-            EncryptedServiceProxyInvocationHttpRequestContext descriptor = argumentWriter.WriteEncryptedArgumentContent(httpRequestMessage, secureChannelRequestMessage);
+            //EncryptedServiceProxyInvocationRequestArgumentWriter argumentWriter = serviceProxyInvocationRequest.ServiceProxyInvocationRequestArgumentWriter as EncryptedServiceProxyInvocationRequestArgumentWriter;
+
+            // Args.ThrowIfNull(argumentWriter, nameof(serviceProxyInvocationRequest.ServiceProxyInvocationRequestArgumentWriter));
+
+            //argumentWriter.ClientSessionInfo = this.ClientSessionInfo;
+
+
+
+            //EncryptedServiceProxyInvocationHttpRequestContext descriptor = argumentWriter.WriteEncryptedArgumentContent(httpRequestMessage, secureChannelRequestMessage);
             //ApiSigningKeyResolver
             //ApiSigningKeyResolver.SetSigningKeyToken(descriptor.HttpRequestMessage, descriptor.)
             return httpRequestMessage;

@@ -122,11 +122,11 @@ namespace Bam.Net.ServiceProxy.Encryption
 
         IApiHmacKeyResolver _apiKeyResolver;
         object _apiKeyResolverSync = new object();
-        public IApiHmacKeyResolver ApiKeyResolver
+        public IApiHmacKeyResolver ApiHmacKeyResolver
         {
             get
             {
-                return _apiKeyResolverSync.DoubleCheckLock(ref _apiKeyResolver, () => new ApiSigningKeyResolver());
+                return _apiKeyResolverSync.DoubleCheckLock(ref _apiKeyResolver, () => new ApiHmacKeyResolver());
             }
             set
             {

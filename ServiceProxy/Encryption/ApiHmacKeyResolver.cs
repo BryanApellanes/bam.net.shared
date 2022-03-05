@@ -20,39 +20,39 @@ namespace Bam.Net.ServiceProxy.Encryption
     /// A class used to provide the functionality
     /// of both an ApiSigningKeyProvider and an ApplicationNameProvider
     /// </summary>
-    public partial class ApiSigningKeyResolver : IApiHmacKeyProvider, IApplicationNameProvider, IApiHmacKeyResolver
+    public partial class ApiHmacKeyResolver : IApiHmacKeyProvider, IApplicationNameProvider, IApiHmacKeyResolver
     {
-        static ApiSigningKeyResolver()
+        static ApiHmacKeyResolver()
         {
-            Default = new ApiSigningKeyResolver();
+            Default = new ApiHmacKeyResolver();
         }
 
-        public ApiSigningKeyResolver()
+        public ApiHmacKeyResolver()
         {
             ApiSigningKeyProvider = DefaultConfigurationApiKeyProvider.Instance;
             ApplicationNameProvider = DefaultConfigurationApplicationNameProvider.Instance;
             HashAlgorithm = HashAlgorithms.SHA256;
         }
 
-        public ApiSigningKeyResolver(IApiHmacKeyProvider apiKeyProvider)
+        public ApiHmacKeyResolver(IApiHmacKeyProvider apiKeyProvider)
             : this()
         {
             ApiSigningKeyProvider = apiKeyProvider;
         }
 
-        public ApiSigningKeyResolver(IApplicationNameProvider nameProvider)
+        public ApiHmacKeyResolver(IApplicationNameProvider nameProvider)
             : this()
         {
             ApplicationNameProvider = nameProvider;
         }
 
-        public ApiSigningKeyResolver(IApiHmacKeyProvider apiKeyProvider, IApplicationNameProvider nameProvider) : this()
+        public ApiHmacKeyResolver(IApiHmacKeyProvider apiKeyProvider, IApplicationNameProvider nameProvider) : this()
         {
             ApiSigningKeyProvider = apiKeyProvider;
             ApplicationNameProvider = nameProvider;
         }
 
-        public static ApiSigningKeyResolver Default
+        public static ApiHmacKeyResolver Default
         {
             get;
         }

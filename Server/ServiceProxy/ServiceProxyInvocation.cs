@@ -75,7 +75,7 @@ namespace Bam.Net.Server.ServiceProxy
         {
             get
             {
-                return _apiKeyResolverSync.DoubleCheckLock(ref _apiKeyResolver, () => new ApiSigningKeyResolver());
+                return _apiKeyResolverSync.DoubleCheckLock(ref _apiKeyResolver, () => new ApiHmacKeyResolver());
             }
             set => _apiKeyResolver = value;
         }
@@ -480,7 +480,7 @@ namespace Bam.Net.Server.ServiceProxy
                 }
                 catch (Exception ex)
                 {
-                    Result = $"{ex.GetInnerException().Message} \r\n\r\n\t{ex.GetInnerException()?.StackTrace}";
+                    Result = $"{ex.GetInnerException()?.Message} \r\n\r\n\t{ex.GetInnerException()?.StackTrace}";
                     Exception = ex;
                     success = false;
                     OnExecutionException(target);

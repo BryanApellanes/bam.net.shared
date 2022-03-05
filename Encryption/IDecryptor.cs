@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Bam.Net.Encryption
 {
-    public interface IDecryptor<TData>
+    public interface IDecryptor<TData> : IDecryptor
     {
         TData Decrypt(byte[] cipherData);
     }

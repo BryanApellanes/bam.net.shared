@@ -546,6 +546,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\ServerKeySetDataManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\SymmetricDecryptor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\SymmetricEncryptor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Encryption\SymmetricHttpRequestEncryptor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GZipBase64ReverseTransformer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GZipBase64Transformer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GZipByteReverseTransformer.cs" />
@@ -572,13 +573,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\Encryption\Partials\SecureSession.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\Encryption\SecureChannelException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\Encryption\EncryptedServiceProxyInvocationRequest.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\Encryption\SecureChannelRequestMessageAsymmetricDecryptor.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\Encryption\SecureChannelRequestMessageAsymmetricEncryptor.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\Encryption\SecureChannelRequestMessageSymmetricDecryptor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\Encryption\SecureServiceProxy_Generated\SecureSession.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\Encryption\SecureServiceProxy_Generated\SecureSessionCollection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\Encryption\SecureServiceProxy_Generated\SecureSessionColumns.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\Encryption\SecureChannelRequestMessageSymmetricEncryptor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\Encryption\ValidationToken.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\IServiceProxyInvocationRequestWriter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\MediaTypeAttribute.cs" />
@@ -2324,7 +2321,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\Encryption\ApiHmacKeyNotFoundException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\Encryption\ApiHmacKeyProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\Encryption\ApiHmacKeyRequiredAttribute.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\Encryption\ApiSigningKeyResolver.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\Encryption\ApiHmacKeyResolver.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\Encryption\ApplicationCreateResult.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\Encryption\ApplicationCreateStatus.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\Encryption\ClientSessionInfo.cs" />

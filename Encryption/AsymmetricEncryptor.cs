@@ -24,7 +24,7 @@ namespace Bam.Net.Encryption
             this.Add(this.GZipByteTransformer);
         }
 
-        protected RsaByteTransformer RsaByteTransformer { get; private set; }
+        protected internal RsaByteTransformer RsaByteTransformer { get; private set; }
         protected GZipByteTransformer GZipByteTransformer { get; private set; }
 
         public new AsymmetricDecryptor<TData> GetReverseTransformer()
@@ -32,6 +32,11 @@ namespace Bam.Net.Encryption
             return new AsymmetricDecryptor<TData>(this);
         }
 
+        /// <summary>
+        /// Encrypts and gzips the json representation of the specified data.
+        /// </summary>
+        /// <param name="data">The object data to encrypt.</param>
+        /// <returns>byte[]</returns>
         public byte[] Encrypt(TData data)
         {
             return Transform(data);
@@ -40,6 +45,24 @@ namespace Bam.Net.Encryption
         public IDecryptor<TData> GetDecryptor()
         {
             return GetReverseTransformer();
+        }
+
+        /// <summary>
+        /// Encrypts the specified string and returns the base 64 encoded cipher.
+        /// </summary>
+        /// <param name="plainData"></param>
+        /// <returns></returns>
+        public string Encrypt(string plainData)
+        {
+            byte[] utf8 = Encoding.UTF8.GetBytes(plainData);
+            byte[] cipherData = RsaByteTransformer.Transform(utf8);
+
+            return cipherData.ToBase64();
+        }
+
+        public byte[] EncryptBytes(byte[] plainData)
+        {
+            return RsaByteTransformer.Transform(plainData);
         }
     }
 }

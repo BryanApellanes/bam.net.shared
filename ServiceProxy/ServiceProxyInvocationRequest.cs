@@ -71,13 +71,13 @@ namespace Bam.Net.ServiceProxy
         {
             get
             {
-                if(_verb == ServiceProxyVerbs.Invalid)
+                if (_verb == ServiceProxyVerbs.Invalid)
                 {
                     // 2048 is a somewhat arbitrary value that is the longest Url Internet Explorer can accept.
                     // ServiceProxyClient and derivatives use HttpClient under the hood which 
                     // shouldn't have this limitation. Specifying this limit helps provide broader support
                     // in the future to display results in a browser when rendering responses natively as html.
-                    _verb = GetInvocationUrl()?.Length >= 2048 ? ServiceProxyVerbs.Post : ServiceProxyVerbs.Get; 
+                    _verb = GetInvocationUrl()?.Length >= 2048 ? ServiceProxyVerbs.Post : ServiceProxyVerbs.Get;
                 }
                 return _verb;
             }
