@@ -37,7 +37,7 @@ namespace Bam.Net.Encryption
         /// </summary>
         /// <param name="data">The object data to encrypt.</param>
         /// <returns>byte[]</returns>
-        public byte[] Encrypt(TData data)
+        public Cipher<TData> Encrypt(TData data)
         {
             return Transform(data);
         }
@@ -52,7 +52,7 @@ namespace Bam.Net.Encryption
         /// </summary>
         /// <param name="plainData"></param>
         /// <returns></returns>
-        public string Encrypt(string plainData)
+        public string EncryptString(string plainData)
         {
             byte[] utf8 = Encoding.UTF8.GetBytes(plainData);
             byte[] cipherData = RsaByteTransformer.Transform(utf8);

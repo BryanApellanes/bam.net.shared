@@ -53,8 +53,8 @@ namespace Bam.Net.Encryption
                     _encrypted.Add(key, value);
                 }
 
-                string decryptedKey = this.Decryptor.Decrypt(key);
-                string decryptedValue = this.Decryptor.Decrypt(value);
+                string decryptedKey = this.Decryptor.DecryptString(key);
+                string decryptedValue = this.Decryptor.DecryptString(value);
                 if(!_unencrypted.ContainsKey(decryptedKey))
                 {
                     _unencrypted.Add(decryptedKey, decryptedValue);

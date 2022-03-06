@@ -7,6 +7,7 @@ using System.Text;
 
 namespace Bam.Net.ServiceProxy.Encryption
 {
+    [Obsolete("Use Encryption.HttpRequestHeaderWriter")]
     public interface IApiValidationProvider
     {
         ISecureChannelSessionDataManager SecureChannelSessionDataManager { get; }

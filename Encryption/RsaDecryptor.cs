@@ -23,7 +23,7 @@ namespace Bam.Net.Encryption
 
         public Func<RsaPublicPrivateKeyPair> KeyProvider { get; set; }
 
-        public string Decrypt(string cipher)
+        public string DecryptString(string cipher)
         {
             RsaPublicPrivateKeyPair rsaPublicPrivateKeyPair = KeyProvider();
             return rsaPublicPrivateKeyPair.Decrypt(cipher);

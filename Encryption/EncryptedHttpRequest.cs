@@ -4,8 +4,8 @@ using System.Text;
 
 namespace Bam.Net.Encryption
 {
-    public interface IRsaKeySource : IRsaPublicKeySource
+    public class EncryptedHttpRequest : HttpRequest
     {
-        RsaPublicPrivateKeyPair GetRsaKey();
+        public Cipher ContentCipher { get; internal set; }
     }
 }

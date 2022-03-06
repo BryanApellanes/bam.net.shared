@@ -24,30 +24,19 @@ namespace Bam.Net.ServiceProxy.Encryption
     /// </summary>
     internal class ApiValidation // TODO: move this implementation to ApiEncryptionProvider 
     {
-/*        public static void SetEncryptedValidationTokenHeaders(HttpRequestMessage request, string plainPostString, string publicKeyPem)
-        {
-            SetEncryptedValidationTokenHeaders(request.Headers, plainPostString, publicKeyPem);
-        }*/
-        
-/*        public static void SetEncryptedValidationTokenHeaders(HttpRequestHeaders headers, string plainPostString, string publicKeyPem)
-        {
-            EncryptedValidationToken token = CreateEncryptedValidationToken(plainPostString, publicKeyPem);
-            headers.Add(Headers.Nonce, token.NonceCipher);
-            headers.Add(Headers.ValidationToken, token.HashCipher);
-        }*/
 
         public static EncryptedValidationToken ReadEncryptedValidationToken(NameValueCollection headers)
         {
             EncryptedValidationToken result = new EncryptedValidationToken
             {
-                TimestampCipher = headers[Headers.Timestamp],
-                HashCipher = headers[Headers.ValidationToken]
+                TimestampCipher = headers[CipherHeaders.TimestampCipher],
+                HashCipher = headers[CipherHeaders.HashCipher]
             };
-            Args.ThrowIfNull(result.TimestampCipher, Headers.Timestamp);
+            Args.ThrowIfNull(result.TimestampCipher, CipherHeaders.TimestampCipher);
             Args.ThrowIf<EncryptedValidationTokenNotFoundException>(
                 string.IsNullOrEmpty(result.HashCipher),  
                 "Header was not found: {0}",
-                Headers.ValidationToken);
+                CipherHeaders.HashCipher);
             return result;
         }
 
@@ -69,13 +58,13 @@ namespace Bam.Net.ServiceProxy.Encryption
 
         public static EncryptedValidationToken CreateEncryptedValidationToken(Instant instant, string validatedString, string publicKeyPem, HashAlgorithms algorithm = HashAlgorithms.SHA256)
         {
-            //{Month}/{Day}/{Year};{Hour}.{Minute}.{Second}.{Millisecond}:{PostString}
-            string nonce = instant.ToString();
-            string hash = $"{nonce}:{validatedString}".HashHexString(algorithm);            
+            //{Month}/{Day}/{Year};{Hour}.{Minute}.{Second}.{Millisecond}
+            string timestamp = instant.ToString();
+            string hash = $"{timestamp}:{validatedString}".HashHexString(algorithm);            
             string hashCipher = hash.EncryptWithPublicKey(publicKeyPem);
-            string nonceCipher = nonce.EncryptWithPublicKey(publicKeyPem);
+            string timestampCipher = timestamp.EncryptWithPublicKey(publicKeyPem);
 
-            return new EncryptedValidationToken { HashCipher = hashCipher, TimestampCipher = nonceCipher };
+            return new EncryptedValidationToken { HashCipher = hashCipher, TimestampCipher = timestampCipher };
         }
 
         public static EncryptedTokenValidationStatus ValidateEncryptedToken(IHttpContext context, string post)

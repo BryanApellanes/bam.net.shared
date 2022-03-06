@@ -9,7 +9,7 @@ namespace Bam.Net.Encryption
     {
         IDictionary<string, string> Headers { get; }
         string ContentType { get; set; }
-        HttpVerbs Method { get; set; }
+        HttpVerbs Verb { get; set; }
         string Content { get; set; }
     }
 }

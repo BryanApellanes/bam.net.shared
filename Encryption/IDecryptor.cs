@@ -6,12 +6,12 @@ namespace Bam.Net.Encryption
 {
     public interface IDecryptor<TData> : IDecryptor
     {
-        TData Decrypt(byte[] cipherData);
+        TData Decrypt(Cipher<TData> cipherData);
     }
 
     public interface IDecryptor
     {
-        string Decrypt(string cipher);
+        string DecryptString(string cipher);
         byte[] DecryptBytes(byte[] cipher);
     }
 }

@@ -22,7 +22,7 @@ namespace Bam.Net.Encryption
 
         public Func<AesKeyVectorPair> KeyProvider { get; set; }
 
-        public string Encrypt(string plainData)
+        public string EncryptString(string plainData)
         {
             AesKeyVectorPair aesKeyVectorPair = KeyProvider();
             return aesKeyVectorPair.Encrypt(plainData);

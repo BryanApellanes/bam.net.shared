@@ -55,6 +55,11 @@ namespace Bam.Net.Encryption.Data
             return new RsaPublicPrivateKeyPair(RsaKey) { RsaKeyLength = RsaKeyLength };
         }
 
+        public RsaPublicKey GetRsaPublicKey()
+        {
+            return GetRsaKey().GetRsaPublicKey();
+        }
+
         public ISecretExchange GetSecretExchange()
         {
             // Only send if the current machine created this key set.

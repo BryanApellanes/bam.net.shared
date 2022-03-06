@@ -486,6 +486,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\AesDecryptor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\AesEncryptor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\AsymmetricDecryptor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Encryption\Cipher.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\ClientKeySetDataManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\Data\ClientKeySet.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\Data\Files\KeySetFile.cs" />
@@ -512,8 +513,15 @@
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\Data\KeySet.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\Data\ServerKeySet.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\DecryptedDictionary.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Encryption\EncryptedHttpRequest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Encryption\EncryptedHttpRequest{T}.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\EncryptionSchemes.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\AsymmetricEncryptor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Encryption\CipherHeaders.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Encryption\HttpRequest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Encryption\HttpRequestEncryptor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Encryption\HttpRequestHeaderEncryptor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Encryption\HttpRequest{T}.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\IAesKeySource.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\IApplicationKeySet.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\IClientKeySet.cs" />
@@ -526,6 +534,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\IHttpRequest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\IHttpRequestEncryptor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\IHttpRequestEncryptor{T}.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Encryption\IHttpRequestHeaderEncryptor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\IHttpRequest{T}.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\IKeySet.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\IAesKeyExchange.cs" />
@@ -546,7 +555,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\ServerKeySetDataManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\SymmetricDecryptor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\SymmetricEncryptor.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Encryption\SymmetricHttpRequestEncryptor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Encryption\HttpRequestEncryptor{T}.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GZipBase64ReverseTransformer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GZipBase64Transformer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GZipByteReverseTransformer.cs" />

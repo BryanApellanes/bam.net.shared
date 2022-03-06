@@ -1,4 +1,5 @@
-﻿using Bam.Net.ServiceProxy.Data;
+﻿using Bam.Net.Encryption;
+using Bam.Net.ServiceProxy.Data;
 using Bam.Net.Web;
 using System;
 using System.Collections.Generic;
@@ -9,6 +10,7 @@ using System.Text;
 
 namespace Bam.Net.ServiceProxy.Encryption
 {
+    [Obsolete("Use Encryption.HttpRequestHeaderWriter")]
     public class ApiValidationProvider : IApiValidationProvider
     {
         public ApiValidationProvider(ISecureChannelSessionDataManager secureChannelSessionManager)
@@ -54,15 +56,15 @@ namespace Bam.Net.ServiceProxy.Encryption
         {
             EncryptedValidationToken encryptedValidationToken = new EncryptedValidationToken
             {
-                TimestampCipher = headers[Headers.Timestamp],
-                HashCipher = headers[Headers.ValidationToken]
+                TimestampCipher = headers[CipherHeaders.TimestampCipher],
+                HashCipher = headers[CipherHeaders.HashCipher]
             };
-            Args.ThrowIfNull(encryptedValidationToken.TimestampCipher, Headers.Timestamp);
+            Args.ThrowIfNull(encryptedValidationToken.TimestampCipher, CipherHeaders.TimestampCipher);
             Args.ThrowIf<EncryptedValidationTokenNotFoundException>
                 (
                     string.IsNullOrEmpty(encryptedValidationToken.HashCipher),
                     "Header was not found: {0}",
-                    Headers.ValidationToken
+                    CipherHeaders.HashCipher
                 );
 
             return encryptedValidationToken;
@@ -78,8 +80,8 @@ namespace Bam.Net.ServiceProxy.Encryption
         {
             HttpRequestHeaders headers = request.Headers;
             EncryptedValidationToken token = CreateEncryptedValidationToken(plainPostString, publicKeyPem);
-            headers.Add(Headers.Timestamp, token.TimestampCipher);
-            headers.Add(Headers.ValidationToken, token.HashCipher);
+            headers.Add(CipherHeaders.TimestampCipher, token.TimestampCipher);
+            headers.Add(CipherHeaders.HashCipher, token.HashCipher);
         }
 
         public EncryptedTokenValidationStatus ValidateEncryptedToken(IHttpContext context, string plainPost)

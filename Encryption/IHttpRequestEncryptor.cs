@@ -7,6 +7,8 @@ namespace Bam.Net.Encryption
     public interface IHttpRequestEncryptor
     {
         IEncryptor Encryptor { get; }
-        IHttpRequest Encrypt(IHttpRequest request);
+        IHttpRequestHeaderEncryptor HeaderEncryptor { get; }
+
+        IHttpRequest EncryptRequest(IHttpRequest request);
     }
 }

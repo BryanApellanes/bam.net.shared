@@ -6,14 +6,14 @@ namespace Bam.Net.Encryption
 {
     public interface IEncryptor<TData> : IEncryptor
     {
-        byte[] Encrypt(TData data);
+        Cipher<TData> Encrypt(TData data);
 
         IDecryptor<TData> GetDecryptor();
     }
 
     public interface IEncryptor
     {
-        string Encrypt(string plainData);
+        string EncryptString(string plainData);
         byte[] EncryptBytes(byte[] plainData);
     }
 }

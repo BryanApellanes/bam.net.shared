@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Bam.Net.Encryption
 {
-    public class RsaPublicPrivateKeyPair : IRsaKeySource, IRsaPublicKeySource
+    public class RsaPublicPrivateKeyPair : IRsaKeySource
     {
         public RsaPublicPrivateKeyPair(RsaKeyLength rsaKeyLength = RsaKeyLength._2048)
         {
@@ -44,11 +44,11 @@ namespace Bam.Net.Encryption
         public RsaKeyLength RsaKeyLength { get; set; }
 
         /// <summary>
-        /// Gets or sets the full keypair as a pem string.
+        /// Gets the full keypair as a pem string.
         /// </summary>
-        public string Pem { get; }
+        public string Pem { get; private set; }
 
-        public string PublicKeyPem { get; set; }
+        public string PublicKeyPem { get; private set; }
 
         /// <summary>
         /// Gets a base 64 encoded cipher for the specified plain text.
