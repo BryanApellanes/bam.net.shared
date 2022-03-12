@@ -17,5 +17,7 @@ namespace Bam.Net.Encryption
         void InitializeAesKey();
 
         ISecretExchange GetSecretExchange();
+
+        string PrivateKeyDecrypt(string value);
     }
 }

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Bam.Net.Encryption
 {
-    public interface IClientKeySet : ICommunicationKeySet
+    public interface IClientKeySet : ICommunicationKeySet, IRsaPublicKeySource, IAesKeySource
     {
         /// <summary>
         /// Gets a value that uniquely identifies this client key set by the hash of the public key.
@@ -28,6 +28,7 @@ namespace Bam.Net.Encryption
 
         string Secret { get; }
 
+        string PublicKeyEncrypt(string value);
         string Encrypt(string value);
 
         string Decrypt(string base64EncodedValue);

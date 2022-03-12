@@ -81,5 +81,10 @@ namespace Bam.Net.Encryption.Data
 
             throw new InvalidOperationException($"The {nameof(ServerKeySet)} with identifier {Identifier} is not from the current machine ({Environment.MachineName})");
         }
+
+        public string PrivateKeyDecrypt(string value)
+        {
+            return value.DecryptWithPrivateKey(GetAsymmetricKeys());
+        }
     }
 }

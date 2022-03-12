@@ -159,6 +159,11 @@ namespace Bam.Net.Encryption.Data
             }
         }
 
+        /// <summary>
+        /// Returns the SHA256 of the specified public key prefixed by "keyset_".
+        /// </summary>
+        /// <param name="publicKey"></param>
+        /// <returns></returns>
         protected internal static string GetIdentifier(string publicKey)
         {
             return $"keyset_{publicKey.Sha256()}";

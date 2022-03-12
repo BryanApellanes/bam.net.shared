@@ -90,59 +90,6 @@ namespace Bam.Net.ServiceProxy.Encryption
             return new SetSessionKeyRequest(keyCipher, keyHashCipher, ivCipher, ivHashCipher);
         }
 
-        /// <summary>
-        /// Returns the base 64 encoded symetric cipher for the specified plain text.
-        /// </summary>
-        /// <param name="plainText"></param>
-        /// <returns></returns>
-        public string GetSymetricCipher(string plainText)
-        {
-            Encrypted encrypted = new Encrypted(plainText, AesKey, AesIV);
-            return encrypted.Base64Cipher;
-        }
-
-        public byte[] GetSymetricCipherBytes(string plainText)
-        {
-            Encrypted encrypted = new Encrypted(plainText, AesKey, AesIV);
-            return encrypted.Cipher;
-        }
-
-        public string GetPlainText(byte[] cipherBytes)
-        {
-            string base64Cipher = Convert.ToBase64String(cipherBytes);
-            Decrypted decrypted = new Decrypted(base64Cipher, AesKey, AesIV);
-            return decrypted.Value;
-        }
-
-        public byte[] GetPlainBytes(byte[] cipherBytes, Encoding encoding = null)
-        {
-            string base64Cipher = Convert.ToBase64String(cipherBytes);
-            Decrypted decrypted = new Decrypted(base64Cipher, AesKey, AesIV);
-            encoding = encoding ?? Encoding.UTF8;
-            return encoding.GetBytes(decrypted.Value);
-        }
-
-        /// <summary>
-        /// Gets a base 64 encoded asymmetric cipher of the specified input.
-        /// </summary>
-        /// <param name="plainText"></param>
-        /// <param name="encoding"></param>
-        /// <returns></returns>
-        public string GetAsymetricCipher(string plainText, Encoding encoding = null)
-        {
-            return plainText.EncryptWithPublicKey(PublicKey, encoding);
-        }
-
-        public byte[] GetAsymetricCipherBytes(string plainText, Encoding encoding = null)
-        {
-            return plainText.GetPublicKeyEncryptedBytes(PublicKey.ToKey(), encoding);
-        }
-
-        public byte[] GetAsymetricCipherBytes(byte[] plainData)
-        {
-            return plainData.GetPublicKeyEncryptedBytes(PublicKey.ToKey());
-        }
-
         public override bool Equals(object obj)
         {
             if (obj is ClientSessionInfo info)

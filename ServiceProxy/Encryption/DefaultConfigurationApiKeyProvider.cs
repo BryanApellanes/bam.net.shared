@@ -27,7 +27,7 @@ namespace Bam.Net.ServiceProxy.Encryption
             return DefaultConfiguration.GetAppSetting("ClientId", true);
         }
 
-        public override string GetApplicationApiSigningKey(string applicationClientId, int index)
+        public override string GetApplicationApiHmacKey(string applicationClientId, int index)
         {
             return DefaultConfiguration.GetAppSetting("ApiKey", true);
         }

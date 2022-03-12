@@ -1,29 +1,12 @@
 /*
 	Copyright © Bryan Apellanes 2015  
 */
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Net;
-using Bam.Net;
 using Bam.Net.Encryption;
-using Bam.Net.Configuration;
-using Bam.Net.ServiceProxy;
-using Bam.Net.Logging;
-using Bam.Net.Web;
-using Org.BouncyCastle.Crypto;
-using Org.BouncyCastle.Crypto.Engines;
-using Org.BouncyCastle.Crypto.Generators;
-using Org.BouncyCastle.Crypto.Parameters;
-using Org.BouncyCastle.Math;
-using Org.BouncyCastle.Security;
-using System.IO;
-using System.Reflection;
-using System.Net.Http;
-using System.Web;
 using Bam.Net.Services;
+using System;
+using System.Linq;
+using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace Bam.Net.ServiceProxy.Encryption
 {
@@ -57,7 +40,7 @@ namespace Bam.Net.ServiceProxy.Encryption
         IApiHmacKeyResolver _apiKeyResolver;
         object _apiKeyResolverSync = new object();
         [Inject]
-        public IApiHmacKeyResolver ApiSigningKeyResolver
+        public IApiHmacKeyResolver ApiHmacKeyResolver
         {
             get
             {
@@ -66,21 +49,6 @@ namespace Bam.Net.ServiceProxy.Encryption
             set
             {
                 _apiKeyResolver = value;
-            }
-        }
-
-        IApiValidationProvider _apiEncryptionProvider;
-        object _apiEncryptionProviderLock = new object();
-        [Inject]
-        public IApiValidationProvider ApiValidationProvider
-        {
-            get
-            {
-                return _apiEncryptionProviderLock.DoubleCheckLock(ref _apiEncryptionProvider, () => new ApiValidationProvider(SecureChannelSessionDataManager));
-            }
-            set
-            {
-                _apiEncryptionProvider = value;
             }
         }
 
@@ -272,9 +240,6 @@ namespace Bam.Net.ServiceProxy.Encryption
                         secureServiceProxyInvocationRequest = serviceProxyInvocationRequest.CopyAs<EncryptedServiceProxyInvocationRequest>();
                     }
                     HttpRequestMessage requestMessage = await CreateServiceProxyInvocationRequestMessageAsync(secureServiceProxyInvocationRequest);
-                    //EncryptedServiceProxyInvocationRequestArgumentWriter<TService> secureServiceProxyArguments = new EncryptedServiceProxyInvocationRequestArgumentWriter<TService>(ClientSessionInfo, ApiSigningKeyResolver, ApiValidationProvider, serviceProxyInvocationRequest);
-                    //secureServiceProxyArguments.WriteArgumentContent(requestMessage);
-                    //secureServiceProxyArguments.SetKeyToken(requestMessage);
 
                     HttpResponseMessage responseMessage = await HttpClient.SendAsync(requestMessage);
                     args.RequestMessage = requestMessage;
@@ -303,11 +268,16 @@ namespace Bam.Net.ServiceProxy.Encryption
                 throw new ArgumentNullException("ServiceType not specified");
             }
 
-            EncryptedServiceProxyInvocationRequestWriter requestWriter = GetRequestWriter<EncryptedServiceProxyInvocationRequestWriter>(ClientSessionInfo, ApiSigningKeyResolver, ApiValidationProvider);
+            IServiceProxyInvocationRequestWriter requestWriter = GetRequestWriter();
             HttpRequestMessage httpRequestMessage = await requestWriter.WriteRequestMessageAsync(serviceProxyInvocationRequest);
 
             Headers.Keys.Each(key => httpRequestMessage.Headers.Add(key, Headers[key]));
             return httpRequestMessage;
+        }
+
+        protected override IServiceProxyInvocationRequestWriter GetRequestWriter()
+        {
+            return new EncryptedServiceProxyInvocationRequestWriter(ClientSessionInfo, ApiHmacKeyResolver);
         }
 
         private void Initialize()

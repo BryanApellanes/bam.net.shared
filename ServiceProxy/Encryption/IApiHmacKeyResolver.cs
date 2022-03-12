@@ -17,19 +17,19 @@ namespace Bam.Net.ServiceProxy.Encryption
         /// <returns></returns>
         string GetHmac(string stringToHash);
         ApiHmacKeyInfo GetApiHmacKeyInfo(IApplicationNameProvider nameProvider);
-        string GetApplicationApiSigningKey(string applicationClientId, int index);
+        string GetApplicationApiHmacKey(string applicationClientId, int index);
         string GetApplicationClientId(IApplicationNameProvider nameProvider);
         string GetApplicationName();
-        string GetCurrentApiKey();
+        string GetCurrentApiHmacKey();
         bool IsValidRequest(ServiceProxyInvocation request);
         bool IsValidKeyToken(string stringToHash, string token);
-
+/*
         void SetHmacHeader(HttpRequestMessage request, string stringToHash);
 
         [Obsolete("Use SetKeyToken(HttpRequestMessage) instead.")]
         void SetHmacHeader(NameValueCollection headers, string stringToHash);
 
         [Obsolete("Use SetKeyToken(HttpRequestMessage) instead.")]
-        void SetHmacHeader(HttpWebRequest request, string stringToHash);
+        void SetHmacHeader(HttpWebRequest request, string stringToHash);*/
     }
 }

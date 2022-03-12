@@ -25,13 +25,12 @@ namespace Bam.Net.Encryption
         public Func<RsaPublicPrivateKeyPair> KeyProvider { get; set; }
         public string EncryptString(string plainData)
         {
-            RsaPublicPrivateKeyPair rsaPublicPrivateKeyPair = KeyProvider();
+            RsaPublicPrivateKeyPair rsaPublicPrivateKeyPair = KeyProvider();            
             return rsaPublicPrivateKeyPair.Encrypt(plainData);
         }
 
         public byte[] EncryptBytes(byte[] plainData)
         {
-
             RsaPublicPrivateKeyPair rsaPublicPrivateKeyPair = KeyProvider();
             return rsaPublicPrivateKeyPair.EncryptBytes(plainData);
         }

@@ -25,7 +25,7 @@ namespace Bam.Net.ServiceProxy.Encryption
             return ClientId;
         }
 
-        public override string GetApplicationApiSigningKey(string applicationClientId, int index)
+        public override string GetApplicationApiHmacKey(string applicationClientId, int index)
         {
             return ApiKey;
         }

@@ -51,14 +51,14 @@ namespace Bam.Net.ServiceProxy.Encryption
             };
         }
 
-        protected SymmetricEncryptor<SecureChannelRequestMessage> GetSymmetricEncryptor()
+        protected SymmetricDataEncryptor<SecureChannelRequestMessage> GetSymmetricEncryptor()
         {
-            return new SymmetricEncryptor<SecureChannelRequestMessage>(ClientSessionInfo);
+            return new SymmetricDataEncryptor<SecureChannelRequestMessage>(ClientSessionInfo);
         }
 
-        protected AsymmetricEncryptor<SecureChannelRequestMessage> GetAsymmetricEncryptor()
+        protected AsymmetricDataEncryptor<SecureChannelRequestMessage> GetAsymmetricEncryptor()
         {
-            return new AsymmetricEncryptor<SecureChannelRequestMessage>(ClientSessionInfo);
+            return new AsymmetricDataEncryptor<SecureChannelRequestMessage>(ClientSessionInfo);
         }
 
         protected Dictionary<EncryptionSchemes, string> EncryptionSchemesToContentTypes

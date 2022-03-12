@@ -27,20 +27,20 @@ namespace Bam.Net.ServiceProxy.Encryption
             string clientId = GetApplicationClientId(nameProvider);
             ApiHmacKeyInfo info = new ApiHmacKeyInfo()
             {
-                ApiHmacKey = GetApplicationApiSigningKey(clientId, 0),
+                ApiHmacKey = GetApplicationApiHmacKey(clientId, 0),
                 ApplicationClientId = clientId
             };
             return info;
         }
 
-        public string GetCurrentApiKey()
+        public string GetCurrentApiHmacKey()
         {
-            return GetApplicationApiSigningKey(GetApplicationClientId(ApplicationNameProvider.Default), 0);
+            return GetApplicationApiHmacKey(GetApplicationClientId(ApplicationNameProvider.Default), 0);
         }
 
         public abstract string GetApplicationClientId(IApplicationNameProvider nameProvider);
 
-        public abstract string GetApplicationApiSigningKey(string applicationClientId, int index);
+        public abstract string GetApplicationApiHmacKey(string applicationClientId, int index);
 
     }
 }

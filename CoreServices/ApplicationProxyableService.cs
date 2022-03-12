@@ -53,10 +53,10 @@ namespace Bam.Net.CoreServices
         }
 
         /// <summary>
-        /// Gets the name of the client application.
+        /// Gets the name of the application the client requested.
         /// </summary>
         /// <value>
-        /// The name of the client application.  This value comes from the custom HTTP header "X-Bam-AppName".
+        /// The name of the application the client requested.  This value comes from the custom HTTP header "X-Bam-AppName".
         /// </value>
         public string ClientApplicationName => base.ApplicationName;
 
@@ -137,7 +137,7 @@ namespace Bam.Net.CoreServices
         
         /// <summary>
         /// Returns true if the ApplicationNameProvider returns the same 
-        /// ApplicationName as is specified by the request headers
+        /// ApplicationName as is specified by the request headers.
         /// </summary>
         /// <returns></returns>
         [Local]

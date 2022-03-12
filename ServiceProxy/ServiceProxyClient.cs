@@ -32,7 +32,7 @@ namespace Bam.Net.ServiceProxy
             {
                 { "User-Agent", UserAgents.ServiceProxyClient() }
             };
-            //this.MethodUrlFormat = "{BaseAddress}ServiceProxy/Invoke/{ClassName}/{MethodName}?{QueryStringArguments}";
+
             this.HttpMethods = new Dictionary<ServiceProxyVerbs, HttpMethod>()
             {
                 { ServiceProxyVerbs.Get, HttpMethod.Get },
@@ -53,12 +53,6 @@ namespace Bam.Net.ServiceProxy
         public event EventHandler<ServiceProxyInvocationRequestEventArgs> GetComplete;
 
         public event EventHandler<ServiceProxyInvocationRequestEventArgs> RequestExceptionThrown;
-
-/*        public string MethodUrlFormat
-        {
-            get;
-            set;
-        }*/
 
         public string BaseAddress
         {
@@ -246,7 +240,7 @@ namespace Bam.Net.ServiceProxy
             }
             else
             {
-                ServiceProxyInvocationRequestWriter serviceProxyInvocationRequestWriter = GetRequestWriter<ServiceProxyInvocationRequestWriter>();
+                IServiceProxyInvocationRequestWriter serviceProxyInvocationRequestWriter = GetRequestWriter();
                 HttpRequestMessage request = await serviceProxyInvocationRequestWriter.WriteRequestMessageAsync(serviceProxyInvocationRequest);
 
                 try
@@ -309,17 +303,22 @@ namespace Bam.Net.ServiceProxy
                 throw new ArgumentNullException("ServiceType not specified");
             }
 
-            IServiceProxyInvocationRequestWriter requestWriter = GetRequestWriter<ServiceProxyInvocationRequestWriter>();
+            IServiceProxyInvocationRequestWriter requestWriter = GetRequestWriter();
 
             HttpRequestMessage httpRequestMessage = await requestWriter.WriteRequestMessageAsync(serviceProxyInvocationRequest);
             Headers.Keys.Each(key => httpRequestMessage.Headers.Add(key, Headers[key]));
             return httpRequestMessage;
         }
 
-        protected TWriter GetRequestWriter<TWriter>(params object[] ctorArgs) where TWriter: IServiceProxyInvocationRequestWriter
+        protected virtual IServiceProxyInvocationRequestWriter GetRequestWriter()
+        {
+            return new ServiceProxyInvocationRequestWriter();//GetRequestWriter<ServiceProxyInvocationRequestWriter>();
+        }
+
+/*        protected TWriter GetRequestWriter<TWriter>(params object[] ctorArgs) where TWriter: IServiceProxyInvocationRequestWriter
         {
             return (TWriter)typeof(TWriter).Construct(ctorArgs);
-        }
+        }*/
 
         public abstract Task<string> InvokeServiceMethodAsync(string baseAddress, string className, string methodName, object[] arguments);
 

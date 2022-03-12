@@ -178,7 +178,7 @@ namespace Bam.Net.Services.Clients
             return token.Equals(checkToken);
         }
 
-        public void SetHmacHeader(HttpRequestMessage request, string stringToHash)
+/*        public void SetHmacHeader(HttpRequestMessage request, string stringToHash)
         {
             request.Headers.Add(Headers.Hmac, GetHmac(stringToHash));
         }
@@ -198,7 +198,8 @@ namespace Bam.Net.Services.Clients
         public void SetHmacHeader(NameValueCollection headers, string stringToHash)
         {
             headers[Headers.Hmac] = GetHmac(stringToHash);
-        }
+        }*/
+
         #endregion
         [Verbosity(VerbosityLevel.Warning, SenderMessageFormat = "ApiKeyFile {ApiKeyFilePath} was not found")]
         public event EventHandler ApiKeyFileNotFound;
@@ -243,7 +244,7 @@ namespace Bam.Net.Services.Clients
             return ApplicationRegistryService.SetActiveApiKeyIndex(index);
         }
 
-        public string GetApplicationApiSigningKey(string applicationClientId, int index) // index ignored in this implementation //TODO: take into account the index
+        public string GetApplicationApiHmacKey(string applicationClientId, int index) // index ignored in this implementation //TODO: take into account the index
         {
             ApiHmacKeyInfo key = GetApiHmacKeyInfo(this);
             if (key.ApplicationClientId.Equals(applicationClientId))
@@ -268,7 +269,7 @@ namespace Bam.Net.Services.Clients
             throw new NotSupportedException("Specified applicationClientId not supported");
         }
 
-        public string GetCurrentApiKey()
+        public string GetCurrentApiHmacKey()
         {
             ApiHmacKeyInfo key = GetApiHmacKeyInfo(this);
             return key.ApiHmacKey;

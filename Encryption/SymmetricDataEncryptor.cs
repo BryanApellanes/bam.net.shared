@@ -4,9 +4,9 @@ using System.Text;
 
 namespace Bam.Net.Encryption
 {
-    public class SymmetricEncryptor<TData> : ValueTransformerPipeline<TData>, IEncryptor<TData>
+    public class SymmetricDataEncryptor<TData> : ValueTransformerPipeline<TData>, IEncryptor<TData>
     {
-        public SymmetricEncryptor(IAesKeySource aesKeySource)
+        public SymmetricDataEncryptor(IAesKeySource aesKeySource)
         {
             this.AesByteTransformer = new AesByteTransformer(aesKeySource);
             this.GZipByteTransformer = new GZipByteTransformer();
@@ -18,9 +18,9 @@ namespace Bam.Net.Encryption
         protected internal AesByteTransformer AesByteTransformer { get; private set; }
         protected GZipByteTransformer GZipByteTransformer { get; private set; }
 
-        public new SymmetricDecryptor<TData> GetReverseTransformer()
+        public new SymmetricDataDecryptor<TData> GetReverseTransformer()
         {
-            return new SymmetricDecryptor<TData>(this);
+            return new SymmetricDataDecryptor<TData>(this);
         }
 
         /// <summary>

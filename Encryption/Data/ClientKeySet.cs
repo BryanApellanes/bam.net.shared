@@ -132,5 +132,15 @@ namespace Bam.Net.Encryption.Data
         {
             return Aes.Decrypt(base64EncodedCipher, GetAesKey());
         }
+
+        public RsaPublicKey GetRsaPublicKey()
+        {
+            return new RsaPublicKey(PublicKey);
+        }
+
+        public string PublicKeyEncrypt(string value)
+        {
+            return value.EncryptWithPublicKey(PublicKey);
+        }
     }
 }

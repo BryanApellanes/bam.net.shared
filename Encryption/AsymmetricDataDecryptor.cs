@@ -4,14 +4,14 @@ using System.Text;
 
 namespace Bam.Net.Encryption
 {
-    public class AsymmetricDecryptor<TData> : ValueReverseTransformerPipeline<TData>, IDecryptor<TData>
+    public class AsymmetricDataDecryptor<TData> : ValueReverseTransformerPipeline<TData>, IDecryptor<TData>
     {
-        public AsymmetricDecryptor(AsymmetricEncryptor<TData> encryptor) : base(encryptor)
+        public AsymmetricDataDecryptor(AsymmetricDataEncryptor<TData> encryptor) : base(encryptor)
         {
             this.Encryptor = encryptor;
         }
 
-        protected AsymmetricEncryptor<TData> Encryptor { get; private set; }
+        protected AsymmetricDataEncryptor<TData> Encryptor { get; private set; }
 
         public TData Decrypt(Cipher<TData> cipherData)
         {

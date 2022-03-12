@@ -25,21 +25,6 @@ namespace Bam.Net.Server.ServiceProxy
             return encodedValue.FromJson(type);
         }
 
-        /// <summary>
-        /// Set the arguments on the specified service proxy invocation by reading them from the specified request.
-        /// </summary>
-        /// <param name="serviceProxyInvocation"></param>
-        /// <param name="request"></param>
-        public void SetArguments(ServiceProxyInvocation serviceProxyInvocation, IRequest request)
-        {
-            serviceProxyInvocation.Arguments = ReadArguments(serviceProxyInvocation, request);
-        }
-
-        public ServiceProxyInvocationArgument[] ReadArguments(ServiceProxyInvocation serviceProxyInvocation, IRequest request)
-        {
-            return ReadArguments(serviceProxyInvocation.MethodInfo, request);
-        }
-
         public abstract ServiceProxyInvocationArgument[] ReadArguments(MethodInfo methodInfo, IRequest request);
 
         public virtual ServiceProxyInvocationArgument[] ReadJsonArgumentsMember(MethodInfo methodInfo, string body)

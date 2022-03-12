@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Bam.Net.Encryption;
+using Bam.Net.Services;
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
@@ -8,16 +10,23 @@ namespace Bam.Net.ServiceProxy.Encryption
 {
     public class EncryptedServiceProxyInvocationRequestWriter : ServiceProxyInvocationRequestWriter
     {
-        public EncryptedServiceProxyInvocationRequestWriter(ClientSessionInfo clientSessionInfo, IApiHmacKeyResolver apiSigningKeyResolver, IApiValidationProvider apiValidationProvider)
+        public EncryptedServiceProxyInvocationRequestWriter(ClientSessionInfo clientSessionInfo, IApiHmacKeyResolver apiHmacKeyResolver)//, IApiValidationProvider apiValidationProvider)
         {
-            this.ApiHmacKeyResolver = apiSigningKeyResolver;
-            this.ApiValidationProvider = apiValidationProvider;
+            this.ApiHmacKeyResolver = apiHmacKeyResolver;
             this.ClientSessionInfo = clientSessionInfo;
 
+            this.HttpRequestEncryptor = new HttpRequestEncryptor<SecureChannelRequestMessage>
+                (
+                    new SymmetricDataEncryptor<SecureChannelRequestMessage>(clientSessionInfo),
+                    new AsymmetricDataEncryptor<SecureChannelRequestMessage>(clientSessionInfo)
+                );
         }
 
+        [Inject]
         public IApiHmacKeyResolver ApiHmacKeyResolver { get; set; }
-        public IApiValidationProvider ApiValidationProvider { get; set; }
+
+        [Inject]
+        public IHttpRequestEncryptor<SecureChannelRequestMessage> HttpRequestEncryptor { get; set; }
 
         public ClientSessionInfo ClientSessionInfo { get; set; }
 

@@ -80,9 +80,9 @@ namespace Bam.Net.ServiceProxy.Encryption
             return ApiSigningKeyProvider.GetApiHmacKeyInfo(nameProvider);
         }
 
-        public string GetApplicationApiSigningKey(string applicationClientId, int index)
+        public string GetApplicationApiHmacKey(string applicationClientId, int index)
         {
-            return ApiSigningKeyProvider.GetApplicationApiSigningKey(applicationClientId, index);
+            return ApiSigningKeyProvider.GetApplicationApiHmacKey(applicationClientId, index);
         }
 
         public string GetApplicationClientId(IApplicationNameProvider nameProvider)
@@ -90,9 +90,9 @@ namespace Bam.Net.ServiceProxy.Encryption
             return ApiSigningKeyProvider.GetApplicationClientId(nameProvider);
         }
 
-        public string GetCurrentApiKey()
+        public string GetCurrentApiHmacKey()
         {
-            return ApiSigningKeyProvider.GetCurrentApiKey();
+            return ApiSigningKeyProvider.GetCurrentApiHmacKey();
         }
 
         #endregion
@@ -106,7 +106,7 @@ namespace Bam.Net.ServiceProxy.Encryption
 
         #endregion
         
-        public void SetHmacHeader(HttpRequestMessage request, string stringToHash)
+/*        public void SetHmacHeader(HttpRequestMessage request, string stringToHash)
         {
             request.Headers.Add(Headers.Hmac, GetHmac(stringToHash));
         }
@@ -119,7 +119,7 @@ namespace Bam.Net.ServiceProxy.Encryption
         public void SetHmacHeader(NameValueCollection headers, string stringToHash)
         {
             headers[Headers.Hmac] = GetHmac(stringToHash);
-        }
+        }*/
 
         public string GetHmac(string stringToHash)
         {

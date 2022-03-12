@@ -8,17 +8,17 @@ namespace Bam.Net.Encryption
     {
         public HttpRequestEncryptor(IEncryptor encryptor)
         {
-            this.Encryptor = encryptor;
+            this.ContentEncryptor = encryptor;
             this.HeaderEncryptor = new HttpRequestHeaderEncryptor(encryptor);
         }
 
-        public HttpRequestEncryptor(IEncryptor encryptor, IHttpRequestHeaderEncryptor headerEncryptor)
+        public HttpRequestEncryptor(IEncryptor contentEncryptor, IEncryptor headerEncryptor)
         {
-            this.Encryptor = encryptor;
-            this.HeaderEncryptor = headerEncryptor;
+            this.ContentEncryptor = contentEncryptor;
+            this.HeaderEncryptor = new HttpRequestHeaderEncryptor(headerEncryptor);
         }
 
-        public IEncryptor Encryptor
+        public IEncryptor ContentEncryptor
         {
             get;
             private set;
@@ -27,14 +27,14 @@ namespace Bam.Net.Encryption
         public IHttpRequestHeaderEncryptor HeaderEncryptor
         {
             get;
-            set;
+            private set;
         }
 
         public IHttpRequest EncryptRequest(IHttpRequest request)
         {
             EncryptedHttpRequest copy = new EncryptedHttpRequest();
             copy.Copy(request);
-            copy.ContentCipher = Encryptor.EncryptString(request.Content);
+            copy.ContentCipher = ContentEncryptor.EncryptString(request.Content);
             HeaderEncryptor.EncryptHeaders(copy);
             return copy;
         }

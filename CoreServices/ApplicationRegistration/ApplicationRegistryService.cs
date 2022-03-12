@@ -67,12 +67,6 @@ namespace Bam.Net.CoreServices
         
         public CompositeRepository CompositeRepository { get; set; }
 
-/*        [ApiKeyRequired]
-        public virtual ApiKeyInfo[] ListApiKeys()
-        {
-            return Application?.ApiKeys.Select(k => k.ToKeyInfo()).ToArray();
-        }*/
-
         [ApiHmacKeyRequired]
         public virtual ApiHmacKeyInfo AddApiKey()
         {
@@ -113,7 +107,7 @@ namespace Bam.Net.CoreServices
             ApplicationRegistrationRepository.Save(apiKeyIndex);
             return new ApiHmacKeyInfo()
             {
-                ApiHmacKey = GetApplicationApiSigningKey(clientId, index),
+                ApiHmacKey = GetApplicationApiHmacKey(clientId, index),
                 ApplicationClientId = clientId
             };
         }
@@ -228,14 +222,14 @@ namespace Bam.Net.CoreServices
             string clientId = GetApplicationClientId(nameProvider);
             ApiHmacKeyInfo info = new ApiHmacKeyInfo()
             {
-                ApiHmacKey = GetApplicationApiSigningKey(clientId, GetActiveApiKeyIndex(nameProvider)), 
+                ApiHmacKey = GetApplicationApiHmacKey(clientId, GetActiveApiKeyIndex(nameProvider)), 
                 ApplicationClientId = clientId
             };
             return info;
         }
 
         [Local]
-        public virtual string GetApplicationApiSigningKey(string applicationClientId, int index)
+        public virtual string GetApplicationApiHmacKey(string applicationClientId, int index)
         {
             CoreServices.ApplicationRegistration.Data.Application app = ApplicationRegistrationRepository.OneApplicationWhere(c => c.Cuid == applicationClientId);
             if(app != null)
@@ -253,7 +247,7 @@ namespace Bam.Net.CoreServices
         }
 
         [Local]
-        public virtual string GetCurrentApiKey()
+        public virtual string GetCurrentApiHmacKey()
         {
             return Application?.ApiKeys.FirstOrDefault()?.SharedSecret;
         }
@@ -284,7 +278,7 @@ namespace Bam.Net.CoreServices
             return token.Equals(checkToken);
         }
 
-        [Exclude]
+/*        [Exclude]
         public void SetHmacHeader(HttpRequestMessage request, string stringToHash)
         {
             throw new InvalidOperationException($"It isn't appropriate for this service to be used for this purpose: {nameof(ApplicationRegistryService)}.{nameof(ApplicationRegistryService.SetHmacHeader)}");
@@ -300,7 +294,7 @@ namespace Bam.Net.CoreServices
         public void SetHmacHeader(HttpWebRequest request, string stringToHash)
         {
             throw new InvalidOperationException($"It isn't appropriate for this service to be used for this purpose: {nameof(ApplicationRegistryService)}.{nameof(ApplicationRegistryService.SetHmacHeader)}");
-        }
+        }*/
 
         /// <summary>
         /// Establishes the means by which the client  

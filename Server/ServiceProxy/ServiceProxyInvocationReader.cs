@@ -69,7 +69,7 @@ namespace Bam.Net.Server.ServiceProxy
 
             ServiceProxyInvocationArgumentReader argumentReader = GetArgumentReader(request);
 
-            argumentReader.SetArguments(serviceProxyInvocation, request);
+            serviceProxyInvocation.Arguments = argumentReader.ReadArguments(serviceProxyInvocation.MethodInfo, request);
 
             return serviceProxyInvocation;
         }
