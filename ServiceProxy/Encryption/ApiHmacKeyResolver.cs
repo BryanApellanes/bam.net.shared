@@ -29,7 +29,7 @@ namespace Bam.Net.ServiceProxy.Encryption
 
         public ApiHmacKeyResolver()
         {
-            ApiSigningKeyProvider = DefaultConfigurationApiKeyProvider.Instance;
+            ApiHmacKeyProvider = DefaultConfigurationApiKeyProvider.Instance;
             ApplicationNameProvider = DefaultConfigurationApplicationNameProvider.Instance;
             HashAlgorithm = HashAlgorithms.SHA256;
         }
@@ -37,7 +37,7 @@ namespace Bam.Net.ServiceProxy.Encryption
         public ApiHmacKeyResolver(IApiHmacKeyProvider apiKeyProvider)
             : this()
         {
-            ApiSigningKeyProvider = apiKeyProvider;
+            ApiHmacKeyProvider = apiKeyProvider;
         }
 
         public ApiHmacKeyResolver(IApplicationNameProvider nameProvider)
@@ -48,7 +48,7 @@ namespace Bam.Net.ServiceProxy.Encryption
 
         public ApiHmacKeyResolver(IApiHmacKeyProvider apiKeyProvider, IApplicationNameProvider nameProvider) : this()
         {
-            ApiSigningKeyProvider = apiKeyProvider;
+            ApiHmacKeyProvider = apiKeyProvider;
             ApplicationNameProvider = nameProvider;
         }
 
@@ -59,7 +59,7 @@ namespace Bam.Net.ServiceProxy.Encryption
 
         public IApiArgumentEncoder ApiArgumentEncoder { get; set; }
 
-        public IApiHmacKeyProvider ApiSigningKeyProvider
+        public IApiHmacKeyProvider ApiHmacKeyProvider
         {
             get;
             set;
@@ -77,22 +77,22 @@ namespace Bam.Net.ServiceProxy.Encryption
 
         public ApiHmacKeyInfo GetApiHmacKeyInfo(IApplicationNameProvider nameProvider)
         {
-            return ApiSigningKeyProvider.GetApiHmacKeyInfo(nameProvider);
+            return ApiHmacKeyProvider.GetApiHmacKeyInfo(nameProvider);
         }
 
         public string GetApplicationApiHmacKey(string applicationClientId, int index)
         {
-            return ApiSigningKeyProvider.GetApplicationApiHmacKey(applicationClientId, index);
+            return ApiHmacKeyProvider.GetApplicationApiHmacKey(applicationClientId, index);
         }
 
         public string GetApplicationClientId(IApplicationNameProvider nameProvider)
         {
-            return ApiSigningKeyProvider.GetApplicationClientId(nameProvider);
+            return ApiHmacKeyProvider.GetApplicationClientId(nameProvider);
         }
 
         public string GetCurrentApiHmacKey()
         {
-            return ApiSigningKeyProvider.GetCurrentApiHmacKey();
+            return ApiHmacKeyProvider.GetCurrentApiHmacKey();
         }
 
         #endregion
