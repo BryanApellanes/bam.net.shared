@@ -6,6 +6,6 @@ namespace Bam.Net.Encryption
 {
     public class EncryptedHttpRequest<TContent> : HttpRequest<TContent>
     {
-        public Cipher<TContent> ContentCipher { get; internal set; }
+        public ContentCipher<TContent> ContentCipher { get; internal set; }
     }
 }

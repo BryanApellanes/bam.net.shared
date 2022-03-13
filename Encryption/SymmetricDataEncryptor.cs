@@ -28,7 +28,7 @@ namespace Bam.Net.Encryption
         /// </summary>
         /// <param name="data">The object data to encrypt.</param>
         /// <returns>byte[]</returns>
-        public Cipher<TData> Encrypt(TData data)
+        public virtual Cipher<TData> Encrypt(TData data)
         {
             return Transform(data);
         }

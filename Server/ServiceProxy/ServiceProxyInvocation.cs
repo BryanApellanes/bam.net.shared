@@ -69,7 +69,7 @@ namespace Bam.Net.Server.ServiceProxy
             set => _logger = value;
         }
 
-        IApiHmacKeyResolver _apiKeyResolver;
+/*        IApiHmacKeyResolver _apiKeyResolver;
         readonly object _apiKeyResolverSync = new object();
         public IApiHmacKeyResolver ApiKeyResolver
         {
@@ -78,7 +78,7 @@ namespace Bam.Net.Server.ServiceProxy
                 return _apiKeyResolverSync.DoubleCheckLock(ref _apiKeyResolver, () => new ApiHmacKeyResolver());
             }
             set => _apiKeyResolver = value;
-        }
+        }*/
 
         public string ClassName
         {

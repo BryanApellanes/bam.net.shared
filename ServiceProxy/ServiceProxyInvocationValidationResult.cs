@@ -46,7 +46,7 @@ namespace Bam.Net.ServiceProxy
             ValidateParameterCount(failures, messages);
             ValidateMethodRoles(context, failures, messages);
             ValidateClassRoles(context, failures, messages);
-            ValidateApiSigningKeyToken(failures, messages);
+            //ValidateHmac(failures, messages);
             ValidateRequestFilters(context, failures, messages);
 
             ValidationFailures = failures.ToArray();
@@ -71,7 +71,7 @@ namespace Bam.Net.ServiceProxy
             }
         }
 
-        private void ValidateApiSigningKeyToken(List<ValidationFailures> failures, List<string> messages)
+/*        private void ValidateHmac(List<ValidationFailures> failures, List<string> messages)
         {
             ApiHmacKeyRequiredAttribute keyRequired;
             if (_toValidate.TargetType != null &&
@@ -82,13 +82,13 @@ namespace Bam.Net.ServiceProxy
                 ))
             {
                 IApiHmacKeyResolver resolver = _toValidate.ApiKeyResolver;
-                if (!resolver.IsValidRequest(_toValidate))
+*//*                if (!resolver.IsValidRequest(_toValidate))
                 {
                     failures.Add(ServiceProxy.ValidationFailures.InvalidApiKeyToken);
                     messages.Add("ApiSigningKeyValidation failed");
-                }
+                }*//*
             }
-        }
+        }*/
 
         private void ValidateClassRoles(IHttpContext context, List<ValidationFailures> failures, List<string> messages)
         {

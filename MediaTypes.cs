@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Bam.Net.ServiceProxy
+namespace Bam.Net
 {
     public class MediaTypes
     {

@@ -265,14 +265,14 @@ namespace Bam.Net.CoreServices
             bool result = false;
             if (!string.IsNullOrEmpty(token))
             {
-                result = IsValidKeyToken(stringToHash, token);
+                result = IsValidHmac(stringToHash, token);
             }
 
             return result;
         }
 
         [Exclude]
-        public bool IsValidKeyToken(string stringToHash, string token)
+        public bool IsValidHmac(string stringToHash, string token)
         {
             string checkToken = GetHmac(stringToHash);
             return token.Equals(checkToken);

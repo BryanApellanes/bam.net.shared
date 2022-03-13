@@ -485,9 +485,12 @@
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\AesByteTransformer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\AesDecryptor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\AesEncryptor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Encryption\AsymmetricContentCipher{T}.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Encryption\AsymmetricContentEncryptor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\AsymmetricDataDecryptor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\Cipher.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\ClientKeySetDataManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Encryption\ContentCipher{T}.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\Data\ClientKeySet.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\Data\Files\KeySetFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\Data\Generated_Dao\ClientKeySet.cs" />
@@ -527,6 +530,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\IClientKeySet.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\IClientKeySetDataManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\ICommunicationKeySet.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Encryption\IContentEncryptor{T}.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\IDecryptedDictionary.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\IDecryptor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\IEncryptedDictionary.cs" />
@@ -553,6 +557,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\RsaPublicPrivateKeyPair.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\SecretExchange.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\ServerKeySetDataManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Encryption\SymmetricContentCipher{T}.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Encryption\SymmetricContentEncryptor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\SymmetricDataDecryptor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\SymmetricDataEncryptor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\HttpRequestEncryptor{T}.cs" />
@@ -574,7 +580,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\AsymmetricKeyNotSetException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\Encryption\EncryptedServiceProxyInvocationHttpRequestContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\Encryption\EncryptedServiceProxyInvocationRequestArgumentWriter.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\MediaTypes.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MediaTypes.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\Data\Generated_Dao\ServiceProxyDataContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\Data\Generated_Dao\ServiceProxyDataRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\Encryption\EncryptedServiceProxyInvocationRequestWriter.cs" />

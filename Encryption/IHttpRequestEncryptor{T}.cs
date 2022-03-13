@@ -10,7 +10,7 @@ namespace Bam.Net.Encryption
     /// <typeparam name="TContent"></typeparam>
     public interface IHttpRequestEncryptor<TContent> : IHttpRequestEncryptor
     {
-        new IEncryptor<TContent> ContentEncryptor { get; }
+        new IContentEncryptor<TContent> ContentEncryptor { get; }
 
         /// <summary>
         /// Encrypts the content of the request.

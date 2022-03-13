@@ -17,7 +17,7 @@ namespace Bam.Net.ServiceProxy.Encryption
 
             this.HttpRequestEncryptor = new HttpRequestEncryptor<SecureChannelRequestMessage>
                 (
-                    new SymmetricDataEncryptor<SecureChannelRequestMessage>(clientSessionInfo),
+                    new SymmetricContentEncryptor<SecureChannelRequestMessage>(clientSessionInfo),
                     new AsymmetricDataEncryptor<SecureChannelRequestMessage>(clientSessionInfo)
                 );
         }
@@ -53,5 +53,7 @@ namespace Bam.Net.ServiceProxy.Encryption
             //ApiSigningKeyResolver.SetSigningKeyToken(descriptor.HttpRequestMessage, descriptor.)
             return httpRequestMessage;
         }
+
+        
     }
 }

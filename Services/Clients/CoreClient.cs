@@ -159,46 +159,24 @@ namespace Bam.Net.Services.Clients
             return $"{keyInfo.ApiHmacKey}:{stringToHash}".HashHexString(HashAlgorithm);
         }
 
-        public bool IsValidRequest(ServiceProxyInvocation request)
+/*        public bool IsValidRequest(ServiceProxyInvocation request)
         {
             Args.ThrowIfNull(request, "request");
             string stringToHash = ApiArgumentEncoder.GetValidationString(request.ClassName, request.MethodName, ApiArgumentEncoder.ArgumentsToJsonArgsMember(request.Arguments));
-            string token = request.Context.Request.Headers[Headers.Hmac];
+            string hmac = request.Context.Request.Headers[Headers.Hmac];
             bool result = false;
-            if (!string.IsNullOrEmpty(token))
+            if (!string.IsNullOrEmpty(hmac))
             {
-                result = IsValidKeyToken(stringToHash, token);
+                result = IsValidHmac(stringToHash, hmac);
             }
             return result;
-        }
+        }*/
 
-        public bool IsValidKeyToken(string stringToHash, string token)
+        public bool IsValidHmac(string stringToHash, string token)
         {
             string checkToken = GetHmac(stringToHash);
             return token.Equals(checkToken);
         }
-
-/*        public void SetHmacHeader(HttpRequestMessage request, string stringToHash)
-        {
-            request.Headers.Add(Headers.Hmac, GetHmac(stringToHash));
-        }
-
-        [Obsolete("Use SetKeyToken(HttpRequestMessage) instead.")]
-        public void SetHmacHeader(HttpWebRequest request, string stringToHash)
-        {
-            SetHmacHeader(request.Headers, stringToHash);
-        }
-
-        /// <summary>
-        /// Set the key token header (X-Bam-Keytoken) using the secret (ApiKey)
-        /// for the current application
-        /// </summary>
-        /// <param name="headers"></param>
-        /// <param name="stringToHash"></param>
-        public void SetHmacHeader(NameValueCollection headers, string stringToHash)
-        {
-            headers[Headers.Hmac] = GetHmac(stringToHash);
-        }*/
 
         #endregion
         [Verbosity(VerbosityLevel.Warning, SenderMessageFormat = "ApiKeyFile {ApiKeyFilePath} was not found")]

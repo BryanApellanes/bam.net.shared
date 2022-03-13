@@ -18,7 +18,7 @@ namespace Bam.Net.ServiceProxy
         MethodNotProxied,
         ParameterCountMismatch,
         PermissionDenied,
-        InvalidApiKeyToken,
+        InvalidHmac,
         RemoteExecutionNotAllowed,
         /// <summary>
         /// An attribute addorned the class or
