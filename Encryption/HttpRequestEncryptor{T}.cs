@@ -6,7 +6,7 @@ namespace Bam.Net.Encryption
 {
     public class HttpRequestEncryptor<TContent> : HttpRequestEncryptor, IHttpRequestEncryptor<TContent>
     {
-        public HttpRequestEncryptor(IContentEncryptor<TContent> encryptor):base(encryptor)
+        public HttpRequestEncryptor(IContentEncryptor<TContent> encryptor) : base(encryptor)
         {
             this.ContentEncryptor = encryptor;
         }
@@ -18,12 +18,8 @@ namespace Bam.Net.Encryption
 
         public new IContentEncryptor<TContent> ContentEncryptor { get; private set; }
 
-        /// <summary>
-        /// Returns an encrypted copy of the specified request.
-        /// </summary>
-        /// <param name="request"></param>
-        /// <returns></returns>
-        public IHttpRequest<TContent> EncryptRequest(IHttpRequest<TContent> request)
+        /// <inheritdoc />
+        public IEncryptedHttpRequest<TContent> EncryptRequest(IHttpRequest<TContent> request)
         {
             EncryptedHttpRequest<TContent> copy = new EncryptedHttpRequest<TContent>();
             copy.Copy(request);

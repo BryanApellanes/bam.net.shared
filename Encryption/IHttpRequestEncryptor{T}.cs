@@ -13,10 +13,10 @@ namespace Bam.Net.Encryption
         new IContentEncryptor<TContent> ContentEncryptor { get; }
 
         /// <summary>
-        /// Encrypts the content of the request.
+        /// Returns an encrypted copy of the specified request.
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
-        IHttpRequest<TContent> EncryptRequest(IHttpRequest<TContent> request);
+        IEncryptedHttpRequest<TContent> EncryptRequest(IHttpRequest<TContent> request);
     }
 }

@@ -9,6 +9,6 @@ namespace Bam.Net.Encryption
         IEncryptor ContentEncryptor { get;  }
         IHttpRequestHeaderEncryptor HeaderEncryptor { get; }
 
-        IHttpRequest EncryptRequest(IHttpRequest request);
+        IEncryptedHttpRequest EncryptRequest(IHttpRequest request);
     }
 }

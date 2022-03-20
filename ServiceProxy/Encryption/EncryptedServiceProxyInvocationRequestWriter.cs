@@ -10,15 +10,15 @@ namespace Bam.Net.ServiceProxy.Encryption
 {
     public class EncryptedServiceProxyInvocationRequestWriter : ServiceProxyInvocationRequestWriter
     {
-        public EncryptedServiceProxyInvocationRequestWriter(ClientSessionInfo clientSessionInfo, IApiHmacKeyResolver apiHmacKeyResolver)//, IApiValidationProvider apiValidationProvider)
+        public EncryptedServiceProxyInvocationRequestWriter(IClientKeySource clientKeySource, IApiHmacKeyResolver apiHmacKeyResolver)//, IApiValidationProvider apiValidationProvider)
         {
             this.ApiHmacKeyResolver = apiHmacKeyResolver;
-            this.ClientSessionInfo = clientSessionInfo;
+            this.ClientKeySource = clientKeySource;
 
             this.HttpRequestEncryptor = new HttpRequestEncryptor<SecureChannelRequestMessage>
                 (
-                    new SymmetricContentEncryptor<SecureChannelRequestMessage>(clientSessionInfo),
-                    new AsymmetricDataEncryptor<SecureChannelRequestMessage>(clientSessionInfo)
+                    new SymmetricContentEncryptor<SecureChannelRequestMessage>(clientKeySource),
+                    new AsymmetricDataEncryptor<SecureChannelRequestMessage>(clientKeySource)
                 );
         }
 
@@ -28,7 +28,7 @@ namespace Bam.Net.ServiceProxy.Encryption
         [Inject]
         public IHttpRequestEncryptor<SecureChannelRequestMessage> HttpRequestEncryptor { get; set; }
 
-        public ClientSessionInfo ClientSessionInfo { get; set; }
+        public IClientKeySource ClientKeySource { get; set; }
 
         public override Task<HttpRequestMessage> WriteRequestMessageAsync(ServiceProxyInvocationRequest serviceProxyInvocationRequest)
         {
@@ -47,7 +47,7 @@ namespace Bam.Net.ServiceProxy.Encryption
             //argumentWriter.ClientSessionInfo = this.ClientSessionInfo;
 
 
-
+            
             //EncryptedServiceProxyInvocationHttpRequestContext descriptor = argumentWriter.WriteEncryptedArgumentContent(httpRequestMessage, secureChannelRequestMessage);
             //ApiSigningKeyResolver
             //ApiSigningKeyResolver.SetSigningKeyToken(descriptor.HttpRequestMessage, descriptor.)

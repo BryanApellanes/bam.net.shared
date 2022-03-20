@@ -25,13 +25,13 @@ namespace Bam.Net.Encryption
             set;
         }
 
-        public string Content
+        public virtual string Content
         {
             get;
             set;
         }
 
-        public void Copy(IHttpRequest request)
+        public virtual void Copy(IHttpRequest request)
         {
             this.Content = request.Content;
             this.ContentType = request.ContentType;

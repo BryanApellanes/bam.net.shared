@@ -7,15 +7,6 @@ namespace Bam.Net.Encryption
 {
     public class HttpRequestHeaderEncryptor : IHttpRequestHeaderEncryptor
     {
-        public static List<string> PlainHeders = new List<string>()
-        {
-            Headers.ProcessLocalIdentifier,
-            Headers.ProcessDescriptor,
-            Headers.ProcessMode,
-            Headers.ApplicationName,
-            Headers.Hash
-        };
-
         public HttpRequestHeaderEncryptor(IEncryptor encryptor)
         {
             this.Encryptor = encryptor;
@@ -26,7 +17,7 @@ namespace Bam.Net.Encryption
         public void EncryptHeaders(IHttpRequest request)
         {
             Args.ThrowIfNull(request, nameof(request));
-            foreach(string header in PlainHeders)
+            foreach(string header in HttpHeaders.PlainHeaders)
             {
                 if (request.Headers.ContainsKey(header))
                 {

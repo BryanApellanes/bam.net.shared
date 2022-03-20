@@ -30,7 +30,12 @@ namespace Bam.Net.Encryption
             private set;
         }
 
-        public IHttpRequest EncryptRequest(IHttpRequest request)
+        /// <summary>
+        /// Returns an encrypted copy of the specified request.
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        public IEncryptedHttpRequest EncryptRequest(IHttpRequest request)
         {
             EncryptedHttpRequest copy = new EncryptedHttpRequest();
             copy.Copy(request);

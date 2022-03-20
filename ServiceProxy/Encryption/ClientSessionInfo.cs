@@ -19,7 +19,7 @@ using Org.BouncyCastle.Crypto.Engines;
 
 namespace Bam.Net.ServiceProxy.Encryption
 {
-    public class ClientSessionInfo : IAesKeySource, IRsaPublicKeySource
+    public class ClientSessionInfo : IClientKeySource 
     {
         public ClientSessionInfo()
         {
