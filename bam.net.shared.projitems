@@ -570,6 +570,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\SecretExchange.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\ServerKeySetDataManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\SymmetricContentCipher{T}.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Encryption\SymmetricContentDecryptor{T}.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\SymmetricContentEncryptor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\SymmetricDataDecryptor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\SymmetricDataEncryptor.cs" />

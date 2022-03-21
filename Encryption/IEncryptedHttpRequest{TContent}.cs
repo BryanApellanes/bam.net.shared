@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Bam.Net.Encryption
 {
-    public interface IEncryptedHttpRequest<TContent> : IEncryptedHttpRequest
+    public interface IEncryptedHttpRequest<TContent> : IEncryptedHttpRequest, IHttpRequest<TContent>
     {
         new ContentCipher<TContent> ContentCipher { get; }
     }

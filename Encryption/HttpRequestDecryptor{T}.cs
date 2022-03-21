@@ -24,7 +24,15 @@ namespace Bam.Net.Encryption
 
         public IHttpRequest<TContent> DecryptRequest(IEncryptedHttpRequest<TContent> request)
         {
-            throw new NotImplementedException();
+            HttpRequest<TContent> copy = new HttpRequest<TContent>();
+            copy.Verb = request.Verb;
+            foreach(string key in request.Headers.Keys)
+            {
+                copy.Headers.Add(key, request.Headers[key]);
+            }
+            copy.Headers.Add("Content-Type", MediaTypes.Json);
+            copy.Content = ContentDecryptor.DecryptContentCipher(request.ContentCipher);
+            return copy;
         }
     }
 }
