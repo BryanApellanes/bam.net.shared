@@ -17,6 +17,6 @@ namespace Bam.Net.Encryption
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
-        IEncryptedHttpRequest<TContent> EncryptRequest(IHttpRequest<TContent> request);
+        EncryptedHttpRequest<TContent> EncryptRequest(IHttpRequest<TContent> request);
     }
 }

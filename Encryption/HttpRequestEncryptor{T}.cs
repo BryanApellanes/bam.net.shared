@@ -18,15 +18,19 @@ namespace Bam.Net.Encryption
 
         public new IContentEncryptor<TContent> ContentEncryptor { get; private set; }
 
-        /// <inheritdoc />
-        public IEncryptedHttpRequest<TContent> EncryptRequest(IHttpRequest<TContent> request)
+        /// <summary>
+        /// Returns an encrypted copy of the specified request.
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        public EncryptedHttpRequest<TContent> EncryptRequest(IHttpRequest<TContent> request)
         {
             EncryptedHttpRequest<TContent> copy = new EncryptedHttpRequest<TContent>();
             copy.Copy(request);
             ContentCipher<TContent> cipher = ContentEncryptor.GetContentCipher(request.Content);
-            copy.ContentCipher = cipher;
-            copy.Headers.Add("Content-Type", cipher.ContentType);
             HeaderEncryptor.EncryptHeaders(copy);
+            copy.ContentCipher = cipher;
+            copy.ContentType = cipher.ContentType;
             return copy;
         }
     }

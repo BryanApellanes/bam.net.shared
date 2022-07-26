@@ -10,7 +10,7 @@ namespace Bam.Net.ServiceProxy.Encryption
 {
     public class EncryptedServiceProxyInvocationRequestWriter : ServiceProxyInvocationRequestWriter
     {
-        public EncryptedServiceProxyInvocationRequestWriter(IClientKeySource clientKeySource, IApiHmacKeyResolver apiHmacKeyResolver)//, IApiValidationProvider apiValidationProvider)
+        public EncryptedServiceProxyInvocationRequestWriter(IClientKeySource clientKeySource, IApiHmacKeyResolver apiHmacKeyResolver)
         {
             this.ApiHmacKeyResolver = apiHmacKeyResolver;
             this.ClientKeySource = clientKeySource;
@@ -30,30 +30,20 @@ namespace Bam.Net.ServiceProxy.Encryption
 
         public IClientKeySource ClientKeySource { get; set; }
 
-        public override Task<HttpRequestMessage> WriteRequestMessageAsync(ServiceProxyInvocationRequest serviceProxyInvocationRequest)
+        public override async Task<HttpRequestMessage> WriteRequestMessageAsync(ServiceProxyInvocationRequest serviceProxyInvocationRequest)
         {
             EncryptedServiceProxyInvocationRequest encryptedServiceProxyInvocationRequest = (serviceProxyInvocationRequest as EncryptedServiceProxyInvocationRequest) ?? serviceProxyInvocationRequest.CopyAs<EncryptedServiceProxyInvocationRequest>();
-            return WriteRequestMessageAsync(encryptedServiceProxyInvocationRequest);
+            return await WriteRequestMessageAsync(encryptedServiceProxyInvocationRequest);
         }
 
         public virtual async Task<HttpRequestMessage> WriteRequestMessageAsync(EncryptedServiceProxyInvocationRequest serviceProxyInvocationRequest)
         {
             HttpRequestMessage httpRequestMessage = await CreateServiceProxyInvocationRequestMessageAsync(serviceProxyInvocationRequest);
-            SecureChannelRequestMessage secureChannelRequestMessage = new SecureChannelRequestMessage(serviceProxyInvocationRequest);
-            //EncryptedServiceProxyInvocationRequestArgumentWriter argumentWriter = serviceProxyInvocationRequest.ServiceProxyInvocationRequestArgumentWriter as EncryptedServiceProxyInvocationRequestArgumentWriter;
 
-            // Args.ThrowIfNull(argumentWriter, nameof(serviceProxyInvocationRequest.ServiceProxyInvocationRequestArgumentWriter));
-
-            //argumentWriter.ClientSessionInfo = this.ClientSessionInfo;
-
-
-            
-            //EncryptedServiceProxyInvocationHttpRequestContext descriptor = argumentWriter.WriteEncryptedArgumentContent(httpRequestMessage, secureChannelRequestMessage);
-            //ApiSigningKeyResolver
-            //ApiSigningKeyResolver.SetSigningKeyToken(descriptor.HttpRequestMessage, descriptor.)
-            return httpRequestMessage;
+            HttpRequest<SecureChannelRequestMessage> request = HttpRequest.FromHttpRequestMessage<SecureChannelRequestMessage>(httpRequestMessage);
+            request.Content = new SecureChannelRequestMessage(serviceProxyInvocationRequest);
+            IHttpRequest encryptedRequest = HttpRequestEncryptor.EncryptRequest(request);
+            return encryptedRequest.ToHttpRequestMessage();
         }
-
-        
     }
 }

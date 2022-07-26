@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Bam.Net.Server.ServiceProxy
 {
@@ -25,7 +26,12 @@ namespace Bam.Net.Server.ServiceProxy
             return encodedValue.FromJson(type);
         }
 
-        public abstract ServiceProxyInvocationArgument[] ReadArguments(MethodInfo methodInfo, IRequest request);
+        public abstract Task<ServiceProxyInvocationArgument[]> ReadArgumentsAsync(MethodInfo methodInfo, IHttpContext httpContext);
+
+/*        public Task<ServiceProxyInvocationArgument[]> ReadJsonArgumentsMemberAsync(MethodInfo methodInfo, string body)
+        {
+            return Task.FromResult(ReadJsonArgumentsMember(methodInfo, body));
+        }*/
 
         public virtual ServiceProxyInvocationArgument[] ReadJsonArgumentsMember(MethodInfo methodInfo, string body)
         {

@@ -13,7 +13,10 @@ namespace Bam.Net.ServiceProxy
 {
     public interface IRequest
     {
+        string Content { get; set; }
+
         string[] AcceptTypes { get; set; }
+
         Encoding ContentEncoding { get; set; }
         //
         // Summary:

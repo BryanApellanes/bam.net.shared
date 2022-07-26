@@ -31,7 +31,7 @@ namespace Bam.Net.ServiceProxy
             return httpRequestMessage;
         }
 
-        protected Task<HttpRequestMessage> CreateServiceProxyInvocationRequestMessageAsync(ServiceProxyInvocationRequest serviceProxyInvocationRequest)
+        protected virtual Task<HttpRequestMessage> CreateServiceProxyInvocationRequestMessageAsync(ServiceProxyInvocationRequest serviceProxyInvocationRequest)
         {
             HttpRequestMessage request = new HttpRequestMessage(HttpMethods[serviceProxyInvocationRequest.Verb], serviceProxyInvocationRequest.GetInvocationUrl());
             request.Headers.Add(Web.Headers.ProcessMode, ProcessMode.Current.Mode.ToString());

@@ -11,6 +11,7 @@ using Bam.Net;
 using Bam.Net.Logging;
 using System.Threading.Tasks;
 using System.Collections.Concurrent;
+using Bam.Net.ServiceProxy;
 
 namespace Bam.Net.Server
 {
@@ -180,7 +181,8 @@ namespace Bam.Net.Server
             {
                 try
                 {
-                    HttpListenerContext context = _listener.GetContext();
+                    HttpListenerContext listenerContext = _listener.GetContext();
+                    IHttpContext context = new HttpContextWrapper(listenerContext);
                     Task.Run(() =>
                     {
                         try
@@ -198,7 +200,7 @@ namespace Bam.Net.Server
             }
         }
 
-        public event Action<HttpListenerContext> PreProcessRequest;
-        public event Action<HttpListenerContext> ProcessRequest;
+        public event Action<IHttpContext> PreProcessRequest;
+        public event Action<IHttpContext> ProcessRequest;
     }
 }

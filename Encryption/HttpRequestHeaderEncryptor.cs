@@ -17,6 +17,14 @@ namespace Bam.Net.Encryption
         public void EncryptHeaders(IHttpRequest request)
         {
             Args.ThrowIfNull(request, nameof(request));
+            if(request.Headers == null)
+            {
+                return;
+            }
+            if (!string.IsNullOrEmpty(request.ContentType))
+            {
+                request.Headers.Add("Content-Type-Cipher", Encryptor.EncryptString(request.ContentType));
+            }
             foreach(string header in HttpHeaders.PlainHeaders)
             {
                 if (request.Headers.ContainsKey(header))

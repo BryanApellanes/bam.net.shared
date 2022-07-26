@@ -33,9 +33,9 @@ namespace Bam.Net.Server.ServiceProxy
             get => ServiceProxyResponder?.ApplicationNameResolver;
         }
 
-        protected IServiceProxyInvocationReader ServiceProxyInvocationResolver
+        protected IServiceProxyInvocationReader ServiceProxyInvocationReader
         {
-            get => ServiceProxyResponder?.ServiceProxyInvocationResolver;
+            get => ServiceProxyResponder?.ServiceProxyInvocationReader;
         }
 
         protected HttpMethodHandlers HttpMethodHandlers { get; private set; }
@@ -56,7 +56,7 @@ namespace Bam.Net.Server.ServiceProxy
             HttpMethodHandlers = new HttpMethodHandlers();
             HttpMethodHandlers.SetHandler("Get", (context) =>
             {
-                ServiceProxyInvocation serviceProxyInvocation = ResolveServiceProxyInvocation(context);
+                ServiceProxyInvocation serviceProxyInvocation = ReadServiceProxyInvocation(context);
 
                 bool success = serviceProxyInvocation.Execute(out object result);
                 if (success)
@@ -69,20 +69,23 @@ namespace Bam.Net.Server.ServiceProxy
 
             HttpMethodHandlers.SetHandler("Post", (context) =>
             {
+                //MediaTypes
+
+                // POST read content type
+                //   json unencrypted invocation request
+                //      - read Uri to determine invoke target
+                //      - read body to determine method arguments
+
+                //   asym cipher is set key request
+                //      - target is SecureChannel
+                //      - decrypt body and read as SecureChannelMessage
+
+                //   sym cipher is encypted invocation request
+                //      - target is SecureChannel
+                //      - decrypt body and read as SecureChannelMessage
+                ServiceProxyInvocation serviceProxyInvocation = ReadServiceProxyInvocation(context);
                 throw new NotImplementedException();
             });
-            // POST read content type
-            //   json unencrypted invocation request
-            //      - read Uri to determine invoke target
-            //      - read body to determine method arguments
-
-            //   asym cipher is set key request
-            //      - target is SecureChannel
-            //      - decrypt body and read as SecureChannelMessage
-
-            //   sym cipher is encypted invocation request
-            //      - target is SecureChannel
-            //      - decrypt body and read as SecureChannelMessage
         }
 
         protected WebServiceProxyDescriptors GetWebServiceProxyDescriptors(IRequest request)
@@ -155,7 +158,7 @@ namespace Bam.Net.Server.ServiceProxy
             }
         }
 
-        private ServiceProxyInvocation ResolveServiceProxyInvocation(IHttpContext context)
+        private ServiceProxyInvocation ReadServiceProxyInvocation(IHttpContext context)
         {
             IRequest request = context.Request;
             WebServiceProxyDescriptors webServiceProxyDescriptors = GetWebServiceProxyDescriptors(request);
@@ -166,7 +169,7 @@ namespace Bam.Net.Server.ServiceProxy
                 serviceProxyPath = ServiceProxyPath.FromUri(request.Url);
             }
 
-            ServiceProxyInvocation serviceProxyInvocation = ServiceProxyInvocationResolver.ReadServiceProxyInvocation(serviceProxyPath, webServiceProxyDescriptors, context);
+            ServiceProxyInvocation serviceProxyInvocation = ServiceProxyInvocationReader.ReadServiceProxyInvocation(serviceProxyPath, webServiceProxyDescriptors, context);
             return serviceProxyInvocation;
         }
     }

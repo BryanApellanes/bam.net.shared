@@ -49,7 +49,8 @@ namespace Bam.Net.Server
             _clientProxyGenerators = new Dictionary<string, IClientProxyGenerator>();
             _requestHandlerResolver = new ResponderContextHandlerResolver<ServiceProxyResponder>(this);
             RendererFactory = new WebRendererFactory(logger);
-            ServiceProxyInvocationResolver = new ServiceProxyInvocationReader();
+            SecureChannelSessionDataManager = new SecureChannelSessionDataManager();               
+            ServiceProxyInvocationReader = new ServiceProxyInvocationReader(SecureChannelSessionDataManager);
             ApplicationServiceSourceResolver = new ApplicationServiceSourceResolver();
             ApplicationServiceRegistryResolver = new ApplicationServiceRegistryResolver();
             ServiceCompilationExceptionReporter = new ServiceCompilationExceptionReporter();
@@ -86,7 +87,7 @@ namespace Bam.Net.Server
         private bool SendMethodForm(IHttpContext context)
         {
             // TODO: use InputFormProvider to send method form
-            Logger.AddEntry("{0} method is not supported by this platform", nameof(SendMethodForm));
+            Logger.AddEntry("{0} method is not currently supported by this platform", nameof(SendMethodForm));
             return false;
         }
 
@@ -106,7 +107,7 @@ namespace Bam.Net.Server
         }
 
         [Inject]
-        public IServiceProxyInvocationReader ServiceProxyInvocationResolver { get; set; }
+        public IServiceProxyInvocationReader ServiceProxyInvocationReader { get; set; }
 
         private IApplicationServiceSourceResolver _applicationServiceSourceResolver;
 
@@ -704,6 +705,7 @@ namespace Bam.Net.Server
         {
             Bam.Net.ServiceProxy.ApplicationServiceSourceResolver.ForEachProxiedClass(BamConf, searchPattern, serviceDir, doForEachProxiedType);
         }
+
         private void SubscribeIfLoggable(object instance)
         {
             if (instance is Loggable loggable)

@@ -58,30 +58,7 @@ namespace Bam.Net.Logging.Http
                 Log.Warn("Error logging http response: {0}", ex.Message);
             }
         }
-
-        public void LogRequest(HttpListenerContext context)
-        {
-            try
-            {
-                Task.Run(() =>
-                {
-                    try
-                    {
-                        RequestData requestData = EnsureRequestData(context);
-                        EnsureUserData(context);
-                    }
-                    catch (Exception ex)
-                    {
-                        Log.Warn("Error logging http request: {0}", ex.Message);
-                    }
-                });
-            }
-            catch (Exception ex)
-            {
-                Log.Warn("Error logging http request: {0}", ex.Message);
-            }
-        }
-        
+                
         public void LogRequest(IHttpContext context)
         {
             try
@@ -106,23 +83,6 @@ namespace Bam.Net.Logging.Http
         }
 
         static object _userDataLock = new object();
-
-        private void EnsureUserData(HttpListenerContext context)
-        {
-            if (context?.Request == null)
-            {
-                return;
-                
-            }
-
-            lock (_userDataLock)
-            {
-                string userName = UserResolver.GetUser(new HttpContextWrapper(context));
-                ulong userKey = userName.ToSha512ULong();
-                HttpLoggingRepository.SetOneUserKeyDataWhere(ukd => ukd.UserName == userName && ukd.UserKey == userKey);
-                HttpLoggingRepository.SetOneUserDataWhere(ud => ud.UserKey == userKey && ud.RequestId == context.Request.GetRequestId());
-            }
-        }
         
         private void EnsureUserData(IHttpContext context)
         {
@@ -154,26 +114,6 @@ namespace Bam.Net.Logging.Http
                 }
 
                 Args.ThrowIfNull(requestData, "Failed to persist request data.", "requestData");
-                return requestData;
-            }
-        }
-
-        private RequestData EnsureRequestData(HttpListenerContext context)
-        {
-            return EnsureRequestData(context.Request);
-        }
-
-        private RequestData EnsureRequestData(HttpListenerRequest request)
-        {
-            lock (requestLogLock)
-            {
-                string requestId = request.GetRequestId();
-                RequestData requestData = HttpLoggingRepository.OneRequestDataWhere(rd => rd.RequestId == requestId);
-                if (requestData == null)
-                {
-                    requestData = HttpLoggingRepository.Save<RequestData>(RequestData.FromRequest(new RequestWrapper(request)));
-                }
-
                 return requestData;
             }
         }

@@ -52,7 +52,10 @@ namespace Bam.Net.ServiceProxy.Encryption
             }
         }
 
-        public Exception SessionStartException
+        /// <summary>
+        /// Gets the exception that occurred during session start.  May be null if session started successfully.
+        /// </summary>
+        public Exception StartSessionException
         {
             get;
             private set;
@@ -131,10 +134,10 @@ namespace Bam.Net.ServiceProxy.Encryption
         /// The event that is raised if an exception occurs starting the 
         /// secure session.
         /// </summary>
-        public event Action<EncryptedServiceProxyClient<TService>, Exception> StartSessionException;
-        protected void OnStartSessionException(Exception ex)
+        public event Action<EncryptedServiceProxyClient<TService>, Exception> SessionStartException;
+        protected void OnSessionStartException(Exception ex)
         {
-            StartSessionException?.Invoke(this, ex);
+            SessionStartException?.Invoke(this, ex);
         }
 
         public async Task<ClientSessionInfo> StartClientSessionAsync(Instant clientNow)
@@ -144,7 +147,8 @@ namespace Bam.Net.ServiceProxy.Encryption
             try
             {
                 ServiceProxyInvocationRequest<SecureChannel> serviceProxyInvocationRequest = new ServiceProxyInvocationRequest<SecureChannel>(nameof(SecureChannel.StartSession), clientNow) { BaseAddress = this.BaseAddress };
-                HttpRequestMessage requestMessage = await base.CreateServiceProxyInvocationRequestMessageAsync(serviceProxyInvocationRequest);
+                ServiceProxyInvocationRequestWriter serviceProxyInvocationRequestWriter = new ServiceProxyInvocationRequestWriter();
+                HttpRequestMessage requestMessage = await serviceProxyInvocationRequestWriter.WriteRequestMessageAsync(serviceProxyInvocationRequest);
                 HttpResponseMessage responseMessage = await HttpClient.SendAsync(requestMessage);
                 string responseString = await responseMessage.Content.ReadAsStringAsync();
                 LastResponse = responseString;
@@ -163,8 +167,8 @@ namespace Bam.Net.ServiceProxy.Encryption
             }
             catch (Exception ex)
             {
-                SessionStartException = ex;
-                OnStartSessionException(ex);
+                StartSessionException = ex;
+                OnSessionStartException(ex);
             }
 
             return null;
@@ -174,7 +178,8 @@ namespace Bam.Net.ServiceProxy.Encryption
         {
             SetSessionKeyRequest setSessionKeyRequest = ClientSessionInfo.CreateSetSessionKeyRequest();
             ServiceProxyInvocationRequest<SecureChannel> serviceProxyInvocationRequest = new ServiceProxyInvocationRequest<SecureChannel>(nameof(SecureChannel.SetSessionKey), setSessionKeyRequest) { BaseAddress = this.BaseAddress };
-            HttpRequestMessage requestMessage = await base.CreateServiceProxyInvocationRequestMessageAsync(serviceProxyInvocationRequest);
+            ServiceProxyInvocationRequestWriter serviceProxyInvocationRequestWriter = new ServiceProxyInvocationRequestWriter();
+            HttpRequestMessage requestMessage = await serviceProxyInvocationRequestWriter.WriteRequestMessageAsync(serviceProxyInvocationRequest);
             HttpResponseMessage responseMessage = await HttpClient.SendAsync(requestMessage);
             string responseString = await responseMessage.Content.ReadAsStringAsync();
             LastResponse = responseString;
@@ -286,19 +291,23 @@ namespace Bam.Net.ServiceProxy.Encryption
         }
 
         Task<ClientSessionInfo> _startSessionTask;
+        object _startSessionLock = new object();
         private async Task<ClientSessionInfo> TryStartSessionAsync()
         {
             try
             {
                 if (ClientSessionInfo == null)
                 {
-                    if (_startSessionTask == null)
+                    lock (_startSessionLock)
                     {
-                        _startSessionTask = StartClientSessionAsync(new Instant());
-                    }
-                    ClientSessionInfo = await _startSessionTask;
+                        if (_startSessionTask == null)
+                        {
+                            _startSessionTask = StartClientSessionAsync(new Instant());
+                        }
+                    }                    
                 }
 
+                ClientSessionInfo = await _startSessionTask;
                 if (ClientSessionInfo == null)
                 {
                     throw new ArgumentNullException("Failed to start session");
@@ -306,7 +315,7 @@ namespace Bam.Net.ServiceProxy.Encryption
             }
             catch (Exception ex)
             {
-                SessionStartException = ex;
+                StartSessionException = ex;
             }
             
             return ClientSessionInfo;

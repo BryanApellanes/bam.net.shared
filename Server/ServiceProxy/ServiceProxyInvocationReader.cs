@@ -18,7 +18,7 @@ namespace Bam.Net.Server.ServiceProxy
     /// </summary>
     public class ServiceProxyInvocationReader : IServiceProxyInvocationReader
     {
-        public ServiceProxyInvocationReader(ILogger logger = null)
+        public ServiceProxyInvocationReader(ISecureChannelSessionDataManager secureChannelSessionDataManager, ILogger logger = null)
         {
             this.Logger = logger;
             this.DefaultArgumentReader = new QueryStringServiceProxyInvocationArgumentReader();
@@ -26,7 +26,7 @@ namespace Bam.Net.Server.ServiceProxy
             {
                 { new HttpMethodContentTypeKey("GET"), DefaultArgumentReader },
                 { new HttpMethodContentTypeKey("POST", MediaTypes.Json), new InputStreamServiceProxyInvocationArgumentReader() },
-                { new HttpMethodContentTypeKey("POST", MediaTypes.BamPipeline), new EncryptedServiceProxyInvocationArgumentReader() },
+                { new HttpMethodContentTypeKey("POST", MediaTypes.BamPipeline), new EncryptedServiceProxyInvocationArgumentReader(secureChannelSessionDataManager) },
             };
             // CREATE A CUSTOM ENCODING PIPELINE ARGUMENT READER
             // IMPLEMENT IValueTransformer that takes a list of encoding names,
@@ -69,7 +69,7 @@ namespace Bam.Net.Server.ServiceProxy
 
             ServiceProxyInvocationArgumentReader argumentReader = GetArgumentReader(request);
 
-            serviceProxyInvocation.Arguments = argumentReader.ReadArguments(serviceProxyInvocation.MethodInfo, request);
+            serviceProxyInvocation.Arguments = argumentReader.ReadArgumentsAsync(serviceProxyInvocation.MethodInfo, context).Result;
 
             return serviceProxyInvocation;
         }

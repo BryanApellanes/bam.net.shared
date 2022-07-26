@@ -1,59 +1,40 @@
 ﻿using Bam.Net.Web;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Text;
 
 namespace Bam.Net.Encryption
 {
-    public class HttpRequest<TContent> : IHttpRequest<TContent>
+    public class HttpRequest<TContent> : HttpRequest, IHttpRequest<TContent>
     {
-        public HttpRequest()
+        TContent content;
+
+        public HttpRequest():base()
         {
-            this.Headers = new Dictionary<string, string>();
         }
 
-        public TContent Content
-        {
-            get; 
-            set;
-        }
-
-        public IDictionary<string, string> Headers
-        {
-            get;
-            private set;
-        }
-
-        public string ContentType
-        {
-            get;
-            set;
-        }
-
-        public HttpVerbs Verb
-        {
-            get;
-            set;
-        }
-
-        string IHttpRequest.Content
+        public new TContent Content
         {
             get
             {
-                return this.Content?.ToJson();
+                if (this.content == null && !string.IsNullOrEmpty(base.Content))
+                {
+                    base.Content.TryFromJson<TContent>(out this.content);
+                }
+                return this.content;
             }
             set
             {
-                if (!string.IsNullOrEmpty(value))
-                {
-                    this.Content = value.FromJson<TContent>();
-                }
+                this.content = value;
+                base.Content = this.Content.ToJson();
             }
         }
 
         public void Copy(IHttpRequest<TContent> request)
         {
+            this.Uri = request.Uri;
             this.Content = request.Content;
             this.ContentType = request.ContentType;
             this.Verb =  request.Verb;

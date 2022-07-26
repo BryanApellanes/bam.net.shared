@@ -293,11 +293,6 @@ namespace Bam.Net.Data
             ExecuteSql(sqlStatement, commandType, dbParameters, conn);
         }
 
-        public virtual void ExecuteSql(string sqlStatement, DbParameter[] dbParameters, DbConnection conn = null, bool releaseConnection = true)
-        {
-            ExecuteSql(sqlStatement, CommandType.Text, dbParameters, conn ?? GetOpenDbConnection(), releaseConnection);
-        }
-
         public virtual void ExecuteSql(string sqlStatement, CommandType commandType, DbParameter[] dbParameters, DbConnection conn, bool releaseConnection = true)
         {
             ExecuteSql(sqlStatement, commandType, dbParameters, conn, (ex) => { }, releaseConnection);
@@ -792,6 +787,7 @@ namespace Bam.Net.Data
 			return new AssignValue(keyColumn, value, columnNameformatter);
 		}
 
+        // TODO: refactor all calls that require a connection, remove the connection parameter and set the connection right before executing the command
         protected internal virtual DbCommand PrepareCommand(string sqlStatement, CommandType commandType, DbParameter[] dbParameters, DbConnection conn)
         {
             if (conn.State == ConnectionState.Closed)
