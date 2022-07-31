@@ -65,7 +65,7 @@ namespace Bam.Net.Caching
     }
 
     /// <summary>
-    /// 
+    /// An object cache
     /// </summary>
     /// <seealso cref="Bam.Net.Caching.Cache" />
     public class Cache: Loggable
@@ -282,7 +282,7 @@ namespace Bam.Net.Caching
         /// <returns>CacheItem</returns>
         public CacheItem RetrieveByName(string name)
         {
-            if(ItemsByName.TryGetValue(name, out CacheItem result))
+            if (ItemsByName.TryGetValue(name, out CacheItem result))
             {
                 result.IncrementHits();
             }

@@ -125,24 +125,18 @@ namespace Bam.Net.ServiceProxy.Encryption
         }
 
 
-        IApiHmacKeyResolver _apiKeyResolver;
+        IApiHmacKeyResolver _apiHmacKeyResolver;
         object _apiKeyResolverSync = new object();
         public IApiHmacKeyResolver ApiHmacKeyResolver
         {
             get
             {
-                return _apiKeyResolverSync.DoubleCheckLock(ref _apiKeyResolver, () => new ApiHmacKeyResolver());
+                return _apiKeyResolverSync.DoubleCheckLock(ref _apiHmacKeyResolver, () => new ApiHmacKeyResolver());
             }
             set
             {
-                _apiKeyResolver = value;
+                _apiHmacKeyResolver = value;
             }
-        }
-
-        public static bool Debug
-        {
-            get;
-            set;
         }
 
         static ServiceRegistry _serviceRegistry;
