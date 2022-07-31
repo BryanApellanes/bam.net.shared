@@ -54,38 +54,21 @@ namespace Bam.Net.Server.ServiceProxy
         protected void SetHttpMethodHandlers()
         {
             HttpMethodHandlers = new HttpMethodHandlers();
-            HttpMethodHandlers.SetHandler("Get", (context) =>
+            HttpMethodHandlers.SetHandler("Get", ExecuteInvocation);
+            HttpMethodHandlers.SetHandler("Post", ExecuteInvocation);
+        }
+
+        protected IHttpResponse ExecuteInvocation(IHttpContext context)
+        {
+            ServiceProxyInvocation serviceProxyInvocation = ReadServiceProxyInvocation(context);
+
+            bool success = serviceProxyInvocation.Execute(out object result);
+            if (success)
             {
-                ServiceProxyInvocation serviceProxyInvocation = ReadServiceProxyInvocation(context);
+                return new HttpResponse(result.ToJson(), 200);
+            }
 
-                bool success = serviceProxyInvocation.Execute(out object result);
-                if (success)
-                {
-                    return new HttpResponse(result.ToJson(), 200);
-                }
-
-                return new HttpErrorResponse(serviceProxyInvocation.Exception) { StatusCode = 500 };
-            });
-
-            HttpMethodHandlers.SetHandler("Post", (context) =>
-            {
-                //MediaTypes
-
-                // POST read content type
-                //   json unencrypted invocation request
-                //      - read Uri to determine invoke target
-                //      - read body to determine method arguments
-
-                //   asym cipher is set key request
-                //      - target is SecureChannel
-                //      - decrypt body and read as SecureChannelMessage
-
-                //   sym cipher is encypted invocation request
-                //      - target is SecureChannel
-                //      - decrypt body and read as SecureChannelMessage
-                ServiceProxyInvocation serviceProxyInvocation = ReadServiceProxyInvocation(context);
-                throw new NotImplementedException();
-            });
+            return new HttpErrorResponse(serviceProxyInvocation.Exception) { StatusCode = 500 };
         }
 
         protected WebServiceProxyDescriptors GetWebServiceProxyDescriptors(IRequest request)

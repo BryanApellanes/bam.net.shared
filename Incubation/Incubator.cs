@@ -159,29 +159,6 @@ namespace Bam.Net.Incubation
             return (T)Construct(typeof(T));
         }
 
-/*        /// <summary>
-        /// Construct an instance of type T without
-        /// setting the new instance as the new internal gettable instance
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
-        public T GetWithoutSet<T>()
-        {
-            return (T)GetWithoutSet(typeof(T));
-        }
-
-        /// <summary>
-        /// Construct an instance of type T without
-        /// setting the new instance as the new internal gettable instance
-        /// </summary>
-        /// <param name="type"></param>
-        /// <returns></returns>
-        public object GetWithoutSet(Type type)
-        {
-            GetCtorAndParams(type, out ConstructorInfo ctor, out List<object> ctorParams);
-            return ctor.Invoke(ctorParams.ToArray());
-        }*/
-
         /// <summary>
         /// Construct an instance of the specified type
         /// injecting constructor params from the current 

@@ -14,6 +14,14 @@ namespace Bam.Net.Server.ServiceProxy
             this.Json = json;            
         }
 
+        public ServiceProxyInvocationArgument(ServiceProxyInvocationArgumentReader argumentReader, ParameterInfo parameterInfo, object value)
+        {
+            this.ArgumentReader = argumentReader;
+            this.ParameterInfo = parameterInfo;
+            this.Json = value.ToJson();
+            this._value = value;
+        }
+
         protected ServiceProxyInvocationArgumentReader ArgumentReader
         {
             get;
@@ -25,12 +33,17 @@ namespace Bam.Net.Server.ServiceProxy
             get;
         }
 
+        object _value;
         public object Value 
         {
             get
             {
-                Args.ThrowIfNull(ParameterInfo, nameof(ParameterInfo));
-                return ArgumentReader.DecodeValue(ParameterInfo.ParameterType, Json);
+                if (_value == null)
+                {
+                    Args.ThrowIfNull(ParameterInfo, nameof(ParameterInfo));
+                    _value = ArgumentReader.DecodeValue(ParameterInfo.ParameterType, Json);
+                }
+                return _value;
             }
         }
 

@@ -26,12 +26,12 @@ namespace Bam.Net.Server.ServiceProxy
             return encodedValue.FromJson(type);
         }
 
-        public abstract Task<ServiceProxyInvocationArgument[]> ReadArgumentsAsync(MethodInfo methodInfo, IHttpContext httpContext);
-
-/*        public Task<ServiceProxyInvocationArgument[]> ReadJsonArgumentsMemberAsync(MethodInfo methodInfo, string body)
+        public virtual ServiceProxyInvocation CreateServiceProxyInvocation(WebServiceProxyDescriptors webServiceProxyDescriptors, string className, string methodName, IHttpContext context)
         {
-            return Task.FromResult(ReadJsonArgumentsMember(methodInfo, body));
-        }*/
+            return new ServiceProxyInvocation(webServiceProxyDescriptors, className, methodName, context);
+        }
+
+        public abstract Task<ServiceProxyInvocationArgument[]> ReadArgumentsAsync(MethodInfo methodInfo, IHttpContext httpContext);
 
         public virtual ServiceProxyInvocationArgument[] ReadJsonArgumentsMember(MethodInfo methodInfo, string body)
         {

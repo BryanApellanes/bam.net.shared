@@ -12,9 +12,9 @@ namespace Bam.Net
             this.ByteReverseTransformer = new ByteReverseTransformer() { ByteTransformer = this };
         }
 
-        public ByteTransformer(Func<byte[], byte[]> encoder):this()
+        public ByteTransformer(Func<byte[], byte[]> transformer):this()
         {
-            this.Transformer = encoder;
+            this.Transformer = transformer;
         }
 
         public ByteReverseTransformer ByteReverseTransformer { get; internal set; }

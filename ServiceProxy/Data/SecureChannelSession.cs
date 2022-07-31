@@ -113,9 +113,12 @@ namespace Bam.Net.ServiceProxy.Data
         {
             await Task.Run(() =>
             {
-                this.Expires = DateTime.UtcNow.AddMinutes(expiresInMinutes);
+                if (!string.IsNullOrEmpty(SymmetricKey) && !string.IsNullOrEmpty(SymmetricIV))
+                {
+                    this.Expires = DateTime.UtcNow.AddMinutes(expiresInMinutes);
 
-                _ = UpdateLastActivityAsync();
+                    _ = UpdateLastActivityAsync();
+                }
             });
         }
 

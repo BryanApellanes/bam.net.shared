@@ -65,9 +65,9 @@ namespace Bam.Net.Server.ServiceProxy
             IRequest request = context.Request;
             string className = serviceProxyPath.Path.ReadUntil('/', out string methodName);
 
-            ServiceProxyInvocation serviceProxyInvocation = new ServiceProxyInvocation(webServiceProxyDescriptors, className, methodName, context);
-
             ServiceProxyInvocationArgumentReader argumentReader = GetArgumentReader(request);
+
+            ServiceProxyInvocation serviceProxyInvocation = argumentReader.CreateServiceProxyInvocation(webServiceProxyDescriptors, className, methodName, context);
 
             serviceProxyInvocation.Arguments = argumentReader.ReadArgumentsAsync(serviceProxyInvocation.MethodInfo, context).Result;
 

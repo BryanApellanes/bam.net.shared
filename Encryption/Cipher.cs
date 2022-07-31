@@ -25,6 +25,13 @@ namespace Bam.Net.Encryption
         {
             return new Cipher<TData>() { Data = data.FromBase64() };
         }
+
+        public Cipher() { }
+
+        public Cipher(string base64Data)
+        {
+            this.Data = base64Data.FromBase64();
+        }
     }
 
     public class Cipher

@@ -96,6 +96,11 @@ namespace Bam.Net.ServiceProxy.Encryption
             return new SecureChannelResponseMessage<ClientSessionInfo>(clientSessionInfo);
         }
 
+        public object Invoke(SecureChannelRequestMessage secureChannelRequestMessage)
+        {
+            throw new NotImplementedException();
+        }
+
         public void EndSession(string sessionIdentifier)
         {
             SecureSession session = SecureSession.Get(sessionIdentifier);
@@ -108,7 +113,7 @@ namespace Bam.Net.ServiceProxy.Encryption
             SecureChannelResponseMessage response = new SecureChannelResponseMessage(true);
             try
             {
-                SecureChannelSessionDataManager.SetSessionKeyAsync(HttpContext, setSessionKeyRequest);
+                SecureChannelSessionDataManager.SetSessionKeyAsync(HttpContext, setSessionKeyRequest).Wait();
                 response.Success = true;
             }
             catch (Exception ex)
