@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace Bam.Net.ServiceProxy
 {
-    public class ServiceProxyClient<TService> : ServiceProxyClient
+    public class ServiceProxyClient<TService> : ServiceProxyClient, IServiceProxyClient
     {
         public ServiceProxyClient(HttpClient httpClient) : base(httpClient, typeof(TService))
         {
@@ -59,11 +59,16 @@ namespace Bam.Net.ServiceProxy
         /// type T
         /// </summary>
         /// <param name="methodName"></param>
-        /// <param name="parameters"></param>
+        /// <param name="arguments"></param>
         /// <returns></returns>
-        public string InvokeServiceMethod(string methodName, params object[] parameters)
+        public override string InvokeServiceMethod(string methodName, params object[] arguments)
         {
-            return InvokeServiceMethodAsync(BaseAddress, typeof(TService).Name, methodName, parameters).Result;
+            return InvokeServiceMethodAsync(BaseAddress, typeof(TService).Name, methodName, arguments).Result;
+        }
+
+        public override string InvokeServiceMethod(string className, string methodName, object[] arguments)
+        {
+            return InvokeServiceMethodAsync(BaseAddress, className, methodName, arguments).Result;
         }
 
         public override Task<string> InvokeServiceMethodAsync(string className, string methodName, object[] arguments)
@@ -76,17 +81,17 @@ namespace Bam.Net.ServiceProxy
             ServiceProxyInvocationRequest<TService> request = new ServiceProxyInvocationRequest<TService>(this, methodName, arguments);
 
             ServiceProxyInvocationRequestEventArgs args = request.CopyAs<ServiceProxyInvocationRequestEventArgs<TService>>(request);
-            OnInvokeMethodStarted(args);
+            OnInvocationStarted(args);
             string response = string.Empty;
             if (args.CancelInvoke)
             {
-                OnInvokeMethodCanceled(args);
+                OnInvocationCanceled(args);
             }
             else
             {
                 response = await ReceiveServiceMethodResponseAsync(request);
                 LastResponse = response;
-                OnInvokeMethodComplete(args);
+                OnInvocationComplete(args);
             }
 
             return response;

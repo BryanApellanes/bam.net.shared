@@ -18,7 +18,7 @@ using System.Net.Http;
 
 namespace Bam.Net.ServiceProxy
 {
-    public abstract class ServiceProxyClient
+    public abstract class ServiceProxyClient : IServiceProxyClient
     {
         public const string DefaultBaseAddress = "http://localhost:8080";
 
@@ -52,20 +52,10 @@ namespace Bam.Net.ServiceProxy
         public event EventHandler<ServiceProxyInvocationRequestEventArgs> GetStarted;
         public event EventHandler<ServiceProxyInvocationRequestEventArgs> GetComplete;
 
-        public event EventHandler<ServiceProxyInvocationRequestEventArgs> RequestExceptionThrown;
-
         public string BaseAddress
         {
             get;
             set;
-        }
-
-        protected void OnRequestExceptionThrown(ServiceProxyInvocationRequestEventArgs args)
-        {
-            if (RequestExceptionThrown != null)
-            {
-                RequestExceptionThrown(this, args);
-            }
         }
 
         /// <summary>
@@ -87,7 +77,7 @@ namespace Bam.Net.ServiceProxy
                 GetCanceled(this, args);
             }
 
-            OnInvokeMethodCanceled(args);
+            OnInvocationCanceled(args);
         }
 
         /// <summary>
@@ -121,11 +111,11 @@ namespace Bam.Net.ServiceProxy
                 PostCanceled(this, args);
             }
 
-            OnInvokeMethodCanceled(args);
+            OnInvocationCanceled(args);
         }
 
         /// <summary>
-        /// Fires the Got event
+        /// Fires the `PostComplete` event
         /// </summary>
         /// <param name="args"></param>
         protected void OnPostComplete(ServiceProxyInvocationRequestEventArgs args)
@@ -204,22 +194,22 @@ namespace Bam.Net.ServiceProxy
             InvocationException?.Invoke(this, args);
         }
 
-        public event EventHandler<ServiceProxyInvocationRequestEventArgs> InvokeMethodStarted;
-        protected void OnInvokeMethodStarted(ServiceProxyInvocationRequestEventArgs args)
+        public event EventHandler<ServiceProxyInvocationRequestEventArgs> InvocationStarted;
+        protected void OnInvocationStarted(ServiceProxyInvocationRequestEventArgs args)
         {
-            InvokeMethodStarted?.Invoke(this, args);
+            InvocationStarted?.Invoke(this, args);
         }
 
-        public event EventHandler<ServiceProxyInvocationRequestEventArgs> InvokeMethodComplete;
-        protected void OnInvokeMethodComplete(ServiceProxyInvocationRequestEventArgs args)
+        public event EventHandler<ServiceProxyInvocationRequestEventArgs> InvocationComplete;
+        protected void OnInvocationComplete(ServiceProxyInvocationRequestEventArgs args)
         {
-            InvokeMethodComplete?.Invoke(this, args);
+            InvocationComplete?.Invoke(this, args);
         }
 
-        public event EventHandler<ServiceProxyInvocationRequestEventArgs> InvokeMethodCanceled;
-        protected void OnInvokeMethodCanceled(ServiceProxyInvocationRequestEventArgs args)
+        public event EventHandler<ServiceProxyInvocationRequestEventArgs> InvocationCanceled;
+        protected void OnInvocationCanceled(ServiceProxyInvocationRequestEventArgs args)
         {
-            InvokeMethodCanceled?.Invoke(this, args);
+            InvocationCanceled?.Invoke(this, args);
         }
 
         public async Task<string> ReceivePostResponseAsync(string methodName, params object[] arguments)
@@ -255,7 +245,7 @@ namespace Bam.Net.ServiceProxy
                 catch (Exception ex)
                 {
                     args.Exception = ex;
-                    OnRequestExceptionThrown(args);
+                    OnInvocationException(args);
                 }
             }
             return result;
@@ -312,15 +302,14 @@ namespace Bam.Net.ServiceProxy
 
         protected virtual IServiceProxyInvocationRequestWriter GetRequestWriter()
         {
-            return new ServiceProxyInvocationRequestWriter();//GetRequestWriter<ServiceProxyInvocationRequestWriter>();
+            return new ServiceProxyInvocationRequestWriter();
         }
 
-/*        protected TWriter GetRequestWriter<TWriter>(params object[] ctorArgs) where TWriter: IServiceProxyInvocationRequestWriter
-        {
-            return (TWriter)typeof(TWriter).Construct(ctorArgs);
-        }*/
+        public abstract string InvokeServiceMethod(string methodName, params object[] arguments);
 
         public abstract Task<string> InvokeServiceMethodAsync(string baseAddress, string className, string methodName, object[] arguments);
+
+        public abstract string InvokeServiceMethod(string className, string methodName, object[] arguments);
 
         public abstract Task<string> InvokeServiceMethodAsync(string className, string methodName, object[] arguments);
 

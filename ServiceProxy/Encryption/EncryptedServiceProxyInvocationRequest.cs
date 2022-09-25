@@ -27,8 +27,8 @@ namespace Bam.Net.ServiceProxy.Encryption
             {
                 BaseAddress = serviceProxyClient?.BaseAddress ?? BaseAddress,
                 ClassName = nameof(SecureChannel),
-                MethodName = "Invoke",
-                QueryStringArguments = "",
+                MethodName = nameof(SecureChannel.Execute),
+                QueryStringArguments = string.Empty,
             });
         }
     }

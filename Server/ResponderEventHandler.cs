@@ -14,5 +14,5 @@ namespace Bam.Net.Server
     /// </summary>
     /// <param name="responder"></param>
     /// <param name="context"></param>
-    public delegate void ResponderEventHandler(IResponder responder, IHttpContext context);
+    public delegate void ResponderEventHandler(IHttpResponder responder, IHttpContext context);
 }

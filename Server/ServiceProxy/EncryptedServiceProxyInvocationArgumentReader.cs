@@ -19,7 +19,7 @@ namespace Bam.Net.Server.ServiceProxy
 
         public EncryptedServiceProxyInvocationArgumentReader(ISecureChannelSessionDataManager secureChannelSessionDataManager)
         {
-            this._secureChannelInvoke = typeof(SecureChannel).GetMethod("Invoke");
+            this._secureChannelInvoke = typeof(SecureChannel).GetMethod(nameof(SecureChannel.Execute));
             this._secureChannelParameter = _secureChannelInvoke.GetParameters().First();
             this.SecureChannelSessionDataManager = secureChannelSessionDataManager;
         }

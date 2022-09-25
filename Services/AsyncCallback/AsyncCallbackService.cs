@@ -33,7 +33,7 @@ namespace Bam.Net.Services
 
         public AsyncCallbackService(AsyncCallbackRepository repo, AppConf conf) : base(repo, conf)
         {
-            HostPrefix = new HostPrefix { HostName = Machine.Current.DnsName, Port = RandomNumber.Between(49152, 65535) };                 
+            HostPrefix = new HostBinding { HostName = Machine.Current.DnsName, Port = RandomNumber.Between(49152, 65535) };                 
             AsyncCallbackRepository = repo;
             _pendingRequests = new ConcurrentDictionary<string, Action<AsyncExecutionResponse>>();
         }
@@ -120,7 +120,7 @@ namespace Bam.Net.Services
             }
         }
 
-        public HostPrefix HostPrefix
+        public HostBinding HostPrefix
         {
             get;set;
         }

@@ -42,13 +42,13 @@ namespace Bam.Net.Services
 
         public override void Start()
         {
-            HostPrefix[] copy = new HostPrefix[HostPrefixes.Count];
-            HostPrefixes.CopyTo(copy);
+            HostBinding[] copy = new HostBinding[HostBindings.Count];
+            HostBindings.CopyTo(copy);
             ServiceSubdomains.Each(sub =>
             {
                 copy.Each(hp =>
                 {
-                    HostPrefixes.Add(hp.FromServiceSubdomain(sub));
+                    HostBindings.Add(hp.FromServiceSubdomain(sub));
                 });
             });
             base.Start();

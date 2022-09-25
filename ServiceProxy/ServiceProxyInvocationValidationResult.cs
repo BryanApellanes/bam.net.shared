@@ -13,7 +13,7 @@ namespace Bam.Net.ServiceProxy
 {
     public class ServiceProxyInvocationValidationResult
     {
-        readonly ServiceProxyInvocation _toValidate;
+        readonly ServiceProxyInvocation _serviceProxyInvocation;
 
         public ServiceProxyInvocationValidationResult()
         {
@@ -22,7 +22,7 @@ namespace Bam.Net.ServiceProxy
 
         public ServiceProxyInvocationValidationResult(ServiceProxyInvocation request, string messageDelimiter = null)
         {
-            _toValidate = request;
+            _serviceProxyInvocation = request;
             Delimiter = messageDelimiter ?? ",\r\n";
         }
 
@@ -56,14 +56,14 @@ namespace Bam.Net.ServiceProxy
 
         private void ValidateRequestFilters(IHttpContext context, List<ValidationFailures> failures, List<string> messages)
         {
-            if (_toValidate.TargetType != null &&
-                _toValidate.MethodInfo != null &&
+            if (_serviceProxyInvocation.TargetType != null &&
+                _serviceProxyInvocation.MethodInfo != null &&
                 (
-                    _toValidate.TargetType.HasCustomAttributeOfType(true, out RequestFilterAttribute filterAttr) ||
-                    _toValidate.MethodInfo.HasCustomAttributeOfType(true, out filterAttr)
+                    _serviceProxyInvocation.TargetType.HasCustomAttributeOfType(true, out RequestFilterAttribute filterAttr) ||
+                    _serviceProxyInvocation.MethodInfo.HasCustomAttributeOfType(true, out filterAttr)
                 ))
             {
-                if (!filterAttr.RequestIsAllowed(_toValidate, out string failureMessage))
+                if (!filterAttr.RequestIsAllowed(_serviceProxyInvocation, out string failureMessage))
                 {
                     failures.Add(ServiceProxy.ValidationFailures.AttributeFilterFailed);
                     messages.Add(failureMessage);
@@ -92,8 +92,8 @@ namespace Bam.Net.ServiceProxy
 
         private void ValidateClassRoles(IHttpContext context, List<ValidationFailures> failures, List<string> messages)
         {
-            if (_toValidate.TargetType != null &&
-                _toValidate.TargetType.HasCustomAttributeOfType(true, out RoleRequiredAttribute requiredClassRoles))
+            if (_serviceProxyInvocation.TargetType != null &&
+                _serviceProxyInvocation.TargetType.HasCustomAttributeOfType(true, out RoleRequiredAttribute requiredClassRoles))
             {
                 if (requiredClassRoles.Roles.Length > 0)
                 {
@@ -104,9 +104,9 @@ namespace Bam.Net.ServiceProxy
 
         private void ValidateMethodRoles(IHttpContext context, List<ValidationFailures> failures, List<string> messages)
         {
-            if (_toValidate.TargetType != null &&
-                            _toValidate.MethodInfo != null &&
-                            _toValidate.MethodInfo.HasCustomAttributeOfType(true, out RoleRequiredAttribute requiredMethodRoles))
+            if (_serviceProxyInvocation.TargetType != null &&
+                            _serviceProxyInvocation.MethodInfo != null &&
+                            _serviceProxyInvocation.MethodInfo.HasCustomAttributeOfType(true, out RoleRequiredAttribute requiredMethodRoles))
             {
                 if (requiredMethodRoles.Roles.Length > 0)
                 {
@@ -117,44 +117,44 @@ namespace Bam.Net.ServiceProxy
 
         private void ValidateParameterCount(List<ValidationFailures> failures, List<string> messages)
         {
-            if (_toValidate.ParameterInfos != null && _toValidate.ParameterInfos.Length != _toValidate.Arguments.Length)
+            if (_serviceProxyInvocation.ParameterInfos != null && _serviceProxyInvocation.ParameterInfos.Length != _serviceProxyInvocation.Arguments.Length)
             {
                 failures.Add(ServiceProxy.ValidationFailures.ParameterCountMismatch);
-                messages.Add("Wrong number of parameters specified: expected ({0}), recieved ({1})"._Format(_toValidate.ParameterInfos.Length, _toValidate.Arguments.Length));
+                messages.Add("Wrong number of parameters specified: expected ({0}), recieved ({1})"._Format(_serviceProxyInvocation.ParameterInfos.Length, _serviceProxyInvocation.Arguments.Length));
             }
         }
 
         private void ValidateLocalExcludeMethod(IHttpContext context, List<ValidationFailures> failures, List<string> messages)
         {
-            if (_toValidate.TargetType != null &&
-                            _toValidate.MethodInfo != null &&
-                            _toValidate.MethodInfo.HasCustomAttributeOfType(out ExcludeAttribute attr))
+            if (_serviceProxyInvocation.TargetType != null &&
+                            _serviceProxyInvocation.MethodInfo != null &&
+                            _serviceProxyInvocation.MethodInfo.HasCustomAttributeOfType(out ExcludeAttribute attr))
             {
                 if (attr is LocalAttribute)
                 {
                     if (!context.Request.UserHostAddress.StartsWith("127.0.0.1"))
                     {
                         failures.Add(ServiceProxy.ValidationFailures.RemoteExecutionNotAllowed);
-                        messages.Add("The specified method is marked [Local] and the request was directed to {0}: {1}"._Format(context.Request.UserHostAddress, _toValidate.MethodName));
+                        messages.Add("The specified method is marked [Local] and the request was directed to {0}: {1}"._Format(context.Request.UserHostAddress, _serviceProxyInvocation.MethodName));
                     }
                 }
                 else
                 {
                     failures.Add(ServiceProxy.ValidationFailures.MethodNotProxied);
-                    messages.Add("The specified method is explicitly excluded from being proxied: {0}"._Format(_toValidate.MethodName));
+                    messages.Add("The specified method is explicitly excluded from being proxied: {0}"._Format(_serviceProxyInvocation.MethodName));
                 }
             }
         }
 
         private void ValidateMethodExists(List<ValidationFailures> failures, List<string> messages)
         {
-            if (_toValidate.TargetType != null && _toValidate.MethodInfo == null)
+            if (_serviceProxyInvocation.TargetType != null && _serviceProxyInvocation.MethodInfo == null)
             {
                 failures.Add(ServiceProxy.ValidationFailures.MethodNotFound);
-                string message = "Method ({0}) was not found"._Format(_toValidate.MethodName);
+                string message = "Method ({0}) was not found"._Format(_serviceProxyInvocation.MethodName);
                 if (!failures.Contains(ServiceProxy.ValidationFailures.ClassNameNotSpecified))
                 {
-                    message = "{0} on class ({1})"._Format(message, _toValidate.ClassName);
+                    message = "{0} on class ({1})"._Format(message, _serviceProxyInvocation.ClassName);
                 }
                 messages.Add(message);
             }
@@ -162,7 +162,7 @@ namespace Bam.Net.ServiceProxy
 
         private void ValidateMethodName(List<ValidationFailures> failures, List<string> messages)
         {
-            if (string.IsNullOrWhiteSpace(_toValidate.MethodName))
+            if (string.IsNullOrWhiteSpace(_serviceProxyInvocation.MethodName))
             {
                 failures.Add(ServiceProxy.ValidationFailures.MethodNameNotSpecified);
                 messages.Add("MethodName not specified");
@@ -171,16 +171,16 @@ namespace Bam.Net.ServiceProxy
 
         private void ValidateTargetType(List<ValidationFailures> failures, List<string> messages)
         {
-            if (_toValidate.TargetType == null)
+            if (_serviceProxyInvocation.TargetType == null)
             {
                 failures.Add(ServiceProxy.ValidationFailures.ClassNotRegistered);
-                messages.Add("Class {0} was not registered as a proxied service.  Register the class with the ServiceProxySystem first."._Format(_toValidate.ClassName));
+                messages.Add("Class {0} was not registered as a proxied service.  Register the class with the ServiceProxySystem first."._Format(_serviceProxyInvocation.ClassName));
             }
         }
 
         private void ValidateClassName(List<ValidationFailures> failures, List<string> messages)
         {
-            if (string.IsNullOrWhiteSpace(_toValidate.ClassName))
+            if (string.IsNullOrWhiteSpace(_serviceProxyInvocation.ClassName))
             {
                 failures.Add(ServiceProxy.ValidationFailures.ClassNameNotSpecified);
                 messages.Add("ClassName not specified");

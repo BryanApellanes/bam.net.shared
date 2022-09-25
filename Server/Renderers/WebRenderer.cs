@@ -64,7 +64,7 @@ namespace Bam.Net.Server.Renderers
         /// Sets the content type then calls Render(request.Result, request.Response.OutputStream);
         /// </summary>
         /// <param name="request"></param>
-        public virtual void Respond(ServiceProxyInvocation request)
+        public virtual void RenderResponse(ServiceProxyInvocation request)
         {
             IResponse response = request.Response;
             object toRender = request.Result;

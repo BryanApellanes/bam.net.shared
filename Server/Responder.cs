@@ -8,10 +8,7 @@ using System.Text;
 using Bam.Net.Logging;
 using System.IO;
 using Bam.Net.ServiceProxy;
-using Bam.Net.Server;
 using Bam.Net.Server.Renderers;
-using Bam.Net.Configuration;
-using System.IO.Compression;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using Bam.Net.Logging.Http;
@@ -20,7 +17,7 @@ using DefaultNamespace;
 
 namespace Bam.Net.Server
 {
-    public abstract class Responder : Loggable, IResponder
+    public abstract class Responder : Loggable, IHttpResponder
     {
         readonly Dictionary<string, string> _contentTypes;        
         public Responder(BamConf conf)
@@ -44,7 +41,8 @@ namespace Bam.Net.Server
             _ignorePrefixes = new List<string>();
 
             AddRespondToPrefix(ResponderName);
-            ApplicationServiceRegistry = conf?.Server?.LoadApplicationServiceRegistry()?.Result;
+            BamServer bamServer = conf?.Server ?? BamServer.Current;
+            ApplicationServiceRegistry = bamServer.LoadApplicationServiceRegistryAsync()?.Result;
         }
 
         public Responder(BamConf conf, ILogger logger)
@@ -259,7 +257,7 @@ namespace Bam.Net.Server
             context.Response.OutputStream.Close();
         }
 
-        protected internal void OnResponded(IResponder responder, IHttpContext context)
+        protected internal void OnResponded(IHttpResponder responder, IHttpContext context)
         {
             Task.Run(() => Responded?.Invoke(responder, context));
         }
@@ -274,12 +272,12 @@ namespace Bam.Net.Server
             Task.Run(() => DidNotRespond?.Invoke(this, context));
         }
 
-        protected internal void OnDidNotRespond(IResponder responder, IHttpContext context)
+        protected internal void OnDidNotRespond(IHttpResponder responder, IHttpContext context)
         {
             Task.Run(() => DidNotRespond?.Invoke(responder, context));
         }
         
-        protected internal void OnContentNotFound(IResponder responder, IHttpContext context, string[] checkedPaths)
+        protected internal void OnContentNotFound(IHttpResponder responder, IHttpContext context, string[] checkedPaths)
         {
             Task.Run(() =>
             {
@@ -299,7 +297,7 @@ namespace Bam.Net.Server
 
             _respondToPrefixes.Add(prefix);
         }
-        protected static void WireResponseLogging(IResponder responder, ILogger logger)
+        protected static void WireResponseLogging(IHttpResponder responder, ILogger logger)
         {
             responder.Responded += (r, context) => logger.AddEntry("*** ({0}) Responded ***\r\n{1}", LogEventType.Information, r.Name, context.Request.PropertiesToString());
             responder.DidNotRespond += (r, context) => logger.AddEntry("*** ({0}) Didn't Respond ***\r\n{1}", LogEventType.Warning, r.Name, context.Request.PropertiesToString());

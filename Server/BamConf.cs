@@ -39,7 +39,6 @@ namespace Bam.Net.Server
         public BamConf()
         {
             this.Fs = new Fs(BamHome.Path);
-            this.MaxThreads = 50;
             this.GenerateDao = true;
             this.DaoConfigs = new DaoConf[] { };
             this.DaoSearchPattern = "*Dao.dll";
@@ -330,11 +329,6 @@ namespace Bam.Net.Server
             return results.ToArray();
         }
 
-        /// <summary>
-        /// Advice to subordinate components.  Not currently used ¯\_(ツ)_/¯
-        /// </summary>
-        public int MaxThreads { get; set; }
-
         List<SchemaInitializer> _schemaInitializers;
         public SchemaInitializer[] SchemaInitializers
         {
@@ -372,7 +366,7 @@ namespace Bam.Net.Server
                     ProcessMode.Current.Mode
                 };
                 ParsedArguments arguments = ParsedArguments.Current;
-                HashSet<String> appsRequestedOnCommandLine = new HashSet<string>();
+                HashSet<string> appsRequestedOnCommandLine = new HashSet<string>();
                 if (arguments.Contains("apps"))
                 {
                     string appsArg = arguments["apps"];
@@ -530,6 +524,13 @@ namespace Bam.Net.Server
         static readonly object _defaultLock = new object();
         public static BamConf Default => _defaultLock.DoubleCheckLock(ref _default, Load);
 
+        /// <summary>
+        /// Load the BamConf from one of BamConf.json, BamConf.yaml, BamConf.xml
+        /// or the Default configuration file whichever is found first in the specified order.  Default 
+        /// is always provided and never returns null.  A json config is created
+        /// if no config is found of any of the formats json, yaml or xml.
+        /// </summary>
+        /// <returns></returns>
         public static BamConf Load()
         {
             return Load(DefaultConfiguration.GetAppSetting(ContentRootConfigKey, BamHome.ContentPath));
@@ -537,8 +538,8 @@ namespace Bam.Net.Server
 
         /// <summary>
         /// Load the BamConf from one of BamConf.json, BamConf.yaml, BamConf.xml
-        /// or the Default configuration file whichever is found first in that order.  Default 
-        /// will always be provided and will never return null.  A json config will be created
+        /// or the Default configuration file whichever is found first in the specified order.  Default 
+        /// is always provided and never returns null.  A json config is created
         /// if no config is found of any of the formats json, yaml or xml.
         /// </summary>
         /// <returns></returns>
@@ -591,7 +592,7 @@ namespace Bam.Net.Server
             return config;
         }
 
-        private static BamConf LoadXmlConfig(string xmlConfig)
+        internal static BamConf LoadXmlConfig(string xmlConfig)
         {
             BamConf temp = null;
             temp = xmlConfig.FromXmlFile<BamConf>();
@@ -600,7 +601,7 @@ namespace Bam.Net.Server
             return temp;
         }
 
-        private static BamConf LoadYamlConfig(string yamlConfig)
+        internal static BamConf LoadYamlConfig(string yamlConfig)
         {
             BamConf temp = null;
             temp = (BamConf)(yamlConfig.FromYamlFile());
@@ -609,7 +610,7 @@ namespace Bam.Net.Server
             return temp;
         }
 
-        private static BamConf LoadJsonConfig(string jsonConfig)
+        internal static BamConf LoadJsonConfig(string jsonConfig)
         {
             BamConf temp = null;
             temp = jsonConfig.FromJsonFile<BamConf>();

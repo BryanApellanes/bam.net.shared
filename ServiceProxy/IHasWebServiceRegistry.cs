@@ -5,11 +5,12 @@ using System.Text;
 using System.Threading.Tasks;
 using Bam.Net.CoreServices;
 using Bam.Net.Incubation;
+using Bam.Net.Services;
 
 namespace Bam.Net.ServiceProxy
 {
-    public interface IHasServiceRegistry
+    public interface IHasWebServiceRegistry
     {
-        ServiceRegistry ServiceRegistry { get; set; }
+        WebServiceRegistry WebServiceRegistry { get; set; }
     }
 }

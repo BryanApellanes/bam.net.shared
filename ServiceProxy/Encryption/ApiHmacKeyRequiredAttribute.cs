@@ -12,7 +12,7 @@ namespace Bam.Net.ServiceProxy.Encryption
 {
     /// <summary>
     /// Attribute used to adorn classes or methods that require
-    /// authentication or authorization.  Implicitly requires
+    /// invocation calls include HMAC signature.  Implicitly requires
     /// application level encryption.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]

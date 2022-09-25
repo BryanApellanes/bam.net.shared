@@ -12,15 +12,15 @@ using System.Threading.Tasks;
 
 namespace Bam.Net.Server
 {
-    public class HostPrefix
+    public class HostBinding
     {
-        public HostPrefix()
+        public HostBinding()
         {
             this.HostName = "localhost";
             this.Port = 8080;
         }
 
-        public HostPrefix(string hostName, int port)
+        public HostBinding(string hostName, int port)
         {
             this.HostName = hostName;
             this.Port = port;
@@ -39,7 +39,7 @@ namespace Bam.Net.Server
 
         public override bool Equals(object obj)
         {
-            if (obj is HostPrefix compareTo)
+            if (obj is HostBinding compareTo)
             {
                 return compareTo.ToString().Equals(this.ToString());
             }
@@ -51,23 +51,23 @@ namespace Bam.Net.Server
             return ToString().ToSha1Int();
         }
 
-        public HostPrefix FromServiceSubdomain(ServiceSubdomainAttribute attr)
+        public HostBinding FromServiceSubdomain(ServiceSubdomainAttribute attr)
         {
-            HostPrefix result = this.CopyAs<HostPrefix>();
+            HostBinding result = this.CopyAs<HostBinding>();
             result.HostName = $"{attr.Subdomain}.{HostName}";
             return result;
         }
 
-        public static HostPrefix[] FromHostAppMaps(IEnumerable<HostAppMap> hostAppMaps)
+        public static HostBinding[] FromHostAppMaps(IEnumerable<HostAppMap> hostAppMaps)
         {
-            return hostAppMaps.Select(hm => new HostPrefix { HostName = hm.Host, Port = 80 }).ToArray();
+            return hostAppMaps.Select(hm => new HostBinding { HostName = hm.Host, Port = 80 }).ToArray();
         }
 
-        public static HostPrefix[] FromBamProcessConfig(string defaultHostName = "localhost", int defaultPort = 80)
+        public static HostBinding[] FromBamProcessConfig(string defaultHostName = "localhost", int defaultPort = 80)
         {
             int port = int.Parse(Config.Current["Port", defaultPort.ToString()]);
             bool ssl = Config.Current["Ssl"].IsAffirmative();
-            List<HostPrefix> results = new List<HostPrefix>();
+            List<HostBinding> results = new List<HostBinding>();
             foreach (string hostName in Config.Current["HostNames"].Or(defaultHostName).DelimitSplit(",", true))
             {
                 AddHostPrefix(hostName, port, ssl, results);
@@ -75,11 +75,11 @@ namespace Bam.Net.Server
             return results.ToArray();
         }
 
-        public static HostPrefix[] FromDefaultConfiguration(string defaultHostName = "localhost", int defaultPort = 80)
+        public static HostBinding[] FromDefaultConfiguration(string defaultHostName = "localhost", int defaultPort = 80)
         {
             int port = int.Parse(DefaultConfiguration.GetAppSetting("Port", defaultPort.ToString()));
             bool ssl = DefaultConfiguration.GetAppSetting("Ssl").IsAffirmative();
-            List<HostPrefix> results = new List<HostPrefix>();
+            List<HostBinding> results = new List<HostBinding>();
             foreach (string hostName in DefaultConfiguration.GetAppSetting("HostNames").Or(defaultHostName).DelimitSplit(",", true))
             {
                 AddHostPrefix(hostName, port, ssl, results);
@@ -87,9 +87,9 @@ namespace Bam.Net.Server
             return results.ToArray();
         }
         
-        private static void AddHostPrefix(string hostName, int port, bool ssl, List<HostPrefix> results)
+        private static void AddHostPrefix(string hostName, int port, bool ssl, List<HostBinding> results)
         {
-            HostPrefix hostPrefix = new HostPrefix()
+            HostBinding hostPrefix = new HostBinding()
             {
                 HostName = hostName,
                 Port = port,

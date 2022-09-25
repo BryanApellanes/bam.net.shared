@@ -27,7 +27,7 @@ namespace Bam.Net.Logging.Http
         public IUserResolver UserResolver { get; }
         public HttpLoggingRepository HttpLoggingRepository { get; }
         
-        public void LogContentNotFound(IResponder responder, IHttpContext context, string[] checkedPaths = null)
+        public void LogContentNotFound(IHttpResponder responder, IHttpContext context, string[] checkedPaths = null)
         {
             try
             {

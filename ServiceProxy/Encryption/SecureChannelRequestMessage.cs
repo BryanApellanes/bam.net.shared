@@ -1,4 +1,5 @@
-﻿using Bam.Net.Server.ServiceProxy;
+﻿using Bam.Net.CoreServices;
+using Bam.Net.Server.ServiceProxy;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,7 +25,17 @@ namespace Bam.Net.ServiceProxy.Encryption
         public string MethodName { get; set; }
         public string JsonArgs { get; set; }
 
-
-
+        internal ServiceProxyInvocation ToServiceProxyInvocation(WebServiceProxyDescriptors serviceRegistry, ServiceProxyInvocationArgumentReader serviceProxyInvocationArgumentReader)
+        {
+            ServiceProxyInvocation serviceProxyInvocation = new ServiceProxyInvocation(serviceRegistry, this.ClassName, this.MethodName);
+            string[] jsonArgsArray = JsonArgs.FromJson<string[]>();
+            List<ServiceProxyInvocationArgument> args = new List<ServiceProxyInvocationArgument>();
+            for (int i = 0; i < serviceProxyInvocation.ParameterInfos.Length; i++)
+            {
+                args.Add(serviceProxyInvocationArgumentReader.DecodeArgument(serviceProxyInvocation.ParameterInfos[i], jsonArgsArray[i]));
+            }
+            serviceProxyInvocation.Arguments = args.ToArray();
+            return serviceProxyInvocation;
+        } 
     }
 }

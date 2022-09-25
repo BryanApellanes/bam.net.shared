@@ -11,14 +11,14 @@ namespace Bam.Net.Server
 {
     public class ResponderList: Responder
     {
-        readonly List<IResponder> _responders;
-        public ResponderList(BamConf conf, IEnumerable<IResponder> responders)
+        readonly List<IHttpResponder> _responders;
+        public ResponderList(BamConf conf, IEnumerable<IHttpResponder> responders)
             : base(conf)
         {
-            this._responders = new List<IResponder>(responders);
+            this._responders = new List<IHttpResponder>(responders);
         }
 
-        public void AddResponders(params IResponder[] responder)
+        public void AddResponders(params IHttpResponder[] responder)
         {
             _responders.AddRange(responder);
         }
@@ -31,14 +31,14 @@ namespace Bam.Net.Server
         /// <summary>
         /// The responder that handled the request if any
         /// </summary>
-        public IResponder HandlingResponder { get; set; }
+        public IHttpResponder HandlingResponder { get; set; }
 
         #region IResponder Members
 
         public override bool TryRespond(IHttpContext context)
         {
             bool handled = false;
-            foreach (IResponder r in _responders)
+            foreach (IHttpResponder r in _responders)
             {
                 if (r.Respond(context))
                 {

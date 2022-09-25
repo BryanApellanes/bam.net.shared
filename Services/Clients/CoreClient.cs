@@ -578,7 +578,7 @@ namespace Bam.Net.Services.Clients
             {
                 ServiceProxyClient client = service.Property<ServiceProxyClient>("Client");
                 client.InvocationException += (o, a) => OnInvocationException(o, a);
-                client.InvokeMethodComplete += (o, a) => OnInvocation(o, a);
+                client.InvocationComplete += (o, a) => OnInvocation(o, a);
             }
         }
         public event EventHandler InvocationExceptionThrown; 

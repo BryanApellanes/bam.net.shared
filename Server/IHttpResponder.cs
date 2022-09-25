@@ -10,7 +10,7 @@ using DefaultNamespace;
 
 namespace Bam.Net.Server
 {
-    public interface IResponder: IInitialize
+    public interface IHttpResponder: IInitialize
     {
         string Name { get; }
         event ResponderEventHandler Responded;

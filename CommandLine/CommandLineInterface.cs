@@ -115,6 +115,16 @@ namespace Bam.Net.CommandLine
             return GetArgument(name, promptMessage, (p) => PasswordPrompt(p));
         }
 
+        public static int GetIntArgumentOrDefault(string name, int defaultValue)
+        {
+            string arg = Arguments.Contains(name) ? Arguments[name] : string.Empty;
+            if (string.IsNullOrEmpty(arg))
+            {
+                return defaultValue;
+            }
+            return int.Parse(arg);
+        }
+
         /// <summary>
         /// Get the value specified for the specified argument, returning ifNotSpecified
         /// if the specified argument was not supplied.
@@ -246,8 +256,7 @@ namespace Bam.Net.CommandLine
         {
             Process process = Process.GetCurrentProcess();
             FileInfo main = new FileInfo(process.MainModule.FileName);
-            string commandLineArgs = string.Join(" ", Environment.GetCommandLineArgs());
-            string info = $"{process.Id}~{commandLineArgs}";
+            string commandLineArgs = string.Join(" ", Environment.GetCommandLineArgs());            
             string pidFileName = $"{Path.GetFileNameWithoutExtension(main.Name)}.pid";
             string pidFilePath = Path.Combine(main.Directory.FullName, pidFileName);
             KillExistingProcess(pidFilePath, commandLineArgs);
@@ -258,8 +267,7 @@ namespace Bam.Net.CommandLine
             if (File.Exists(pidFilePath))
             {
                 string readInfo = pidFilePath.SafeReadFile();
-                string argsInFile = string.Empty;
-                string pid = readInfo.ReadUntil('~', out argsInFile);
+                string pid = readInfo.ReadUntil('~', out string argsInFile);
                 if (argsInFile.Equals(commandLineArgs))
                 {
                     try

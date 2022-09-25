@@ -28,20 +28,6 @@ namespace Bam.Net.Server.ServiceProxy
                 { new HttpMethodContentTypeKey("POST", MediaTypes.Json), new InputStreamServiceProxyInvocationArgumentReader() },
                 { new HttpMethodContentTypeKey("POST", MediaTypes.BamPipeline), new EncryptedServiceProxyInvocationArgumentReader(secureChannelSessionDataManager) },
             };
-            // CREATE A CUSTOM ENCODING PIPELINE ARGUMENT READER
-            // IMPLEMENT IValueTransformer that takes a list of encoding names,
-            // for example: json, aes, gzip // move this note to the data management related namespace(s)
-            // or
-            // json, rsa, gzip
-            // use internally from ApiArgumentEncoder and ...ArgumentReader
-
-            //   asym cipher is set key request
-            //      - target is SecureChannel
-            //      - decrypt body and read as SecureChannelMessage
-
-            //   sym cipher is encypted invocation request
-            //      - target is SecureChannel
-            //      - decrypt body and read as SecureChannelMessage
         }
 
         protected Dictionary<HttpMethodContentTypeKey, ServiceProxyInvocationArgumentReader> ArgumentReaders { get; }

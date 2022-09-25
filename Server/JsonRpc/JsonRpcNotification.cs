@@ -1,6 +1,7 @@
 using Bam.Net.CoreServices;
 using Bam.Net.Incubation;
 using Bam.Net.ServiceProxy;
+using Bam.Net.Services;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -31,8 +32,8 @@ namespace Bam.Net.Server.JsonRpc
 
         public string Method { get; set; }
 
-        ServiceRegistry _serviceRegistry;
-        protected internal ServiceRegistry ServiceRegistry
+        WebServiceRegistry _serviceRegistry;
+        protected internal WebServiceRegistry ServiceRegistry
         {
             get
             {
@@ -121,7 +122,7 @@ namespace Bam.Net.Server.JsonRpc
             return results.ToArray();
         }
 
-        public static JsonRpcNotification Create<T>(ServiceRegistry serviceProvider, string methodName, params object[] parameters)
+        public static JsonRpcNotification Create<T>(WebServiceRegistry serviceProvider, string methodName, params object[] parameters)
         {
             JsonRpcNotification result = Create<T>(methodName, parameters);
             result.ServiceRegistry = serviceProvider;
@@ -130,7 +131,7 @@ namespace Bam.Net.Server.JsonRpc
 
         public static JsonRpcNotification Create(MethodInfo method, params object[] parameters)
         {
-            return Create(new ServiceRegistry(), method, parameters);
+            return Create(new WebServiceRegistry(), method, parameters);
         }
 
         public static JsonRpcNotification Create<T>(string methodName, params object[] parameters)
@@ -138,7 +139,7 @@ namespace Bam.Net.Server.JsonRpc
             return Create(typeof(T).GetMethod(methodName, parameters.Select(p => p.GetType()).ToArray()), parameters);
         }
 
-        public static JsonRpcNotification Create(ServiceRegistry serviceProvider, MethodInfo method, params object[] parameters)
+        public static JsonRpcNotification Create(WebServiceRegistry serviceProvider, MethodInfo method, params object[] parameters)
         {
             JsonRpcNotification result = new JsonRpcNotification();
             result.ServiceRegistry = serviceProvider;

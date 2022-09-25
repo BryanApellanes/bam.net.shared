@@ -7,18 +7,39 @@ using System.Linq;
 
 namespace Bam.Net.Server
 {
-    public abstract class SimpleServer<TResponder> where TResponder: IResponder
+    public abstract class SimpleServer<TResponder> where TResponder: IHttpResponder, new()
     {
         HttpServer _server;
+        public SimpleServer(): this(new TResponder(), Log.Default)
+        {
+        }
+
+        public SimpleServer(int port, bool ssl = false) : this("localhost", port, ssl)
+        { 
+        }
+
+        public SimpleServer(string hostName, int port, bool ssl = false): this(new TResponder(), Log.Default)
+        {
+            HostBindings = new HashSet<HostBinding> 
+            { 
+                new HostBinding
+                {
+                    Port = port,
+                    HostName = hostName,
+                    Ssl = ssl
+                }
+            };
+        }
+
         public SimpleServer(TResponder responder, ILogger logger)
         {
             Responder = responder;
             Logger = logger ?? Log.Default;
             CreatedOrChangedHandler = (o, a) => { };
             RenamedHandler = (o, a) => { };
-            HostPrefixes = new HashSet<HostPrefix>
+            HostBindings = new HashSet<HostBinding>
             {
-                new HostPrefix { Port = 80, HostName = "localhost", Ssl = false }
+                new HostBinding { Port = 80, HostName = "localhost", Ssl = false }
             };
             MonitorDirectories = new string[] { Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) };
         }
@@ -26,7 +47,7 @@ namespace Bam.Net.Server
         /// <summary>
         /// An array of hosts that this server will respond to
         /// </summary>
-        public HashSet<HostPrefix> HostPrefixes { get; set; }
+        public HashSet<HostBinding> HostBindings { get; set; }
         
         /// <summary>
         /// The responder
@@ -60,7 +81,7 @@ namespace Bam.Net.Server
             Logger.RestartLoggingThread();
             this.FileSystemWatchers = new List<FileSystemWatcher>();
             this.WireEventHandlers();
-            _server.Start(HostPrefixes.ToArray());
+            _server.Start(HostBindings.ToArray());
         }
 
         public virtual void Stop()

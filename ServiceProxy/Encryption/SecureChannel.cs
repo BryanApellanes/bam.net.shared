@@ -24,6 +24,9 @@ using Org.BouncyCastle.Crypto.Engines;
 using Bam.Net.Configuration;
 using Bam.Net.CoreServices;
 using Bam.Net.ServiceProxy.Data;
+using Bam.Net.Server.ServiceProxy;
+using Bam.Net.Server;
+using Bam.Net.Services;
 
 namespace Bam.Net.ServiceProxy.Encryption
 {
@@ -32,17 +35,21 @@ namespace Bam.Net.ServiceProxy.Encryption
     /// application layer encrypted communication
     /// </summary>
     [Proxy("secureChannel")]
-    public partial class SecureChannel: IRequiresHttpContext, IHasServiceRegistry
+    public partial class SecureChannel: IRequiresHttpContext, IHasApplicationServiceRegistry, IHasWebServiceRegistry
     {
         public SecureChannel()
-        {
+        { 
             this.SecureChannelSessionDataManager = new SecureChannelSessionDataManager();
         }
 
         [Exclude]
         public object Clone()
         {
-            SecureChannel clone = new SecureChannel();
+            SecureChannel clone = new SecureChannel()
+            { 
+                ApplicationServiceRegistry = ApplicationServiceRegistry,
+                WebServiceProxyDescriptorsProvider = WebServiceProxyDescriptorsProvider 
+            };
             clone.CopyProperties(this);
             
             return clone;
@@ -62,6 +69,19 @@ namespace Bam.Net.ServiceProxy.Encryption
             }
         }
 
+        [Inject]
+        public IApplicationNameProvider ApplicationNameProvider
+        {
+            get;
+            set;
+        }
+
+        internal IWebServiceProxyDescriptorsProvider WebServiceProxyDescriptorsProvider
+        {
+            get;
+            set;
+        }
+
         ISecureChannelSessionDataManager _secureChannelSessionManager;
         protected ISecureChannelSessionDataManager SecureChannelSessionDataManager 
         {
@@ -69,7 +89,7 @@ namespace Bam.Net.ServiceProxy.Encryption
             {
                 if(_secureChannelSessionManager == null)
                 {
-                    _secureChannelSessionManager = ServiceRegistry.Get<ISecureChannelSessionDataManager>();
+                    _secureChannelSessionManager = WebServiceRegistry.Get<ISecureChannelSessionDataManager>();
                 }
                 return _secureChannelSessionManager;
             }
@@ -96,16 +116,17 @@ namespace Bam.Net.ServiceProxy.Encryption
             return new SecureChannelResponseMessage<ClientSessionInfo>(clientSessionInfo);
         }
 
-        public object Invoke(SecureChannelRequestMessage secureChannelRequestMessage)
+        public object Execute(SecureChannelRequestMessage secureChannelRequestMessage)
         {
-            throw new NotImplementedException();
+            WebServiceProxyDescriptors webServiceProxyDescriptors = WebServiceProxyDescriptorsProvider.GetWebServiceProxyDescriptors(ApplicationNameProvider.GetApplicationName());
+            ServiceProxyInvocation serviceProxyInvocation = secureChannelRequestMessage.ToServiceProxyInvocation(webServiceProxyDescriptors, new InputStreamServiceProxyInvocationArgumentReader());
+            return serviceProxyInvocation.Execute();
         }
 
         public void EndSession(string sessionIdentifier)
         {
-            SecureSession session = SecureSession.Get(sessionIdentifier);
-            session.Delete();
-            Log.AddEntry("EndSession: Session {0} was deleted", sessionIdentifier);
+            _ = SecureChannelSessionDataManager.EndSecureChannelSessionAsync(sessionIdentifier);
+            Log.AddEntry("EndSession: Session {0} was set to deleted", sessionIdentifier);
         }
 
         public SecureChannelResponseMessage SetSessionKey(SetSessionKeyRequest setSessionKeyRequest)
@@ -139,20 +160,20 @@ namespace Bam.Net.ServiceProxy.Encryption
             }
         }
 
-        static ServiceRegistry _serviceRegistry;
+        static WebServiceRegistry _webServiceRegistry;
         static object _serviceRegistrySync = new object();
         /// <summary>
         /// The `ServiceRegistry` used for SecureChannel requests
         /// </summary>
-        public ServiceRegistry ServiceRegistry
+        public WebServiceRegistry WebServiceRegistry
         {
             get
             {
-                return _serviceRegistrySync.DoubleCheckLock(ref _serviceRegistry, () => new ServiceRegistry());
+                return _serviceRegistrySync.DoubleCheckLock(ref _webServiceRegistry, () => new WebServiceRegistry());
             }
             set
             {
-                _serviceRegistry = value;
+                _webServiceRegistry = value;
             }
         }
 
@@ -160,6 +181,20 @@ namespace Bam.Net.ServiceProxy.Encryption
         {
             get;
             set;
+        }
+
+        static ApplicationServiceRegistry _applicationServiceRegistry;
+        static object _applicationServiceRegistrySync = new object();
+        public ApplicationServiceRegistry ApplicationServiceRegistry 
+        {
+            get
+            {
+                return _applicationServiceRegistrySync.DoubleCheckLock(ref _applicationServiceRegistry, () => ApplicationServiceRegistry.Current);
+            }
+            set
+            {
+                _applicationServiceRegistry = value;
+            }
         }
     }
 }

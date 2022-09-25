@@ -255,7 +255,7 @@ namespace Bam.Net.ServiceProxy.Encryption
                 catch (Exception ex)
                 {
                     args.Exception = ex;
-                    OnRequestExceptionThrown(args);
+                    OnInvocationException(args);
                 }
             }
             return response;
@@ -287,7 +287,7 @@ namespace Bam.Net.ServiceProxy.Encryption
 
         private void Initialize()
         {
-            this.InvokeMethodStarted += (s, a) => _startSessionTask = TryStartSessionAsync();
+            this.InvocationStarted += (s, a) => _startSessionTask = TryStartSessionAsync();
         }
 
         Task<ClientSessionInfo> _startSessionTask;

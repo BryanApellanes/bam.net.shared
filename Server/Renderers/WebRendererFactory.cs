@@ -36,7 +36,7 @@ namespace Bam.Net.Server.Renderers
         {
             IWebRenderer renderer = CreateRenderer(request, contentResponder);
 
-            renderer.Respond(request);
+            renderer.RenderResponse(request);
         }
 
         protected internal IWebRenderer CreateRenderer(ServiceProxyInvocation request, ContentResponder contentResponder)

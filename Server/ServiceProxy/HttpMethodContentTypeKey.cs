@@ -26,7 +26,6 @@ namespace Bam.Net.Server.ServiceProxy
 
         public HttpMethodContentTypeKey(IRequest request):this(request.HttpMethod, request.ContentType)
         {
-
         }
 
         public string HttpMethod { get; }

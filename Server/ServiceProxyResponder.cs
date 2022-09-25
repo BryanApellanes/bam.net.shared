@@ -39,16 +39,23 @@ namespace Bam.Net.Server
 
         private ResponderContextHandlerResolver<ServiceProxyResponder> _requestHandlerResolver;
 
+        public ServiceProxyResponder() : base(new BamConf(), Log.Default)
+        { }
+
         public ServiceProxyResponder(BamConf conf, ILogger logger)
             : base(conf, logger)
         {
             _commonServiceProvider = new Incubator();
             _appServiceProviders = new Dictionary<string, Incubator>();
             _appSecureChannels = new Dictionary<string, SecureChannel>();
-            _commonSecureChannel = new SecureChannel();
+            
             _clientProxyGenerators = new Dictionary<string, IClientProxyGenerator>();
             _requestHandlerResolver = new ResponderContextHandlerResolver<ServiceProxyResponder>(this);
+
             RendererFactory = new WebRendererFactory(logger);
+            WebServiceProxyDescriptorsProvider = new WebServiceProxyDescriptorsProvider(this);
+            _commonSecureChannel = new SecureChannel() { WebServiceProxyDescriptorsProvider = WebServiceProxyDescriptorsProvider };
+
             SecureChannelSessionDataManager = new SecureChannelSessionDataManager();               
             ServiceProxyInvocationReader = new ServiceProxyInvocationReader(SecureChannelSessionDataManager);
             ApplicationServiceSourceResolver = new ApplicationServiceSourceResolver();
@@ -64,26 +71,21 @@ namespace Bam.Net.Server
             AddClientProxyGenerator(new JsClientProxyGenerator(), "proxies.js", "jsproxies", "javascriptproxies");
             AddClientProxyGenerator(new JsWebServiceProxyGenerator(), "webservices.js", "webservices", "webproxies.js", "webproxies");
 
-            CommonServiceAdded += (type, obj) =>
-            {
-                CommonSecureChannel.ServiceRegistry.Set(type, obj);
-            };
-            CommonServiceRemoved += (type) =>
-            {
-                CommonSecureChannel.ServiceRegistry.Remove(type);
-            };
+            CommonServiceAdded += (type, obj) => CommonSecureChannel.WebServiceRegistry.Set(type, obj);
+            CommonServiceRemoved += (type) => CommonSecureChannel.WebServiceRegistry.Remove(type);
             AppServiceAdded += (appName, type, instance) =>
             {
                 if (!AppSecureChannels.ContainsKey(appName))
                 {
-                    SecureChannel channel = new SecureChannel();
-                    channel.ServiceRegistry.CopyFrom(CommonServiceProvider, true);
+                    SecureChannel channel = new SecureChannel() { WebServiceProxyDescriptorsProvider = WebServiceProxyDescriptorsProvider };
+                    channel.WebServiceRegistry.CopyFrom(CommonServiceProvider, true);
                     AppSecureChannels.Add(appName, channel);
                 }
 
-                AppSecureChannels[appName].ServiceRegistry.Set(type, instance, false);
+                AppSecureChannels[appName].WebServiceRegistry.Set(type, instance, false);
             };
         }
+
         private bool SendMethodForm(IHttpContext context)
         {
             // TODO: use InputFormProvider to send method form
@@ -106,6 +108,23 @@ namespace Bam.Net.Server
             CompilationException?.Invoke(this, args);
         }
 
+        ApplicationServiceRegistry _dependencyInjectionServiceRegistry;
+        public ApplicationServiceRegistry DependencyInjectionServiceRegistry
+        {
+            get
+            {
+                if(_dependencyInjectionServiceRegistry == null)
+                {
+                    _dependencyInjectionServiceRegistry = ApplicationServiceRegistry.Current;
+                }
+                return _dependencyInjectionServiceRegistry;
+            }
+            set
+            {
+                _dependencyInjectionServiceRegistry = value;
+            }
+        }
+
         [Inject]
         public IServiceProxyInvocationReader ServiceProxyInvocationReader { get; set; }
 
@@ -121,6 +140,9 @@ namespace Bam.Net.Server
                 _applicationServiceSourceResolver.SubscribeOnce( nameof(_applicationServiceSourceResolver.CompilationException),(o, a) => HandleCompilationException(o, (RoslynCompilationExceptionEventArgs) a));
             }
         }
+
+        [Inject]
+        public IWebServiceProxyDescriptorsProvider WebServiceProxyDescriptorsProvider { get; set; }
 
         [Inject]
         public ISecureChannelSessionDataManager SecureChannelSessionDataManager { get; set; }
@@ -158,14 +180,14 @@ namespace Bam.Net.Server
         {
             webServiceRegistry.Set(typeof(SecureChannel), CommonSecureChannel);
             _commonServiceProvider = webServiceRegistry;
-            CommonSecureChannel.ServiceRegistry = webServiceRegistry;
+            CommonSecureChannel.WebServiceRegistry = webServiceRegistry;
         }
 
         public void SetApplicationWebServices(string applicationName, WebServiceRegistry webServiceRegistry)
         {
             webServiceRegistry.Set(typeof(SecureChannel), _appSecureChannels[applicationName]);
             _appServiceProviders[applicationName] = webServiceRegistry;
-            _appSecureChannels[applicationName].ServiceRegistry = webServiceRegistry;
+            _appSecureChannels[applicationName].WebServiceRegistry = webServiceRegistry;
         }
 
         public void AddClientProxyGenerator<T>(T proxyGenerator, params string[] fileNames) where T : IClientProxyGenerator
@@ -296,6 +318,7 @@ namespace Bam.Net.Server
             _commonServiceProvider.Set(type, instanciator);
             OnCommonServiceAdded(type, instanciator);
         }
+
         /// <summary>
         /// Add the specified instance as an executor
         /// </summary>

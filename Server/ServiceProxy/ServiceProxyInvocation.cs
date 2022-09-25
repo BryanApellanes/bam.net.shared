@@ -27,13 +27,15 @@ namespace Bam.Net.Server.ServiceProxy
             OnAnyInstanciated(this);
         }
 
-        public ServiceProxyInvocation(string className, string methodName, IHttpContext context = null) : this(null, className, methodName, context)
+        public ServiceProxyInvocation(string className, string methodName, IHttpContext context = null) : this(new WebServiceProxyDescriptors { WebServiceRegistry = Services.WebServiceRegistry.ForApplicationServiceRegistry(ApplicationServiceRegistry.ForProcess()) }, className, methodName, context)
         {
         }
 
         public ServiceProxyInvocation(WebServiceProxyDescriptors webServiceProxyDescriptors, string className, string methodName, IHttpContext context = null)
         {
-            this.WebServiceProxyDescriptors = webServiceProxyDescriptors ?? new WebServiceProxyDescriptors { WebServiceRegistry = Services.WebServiceRegistry.ForApplicationServiceRegistry(ApplicationServiceRegistry.ForProcess()) };
+            Args.ThrowIfNull(webServiceProxyDescriptors, nameof(webServiceProxyDescriptors));
+
+            this.WebServiceProxyDescriptors = webServiceProxyDescriptors;
             this.Context = context ?? new HttpContextWrapper();
             this.ClassName = className;
             this.MethodName = methodName;
@@ -41,7 +43,7 @@ namespace Bam.Net.Server.ServiceProxy
             OnAnyInstanciated(this);
         }
 
-        public static ServiceProxyInvocation Create(ServiceRegistry serviceRegistry, MethodInfo method, params ServiceProxyInvocationArgument[] arguments)
+        public static ServiceProxyInvocation Create(WebServiceRegistry serviceRegistry, MethodInfo method, params ServiceProxyInvocationArgument[] arguments)
         {
             ServiceProxyInvocation request = new ServiceProxyInvocation()
             {
@@ -87,24 +89,45 @@ namespace Bam.Net.Server.ServiceProxy
             set;
         }
 
-        ServiceRegistry _serviceRegistry;
-        public ServiceRegistry WebServiceRegistry
+        ApplicationServiceRegistry _applicationServiceRegistry;
+        public ApplicationServiceRegistry ApplicationServiceRegistry
         {
             get
             {
-                if(_serviceRegistry == null)
+                if (_applicationServiceRegistry == null)
                 {
                     if (WebServiceProxyDescriptors != null)
                     {
-                        _serviceRegistry = WebServiceProxyDescriptors.WebServiceRegistry;
+                        _applicationServiceRegistry = WebServiceProxyDescriptors.ApplicationServiceRegistry;
                     }
                 }
 
-                return _serviceRegistry;
+                return _applicationServiceRegistry;
             }
             set
             {
-                _serviceRegistry = value;
+                _applicationServiceRegistry = value;
+            }
+        }
+
+        WebServiceRegistry _webServiceRegistry;
+        public WebServiceRegistry WebServiceRegistry
+        {
+            get
+            {
+                if(_webServiceRegistry == null)
+                {
+                    if (WebServiceProxyDescriptors != null)
+                    {
+                        _webServiceRegistry = WebServiceProxyDescriptors.WebServiceRegistry;
+                    }
+                }
+
+                return _webServiceRegistry;
+            }
+            set
+            {
+                _webServiceRegistry = value;
             }
         }
 
@@ -115,7 +138,7 @@ namespace Bam.Net.Server.ServiceProxy
             {
                 if (_targetType == null && !string.IsNullOrWhiteSpace(ClassName))
                 {
-                    InvocationTarget = WebServiceRegistry.Get(ClassName, out _targetType);
+                    InvocationTarget = WebServiceRegistry.Get(ClassName, ApplicationServiceRegistry, out _targetType);
                 }
 
                 return _targetType;
@@ -130,7 +153,7 @@ namespace Bam.Net.Server.ServiceProxy
             {
                 if (_invocationTarget == null)
                 {
-                    _invocationTarget = WebServiceRegistry.Get(ClassName);
+                    _invocationTarget = WebServiceRegistry.Get(ClassName, ApplicationServiceRegistry);
                 }
                 return _invocationTarget;
             }
@@ -158,7 +181,9 @@ namespace Bam.Net.Server.ServiceProxy
             {
                 if (_parameterInfos == null && MethodInfo != null)
                 {
-                    _parameterInfos = MethodInfo.GetParameters();
+                    List<System.Reflection.ParameterInfo> parameters = MethodInfo.GetParameters().ToList();
+                    parameters.Sort((x, y) => x.Position.CompareTo(y.Position));
+                    _parameterInfos = parameters.ToArray();
                 }
 
                 return _parameterInfos;
@@ -410,19 +435,23 @@ namespace Bam.Net.Server.ServiceProxy
             Executed?.Invoke(this, target);
         }
 
-        // -- TODO: move these events to ServiceProxyInvocationResolver
         public event Action<ServiceProxyInvocation, object> ContextSet;
         protected void OnContextSet(object target)
         {
             ContextSet?.Invoke(this, target);
         }
 
-        public event Action<ServiceProxyInvocation, object> ServiceRegistrySet;
-        protected void OnServiceRegsitrySet(object target)
+        public event Action<ServiceProxyInvocation, object> WebServiceRegistrySet;
+        protected void OnWebServiceRegistrySet(object target)
         {
-            ServiceRegistrySet?.Invoke(this, target);
+            WebServiceRegistrySet?.Invoke(this, target);
         }
-        // -- / end TODO
+
+        public event Action<ServiceProxyInvocation, object> ApplicationServiceRegistrySet;
+        protected void OnApplicationServiceRegistrySet(object target)
+        {
+            ApplicationServiceRegistrySet?.Invoke(this, target);
+        }
 
         public bool Execute()
         {
@@ -453,7 +482,8 @@ namespace Bam.Net.Server.ServiceProxy
                 try
                 {
                     target = SetContext(target);
-                    target = SetServiceRegistry(target);
+                    target = SetApplicationServiceRegistry(target);
+                    target = SetWebServiceRegistry(target);
                     OnAnyExecuting(target);
                     OnExecuting(target);
                     Result = MethodInfo.Invoke(target, Arguments.Select(arg => arg.Value).ToArray());
@@ -487,16 +517,29 @@ namespace Bam.Net.Server.ServiceProxy
             return result;
         }
 
-        protected internal object SetServiceRegistry(object target)
+        protected internal object SetApplicationServiceRegistry(object target)
         {
             object result = target;
-            if (target is IHasServiceRegistry hasServiceRegistry)
+            if (target is IHasApplicationServiceRegistry hasServiceRegistry)
             {
-                hasServiceRegistry.ServiceRegistry = WebServiceRegistry;
-                OnServiceRegsitrySet(target);
+                hasServiceRegistry.ApplicationServiceRegistry = ApplicationServiceRegistry;
+                OnApplicationServiceRegistrySet(target);
+                ApplicationServiceRegistry.SetInjectionProperties(target);
                 result = hasServiceRegistry;
             }
             return result;
         }
+
+        protected internal object SetWebServiceRegistry(object target)
+        {
+            object result = target;
+            if (target is IHasWebServiceRegistry hasServiceRegistry)
+            {
+                hasServiceRegistry.WebServiceRegistry = WebServiceRegistry;
+                OnWebServiceRegistrySet(target);
+                result = hasServiceRegistry;
+            }
+            return result;
+        }        
     }
 }

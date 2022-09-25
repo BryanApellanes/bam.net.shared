@@ -20,14 +20,14 @@ namespace Bam.Net.ServiceProxy.Encryption
 {
     public class SecureChannelSessionDataManager : ISecureChannelSessionDataManager
     {
-        public SecureChannelSessionDataManager(ApiConfig apiConfig = null)
+        public SecureChannelSessionDataManager(ApiConf apiConfig = null)
         {
-            this.ApiConfig = apiConfig ?? new ApiConfig();
+            this.ApiConfig = apiConfig ?? new ApiConf();
             this.ServiceProxyDataRepository = new ServiceProxyDataRepository();
             this.ServerKeySetDataManager = new ServerKeySetDataManager();
         }
 
-        public ApiConfig ApiConfig { get; }
+        public ApiConf ApiConfig { get; }
 
         [Inject]
         public ServiceProxyDataRepository ServiceProxyDataRepository { get; set; }

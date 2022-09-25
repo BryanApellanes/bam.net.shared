@@ -36,9 +36,9 @@ namespace Bam.Net.Server
             return DatabaseFactory.Instance.GetDatabase(sqlDialect, connectionString);
         }
 
-        public static HostPrefix[] GetConfiguredHostPrefixes()
+        public static HostBinding[] GetConfiguredHostBindings()
         {
-            return HostPrefix.FromDefaultConfiguration();
+            return HostBinding.FromDefaultConfiguration();
         }
         
         static ILogger multiTargetLogger;

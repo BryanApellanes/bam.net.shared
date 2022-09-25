@@ -18,6 +18,11 @@ namespace Bam.Net.ServiceProxy
         }
 
         /// <summary>
+        /// Gets or sets the service registry used for dependency injection.
+        /// </summary>
+        public ApplicationServiceRegistry ApplicationServiceRegistry { get; set; }
+
+        /// <summary>
         /// Gets or sets the WebServiceRegistry.
         /// </summary>
         public WebServiceRegistry WebServiceRegistry { get; set; }

@@ -14,18 +14,12 @@ namespace Bam.Net.Server.ServiceProxy
     {
         public ServiceProxyContextHandler() : base()
         {
-            ApplicationWebServiceProxyDescriptors = new Dictionary<string, WebServiceProxyDescriptors>();
             SetHttpMethodHandlers();
         }
 
         public ServiceProxyResponder ServiceProxyResponder
         {
             get => this.Responder;
-        }
-
-        public BamConf BamConf
-        {
-            get => ServiceProxyResponder?.BamConf;
         }
 
         public IApplicationNameResolver ApplicationNameResolver
@@ -38,13 +32,12 @@ namespace Bam.Net.Server.ServiceProxy
             get => ServiceProxyResponder?.ServiceProxyInvocationReader;
         }
 
-        protected HttpMethodHandlers HttpMethodHandlers { get; private set; }
-
-        protected Dictionary<string, WebServiceProxyDescriptors> ApplicationWebServiceProxyDescriptors
+        protected IWebServiceProxyDescriptorsProvider WebServiceProxyDescriptorsProvider
         {
-            get;
-            private set;
+            get => ServiceProxyResponder?.WebServiceProxyDescriptorsProvider;
         }
+
+        protected HttpMethodHandlers HttpMethodHandlers { get; private set; }
 
         protected override IHttpResponse HandleContext(IHttpContext context)
         {
@@ -73,44 +66,7 @@ namespace Bam.Net.Server.ServiceProxy
 
         protected WebServiceProxyDescriptors GetWebServiceProxyDescriptors(IRequest request)
         {
-            return GetWebServiceProxyDescriptors(ApplicationNameResolver.ResolveApplicationName(request));
-        }
-
-        object _webServiceRegistriesLock = new object();
-        protected WebServiceProxyDescriptors GetWebServiceProxyDescriptors(string applicationName)
-        {
-            if (!ApplicationWebServiceProxyDescriptors.ContainsKey(applicationName))
-            {
-                lock (_webServiceRegistriesLock)
-                {
-                    WebServiceRegistry webServiceRegistry = new WebServiceRegistry();
-
-                    HashSet<ProxyAlias> proxyAliases = new HashSet<ProxyAlias>();
-                    BamConf.ProxyAliases.Each(proxyAlias => proxyAliases.Add(proxyAlias));
-
-                    AddProxyAliases(ServiceProxySystem.Incubator, proxyAliases);
-                    webServiceRegistry.CopyFrom(ServiceProxySystem.Incubator, true);
-
-                    AddProxyAliases(ServiceProxyResponder?.CommonServiceProvider, proxyAliases);
-                    webServiceRegistry.CopyFrom(ServiceProxyResponder?.CommonServiceProvider, true);
-
-                    Dictionary<string, Incubator> appServiceProviders = ServiceProxyResponder?.AppServiceProviders;
-                    if (appServiceProviders.ContainsKey(applicationName))
-                    {
-                        Incubator appServices = appServiceProviders[applicationName];
-                        AddProxyAliases(appServices, proxyAliases);
-                        webServiceRegistry.CopyFrom(appServices, true);
-                    }
-
-                    ApplicationWebServiceProxyDescriptors.Add(applicationName, new WebServiceProxyDescriptors
-                    {
-                        WebServiceRegistry = webServiceRegistry,
-                        ProxyAliases = proxyAliases
-                    });
-                }
-            }
-
-            return ApplicationWebServiceProxyDescriptors[applicationName];
+            return WebServiceProxyDescriptorsProvider.GetWebServiceProxyDescriptors(ApplicationNameResolver.ResolveApplicationName(request));
         }
 
         public override object Clone()
@@ -119,26 +75,6 @@ namespace Bam.Net.Server.ServiceProxy
             serviceProxyInvocationRequestHandler.CopyProperties(this);
             serviceProxyInvocationRequestHandler.CopyEventHandlers(this);
             return serviceProxyInvocationRequestHandler;
-        }
-
-        private void AddProxyAliases(Incubator source, HashSet<ProxyAlias> hashSetToPopulate)
-        {
-            if (source == null || hashSetToPopulate == null)
-            {
-                return;
-            }
-
-            foreach (string className in source.ClassNames)
-            {
-                Type currentType = source[className];
-                if (currentType.HasCustomAttributeOfType(out ProxyAttribute proxyAttribute))
-                {
-                    if (!string.IsNullOrEmpty(proxyAttribute.VarName) && !proxyAttribute.VarName.Equals(currentType.Name))
-                    {
-                        hashSetToPopulate.Add(new ProxyAlias(proxyAttribute.VarName, currentType));
-                    }
-                }
-            }
         }
 
         private ServiceProxyInvocation ReadServiceProxyInvocation(IHttpContext context)

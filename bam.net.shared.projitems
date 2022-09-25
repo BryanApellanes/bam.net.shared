@@ -191,7 +191,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)ApplicationDiagnosticInfo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ApplicationNameProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ApplicationSettings.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Application\ApiConfig.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Application\ApiConf.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Application\AppDataModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Application\AppDataPropertyModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Application\AppKind.cs" />
@@ -590,6 +590,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)JsonValueConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\RsaBase64ReverseTransformer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\RsaBase64Transformer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Server\ServiceProxy\IWebServiceProxyDescriptorsProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Server\ServiceProxy\SecureChannelServiceProxyInvocationArgumentReader.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Server\ServiceProxy\WebServiceProxyDescriptorsProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\AsymmetricKeyNotSetException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\Encryption\EncryptedServiceProxyInvocationHttpRequestContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\Encryption\EncryptedServiceProxyInvocationRequestArgumentWriter.cs" />
@@ -605,6 +608,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\Encryption\SecureServiceProxy_Generated\SecureSessionCollection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\Encryption\SecureServiceProxy_Generated\SecureSessionColumns.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\Encryption\ValidationToken.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\IHasApplicationServiceRegistry.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\IServiceProxyClient.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\IServiceProxyInvocationRequestWriter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\MediaTypeAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\ServiceProxyInvocationRequestWriter.cs" />
@@ -2236,7 +2241,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Server\Fs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Server\FsEvent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Server\HostAppMap.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Server\HostPrefix.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Server\HostBinding.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Server\HttpHeaderResponder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Server\HttpMethodResponder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Server\HttpPostedFile.cs" />
@@ -2249,8 +2254,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Server\InitializeFrom.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Server\IPostServerInitializationHandler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Server\IPostServerInitialize.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Server\IRequestRenderer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Server\IResponder.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Server\IResponseRenderer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Server\IHttpResponder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Server\JsonRpc\IJsonRpcRequest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Server\JsonRpc\JsonRpcBatch.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Server\JsonRpc\JsonRpcBatchResonse.cs" />
@@ -2325,7 +2330,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\IApplicationNameResolver.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\IClientProxyGenerator.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Server\ServiceProxy\IServiceProxyInvocationReader.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\IHasServiceRegistry.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\IHasWebServiceRegistry.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\IHttpContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\IProxy.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\IRequest.cs" />
@@ -3259,6 +3264,7 @@
     <None Include="$(MSBuildThisFileDirectory)Documentation\XmlDocumentation.xsd" />
     <None Include="$(MSBuildThisFileDirectory)Encryption\Data\DaoRepoGenerationConfig.yaml" />
     <None Include="$(MSBuildThisFileDirectory)Encryption\Encryption.db.js" />
+    <None Include="$(MSBuildThisFileDirectory)Encryption\SocialKeyInfrastructure\NOTES.md" />
     <None Include="$(MSBuildThisFileDirectory)Messaging\messaging.db.js" />
     <None Include="$(MSBuildThisFileDirectory)Server\README.md" />
     <None Include="$(MSBuildThisFileDirectory)ServiceProxy\Data\DaoRepoGenerationConfig.yaml" />
