@@ -614,6 +614,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\MediaTypeAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\ServiceProxyInvocationRequestWriter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\SessionKeyNotSetException.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Shell\IRegisterArguments.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Shell\ProviderArguments.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Shell\ShellProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ValueReverseTransformerPipeline.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ValueTransformerPipeline.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ValueTransformer.cs" />
