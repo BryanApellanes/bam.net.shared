@@ -261,6 +261,17 @@ namespace Bam.Net
             }
         }
 
+        protected static FileInfo ProcessFile()
+        {
+            Process process = Process.GetCurrentProcess();
+            return new FileInfo(process.MainModule.FileName);            
+        }
+
+        protected static DirectoryInfo ProcessDirectory()
+        {
+            return ProcessFile().Directory;
+        }
+
         protected static void MainMenu(string header)
         {
             AddMenu(Assembly.GetEntryAssembly(), header, 'm', new ConsoleMenuDelegate(ShowMenu));
