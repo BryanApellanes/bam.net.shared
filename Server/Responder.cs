@@ -169,6 +169,11 @@ namespace Bam.Net.Server
             SendResponse(context, handler.Handle(), handler.Code);
         }
 
+        public static void SendResponse(IHttpContext context, int statusCode, object dynamicObjectHeaders)
+        {
+            SendResponse(context, new HttpStatusCodeHandler(statusCode, string.Empty), dynamicObjectHeaders);
+        }
+
         public static void SendResponse(IHttpContext context, HttpStatusCodeHandler handler, object dynamicObjectHeaders)
         {
             SendResponse(context, handler.Handle(), handler.Code, null, dynamicObjectHeaders.ToDictionary(pi => $"X-{pi.Name.PascalSplit("-")}", (o) => (string)o));
