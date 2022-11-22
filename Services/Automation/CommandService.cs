@@ -1,6 +1,6 @@
 ﻿using Bam.Net.CommandLine;
 using Bam.Net.ServiceProxy;
-using Bam.Net.ServiceProxy.Secure;
+using Bam.Net.ServiceProxy.Encryption;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -9,11 +9,12 @@ using System.Text;
 using System.Threading.Tasks;
 using Bam.Net.Services;
 using Bam.Net.Data.Repositories;
+using Bam.Net.Encryption;
 
 namespace Bam.Net.Services.Automation
 {
     [Encrypt]
-    [ApiKeyRequired]
+    [ApiHmacKeyRequired]
     [Proxy("commandSvc")]
     [ServiceSubdomain("command")]
     public class CommandService : AsyncProxyableService

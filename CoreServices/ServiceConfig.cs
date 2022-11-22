@@ -13,7 +13,7 @@ namespace Bam.Net.Server
 {
     public static class ServiceConfig
     {
-        public static string ContentRoot => DefaultConfiguration.GetAppSetting("ContentRoot").Or(BamHome.Content);
+        public static string ContentRoot => DefaultConfiguration.GetAppSetting("ContentRoot").Or(BamHome.ContentPath);
 
         public static string LogRoot => Path.Combine(ContentRoot, "logs");
 
@@ -36,9 +36,9 @@ namespace Bam.Net.Server
             return DatabaseFactory.Instance.GetDatabase(sqlDialect, connectionString);
         }
 
-        public static HostPrefix[] GetConfiguredHostPrefixes()
+        public static HostBinding[] GetConfiguredHostBindings()
         {
-            return HostPrefix.FromDefaultConfiguration();
+            return HostBinding.FromDefaultConfiguration();
         }
         
         static ILogger multiTargetLogger;

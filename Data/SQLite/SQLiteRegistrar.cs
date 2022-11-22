@@ -45,8 +45,7 @@ namespace Bam.Net.Data
         /// <summary>
         /// Registers SQLite as the handler for the specified connection name.
         /// This dao handler will register apropriate DatabaseInitializer and
-        /// ConnectionStringResolver.  This behavior is different compared to the
-        /// SqlClientRegistrar's Register method.
+        /// ConnectionStringResolver. 
         /// </summary>
         /// <param name="connectionName"></param>
         public static void Register(string connectionName)

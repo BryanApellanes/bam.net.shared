@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Bam.Net.ServiceProxy;
 using Bam.Net.Web;
-using Bam.Net.ServiceProxy.Secure;
+using Bam.Net.ServiceProxy.Encryption;
 
 namespace Bam.Net.ServiceProxy
 {
@@ -26,23 +26,23 @@ namespace Bam.Net.ServiceProxy
 
         public IHttpContext HttpContext { get; set; }
 
-        public string ResolveApplicationName(IHttpContext context)
+        public string ResolveApplicationName(IRequest context)
         {
             return ResolveApplicationName(context, true);
         }
 
-        public string ResolveApplicationName(IHttpContext context, bool withHost)
+        public string ResolveApplicationName(IRequest request, bool withHost)
         {
-            string host = context?.Request?.Url?.Host;
-            string userHostAddress = context?.Request?.UserHostAddress;
-            string fromHeader = context?.Request?.Headers[Headers.ApplicationName];
-            string unknown = ServiceProxy.Secure.Application.Unknown.Name;            
+            string host = request?.Url?.Host;
+            string userHostAddress = request?.UserHostAddress;
+            string fromHeader = request?.Headers[Headers.ApplicationName];
+            string unknown = Bam.Net.CoreServices.ApplicationRegistration.Data.Application.Unknown.Name;            
             return withHost ? $"{fromHeader.Or(unknown)}@{host.Or("localhost")}({userHostAddress})": fromHeader.Or(unknown);
         }
 
         public string GetApplicationName()
         {
-            return ResolveApplicationName(HttpContext, false);
+            return ResolveApplicationName(HttpContext.Request, false);
         }
 
         public static string Resolve(IHttpContext context)

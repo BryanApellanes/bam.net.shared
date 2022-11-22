@@ -2,16 +2,19 @@
 using System.Collections.Specialized;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using Bam.Net.Caching;
 using Bam.Net.Configuration;
 using Bam.Net.CoreServices.ApplicationRegistration.Data;
 using Bam.Net.CoreServices.ApplicationRegistration.Data.Dao.Repository;
 using Bam.Net.Data;
 using Bam.Net.Data.Repositories;
+using Bam.Net.Encryption;
 using Bam.Net.Logging;
 using Bam.Net.Server;
+using Bam.Net.Server.ServiceProxy;
 using Bam.Net.ServiceProxy;
-using Bam.Net.ServiceProxy.Secure;
+using Bam.Net.ServiceProxy.Encryption;
 using Bam.Net.UserAccounts;
 using Bam.Net.Web;
 
@@ -20,10 +23,10 @@ namespace Bam.Net.CoreServices
     [Proxy("appRegistrationSvc")]
     [Encrypt]
     [ServiceSubdomain("appregistration")]
-    public partial class ApplicationRegistryService : ApplicationProxyableService, IApiKeyResolver, IApiKeyProvider, IApplicationNameProvider
+    public partial class ApplicationRegistryService : ApplicationProxyableService, IApiHmacKeyResolver, IApiHmacKeyProvider, IApplicationNameProvider
     {
         CacheManager _cacheManager;
-        ApiKeyResolver _apiKeyResolver;
+        ApiHmacKeyResolver _apiKeyResolver;
 
         protected ApplicationRegistryService() { }
 
@@ -34,7 +37,7 @@ namespace Bam.Net.CoreServices
             dataSettings.SetDatabases(this);
             CompositeRepository = new CompositeRepository(ApplicationRegistrationRepository, dataSettings);
             _cacheManager = new CacheManager(100000000);
-            _apiKeyResolver = new ApiKeyResolver(this, this);
+            _apiKeyResolver = new ApiHmacKeyResolver(this, this);
             AppConf = conf;
             DataSettings = dataSettings;
             Logger = logger;
@@ -64,42 +67,36 @@ namespace Bam.Net.CoreServices
         
         public CompositeRepository CompositeRepository { get; set; }
 
-        [ApiKeyRequired]
-        public virtual ApiKeyInfo[] ListApiKeys()
-        {
-            return Application?.ApiKeys.Select(k => k.ToKeyInfo()).ToArray();
-        }
-
-        [ApiKeyRequired]
-        public virtual ApiKeyInfo AddApiKey()
+        [ApiHmacKeyRequired]
+        public virtual ApiHmacKeyInfo AddApiKey()
         {
             if (ApplicationName.Equals(ApplicationDiagnosticInfo.UnknownApplication))
             {
                 throw new ApplicationNameNotSpecifiedException();
             }
             CoreServices.ApplicationRegistration.Data.Application app = CompositeRepository.Query<CoreServices.ApplicationRegistration.Data.Application>(a => a.Name.Equals(base.ApplicationName)).FirstOrDefault();
-            if(app == null)
+            if (app == null)
             {
                 throw new InvalidOperationException("Application not registered");
             }
-            AddApiKey(ApplicationRegistrationRepository, app, out CoreServices.ApplicationRegistration.Data.ApiKey key);
-            return new ApiKeyInfo { ApplicationClientId = key.ClientIdentifier, ApiKey = key.SharedSecret, ApplicationName = ApplicationName };
+            AddApiKey(ApplicationRegistrationRepository, app, out CoreServices.ApplicationRegistration.Data.ApiHmacKey key);
+            return new ApiHmacKeyInfo { ApplicationClientId = key.ClientIdentifier, ApiHmacKey = key.SharedSecret, ApplicationName = ApplicationName };
         }
 
-        [ApiKeyRequired]
-        public virtual ApiKeyInfo SetActiveApiKeyIndex(int index)
+        [ApiHmacKeyRequired]
+        public virtual ApiHmacKeyInfo SetActiveApiKeyIndex(int index)
         {
             return SetActiveApiKeyIndex(this, index);
         }
 
         [Local]
-        public virtual ApiKeyInfo SetActiveApiKeyIndex(IApplicationNameProvider nameProvider, int index)
+        public virtual ApiHmacKeyInfo SetActiveApiKeyIndex(IApplicationNameProvider nameProvider, int index)
         {
             string clientId = GetApplicationClientId(nameProvider);
-            ActiveApiKeyIndex apiKeyIndex = ApplicationRegistrationRepository.OneActiveApiKeyIndexWhere(c => c.ApplicationIdentifier == clientId);
+            ActiveApiSigningKeyIndex apiKeyIndex = ApplicationRegistrationRepository.OneActiveApiKeyIndexWhere(c => c.ApplicationIdentifier == clientId);
             if(apiKeyIndex == null)
             {
-                apiKeyIndex = new ActiveApiKeyIndex { ApplicationIdentifier = clientId };
+                apiKeyIndex = new ActiveApiSigningKeyIndex { ApplicationIdentifier = clientId };
             }
 
             if (Application?.ApiKeys.Count - 1 > index || index < 0)
@@ -108,9 +105,9 @@ namespace Bam.Net.CoreServices
             }
             apiKeyIndex.Value = index;
             ApplicationRegistrationRepository.Save(apiKeyIndex);
-            return new ApiKeyInfo()
+            return new ApiHmacKeyInfo()
             {
-                ApiKey = GetApplicationApiKey(clientId, index),
+                ApiHmacKey = GetApplicationApiHmacKey(clientId, index),
                 ApplicationClientId = clientId
             };
         }
@@ -119,7 +116,7 @@ namespace Bam.Net.CoreServices
         public virtual int GetActiveApiKeyIndex(IApplicationNameProvider nameProvider)
         {
             string clientId = GetApplicationClientId(nameProvider);
-            ActiveApiKeyIndex apiKeyIndex = ApplicationRegistrationRepository.OneActiveApiKeyIndexWhere(c => c.ApplicationIdentifier == clientId);
+            ActiveApiSigningKeyIndex apiKeyIndex = ApplicationRegistrationRepository.OneActiveApiKeyIndexWhere(c => c.ApplicationIdentifier == clientId);
             if (apiKeyIndex != null)
             {
                 return apiKeyIndex.Value;
@@ -132,9 +129,9 @@ namespace Bam.Net.CoreServices
             return ApplicationName.Or(ApplicationDiagnosticInfo.UnknownApplication);
         }
         
-        public virtual ApiKeyInfo GetClientApiKeyInfo()
+        public virtual ApiHmacKeyInfo GetClientApiKeyInfo()
         {
-            return GetApiKeyInfo(this);
+            return GetApiHmacKeyInfo(this);
         }
 
         /// <summary>
@@ -213,26 +210,26 @@ namespace Bam.Net.CoreServices
         }
 
         [Exclude]
-        public string CreateKeyToken(string stringToHash)
+        public string GetHmac(string stringToHash)
         {
-            ApiKeyInfo apiKey = GetApiKeyInfo(this);
-            return $"{apiKey.ApiKey}:{stringToHash}".HashHexString(HashAlgorithm);
+            ApiHmacKeyInfo apiKey = GetApiHmacKeyInfo(this);
+            return $"{apiKey.ApiHmacKey}:{stringToHash}".HashHexString(HashAlgorithm);
         }
 
         [Exclude]
-        public ApiKeyInfo GetApiKeyInfo(IApplicationNameProvider nameProvider)
+        public ApiHmacKeyInfo GetApiHmacKeyInfo(IApplicationNameProvider nameProvider)
         {
             string clientId = GetApplicationClientId(nameProvider);
-            ApiKeyInfo info = new ApiKeyInfo()
+            ApiHmacKeyInfo info = new ApiHmacKeyInfo()
             {
-                ApiKey = GetApplicationApiKey(clientId, GetActiveApiKeyIndex(nameProvider)), 
+                ApiHmacKey = GetApplicationApiHmacKey(clientId, GetActiveApiKeyIndex(nameProvider)), 
                 ApplicationClientId = clientId
             };
             return info;
         }
 
         [Local]
-        public virtual string GetApplicationApiKey(string applicationClientId, int index)
+        public virtual string GetApplicationApiHmacKey(string applicationClientId, int index)
         {
             CoreServices.ApplicationRegistration.Data.Application app = ApplicationRegistrationRepository.OneApplicationWhere(c => c.Cuid == applicationClientId);
             if(app != null)
@@ -250,48 +247,54 @@ namespace Bam.Net.CoreServices
         }
 
         [Local]
-        public virtual string GetCurrentApiKey()
+        public virtual string GetCurrentApiHmacKey()
         {
             return Application?.ApiKeys.FirstOrDefault()?.SharedSecret;
         }
 
         [Exclude]
-        public bool IsValidRequest(ExecutionRequest request)
+        public bool IsValidRequest(ServiceProxyInvocation request)
         {
             Args.ThrowIfNull(request, "request");
 
             string className = request.ClassName;
             string methodName = request.MethodName;
-            string stringToHash = ApiParameters.GetStringToHash(className, methodName, request.JsonParams);
+            string stringToHash = string.Empty;// ApiArgumentEncoder.GetStringToHash(className, methodName, request.ArgumentsAsJsonArrayOfJsonStrings);
 
-            string token = request.Context.Request.Headers[Headers.KeyToken];
+            string token = request.Context.Request.Headers[Headers.Hmac];
             bool result = false;
             if (!string.IsNullOrEmpty(token))
             {
-                result = IsValidKeyToken(stringToHash, token);
+                result = IsValidHmac(stringToHash, token);
             }
 
             return result;
         }
 
         [Exclude]
-        public bool IsValidKeyToken(string stringToHash, string token)
+        public bool IsValidHmac(string stringToHash, string token)
         {
-            string checkToken = CreateKeyToken(stringToHash);
+            string checkToken = GetHmac(stringToHash);
             return token.Equals(checkToken);
         }
 
-        [Exclude]
-        public void SetKeyToken(NameValueCollection headers, string stringToHash)
+/*        [Exclude]
+        public void SetHmacHeader(HttpRequestMessage request, string stringToHash)
         {
-            throw new InvalidOperationException($"It isn't appropriate for this service to be used for this purpose: {nameof(ApplicationRegistryService)}.{nameof(ApplicationRegistryService.SetKeyToken)}");
+            throw new InvalidOperationException($"It isn't appropriate for this service to be used for this purpose: {nameof(ApplicationRegistryService)}.{nameof(ApplicationRegistryService.SetHmacHeader)}");
         }
 
         [Exclude]
-        public void SetKeyToken(HttpWebRequest request, string stringToHash)
+        public void SetHmacHeader(NameValueCollection headers, string stringToHash)
         {
-            throw new InvalidOperationException($"It isn't appropriate for this service to be used for this purpose: {nameof(ApplicationRegistryService)}.{nameof(ApplicationRegistryService.SetKeyToken)}");
+            throw new InvalidOperationException($"It isn't appropriate for this service to be used for this purpose: {nameof(ApplicationRegistryService)}.{nameof(ApplicationRegistryService.SetHmacHeader)}");
         }
+
+        [Exclude]
+        public void SetHmacHeader(HttpWebRequest request, string stringToHash)
+        {
+            throw new InvalidOperationException($"It isn't appropriate for this service to be used for this purpose: {nameof(ApplicationRegistryService)}.{nameof(ApplicationRegistryService.SetHmacHeader)}");
+        }*/
 
         /// <summary>
         /// Establishes the means by which the client  
@@ -340,13 +343,13 @@ namespace Bam.Net.CoreServices
 
         protected DataProvider DataSettings { get; set; }
 
-        protected internal ApiKeyInfo GenerateApiKeyInfo(CoreServices.ApplicationRegistration.Data.Application app)
+        protected internal ApiHmacKeyInfo GenerateApiKeyInfo(CoreServices.ApplicationRegistration.Data.Application app)
         {
-            ApiKeyInfo info = new ApiKeyInfo
+            ApiHmacKeyInfo info = new ApiHmacKeyInfo
             {
                 ApplicationNameProvider = new StaticApplicationNameProvider(app.Name),
                 ApplicationClientId = app.Cuid,
-                ApiKey = ServiceProxySystem.GenerateSecureRandomString()
+                ApiHmacKey = ServiceProxySystem.GenerateSecureRandomString()
             };
             return info;
         }
@@ -359,13 +362,14 @@ namespace Bam.Net.CoreServices
         /// <returns></returns>
         protected internal CoreServices.ApplicationRegistration.Data.Application AddApiKey(ApplicationRegistrationRepository repo, CoreServices.ApplicationRegistration.Data.Application app)
         {
-            CoreServices.ApplicationRegistration.Data.ApiKey ignore;
+            CoreServices.ApplicationRegistration.Data.ApiHmacKey ignore;
             return AddApiKey(repo, app, out ignore);
         }
-        protected internal CoreServices.ApplicationRegistration.Data.Application AddApiKey(ApplicationRegistrationRepository repo, CoreServices.ApplicationRegistration.Data.Application app, out CoreServices.ApplicationRegistration.Data.ApiKey key)
+
+        protected internal CoreServices.ApplicationRegistration.Data.Application AddApiKey(ApplicationRegistrationRepository repo, CoreServices.ApplicationRegistration.Data.Application app, out CoreServices.ApplicationRegistration.Data.ApiHmacKey key)
         {
-            ApiKeyInfo keyInfo = GenerateApiKeyInfo(app);
-            key = CoreServices.ApplicationRegistration.Data.ApiKey.FromKeyInfo(keyInfo);
+            ApiHmacKeyInfo keyInfo = GenerateApiKeyInfo(app);
+            key = keyInfo.ToApiSigningKey();
             key.Created = DateTime.UtcNow;
             key.CreatedBy = CurrentUser.UserName;
             app.ApiKeys.Add(key);

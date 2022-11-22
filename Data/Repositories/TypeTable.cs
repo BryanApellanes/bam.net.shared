@@ -10,7 +10,7 @@ namespace Bam.Net.Data.Repositories
 {
     /// <summary>
     /// Used to describe the shape of a database table
-    /// given a CLR type
+    /// given a CLR type.
     /// </summary>
     public class TypeTable
     {

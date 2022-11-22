@@ -94,7 +94,7 @@ namespace Bam.Net.CoreServices
         /// </summary>
         public string WorkspaceDirectory { get; private set; }
 
-        public T GetProxy<T>(EventHandler<ServiceProxyInvokeEventArgs> invocationExceptionHandler)
+        public T GetProxy<T>(EventHandler<ServiceProxyInvocationRequestEventArgs> invocationExceptionHandler)
         {
             T result = GetProxy<T>();
             SubscribeToInvocationExceptions(result, invocationExceptionHandler);
@@ -111,7 +111,7 @@ namespace Bam.Net.CoreServices
         /// <param name="port"></param>
         /// <param name="invocationExceptionHandler"></param>
         /// <returns></returns>
-        public T GetProxy<T>(string hostName, int port, EventHandler<ServiceProxyInvokeEventArgs> invocationExceptionHandler)
+        public T GetProxy<T>(string hostName, int port, EventHandler<ServiceProxyInvocationRequestEventArgs> invocationExceptionHandler)
         {
             T result = GetProxy<T>(hostName, port, new HashSet<Assembly>());
             SubscribeToInvocationExceptions(result, invocationExceptionHandler);
@@ -167,7 +167,7 @@ namespace Bam.Net.CoreServices
         {
             ProxySettings settings = DefaultSettings.Clone();
             settings.ServiceType = type;
-            settings.DownloadClient = true;
+            settings.ClientCodeSource = ClientCodeSource.HostDownload;
             settings.Host = hostName;
             settings.Port = port;
             return GetProxySource(settings);
@@ -229,7 +229,7 @@ namespace Bam.Net.CoreServices
         {
             ProxySettings settings = DefaultSettings.Clone();
             settings.ServiceType = type;
-            settings.DownloadClient = false;
+            settings.ClientCodeSource = ClientCodeSource.Local;
             return GetAssembly(settings);
         }
 
@@ -250,7 +250,7 @@ namespace Bam.Net.CoreServices
         {
             ProxySettings settings = DefaultSettings.Clone();
             settings.ServiceType = type;
-            settings.DownloadClient = true;
+            settings.ClientCodeSource = ClientCodeSource.HostDownload;
             settings.Host = hostName;
             settings.Port = port;
             return GetAssembly(settings, addedReferenceAssemblies);
@@ -265,10 +265,10 @@ namespace Bam.Net.CoreServices
         /// <returns></returns>
         protected internal Assembly GetAssembly(ProxySettings settings, HashSet<Assembly> addedReferenceAssemblies = null)
         {
+            Args.ThrowIfNull(settings, "settings");
             Args.ThrowIfNull(settings.ServiceType, "ProxySettings.ServiceType");
             settings.ValidateTypeMethodsOrThrow();
 
-            settings = settings ?? DefaultSettings;
             ProxyAssemblyGenerator generator = new ProxyAssemblyGenerator(settings, WorkspaceDirectory, Logger, addedReferenceAssemblies);
             generator.AssemblyGenerating += (o, args) => OnAssemblyGenerating(args);
             generator.AssemblyGenerated += (o, args) => OnAssemblyGenerated(args);
@@ -305,7 +305,7 @@ namespace Bam.Net.CoreServices
             return result;
         }
         
-        private static void SubscribeToInvocationExceptions<T>(T result, EventHandler<ServiceProxyInvokeEventArgs> invocationExceptionHandler)
+        private static void SubscribeToInvocationExceptions<T>(T result, EventHandler<ServiceProxyInvocationRequestEventArgs> invocationExceptionHandler)
         {
             ServiceProxyClient client = result.Property<ServiceProxyClient>("Client"); // Client is defined on the generated proxy class, and this is using reflection to access it; magical knowledge 
             client.Subscribe(nameof(ServiceProxyClient.InvocationException), invocationExceptionHandler);

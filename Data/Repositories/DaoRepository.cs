@@ -31,6 +31,7 @@ namespace Bam.Net.Data.Repositories
             Database = DataProvider.Current.GetSysDatabaseFor(this);
             Logger = Log.Default;
         }
+
         /// <summary>
         /// Create an instance of DaoRepository
         /// </summary>
@@ -173,6 +174,7 @@ namespace Bam.Net.Data.Repositories
                 return _typeSchema;
 			}
 		}
+
         [Verbosity(VerbosityLevel.Warning, SenderMessageFormat = "Missing {PropertyType} property: {ClassName}.{PropertyName}")]
         public event EventHandler SchemaWarning;
 
@@ -194,13 +196,13 @@ namespace Bam.Net.Data.Repositories
                 NullifyDaoAssemblyOnAddType = false;
             }
         }
-        
+
         /// <summary>
-        /// If true (the default) adding a type will set the DaoAssembly to null
-        /// effectively requiring that it be regenerated.  Directly
-        /// setting the DaoAssembly will set this to
-        /// false.  This can be set to false if the DaoAssembly
-        /// has already been set and you wish for it not to be reset.
+        /// Gets or sets a value indicating whether adding a type will set the 
+        /// DaoAssembly to null, effectively requiring that it be regenerated.  
+        /// Directly setting the DaoAssembly sets this to false.  If the 
+        /// DaoAssembly has already been set and you wish for it not to be reset, 
+        /// set this to false.  The default value is true;
         /// </summary>
         protected bool NullifyDaoAssemblyOnAddType { get; set; }
 
@@ -803,10 +805,9 @@ namespace Bam.Net.Data.Repositories
 
 		public object ConstructWrapper(Type baseType)
 		{
-
             Type wrapperType = GetWrapperType(baseType);
 			ConstructorInfo ctor = wrapperType.GetConstructor(new Type[] { typeof(DaoRepository) });
-			object result = null;
+            object result;
 			if (ctor == null)
 			{
 				ctor = wrapperType.GetConstructor(Type.EmptyTypes);

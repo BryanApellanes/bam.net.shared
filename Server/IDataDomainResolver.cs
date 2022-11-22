@@ -17,6 +17,6 @@ namespace Bam.Net.Server
         /// </summary>
         /// <param name="appConf"></param>
         /// <returns></returns>
-        IEnumerable<HostPrefix> ResolveDataSubdomains(AppConf appConf);
+        IEnumerable<HostBinding> ResolveDataSubdomains(AppConf appConf);
     }
 }

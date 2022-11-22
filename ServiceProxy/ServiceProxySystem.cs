@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Bam.Net;
 using Bam.Net.Data;
 using Bam.Net.Incubation;
 using Bam.Net.Logging;
@@ -15,15 +14,14 @@ using System.Web;
 using System.Reflection;
 using System.IO;
 using System.Reflection.Metadata;
-using Bam.Net.ServiceProxy.Secure;
+using Bam.Net.ServiceProxy.Encryption;
 using Org.BouncyCastle.Security;
+using Bam.Net.Encryption;
 
 namespace Bam.Net.ServiceProxy
 {
-    public partial class ServiceProxySystem
+    public static class ServiceProxySystem
     {
-        public const string ServiceProxyPartialFormat = "~/Views/ServiceProxy/{0}/{1}";
-
         static ServiceProxySystem()
         {
             UserResolvers = new UserResolvers();
@@ -133,22 +131,20 @@ namespace Bam.Net.ServiceProxy
         }
 
         /// <summary>
-        /// Register the specified type as a ServiceProxy responder.
+        /// Register the specified type as a ServiceProxy invocation target.
         /// </summary>
         /// <param name="type"></param>
         public static void Register(Type type)
         {
-            Initialize();
             Incubator.Construct(type);
         }
 
         /// <summary>
-        /// Register the speicified generic type T as a ServiceProxy responder.
+        /// Register the speicified generic type T as a ServiceProxy invocation target.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         public static void Register<T>()
         {
-            Initialize();
             Incubator.Construct<T>();
         }
 
@@ -159,7 +155,6 @@ namespace Bam.Net.ServiceProxy
         /// <param name="instance"></param>
         public static void Register<T>(T instance)
         {
-            Initialize();
             Incubator.Set<T>(instance);
         }
 
@@ -175,8 +170,7 @@ namespace Bam.Net.ServiceProxy
 
 		/// <summary>
 		/// Get the MethodInfos for the specified type that are
-		/// proxied if the specified type is registered as 
-		/// a service proxy.
+		/// proxied.
 		/// </summary>
 		/// <param name="type"></param>
         /// <param name="includeLocalMethods"></param>
@@ -198,7 +192,7 @@ namespace Bam.Net.ServiceProxy
         static Incubator incubator;
         static readonly object incubatorLock = new object();
         /// <summary>
-        /// Gets or sets the default Incubator instance used by the ServiceProxy system.
+        /// Gets or sets the default dependency injection container used by the ServiceProxy system.
         /// </summary>
         public static Incubator Incubator
         {
@@ -250,7 +244,7 @@ namespace Bam.Net.ServiceProxy
             return GenerateCSharpProxyCode(defaultBaseAddress, classNames, nameSpace, contractNamespace, ServiceProxySystem.Incubator);
         }
 
-        public static string HeaderFormat
+        internal static string HeaderFormat
         {
             get
             {
@@ -261,22 +255,23 @@ This file was generated from {0}serviceproxy/csharpproxies.  This file should no
 ";
             }
         }
-        protected static string MethodFormat
+
+        internal static string MethodFormat
         {
             get
             {
                 return @"{0}
         public {1} {2}({3})
         {{
-            object[] parameters = new object[] {{ {4} }};
-            {5}(""{2}"", parameters);
+            object[] arguments = new object[] {{ {4} }};
+            {5}(""{2}"", arguments);
         }}";
             }
         }
 
-        protected static string UsingFormat { get { return "\tusing {0};\r\n"; } }
+        internal static string UsingFormat { get { return "\tusing {0};\r\n"; } }
 
-        protected static string NameSpaceFormat
+        internal static string NameSpaceFormat
         {
             get
             {
@@ -289,7 +284,7 @@ namespace {0}
             }
         }
 
-        protected static string ClassFormat
+        internal static string ClassFormat
         {
             get
             {
@@ -310,12 +305,12 @@ namespace {0}
             }
         }
 
-        protected static string SecureClassFormat
+        internal static string EncryptedClassFormat
         {
             get
             {
                 return @"{0}
-    public class {1}Client: SecureServiceProxyClient<{2}.I{3}>, {2}.I{3}
+    public class {1}Client: EncryptedServiceProxyClient<{2}.I{3}>, {2}.I{3}
     {{
         public {1}Client(): base(DefaultConfiguration.GetAppSetting(""{3}Url"", ""{4}""))
         {{
@@ -331,7 +326,7 @@ namespace {0}
             }
         }
 
-        protected static string InterfaceFormat
+        internal static string InterfaceFormat
         {
             get
             {
@@ -344,7 +339,7 @@ namespace {0}
             }
         }
 
-        protected static string InterfaceMethodFormat
+        internal static string InterfaceMethodFormat
         {
             get
             {
@@ -382,7 +377,7 @@ namespace {0}
                 "System",
                 "Bam.Net.Configuration",
                 "Bam.Net.ServiceProxy",
-                "Bam.Net.ServiceProxy.Secure",
+                "Bam.Net.ServiceProxy.Encryption",
                 contractNamespace
             };
 
@@ -403,11 +398,11 @@ namespace {0}
 
                     string returnOrBlank = isVoidReturn ? "" : "return ";
                     string genericTypeOrBlank = isVoidReturn ? "" : $"<{returnType}>";
-                    string invoke = $"{returnOrBlank}Invoke{genericTypeOrBlank}";
+                    string invoke = $"{returnOrBlank}InvokeServiceMethod{genericTypeOrBlank}";
 
                     string methodParams = methodGenInfo.MethodSignature;
                     string wrapped = parameters.ToDelimited(p => p.Name.CamelCase()); // wrapped as object array
-                    string methodApiKeyRequired = method.HasCustomAttributeOfType<ApiKeyRequiredAttribute>() ? "\r\n\t\t[ApiKeyRequired]" : "";
+                    string methodApiKeyRequired = method.HasCustomAttributeOfType<ApiHmacKeyRequiredAttribute>() ? "\r\n\t\t[ApiKeyRequired]" : "";
                     methods.AppendFormat(MethodFormat, methodApiKeyRequired, returnType, method.Name, methodParams, wrapped, invoke);
                     interfaceMethods.AppendFormat(InterfaceMethodFormat, returnType, method.Name, methodParams);
                 }
@@ -419,8 +414,8 @@ namespace {0}
                     clientName = clientName.Truncate(6);
                 }
 
-                string classFormatToUse = type.HasCustomAttributeOfType<EncryptAttribute>() ? SecureClassFormat : ClassFormat;
-                string typeApiKeyRequired = type.HasCustomAttributeOfType<ApiKeyRequiredAttribute>() ? "\r\n\t\t[ApiKeyRequired]" : "";
+                string classFormatToUse = type.HasCustomAttributeOfType<EncryptAttribute>() ? EncryptedClassFormat : ClassFormat;
+                string typeApiKeyRequired = type.HasCustomAttributeOfType<ApiHmacKeyRequiredAttribute>() ? "\r\n\t\t[ApiHmacKeyRequired]" : "";
                 classes.AppendFormat(classFormatToUse, typeApiKeyRequired, clientName, contractNamespace, serverName, defaultBaseAddress, methods.ToString());
                 interfaces.AppendFormat(InterfaceFormat, serverName, interfaceMethods.ToString());
             }
@@ -486,7 +481,7 @@ namespace {0}
 
                 foreach (MethodInfo method in type.GetMethods())
                 {
-                    if (methodFilter(method))//method.WillProxy(includeLocal))
+                    if (methodFilter(method))
                     {
                         stringBuilder.AppendLine(GetJsMethodCall(type, method));
                     }
@@ -551,8 +546,8 @@ namespace {0}
             {
                 methodName = "secureInvoke";
             }
-            if(type.HasCustomAttributeOfType<ApiKeyRequiredAttribute>() ||
-                method.HasCustomAttributeOfType<ApiKeyRequiredAttribute>())
+            if(type.HasCustomAttributeOfType<ApiHmacKeyRequiredAttribute>() ||
+                method.HasCustomAttributeOfType<ApiHmacKeyRequiredAttribute>())
             {
                 builder.Append("\t\toptions = $.extend({}, {apiKeyRequired: true}, options);\r\n");
             }
@@ -636,7 +631,7 @@ namespace {0}
             }
         }
 
-        public static StringBuilder BuildPartialView(Type type)
+        public static StringBuilder BuildPartialView(Type type) // TODO: move this to schema.org project
         {
             StringBuilder source = new StringBuilder();
             string typeName = type.Name.DropTrailingNonLetters();

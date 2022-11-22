@@ -1,5 +1,6 @@
 ﻿using Bam.Net.CoreServices;
 using Bam.Net.Data.Repositories;
+using Bam.Net.Encryption;
 using Bam.Net.UserAccounts;
 using System;
 using System.Collections.Generic;

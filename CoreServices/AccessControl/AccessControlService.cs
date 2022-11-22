@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Bam.Net.CoreServices.AccessControl.Data;
 using Bam.Net.ServiceProxy;
-using Bam.Net.ServiceProxy.Secure;
+using Bam.Net.ServiceProxy.Encryption;
 using Bam.Net.Services;
 using Bam.Net.CoreServices.AccessControl.Data.Dao.Repository;
 using System.Linq;
@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace Bam.Net.CoreServices.AccessControl
 {
     [Proxy("accessControlSvc")]
-    [ApiKeyRequired]
+    [ApiHmacKeyRequired]
     [ServiceSubdomain("accesscontrol")]
     public class AccessControlService : AsyncProxyableService
     {

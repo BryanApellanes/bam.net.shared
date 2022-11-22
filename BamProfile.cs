@@ -18,6 +18,7 @@ namespace Bam.Net
             EnsureDirectoryExists(ContentPath);
             EnsureDirectoryExists(AppsPath);
             EnsureDirectoryExists(SvcScriptsSrcPath);
+            EnsureDirectoryExists(ProxiesPath);
             EnsureDirectoryExists(DataPath);
             EnsureDirectoryExists(FilesPath);
             EnsureDirectoryExists(VaultsPath);
@@ -55,9 +56,7 @@ namespace Bam.Net
                 }
             }
         }
-        
-        public static string ReferenceAssembliesPath => System.IO.Path.Combine(Path, "referenceassemblies");
-        
+                
         public static string ToolkitPath => System.IO.Path.Combine(ToolkitSegments);
         public static string[] ToolkitSegments => new string[] {Path, "toolkit"};
         public static string NugetOutputPath => System.IO.Path.Combine(NugetOutputSegments);
@@ -81,12 +80,17 @@ namespace Bam.Net
         public static string SvcScriptsSrcPath => System.IO.Path.Combine(SvcScriptsSrcSegments);
         public static string[] SvcScriptsSrcSegments => new string[] {Path, "svc", "scripts"};
 
+        public static string GeneratedPath => System.IO.Path.Combine(DataPath, "generated");
+        public static string ProxiesPath => System.IO.Path.Combine(DataPath, "proxies");
+
         public static string DataPath => System.IO.Path.Combine(DataSegments);
 
         public static string[] DataSegments => new string[] {Path, "data"};
 
         public static string FilesPath => System.IO.Path.Combine(FilesSegments);
         public static string[] FilesSegments => new string[] {Path, "files"};
+
+        public static string LogsPath => System.IO.Path.Combine(Path, "logs");
 
         public static string VaultsPath => System.IO.Path.Combine(VaultsSegments);
         public static string[] VaultsSegments => new string[] {Path, "vaults"};

@@ -11,7 +11,7 @@ namespace Bam.Net.Services.Chunking
     public class ChunkResponse: StreamingResponse
     {
         public bool Success { get; set; }
-        public string Message { get; set; }
+        public new string Message { get; set; }
         public IChunk Chunk { get; set; }
         /// <summary>
         /// Throw an exception if the Data.Hash does not

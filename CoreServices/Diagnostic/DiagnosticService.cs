@@ -1,12 +1,12 @@
 using System;
 using Bam.Net.Server;
-using Bam.Net.ServiceProxy.Secure;
+using Bam.Net.ServiceProxy.Encryption;
 using Bam.Net;
 
 namespace Bam.Net.CoreServices
 {
     [Proxy("diagSvc")]
-    [ApiKeyRequired]
+    [ApiHmacKeyRequired]
     public class DiagnosticService: ApplicationProxyableService 
     {
         protected DiagnosticService() { } // required for client proxy generation via ProxyFactory

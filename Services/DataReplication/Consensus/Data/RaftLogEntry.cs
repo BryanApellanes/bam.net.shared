@@ -20,10 +20,10 @@ namespace Bam.Net.Services.DataReplication.Consensus.Data
         public ulong InstanceId { get; set; }
 
         [CompositeKey]
-        public long TypeId { get; set; }
+        public ulong TypeId { get; set; }
         
         [CompositeKey]
-        public long PropertyId { get; set; }
+        public ulong PropertyId { get; set; }
         
         [CompositeKey]
         public string Value { get; set; }
@@ -54,7 +54,7 @@ namespace Bam.Net.Services.DataReplication.Consensus.Data
                 Args.ThrowIfNull(instance, "instance");
                 Type type = instance.GetType();
                 instance.Id = instance.GetULongKeyHash();
-                long typeId = TypeMap.GetTypeId(type);
+                ulong typeId = TypeMap.GetTypeId(type);
                 foreach (PropertyInfo prop in type.GetProperties()
                     .Where(p => p.PropertyType.IsValueType || p.PropertyType == typeof(string)).ToArray())
                 {

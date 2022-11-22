@@ -74,14 +74,18 @@ namespace Bam.Net.Incubation
         }
         
         /// <summary>
-        /// Copy the values from the specified incubator to the current; the same as CombineWith
+        /// Copy the values from the specified incubator to the current; the same as CombineWith.
         /// </summary>
         /// <param name="incubator">The incubator to copy from</param>
         /// <param name="overwrite">If true, values in the current incubator
-        /// will be over written by values of the same types from the specified
-        /// incubator otherwise the current value will be kept</param>
+        /// are over written by values of the same types from the specified
+        /// incubator otherwise the current value is kept.</param>
         public void CopyFrom(Incubator incubator, bool overwrite = true)
         {
+            if (incubator == null)
+            {
+                return;
+            }
             lock (_accessLock)
             {
                 foreach (Type t in incubator._typeInstanceDictionary.Keys)
@@ -143,40 +147,16 @@ namespace Bam.Net.Incubation
         }
 
         /// <summary>
-        /// Constructs an instance of type T by finding a constructor
-        /// that can take objects of types that have already been 
-        /// constructed or set.  If the constructor parameters have not
-        /// been instantiated an InvalidOperationException will be 
-        /// thrown.
+        /// Constructs and sets an instance of type T by finding a constructor
+        /// that takes constructor arguments of types already 
+        /// constructed or set.  If the constructor arguments are not 
+        /// already instantiated an InvalidOperationException is thrown.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         public T Construct<T>()
         {
             return (T)Construct(typeof(T));
-        }
-
-        /// <summary>
-        /// Construct an instance of type T without
-        /// setting the new instance as the new internal gettable instance
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
-        public T GetWithoutSet<T>()
-        {
-            return (T)GetWithoutSet(typeof(T));
-        }
-
-        /// <summary>
-        /// Construct an instance of type T without
-        /// setting the new instance as the new internal gettable instance
-        /// </summary>
-        /// <param name="type"></param>
-        /// <returns></returns>
-        public object GetWithoutSet(Type type)
-        {
-            GetCtorAndParams(type, out ConstructorInfo ctor, out List<object> ctorParams);
-            return ctor.Invoke(ctorParams.ToArray());
         }
 
         /// <summary>
@@ -225,7 +205,7 @@ namespace Bam.Net.Incubation
         /// values in the current Incubator.
         /// </summary>
         /// <param name="instance">The instance.</param>
-        public void SetInjectionProperties(object instance)
+        public void SetInjectionProperties(object instance) 
         {
             Type type = instance.GetType();
             PropertyInfo[] properties = type.GetProperties();

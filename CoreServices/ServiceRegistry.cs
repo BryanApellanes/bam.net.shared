@@ -65,6 +65,16 @@ namespace Bam.Net.CoreServices
         }
 
         public new static ServiceRegistry Default { get; set; }
+
+        /// <summary>
+        /// Gets a function that returns a `ServiceRegistry` instance.  The function returned
+        /// is a reference to the `Get` method of the first class found addorned with the
+        /// `ServiceRegistryContainer` attribute or the first method of said class addorned
+        /// with a `ServiceRegistryLoader` attribute.
+        /// </summary>
+        /// <param name="type">The type whose assembly is searched.</param>
+        /// <param name="orDefault"></param>
+        /// <returns></returns>
         public static Func<object> GetServiceLoader(Type type, object orDefault = null)
         {
             if (Default == null)

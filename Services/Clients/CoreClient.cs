@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using System.IO;
 using Bam.Net.Logging;
 using Bam.Net.ServiceProxy;
-using Bam.Net.ServiceProxy.Secure;
+using Bam.Net.ServiceProxy.Encryption;
 using System.Reflection;
 using Bam.Net.Data.Repositories;
 using Bam.Net.Data.SQLite;
@@ -20,6 +20,8 @@ using Bam.Net.CoreServices;
 using Bam.Net.CoreServices.ApplicationRegistration.Data.Dao.Repository;
 using Bam.Net.CoreServices.ApplicationRegistration.Data;
 using Bam.Net.CoreServices.Auth;
+using System.Net.Http;
+using Bam.Net.Server.ServiceProxy;
 
 namespace Bam.Net.Services.Clients
 {
@@ -27,10 +29,10 @@ namespace Bam.Net.Services.Clients
     /// A client to the core bam service server.
     /// </summary>
     /// <seealso cref="Bam.Net.Logging.Loggable" />
-    /// <seealso cref="Bam.Net.ServiceProxy.Secure.IApiKeyResolver" />
-    /// <seealso cref="Bam.Net.ServiceProxy.Secure.IApiKeyProvider" />
+    /// <seealso cref="Bam.Net.ServiceProxy.Encryption.IApiHmacKeyResolver" />
+    /// <seealso cref="Bam.Net.ServiceProxy.Encryption.IApiHmacKeyProvider" />
     /// <seealso cref="Bam.Net.IApplicationNameProvider" />
-    public partial class CoreClient: Loggable, IApiKeyResolver, IApiKeyProvider, IApplicationNameProvider
+    public partial class CoreClient: Loggable, IApiHmacKeyResolver, IApiHmacKeyProvider, IApplicationNameProvider
     {
         internal CoreClient(string organizationName, string applicationName, string workingDirectory = null, ILogger logger = null)
         {
@@ -149,46 +151,33 @@ namespace Bam.Net.Services.Clients
             get; set;
         }
 
-        public string CreateKeyToken(string stringToHash)
+        public IApiArgumentEncoder ApiArgumentEncoder { get; set; }
+
+        public string GetHmac(string stringToHash)
         {
-            ApiKeyInfo keyInfo = GetApiKeyInfo(this);
-            return $"{keyInfo.ApiKey}:{stringToHash}".HashHexString(HashAlgorithm);
+            ApiHmacKeyInfo keyInfo = GetApiHmacKeyInfo(this);
+            return $"{keyInfo.ApiHmacKey}:{stringToHash}".HashHexString(HashAlgorithm);
         }
 
-        public bool IsValidRequest(ExecutionRequest request)
+/*        public bool IsValidRequest(ServiceProxyInvocation request)
         {
             Args.ThrowIfNull(request, "request");
-            string stringToHash = ApiParameters.GetStringToHash(request);
-            string token = request.Context.Request.Headers[Headers.KeyToken];
+            string stringToHash = ApiArgumentEncoder.GetValidationString(request.ClassName, request.MethodName, ApiArgumentEncoder.ArgumentsToJsonArgsMember(request.Arguments));
+            string hmac = request.Context.Request.Headers[Headers.Hmac];
             bool result = false;
-            if (!string.IsNullOrEmpty(token))
+            if (!string.IsNullOrEmpty(hmac))
             {
-                result = IsValidKeyToken(stringToHash, token);
+                result = IsValidHmac(stringToHash, hmac);
             }
             return result;
-        }
+        }*/
 
-        public bool IsValidKeyToken(string stringToHash, string token)
+        public bool IsValidHmac(string stringToHash, string token)
         {
-            string checkToken = CreateKeyToken(stringToHash);
+            string checkToken = GetHmac(stringToHash);
             return token.Equals(checkToken);
         }
 
-        public void SetKeyToken(HttpWebRequest request, string stringToHash)
-        {
-            SetKeyToken(request.Headers, stringToHash);
-        }
-
-        /// <summary>
-        /// Set the key token header (X-Bam-Keytoken) using the secret (ApiKey)
-        /// for the current application
-        /// </summary>
-        /// <param name="headers"></param>
-        /// <param name="stringToHash"></param>
-        public void SetKeyToken(NameValueCollection headers, string stringToHash)
-        {
-            headers[Headers.KeyToken] = CreateKeyToken(stringToHash);
-        }
         #endregion
         [Verbosity(VerbosityLevel.Warning, SenderMessageFormat = "ApiKeyFile {ApiKeyFilePath} was not found")]
         public event EventHandler ApiKeyFileNotFound;
@@ -200,14 +189,14 @@ namespace Bam.Net.Services.Clients
         public event EventHandler WroteApiKeyFile;
         #region IApiKeyProvider
 
-        ApiKeyInfo _apiKeyInfo;
-        public ApiKeyInfo GetApiKeyInfo(IApplicationNameProvider nameProvider)
+        ApiHmacKeyInfo _apiKeyInfo;
+        public ApiHmacKeyInfo GetApiHmacKeyInfo(IApplicationNameProvider nameProvider)
         {
             if (_apiKeyInfo == null)
             {
                 if (File.Exists(ApiKeyFilePath))
                 {
-                    _apiKeyInfo = ApiKeyFilePath.FromJsonFile<ApiKeyInfo>();
+                    _apiKeyInfo = ApiKeyFilePath.FromJsonFile<ApiHmacKeyInfo>();
                 }
                 else
                 {
@@ -223,22 +212,22 @@ namespace Bam.Net.Services.Clients
             return _apiKeyInfo;
         }
 
-        public ApiKeyInfo AddApiKey()
+        public ApiHmacKeyInfo AddApiKey()
         {
             return ApplicationRegistryService.AddApiKey();
         }
 
-        public ApiKeyInfo SetActiveApiKeyIndex(int index)
+        public ApiHmacKeyInfo SetActiveApiKeyIndex(int index)
         {
             return ApplicationRegistryService.SetActiveApiKeyIndex(index);
         }
 
-        public string GetApplicationApiKey(string applicationClientId, int index) // index ignored in this implementation //TODO: take into account the index
+        public string GetApplicationApiHmacKey(string applicationClientId, int index) // index ignored in this implementation //TODO: take into account the index
         {
-            ApiKeyInfo key = GetApiKeyInfo(this);
+            ApiHmacKeyInfo key = GetApiHmacKeyInfo(this);
             if (key.ApplicationClientId.Equals(applicationClientId))
             {
-                return key.ApiKey;
+                return key.ApiHmacKey;
             }
             throw new NotSupportedException("Specified applicationClientId not supported");
         }
@@ -250,7 +239,7 @@ namespace Bam.Net.Services.Clients
 
         public string GetApplicationClientId(IApplicationNameProvider nameProvider)
         {
-            ApiKeyInfo key = GetApiKeyInfo(this);
+            ApiHmacKeyInfo key = GetApiHmacKeyInfo(this);
             if (key.ApplicationName.Equals(nameProvider.GetApplicationName()))
             {
                 return key.ApplicationClientId;
@@ -258,10 +247,10 @@ namespace Bam.Net.Services.Clients
             throw new NotSupportedException("Specified applicationClientId not supported");
         }
 
-        public string GetCurrentApiKey()
+        public string GetCurrentApiHmacKey()
         {
-            ApiKeyInfo key = GetApiKeyInfo(this);
-            return key.ApiKey;
+            ApiHmacKeyInfo key = GetApiHmacKeyInfo(this);
+            return key.ApiHmacKey;
         }
         #endregion
 
@@ -294,10 +283,10 @@ namespace Bam.Net.Services.Clients
             throw new ApplicationException(response.Message);
         }
 
-        public ApiKeyInfo GetCurrentApplicationApiKeyInfo()
+        public ApiHmacKeyInfo GetCurrentApplicationApiKeyInfo()
         {
             RegisterApplicationProcess();
-            return ApiKeyFilePath.FromJsonFile<ApiKeyInfo>();
+            return ApiKeyFilePath.FromJsonFile<ApiHmacKeyInfo>();
         }
 
         public LoginResponse Login(string userName, string passHash)
@@ -324,9 +313,9 @@ namespace Bam.Net.Services.Clients
                     {
                         IsInitialized = true;
                         FireEvent(Initialized);
-                        ApiKeyInfo keyInfo = new ApiKeyInfo
+                        ApiHmacKeyInfo keyInfo = new ApiHmacKeyInfo
                         {
-                            ApiKey = appRegistrationResult.ApiKey,
+                            ApiHmacKey = appRegistrationResult.ApiKey,
                             ApplicationClientId = appRegistrationResult.ClientId,
                             ApplicationName = GetApplicationName()
                         };
@@ -588,18 +577,18 @@ namespace Bam.Net.Services.Clients
             foreach(ProxyableService service in ServiceClients)
             {
                 ServiceProxyClient client = service.Property<ServiceProxyClient>("Client");
-                client.InvocationException += (o, a) => InvocationExceptionHandler(o, a);
-                client.InvokedMethod += (o, a) => InvocationHandler(o, a);
+                client.InvocationException += (o, a) => OnInvocationException(o, a);
+                client.InvocationComplete += (o, a) => OnInvocation(o, a);
             }
         }
-        public event EventHandler InvocationException;
+        public event EventHandler InvocationExceptionThrown; 
         public event EventHandler MethodInvoked;
-        private void InvocationExceptionHandler(object sender, ServiceProxyInvokeEventArgs args)
+        protected virtual void OnInvocationException(object sender, ServiceProxyInvocationRequestEventArgs args)
         {
-            FireEvent(InvocationException, sender, args);
+            FireEvent(InvocationExceptionThrown, sender, args);
         }
 
-        private void InvocationHandler(object sender, ServiceProxyInvokeEventArgs args)
+        protected virtual void OnInvocation(object sender, ServiceProxyInvocationRequestEventArgs args)
         {
             FireEvent(MethodInvoked, sender, args);
         }

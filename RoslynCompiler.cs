@@ -31,7 +31,7 @@ namespace Bam.Net
             ReferenceAssemblyResolver = referenceAssemblyResolver;
         }
         
-        public IReferenceAssemblyResolver ReferenceAssemblyResolver { get; set; }
+        public IReferenceAssemblyResolver ReferenceAssemblyResolver { get; set; } // TOOD: revisit this; this does not work the way it was orignially intended and should be removed.
 
         readonly HashSet<Assembly> _assembliesToReference;
         public Assembly[] AssembliesToReference
@@ -169,7 +169,7 @@ namespace Bam.Net
         {
             List<MetadataReference> references = new List<MetadataReference>
             {   
-                // Here we get the path to the mscorlib and private mscorlib
+                // Get the path to the mscorlib and private mscorlib
                 // libraries that are required for compilation to succeed.
                 MetadataReference.CreateFromFile(RuntimeSettings.GetReferenceAssembliesDirectory() + Path.DirectorySeparatorChar + "mscorlib.dll"),
                 MetadataReference.CreateFromFile(typeof(object).GetTypeInfo().Assembly.Location),

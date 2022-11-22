@@ -12,8 +12,7 @@ using Bam.Net.Logging;
 namespace Bam.Net.Data
 {
     /// <summary>
-    /// This class takes responsibility for initializing databases and their 
-    /// related schemas.
+    /// Initializes databases and their related schemas.
     /// </summary>
     public class SchemaInitializer
     {

@@ -255,10 +255,21 @@ namespace Bam.Net
                 {
                     ex = new ReflectionTypeLoadAggregateException(typeLoadEx);
                 }
-                OutLine(ex.Message);
-                OutLine(ex.StackTrace);
+                Message.PrintLine(ex.Message);
+                Message.PrintLine(ex.StackTrace);
                 throw;
             }
+        }
+
+        protected static FileInfo ProcessFile()
+        {
+            Process process = Process.GetCurrentProcess();
+            return new FileInfo(process.MainModule.FileName);            
+        }
+
+        protected static DirectoryInfo ProcessDirectory()
+        {
+            return ProcessFile().Directory;
         }
 
         protected static void MainMenu(string header)
@@ -418,9 +429,9 @@ namespace Bam.Net
                 }
                 else
                 {
-                    OutLineFormat("All ({0}) tests passed", ConsoleColor.Green, ConsoleColor.Black, summary.PassedTests.Count);
+                    Message.PrintLine("All ({0}) tests passed", ConsoleColor.Green, ConsoleColor.Black, summary.PassedTests.Count);
                 }
-                OutLine("********", ConsoleColor.Blue, ConsoleColor.Black);
+                Message.PrintLine("********", ConsoleColor.Blue, ConsoleColor.Black);
             };
             return runner;
         }

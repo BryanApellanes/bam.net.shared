@@ -11,13 +11,13 @@ namespace Bam.Net.Testing.Specification
     {
         public override LogMessage AddMessage(string format, params string[] args)
         {
-            CommandLine.CommandLineInterface.OutLineFormat(format, args);
+            Message.PrintLine(format, args);
             return base.AddMessage(format, args);
         }
 
         public override LogMessage AddWarningMessage(string format, params string[] args)
         {
-            CommandLineInterface.OutLineFormat(format, ConsoleColor.DarkYellow, args);
+            Message.PrintLine(format, ConsoleColor.DarkYellow, args);
             return base.AddWarningMessage(format, args);
         }
 

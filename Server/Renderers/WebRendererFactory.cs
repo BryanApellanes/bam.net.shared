@@ -9,11 +9,10 @@ using System.Threading.Tasks;
 using System.IO;
 using Bam.Net.Web;
 using Bam.Net.Presentation.Html;
-using Bam.Net;
 using Bam.Net.Logging;
-using Bam.Net.Server;
 using Bam.Net.ServiceProxy;
 using Bam.Net.Presentation;
+using Bam.Net.Server.ServiceProxy;
 
 namespace Bam.Net.Server.Renderers
 {
@@ -33,14 +32,14 @@ namespace Bam.Net.Server.Renderers
 
         protected ILogger Logger { get; set; }
 
-        public void Respond(ExecutionRequest request, ContentResponder contentResponder)
+        public void Respond(ServiceProxyInvocation request, ContentResponder contentResponder)
         {
             IWebRenderer renderer = CreateRenderer(request, contentResponder);
 
-            renderer.Respond(request);
+            renderer.RenderResponse(request);
         }
 
-        protected internal IWebRenderer CreateRenderer(ExecutionRequest request, ContentResponder contentResponder)
+        protected internal IWebRenderer CreateRenderer(ServiceProxyInvocation request, ContentResponder contentResponder)
         {
             IRequest webRequest = request.Request;
             IResponse webResponse = request.Response;
@@ -51,11 +50,11 @@ namespace Bam.Net.Server.Renderers
             string ext = Path.GetExtension(path);
 
             IWebRenderer renderer = CreateRenderer(webRequest, ext);
-
+/*
             if (request.HasCallback || ScriptRenderer.Extensions.Contains(ext.ToLowerInvariant()))
             {
                 renderer = new ScriptRenderer(request, contentResponder);
-            }
+            }*/
 
             OnCreatedRenderer(webRequest, renderer);
             return renderer;
@@ -95,17 +94,17 @@ namespace Bam.Net.Server.Renderers
         /// The event that fires before resolving the renderer for the current request
         /// </summary>
         public event Action<WebRendererFactory, IRequest> CreatingRenderer;
+        
         protected void OnCreatingRenderer(IRequest request)
         {
             CreatingRenderer?.Invoke(this, request);
         }
+        
         public event Action<WebRendererFactory, IRequest, IWebRenderer> CreatedRenderer;
+        
         protected void OnCreatedRenderer(IRequest request, IWebRenderer renderer)
         {
-            if (CreatedRenderer != null)
-            {
-                CreatedRenderer(this, request, renderer);
-            }
+            CreatedRenderer?.Invoke(this, request, renderer);
         }
 
         protected internal string GetContentType(IWebRenderer renderer, IRequest webRequest)

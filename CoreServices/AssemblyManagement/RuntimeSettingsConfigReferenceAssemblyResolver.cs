@@ -11,7 +11,7 @@ namespace Bam.Net.CoreServices.AssemblyManagement
             return ResolveReferenceAssemblyPath(type.Namespace, type.Name);
         }
 
-        public virtual string ResolveReferenceAssemblyPath(string typeNamespace, string typeName)
+        public override string ResolveReferenceAssemblyPath(string typeNamespace, string typeName)
         {
             string referenceAssembliesDir = RuntimeSettings.GetRuntimeConfig().ReferenceAssemblies;
 

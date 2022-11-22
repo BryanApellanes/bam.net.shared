@@ -28,7 +28,7 @@ namespace Bam.Net.ServiceProxy
                                    !method.IsProperty() &&
                                    method.DeclaringType != typeof(object);
             bool hasExcludeAttribute = method.HasCustomAttributeOfType(out ExcludeAttribute attr);
-            bool result = false;
+            bool result;
             if (includeLocal)
             {
                 result = hasExcludeAttribute ? (attr is LocalAttribute && baseCheck) : baseCheck;

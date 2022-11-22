@@ -25,11 +25,11 @@ namespace Bam.Net.CoreServices.ServiceRegistration.Data.Wrappers
 
 		public ServiceDescriptorWrapper(DaoRepository repository) : this()
 		{
-			this.Repository = repository;
+			this.DaoRepository = repository;
 		}
 
 		[JsonIgnore]
-		public DaoRepository Repository { get; set; }
+		public DaoRepository DaoRepository { get; set; }
 
 		[JsonIgnore]
 		public Dictionary<string, PropertyInfo> UpdatedXrefCollectionProperties { get; set; }
@@ -57,8 +57,8 @@ namespace Bam.Net.CoreServices.ServiceRegistration.Data.Wrappers
 			{
 				if(_serviceRegistryDescriptors == null || _serviceRegistryDescriptors.Count == 0)
 				{
-					var xref = new XrefDaoCollection<Bam.Net.CoreServices.ServiceRegistration.Data.Dao.ServiceDescriptorServiceRegistryDescriptor,  Bam.Net.CoreServices.ServiceRegistration.Data.Dao.ServiceRegistryDescriptor>(Repository.GetDaoInstance(this), false);
-					xref.Load(Repository.Database);
+					var xref = new XrefDaoCollection<Bam.Net.CoreServices.ServiceRegistration.Data.Dao.ServiceDescriptorServiceRegistryDescriptor,  Bam.Net.CoreServices.ServiceRegistration.Data.Dao.ServiceRegistryDescriptor>(DaoRepository.GetDaoInstance(this), false);
+					xref.Load(DaoRepository.Database);
 					_serviceRegistryDescriptors = ((IEnumerable)xref).CopyAs<Bam.Net.CoreServices.ServiceRegistration.Data.ServiceRegistryDescriptor>().ToList();
 					SetUpdatedXrefCollectionProperty("ServiceRegistryDescriptors", this.GetType().GetProperty("ServiceRegistry"));					
 				}

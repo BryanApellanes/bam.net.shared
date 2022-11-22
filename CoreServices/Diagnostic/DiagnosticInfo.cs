@@ -64,9 +64,9 @@ namespace Bam.Net.CoreServices
         private void SetServiceProxies()
         {
             List<ServiceProxyInfo> serviceProxies = new List<ServiceProxyInfo>();
-            ServiceProxySystem.Incubator.ClassNames.Each(cn =>
+            ServiceProxySystem.Incubator.ClassNames.Each(className =>
             {
-                serviceProxies.Add(new ServiceProxyInfo(ServiceProxySystem.Incubator[cn]));
+                serviceProxies.Add(new ServiceProxyInfo(ServiceProxySystem.Incubator[className]));
             });
             this.ServiceProxies = serviceProxies.ToArray();
         }

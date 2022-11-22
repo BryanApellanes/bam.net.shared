@@ -83,8 +83,8 @@ namespace Bam.Net.Server
 
 
         List<ILogger> _subscribers;
-        object _subscriberLock = new object();
-        public ILogger[] Subscribers
+        readonly object _subscriberLock = new object();
+        public override ILogger[] Subscribers
         {
             get
             {
@@ -99,14 +99,14 @@ namespace Bam.Net.Server
             }
         }
 
-        public bool IsSubscribed(ILogger logger)
+        public override bool IsSubscribed(ILogger logger)
         {
             lock (_subscriberLock)
             {
                 return _subscribers.Contains(logger);
             }
         }
-        public void Subscribe(ILogger logger)
+        public override void Subscribe(ILogger logger)
         {
             if (!IsSubscribed(logger))
             {

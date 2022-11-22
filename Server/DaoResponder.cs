@@ -161,7 +161,7 @@ namespace Bam.Net.Server
             IResponse response = context.Response;
             bool handled = false;
             string path = request.Url.AbsolutePath;
-            string appName = ApplicationNameResolver.ResolveApplicationName(context);
+            string appName = ApplicationNameResolver.ResolveApplicationName(request);
             string[] chunks = path.DelimitSplit("/");
 
             HttpArgs queryString = new HttpArgs(request.Url.Query);
@@ -192,10 +192,7 @@ namespace Bam.Net.Server
         {
             IRequest request = context.Request;
             IResponse response = context.Response;
-            string connectionName;
-            string methodName;
-            string daoName;
-            GetDaoInfo(chunks, out connectionName, out methodName, out daoName);
+            GetDaoInfo(chunks, out string connectionName, out string methodName, out string daoName);
             DaoProxyRegistration daoProxyReg = null;
             connectionName = connectionName.ToLowerInvariant();
             if (CommonDaoProxyRegistrations.ContainsKey(connectionName))
@@ -249,21 +246,24 @@ namespace Bam.Net.Server
             return result;
         }
 
-        public bool IsInitialized
+        public override bool IsInitialized
         {
             get;
-            set;
+            protected set;
         }
 
-        List<ILogger> _subscribers = new List<ILogger>();
-        object _subscriberLock = new object();
-        public ILogger[] Subscribers
+        private List<ILogger> _subscribers = new List<ILogger>();
+        private readonly object _subscriberLock = new object();
+        public override ILogger[] Subscribers
         {
             get
             {
                 if (_subscribers == null)
                 {
-                    _subscribers = new List<ILogger>();
+                    lock (_subscriberLock)
+                    {
+                        _subscribers = new List<ILogger>();
+                    }
                 }
                 lock (_subscriberLock)
                 {
@@ -272,14 +272,15 @@ namespace Bam.Net.Server
             }
         }
 
-        public bool IsSubscribed(ILogger logger)
+        public override bool IsSubscribed(ILogger logger)
         {
             lock (_subscriberLock)
             {
                 return _subscribers.Contains(logger);
             }
         }
-        public void Subscribe(ILogger logger)
+        
+        public override void Subscribe(ILogger logger)
         {
             if (!IsSubscribed(logger))
             {
@@ -434,7 +435,7 @@ namespace Bam.Net.Server
         }
 
         readonly object _initializeLock = new object();
-        public void Initialize()
+        public override void Initialize()
         {
             OnInitializing();
             lock (_initializeLock)

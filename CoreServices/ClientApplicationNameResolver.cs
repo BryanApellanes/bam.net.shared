@@ -20,25 +20,27 @@ namespace Bam.Net.CoreServices
             ApplicationRegistrationRepository = repo;
         }
 
-        public ClientApplicationNameResolver(ApplicationRegistrationRepository repo, IHttpContext context) : this(repo)
+/*        public ClientApplicationNameResolver(ApplicationRegistrationRepository repo, IHttpContext context) : this(repo)
         {
             HttpContext = context;
-        }
+        }*/
 
         public ApplicationRegistrationRepository ApplicationRegistrationRepository { get; set; }
+
+        // TOOD: pretty sure this will  cause a race condition depending on how this is set and used
         public IHttpContext HttpContext { get; set; }
 
         public string GetApplicationName()
         {
-            return ResolveApplicationName(HttpContext);
+            return ResolveApplicationName(HttpContext.Request);
         }
 
-        public string ResolveApplicationName(IHttpContext context)
+        public string ResolveApplicationName(IRequest request)
         {
-            string fromHeader = context?.Request?.Headers[Headers.ApplicationName];
+            string fromHeader = request?.Headers[Headers.ApplicationName];
             if (string.IsNullOrEmpty(fromHeader))
             {
-                string domainName = context?.Request?.Url?.Host;
+                string domainName = request?.Url?.Host;
                 if (!string.IsNullOrEmpty(domainName))
                 {
                     HostDomain hostDomain = ApplicationRegistrationRepository.OneHostDomainWhere(d => d.DomainName == domainName);

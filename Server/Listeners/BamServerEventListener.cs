@@ -38,11 +38,11 @@ namespace Bam.Net.Server
 
         public virtual void CreatedApp(BamServer bryanServer, AppConf appConf) { }
 
-        public virtual void Responded(BamServer bryanServer, IResponder iResponder, IRequest iRequest) { }
+        public virtual void Responded(BamServer bryanServer, IHttpResponder iResponder, IRequest iRequest) { }
         
         public virtual void NotResponded(BamServer bryanServer, IRequest iRequest) { }
 
-        public virtual void ResponderAdded(BamServer bryanServer, IResponder iResponder) { }
+        public virtual void ResponderAdded(BamServer bryanServer, IHttpResponder iResponder) { }
 
         public virtual void SettingConf(BamServer bryanServer, BamConf bryanConf) { }
 

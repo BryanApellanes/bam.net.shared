@@ -123,14 +123,14 @@ namespace Bam.Net.Data
             set;
         }
 
-        public virtual void Execute(Database db)
+        public new virtual void Execute(Database db)
         {
             DataSet = base.GetDataSet(db);
             OnExecuted(db);
             this.Reset();
         }
 
-        protected internal void OnExecuted(Database db)
+        protected new internal void OnExecuted(Database db)
         {
             Executed?.Invoke(this, db);
         }

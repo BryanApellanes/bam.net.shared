@@ -424,7 +424,10 @@ namespace Bam.Net.Automation
                     _runnerThread.Join(2500);
                 }                
             }
-            catch { }
+            catch
+            {
+                // ignored
+            }
 
             _isRunning = false;
         }

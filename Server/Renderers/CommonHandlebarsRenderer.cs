@@ -76,10 +76,5 @@ namespace Bam.Net.Server.Renderers
             }
             HandlebarsDirectories = handlebarsDirectories;
         }
-        
-        public string Render(string templateName, object data)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

@@ -172,6 +172,7 @@ namespace Bam.Net.Services.DataReplication.Consensus
 
             RaftLogEntry logEntry = writeRequest.FollowerCopy(RaftLogEntryState.Committed).LogEntry;
             LocalRepository.SaveAsync(logEntry);
+            FireEvent(FollowerValueCommitted, new RaftLogEntryWrittenEventArgs() {WriteRequest = writeRequest} );
         }
         
         // -- IDistributedRepository methods

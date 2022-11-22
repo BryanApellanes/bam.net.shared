@@ -5,7 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Bam.Net.ServiceProxy.Secure;
+using Bam.Net.Encryption;
+using Bam.Net.ServiceProxy.Encryption;
 
 namespace Bam.Net.ServiceProxy
 {
@@ -22,7 +23,7 @@ namespace Bam.Net.ServiceProxy
     /// <summary>
     /// Echo class that requires an api key
     /// </summary>
-    [ApiKeyRequired]
+    [ApiHmacKeyRequired]
     public class ApiKeyRequiredEcho : Echo
     {
 

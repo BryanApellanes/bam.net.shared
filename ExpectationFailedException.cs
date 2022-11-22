@@ -30,26 +30,48 @@ namespace Bam.Net
 
         public ExpectationFailedException(string expected, string actual)
             : this(expected, actual, false)
-        { }
+        {
+            this.Expected = expected;
+            this.Actual = actual;
+        }
 
         public ExpectationFailedException(string expected, string actual, bool htmlEncode)
-            : this(string.Format(htmlEncode ? HttpUtility.HtmlEncode(defaultMessage) : defaultMessage, expected, actual))
-        { }
+            : this(string.Format(htmlEncode ? HttpUtility.HtmlEncode(defaultMessage) : defaultMessage, expected,
+                actual))
+        {
+            this.Expected = expected;
+            this.Actual = actual;
+        }
 
         public ExpectationFailedException(bool expected, bool actual)
             : this(expected.ToString(), actual.ToString())
-        { }
+        {
+            this.Expected = expected;
+            this.Actual = actual;
+        }
 
         public ExpectationFailedException(bool expected, bool actual, bool htmlEncode)
             : this(expected.ToString(), actual.ToString(), htmlEncode)
-        { }
-        
+        {
+            this.Expected = expected;
+            this.Actual = actual;
+        }
+
         public ExpectationFailedException(Type expected, object actual)
-            : this(expected.Name, actual == null ? "null": actual.GetType().Name)
-        { }
+            : this(expected.Name, actual == null ? "null" : actual.GetType().Name)
+        {
+            this.Expected = expected;
+            this.Actual = actual?.GetType();
+        }
 
         public ExpectationFailedException(Type expected, object actual, bool htmlEncode)
-            : this(expected.Name, actual == null ? "null": actual.GetType().Name, htmlEncode)
-        { }
+            : this(expected.Name, actual == null ? "null" : actual.GetType().Name, htmlEncode)
+        {
+            this.Expected = expected;
+            this.Actual = actual?.GetType();
+        }
+        
+        public object Expected { get; set; }
+        public object Actual { get; set; }
     }
 }

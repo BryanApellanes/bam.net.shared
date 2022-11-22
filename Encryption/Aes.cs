@@ -20,7 +20,7 @@ namespace Bam.Net.Encryption
         /// <returns></returns>
         public static string Encrypt(string value)
         {
-            return Encrypt(value, AesKeyVectorPair.AppKey);
+            return Encrypt(value, AesKeyVectorPair.SystemKey);
         }
 
         /// <summary>
@@ -38,11 +38,11 @@ namespace Bam.Net.Encryption
         /// <summary>
         /// Encrypts the specified value.
         /// </summary>
-        /// <param name="value">The value.</param>
+        /// <param name="plainText">The value.</param>
         /// <param name="base64EncodedKey">The base64 encoded key.</param>
         /// <param name="base64EncodedIV">The base64 encoded iv.</param>
-        /// <returns></returns>
-        public static string Encrypt(string value, string base64EncodedKey, string base64EncodedIV)
+        /// <returns>Base64 encoded encrypted value</returns>
+        public static string Encrypt(string plainText, string base64EncodedKey, string base64EncodedIV)
         {
             AesManaged aes = new AesManaged
             {
@@ -52,20 +52,46 @@ namespace Bam.Net.Encryption
 
             ICryptoTransform encryptor = aes.CreateEncryptor();
 
-            return Encrypt(value, encryptor);
+            byte[] encryptedBytes = Encrypt(plainText, encryptor);
+            return Convert.ToBase64String(encryptedBytes);
         }
 
-        private static string Encrypt(string value, ICryptoTransform encryptor)
+        public static byte[] Encrypt(string plainText, ICryptoTransform encryptor)
         {
-            using(MemoryStream encryptBuffer = new MemoryStream())
+            using (MemoryStream encryptBuffer = new MemoryStream())
             {
                 using (CryptoStream encryptStream = new CryptoStream(encryptBuffer, encryptor, CryptoStreamMode.Write))
                 {
-                    byte[] data = Encoding.UTF8.GetBytes(value);
+                    byte[] data = Encoding.UTF8.GetBytes(plainText);
                     encryptStream.Write(data, 0, data.Length);
                     encryptStream.FlushFinalBlock();
+                    return encryptBuffer.ToArray();
+                }
+            }
+        }
 
-                    return Convert.ToBase64String(encryptBuffer.ToArray());
+        public static byte[] EncryptBytes(byte[] plainData, string base64EncodedKey, string base64EncodedIV)
+        {
+            AesManaged aes = new AesManaged
+            {
+                IV = Convert.FromBase64String(base64EncodedIV),
+                Key = Convert.FromBase64String(base64EncodedKey)
+            };
+
+            ICryptoTransform encryptor = aes.CreateEncryptor();
+
+            return EncryptBytes(plainData, encryptor);            
+        }
+
+        public static byte[] EncryptBytes(byte[] plainData, ICryptoTransform encryptor)
+        {
+            using (MemoryStream encryptBuffer = new MemoryStream())
+            {
+                using (CryptoStream encryptStream = new CryptoStream(encryptBuffer, encryptor, CryptoStreamMode.Write))
+                {
+                    encryptStream.Write(plainData, 0, plainData.Length);
+                    encryptStream.FlushFinalBlock();
+                    return encryptBuffer.ToArray();
                 }
             }
         }
@@ -77,7 +103,7 @@ namespace Bam.Net.Encryption
         /// <returns></returns>
         public static string Decrypt(string base64EncodedValue)
         {
-            return Decrypt(base64EncodedValue, AesKeyVectorPair.AppKey);
+            return Decrypt(base64EncodedValue, AesKeyVectorPair.SystemKey);
         }
 
         /// <summary>
@@ -94,11 +120,18 @@ namespace Bam.Net.Encryption
         /// <summary>
         /// Decrypts the specified base64 encoded value.
         /// </summary>
-        /// <param name="base64EncodedValue">The base64 encoded value.</param>
+        /// <param name="base64EndoedCipher">The base64 encoded value.</param>
         /// <param name="base64EncodedKey">The base64 encoded key.</param>
         /// <param name="base64EncodedIV">The base64 encoded iv.</param>
         /// <returns></returns>
-        public static string Decrypt(string base64EncodedValue, string base64EncodedKey, string base64EncodedIV)
+        public static string Decrypt(string base64EndoedCipher, string base64EncodedKey, string base64EncodedIV, Encoding encoding = null)
+        {
+            byte[] encData = Convert.FromBase64String(base64EndoedCipher);
+            byte[] retBytes = DecryptBytes(encData, base64EncodedKey, base64EncodedIV);
+            return (encoding ?? Encoding.UTF8).GetString(retBytes.ToArray());
+        }
+
+        public static byte[] DecryptBytes(byte[] encData, string base64EncodedKey, string base64EncodedIV)
         {
             AesManaged aes = new AesManaged
             {
@@ -108,10 +141,9 @@ namespace Bam.Net.Encryption
 
             ICryptoTransform decryptor = aes.CreateDecryptor();
 
-            byte[] encData = Convert.FromBase64String(base64EncodedValue);
             using (MemoryStream decryptBuffer = new MemoryStream(encData))
             {
-                using(CryptoStream decryptStream = new CryptoStream(decryptBuffer, decryptor, CryptoStreamMode.Read))
+                using (CryptoStream decryptStream = new CryptoStream(decryptBuffer, decryptor, CryptoStreamMode.Read))
                 {
                     byte[] decrypted = new byte[encData.Length];
 
@@ -125,11 +157,11 @@ namespace Bam.Net.Encryption
                     {
                         if (b == 0)
                             break;
-                        
-                        retBytes.Add(b);                        
+
+                        retBytes.Add(b);
                     }
 
-                    return Encoding.UTF8.GetString(retBytes.ToArray());
+                    return retBytes.ToArray();
                 }
             }
         }
@@ -184,12 +216,16 @@ namespace Bam.Net.Encryption
         public static T Decrypt<T>(string filePath, string keyFile)
         {
             if (!File.Exists(filePath))
+            {
                 throw new FileNotFoundException(string.Format("The file specified to deserialize from {0} does not exist", filePath));
+            }
 
             if (!File.Exists(keyFile))
+            {
                 throw new FileNotFoundException(string.Format("The key file specified {0} does not exist", keyFile));
+            }
 
-            AesKeyVectorPair key = AesKeyVectorPair.Load(keyFile); //Serialization.Deserialize<Base64EncodedRijndaelKeyVectorPair>(keyFile);
+            AesKeyVectorPair key = AesKeyVectorPair.Load(keyFile); 
 
             return Decrypt<T>(filePath, key);
         }
@@ -221,7 +257,8 @@ namespace Bam.Net.Encryption
                 Key = Convert.ToBase64String(rm.Key),
                 IV = Convert.ToBase64String(rm.IV)
             };
-            return Encrypt(xml, rm.CreateEncryptor());
+            byte[] encryptedBytes = Encrypt(xml, rm.CreateEncryptor());
+            return Convert.ToBase64String(encryptedBytes);
         }
 
         /// <summary>
@@ -233,12 +270,6 @@ namespace Bam.Net.Encryption
         /// <returns></returns>
         public static T Deserialize<T>(string base64EncryptedXmlString, AesKeyVectorPair key)
         {
-            AesManaged rKey = new AesManaged
-            {
-                IV = Convert.FromBase64String(key.IV),
-                Key = Convert.FromBase64String(key.Key)
-            };
-
             string xml = Decrypt(base64EncryptedXmlString, key.Key, key.IV);
             return SerializationExtensions.FromXml<T>(xml);
         }

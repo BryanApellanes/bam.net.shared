@@ -28,6 +28,7 @@ namespace Bam.Net.CoreServices.ServiceRegistration.Data
             }
             Initialize(toUse);
         }
+
         public ServiceRegistryLoaderDescriptor(Type type, string name = null, string description = null)
         {
             Initialize(type, name, description);

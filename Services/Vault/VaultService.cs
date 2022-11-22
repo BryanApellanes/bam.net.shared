@@ -4,22 +4,21 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Bam.Net.Encryption;
-using Bam.Net.ServiceProxy.Secure;
+using Bam.Net.ServiceProxy.Encryption;
 
 namespace Bam.Net.Services
 {
     [Proxy("vaultSvc")]
-    [ApiKeyRequired]
+    [ApiHmacKeyRequired]
     public class VaultService : AsyncProxyableService, IVaultService
     {
         public VaultService(VaultDatabase db)
         {
             Database = db;
-            
         }
 
         [Local]
-        public VaultDatabase Database { get; set; }
+        public new VaultDatabase Database { get; set; }
 
         public override object Clone()
         {

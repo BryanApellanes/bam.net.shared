@@ -9,7 +9,7 @@ namespace Bam.Net.ServiceProxy
 {
     public interface IApplicationNameResolver: IApplicationNameProvider 
     {
-        string ResolveApplicationName(IHttpContext context);
+        string ResolveApplicationName(IRequest request);
         
     }
 }

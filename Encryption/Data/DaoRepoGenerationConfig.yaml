@@ -1,0 +1,6 @@
+﻿#TypeAssembly: ./bam.net.core.dll # only necessary for external assemblies
+SchemaName: EncryptionData
+WriteSourceTo: ./Generated_Dao
+FromNameSpace: Bam.Net.Encryption.Data
+ToNameSpace: Bam.Net.Encryption.Data.Dao
+UseInheritanceSchema: true

@@ -43,11 +43,11 @@ namespace Bam.Net.Encryption
         {
             get
             {
-                if (!Directory.Exists(Paths.Local))
+                if (!Directory.Exists(BamHome.Local))
                 {
-                    Directory.CreateDirectory(Paths.Local);
+                    Directory.CreateDirectory(BamHome.Local);
                 }
-                return new VaultInfo { FilePath = Path.Combine(Paths.Local, "Credentials.vaults.sqlite"), Name = DefaultVaultName };
+                return new VaultInfo { FilePath = Path.Combine(BamHome.Local, "Credentials.vaults.sqlite"), Name = DefaultVaultName };
             }
         }
 

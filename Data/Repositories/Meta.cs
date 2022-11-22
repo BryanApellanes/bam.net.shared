@@ -14,12 +14,12 @@ using NCuid;
 
 namespace Bam.Net.Data.Repositories
 {
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <seealso cref="Bam.Net.Data.Repositories.Meta" />
-    [Serializable]
+	/// <summary>
+	/// Provides meta data about persisted or persistable objects. 
+	/// </summary>
+	/// <typeparam name="T"></typeparam>
+	/// <seealso cref="Bam.Net.Data.Repositories.Meta" />
+	[Serializable]
 	public class Meta<T>: Meta
 	{
         /// <summary>
@@ -96,7 +96,7 @@ namespace Bam.Net.Data.Repositories
 		{
 			RequireIdProperty = true;
 			ObjectPersister = objectReaderWriter;
-			if(setMeta)
+			if (setMeta)
 			{
 				SetMeta(data);
 			}
@@ -274,9 +274,9 @@ namespace Bam.Net.Data.Repositories
 
 		public virtual void SetMeta()
 		{
-			if(Data != null)
+			if (Data != null)
 			{
-				if(GetId(Data) <= 0)
+				if (GetId(Data) <= 0)
 				{
 					SetId(Data);
 				}
@@ -284,7 +284,7 @@ namespace Bam.Net.Data.Repositories
 				{
 					SetUuid(Data);
 				}
-                SetCuid(Data);
+				SetCuid(Data);
 			}
 		}
 

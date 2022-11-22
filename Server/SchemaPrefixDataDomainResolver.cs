@@ -21,7 +21,7 @@ namespace Bam.Net.Server
         
         public string PrimaryHostName { get; set; }
         public int Port { get; set; }
-        public IEnumerable<HostPrefix> ResolveDataSubdomains(AppConf appConf)
+        public IEnumerable<HostBinding> ResolveDataSubdomains(AppConf appConf)
         {
             throw new NotImplementedException();
         }

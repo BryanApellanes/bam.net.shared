@@ -9,22 +9,21 @@ using System.Threading.Tasks;
 using System.IO;
 using Bam.Net.Web;
 using Bam.Net.Presentation.Html;
-using Bam.Net.Server;
-using Bam.Net.ServiceProxy;
 using System.Reflection;
+using Bam.Net.Server.ServiceProxy;
 
 namespace Bam.Net.Server.Renderers
 {
     public abstract class ContentRenderer: WebRenderer
     {
-        public ContentRenderer(ExecutionRequest request, ContentResponder content, string contentType, params string[] extensions)
+        public ContentRenderer(ServiceProxyInvocation invocation, ContentResponder content, string contentType, params string[] extensions)
             :base(contentType, extensions)
         {
-            this.ExecutionRequest = request;
+            this.ServiceProxyInvocation = invocation;
             this.ContentResponder = content;
         }
 
-        protected ExecutionRequest ExecutionRequest
+        protected ServiceProxyInvocation ServiceProxyInvocation
         {
             get;
             set;

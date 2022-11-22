@@ -89,7 +89,7 @@ namespace Bam.Net.Data.Repositories
             return Task.Run(() => Save(instance));
         }
 
-        public Task<T> SaveAsync<T>(T instance) where T : class, new()
+        public new Task<T> SaveAsync<T>(T instance) where T : class, new()
         {
             return Task.Run(() => Save<T>(instance));
         }

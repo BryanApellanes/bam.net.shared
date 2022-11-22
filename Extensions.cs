@@ -29,6 +29,7 @@ using Bam.Net.Testing.Data;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.CodeAnalysis;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Bson;
 using Newtonsoft.Json.Linq;
 using ParameterInfo = System.Reflection.ParameterInfo;
 
@@ -277,7 +278,7 @@ namespace Bam.Net
 
         /// <summary>
         /// Returns true if the string equals "true", "t", "yes", "y" or "1" using a case
-        /// insensitive comparison
+        /// insensitive comparison.
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
@@ -418,9 +419,37 @@ namespace Bam.Net
         /// returning the characters read and producing remainder as an out parameter.  Discards
         /// the specified charToFind returning only values on either side
         /// </summary>
+        public static string ReadUntil(this string toRead, char charToFind, bool skipBlanks, out string remainder)
+        {
+            string result = string.Empty;
+            remainder = string.Empty;
+            if (skipBlanks)
+            {
+                string read = toRead;
+                while (string.IsNullOrEmpty(result) && !string.IsNullOrEmpty(read))
+                {
+                    result = ReadUntil(read, charToFind, out remainder);
+                    if (!string.IsNullOrEmpty(remainder))
+                    {
+                        read = remainder;
+                    }
+                }
+            }
+            else
+            {
+                result =  ReadUntil(toRead, charToFind, out remainder);
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// Read the specified string up to the first instance of the specified charToFind
+        /// returning the characters read and producing remainder as an out parameter.  Discards
+        /// the specified charToFind returning only values on either side
+        /// </summary>
         public static string ReadUntil(this string toRead, char charToFind)
         {
-            return ReadUntil(toRead, charToFind, out string ignore);
+            return ReadUntil(toRead, charToFind, out _);
         }
 
         /// <summary>
@@ -585,9 +614,22 @@ namespace Bam.Net
             }
         }
 
+        public static T TryCopyAs<T>(this object source) where T: new()
+        {
+            try
+            {
+                return CopyAs<T>(source);
+            }
+            catch
+            {
+                // don't crash
+            }
+            return default;
+        }
+
         /// <summary>
         /// Copy the current source instance as the specified generic
-        /// type T copying all properties that match in name and type
+        /// type T copying all properties that match in name and type.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="source"></param>
@@ -596,6 +638,22 @@ namespace Bam.Net
         {
             T result = new T();
             result.CopyProperties(source);
+            return result;
+        }
+
+        /// <summary>
+        /// Copies the specified object as the specified generic repo data type.  The 
+        /// new value has an Id of 0 so attempts to save it in a DaoRepository results
+        /// in a new entry rather than an attempted update.
+        /// </summary>
+        /// <typeparam name="TRepoData"></typeparam>
+        /// <param name="source"></param>
+        /// <returns></returns>
+        public static TRepoData CopyAsNew<TRepoData>(this object source) where TRepoData : RepoData, new()
+        {
+            TRepoData result = new TRepoData();
+            result.CopyProperties(source);
+            result.Id = 0;
             return result;
         }
 
@@ -1575,8 +1633,8 @@ namespace Bam.Net
 
         /// <summary>
         /// Iterate backwards over the specified array (IEnumerable).
-        /// This will allow one to remove the current element without
-        /// causing an exception.
+        /// Allows one to remove the current element of each iteration, 
+        /// if necessary, without causing an exception.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="arr"></param>
@@ -1588,8 +1646,8 @@ namespace Bam.Net
 
         /// <summary>
         /// Iterate backwards over the specified array (IEnumerable).
-        /// This will allow one to remove the current element without
-        /// causing an exception.
+        /// Allows one to remove the current element of each iteration, 
+        /// if necessary, without causing an exception.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="arr"></param>
@@ -1608,8 +1666,8 @@ namespace Bam.Net
 
         /// <summary>
         /// Iterate backwards over the specified array (IEnumerable).
-        /// This will allow one to remove the current element without
-        /// causing an exception.
+        /// Allows one to remove the current element of each iteration, 
+        /// if necessary, without causing an exception.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="arr"></param>
@@ -1621,8 +1679,8 @@ namespace Bam.Net
 
         /// <summary>
         /// Iterate backwards over the specified array (IEnumerable).
-        /// This will allow one to remove the current element without
-        /// causing an exception.
+        /// Allows one to remove the current element of each iteration, 
+        /// if necessary, without causing an exception.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="arr"></param>
@@ -1645,8 +1703,8 @@ namespace Bam.Net
 
         /// <summary>
         /// Iterate backwards over the specified array (IEnumerable).
-        /// This will allow one to remove the current element without
-        /// causing an exception.
+        /// Allows one to remove the current element of each iteration, 
+        /// if necessary, without causing an exception.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="arr"></param>
@@ -1657,8 +1715,8 @@ namespace Bam.Net
 
         /// <summary>
         /// Iterate backwards over the specified array (IEnumerable).
-        /// This will allow one to remove the current element without
-        /// causing an exception.
+        /// Allows one to remove the current element of each iteration, 
+        /// if necessary, without causing an exception.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="arr"></param>
@@ -1751,19 +1809,19 @@ namespace Bam.Net
             return arr;
         }
 
-        public static bool TryConstruct(this Type type, out object constructed, params object[] ctorParams)
+        public static bool TryConstruct(this Type type, out object constructed, params object[] ctorArgs)
         {
-            return type.TryConstruct(out constructed, ex => { }, ctorParams);
+            return type.TryConstruct(out constructed, ex => { }, ctorArgs);
         }
 
         public static bool TryConstruct(this Type type, out object constructed, Action<Exception> catcher,
-            params object[] ctorParams)
+            params object[] ctorArgs)
         {
             bool result = false;
             constructed = null;
             try
             {
-                constructed = Construct(type, ctorParams);
+                constructed = Construct(type, ctorArgs);
                 result = constructed != null;
             }
             catch (Exception ex)
@@ -1775,19 +1833,19 @@ namespace Bam.Net
             return result;
         }
 
-        public static bool TryConstruct<T>(this Type type, out T constructed, params object[] ctorParams)
+        public static bool TryConstruct<T>(this Type type, out T constructed, params object[] ctorArgs)
         {
-            return type.TryConstruct(out constructed, ex => { }, ctorParams);
+            return type.TryConstruct(out constructed, ex => { }, ctorArgs);
         }
 
         public static bool TryConstruct<T>(this Type type, out T constructed, Action<Exception> catcher,
-            params object[] ctorParams)
+            params object[] ctorArgs)
         {
             bool result = true;
             constructed = default(T);
             try
             {
-                constructed = Construct<T>(type, ctorParams);
+                constructed = Construct<T>(type, ctorArgs);
             }
             catch (Exception ex)
             {
@@ -1799,7 +1857,7 @@ namespace Bam.Net
         }
 
 
-        private delegate T CompiledLambdaCtor<T>(params object[] ctorParams);
+        private delegate T CompiledLambdaCtor<T>(params object[] ctorArgs);
 
         /// <summary>
         /// Construct an instance of the type using a dynamically defined and
@@ -1808,20 +1866,20 @@ namespace Bam.Net
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="type"></param>
-        /// <param name="ctorParams"></param>
+        /// <param name="ctorArgs"></param>
         /// <returns></returns>
-        public static T DynamicConstruct<T>(this Type type, params object[] ctorParams)
+        public static T DynamicConstruct<T>(this Type type, params object[] ctorArgs)
         {
             ParameterExpression param;
             NewExpression newExp;
-            GetExpressions(type, ctorParams, out param, out newExp);
+            GetExpressions(type, ctorArgs, out param, out newExp);
 
             LambdaExpression lambda = Expression.Lambda(typeof(CompiledLambdaCtor<T>), newExp, param);
             CompiledLambdaCtor<T> compiled = (CompiledLambdaCtor<T>) lambda.Compile();
-            return compiled(ctorParams);
+            return compiled(ctorArgs);
         }
 
-        private delegate object CompiledLambdaCtor(params object[] ctorParams);
+        private delegate object CompiledLambdaCtor(params object[] ctorArgs);
 
         /// <summary>
         /// Construct an instance of the type using a dynamically defined and
@@ -1832,23 +1890,23 @@ namespace Bam.Net
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="type"></param>
-        /// <param name="ctorParams"></param>
+        /// <param name="ctorArgs"></param>
         /// <returns></returns>
-        public static object DynamicConstruct(this Type type, params object[] ctorParams)
+        public static object DynamicConstruct(this Type type, params object[] ctorArgs)
         {
             ParameterExpression param;
             NewExpression newExp;
-            GetExpressions(type, ctorParams, out param, out newExp);
+            GetExpressions(type, ctorArgs, out param, out newExp);
 
             LambdaExpression lambda = Expression.Lambda(typeof(CompiledLambdaCtor), newExp, param);
             CompiledLambdaCtor compiled = (CompiledLambdaCtor) lambda.Compile();
-            return compiled(ctorParams);
+            return compiled(ctorArgs);
         }
 
-        private static void GetExpressions(Type type, object[] ctorParams, out ParameterExpression param,
+        private static void GetExpressions(Type type, object[] ctorArgs, out ParameterExpression param,
             out NewExpression newExp)
         {
-            ConstructorInfo ctor = GetConstructor(type, ctorParams);
+            ConstructorInfo ctor = GetConstructor(type, ctorArgs);
             ParameterInfo[] parameterInfos = ctor.GetParameters();
 
             param = Expression.Parameter(typeof(object[]), "args");
@@ -1874,11 +1932,11 @@ namespace Bam.Net
         /// </summary>
         /// <typeparam name="T">The type to cast the result as</typeparam>
         /// <param name="type">The type whose constructor will be called</param>
-        /// <param name="ctorParams">The parameters to pass to the constructor if any</param>
+        /// <param name="ctorArgs">The parameters to pass to the constructor if any</param>
         /// <returns></returns>
-        public static T Construct<T>(this Type type, params object[] ctorParams)
+        public static T Construct<T>(this Type type, params object[] ctorArgs)
         {
-            return (T) type.Construct(ctorParams);
+            return (T) type.Construct(ctorArgs);
         }
 
         /// <summary>
@@ -1886,15 +1944,15 @@ namespace Bam.Net
         /// specified parameters to the constructor.
         /// </summary>
         /// <param name="type"></param>
-        /// <param name="ctorParams"></param>
+        /// <param name="ctorArgs"></param>
         /// <returns></returns>
-        public static object Construct(this Type type, params object[] ctorParams)
+        public static object Construct(this Type type, params object[] ctorArgs)
         {
-            ConstructorInfo ctor = GetConstructor(type, ctorParams);
+            ConstructorInfo ctor = GetConstructor(type, ctorArgs);
             object val = null;
             if (ctor != null)
             {
-                val = ctor.Invoke(ctorParams);
+                val = ctor.Invoke(ctorArgs);
             }
 
             return val;
@@ -2118,6 +2176,29 @@ namespace Bam.Net
             return JsonConvert.SerializeObject(value, settings);
         }
 
+        public static byte[] ToBson(this object value)
+        {
+            MemoryStream memoryStream = new MemoryStream();
+            using(BsonDataWriter writer = new BsonDataWriter(memoryStream))
+            {
+                JsonSerializer jsonSerializer = new JsonSerializer();
+                jsonSerializer.Serialize(writer, value);
+            }
+
+            return memoryStream.ToArray();
+        }
+
+        public static T FromBson<T>(this byte[] data)
+        {
+            MemoryStream memoryStream = new MemoryStream(data);
+            using(BsonDataReader reader = new BsonDataReader(memoryStream))
+            {
+                JsonSerializer jsonSerializer = new JsonSerializer();
+
+                return jsonSerializer.Deserialize<T>(reader);
+            }
+        }
+
         public static bool HasExtension(this FileInfo file, string dotExtension)
         {
             return Path.GetExtension(file.FullName).Equals(dotExtension);
@@ -2153,7 +2234,7 @@ namespace Bam.Net
 
         public static bool TryFromJson<T>(this string json)
         {
-            return TryFromJson<T>(json, out T ignore);
+            return TryFromJson<T>(json, out T _);
         }
 
         public static bool TryFromJson<T>(this string json, out T instance)
@@ -2834,15 +2915,14 @@ namespace Bam.Net
 
         public static Dictionary<string, object> PropertiesToDictionary(this object value)
         {
-            Dictionary<string, object> result = new Dictionary<string, object>();
             Type type = value.GetType();
             PropertyInfo[] props = type.GetProperties();
             return PropertiesToDictionary(value, props);
         }
 
         /// <summary>
-        /// Drops the specified number of characters from the end of the 
-        /// string toTruncate and returns the result
+        /// Removes the specified number of characters from the end of the 
+        /// string and returns the result.
         /// </summary>
         /// <param name="toTruncate"></param>
         /// <param name="count"></param>
@@ -2850,14 +2930,16 @@ namespace Bam.Net
         public static string Truncate(this string toTruncate, int count)
         {
             if (count > toTruncate.Length)
-                return "";
+            {
+                return string.Empty;
+            }
 
             return toTruncate.Substring(0, toTruncate.Length - count);
         }
 
         /// <summary>
-        /// Drop the specified number of characters from the beginning of the
-        /// string toTruncate and returns the result
+        /// Removes the specified number of characters from the beginning of the
+        /// string and returns the result.
         /// </summary>
         /// <param name="toTruncate"></param>
         /// <param name="count"></param>
@@ -2865,7 +2947,9 @@ namespace Bam.Net
         public static string TruncateFront(this string toTruncate, int count)
         {
             if (count > toTruncate.Length)
-                return "";
+            {
+                return string.Empty;
+            }
 
             return toTruncate.Substring(count, toTruncate.Length - count);
         }
@@ -2892,9 +2976,9 @@ namespace Bam.Net
             {
                 return obj.PropertiesToString(separator);
             }
-            catch //(Exception ex)
+            catch
             {
-
+                // don't crash
             }
 
             return string.Empty;
@@ -4380,10 +4464,10 @@ namespace Bam.Net
             return instance.GetType().GetProperties().Where(pi => pi.PropertyType.IsValueType).ToArray();
         }
 
-        private static ConstructorInfo GetConstructor(Type type, object[] ctorParams)
+        private static ConstructorInfo GetConstructor(Type type, object[] ctorArgs)
         {
             List<Type> paramTypes = new List<Type>();
-            foreach (object o in ctorParams)
+            foreach (object o in ctorArgs)
             {
                 paramTypes.Add(o.GetType());
             }

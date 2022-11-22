@@ -8,7 +8,7 @@ using Bam.Net.CoreServices;
 using Bam.Net.Data.Repositories;
 using Bam.Net.Incubation;
 using Bam.Net.Server;
-using Bam.Net.ServiceProxy.Secure;
+using Bam.Net.ServiceProxy.Encryption;
 using Bam.Net.CoreServices.ServiceRegistration;
 using Bam.Net.CoreServices.ServiceRegistration.Data;
 using Bam.Net.CoreServices.ServiceRegistration.Data.Dao.Repository;
@@ -29,7 +29,7 @@ namespace Bam.Net.CoreServices
     /// registering and retrieving services and their
     /// implementations.
     /// </summary>
-    [ApiKeyRequired]
+    [ApiHmacKeyRequired]
     [Proxy("serviceRegistrySvc")]
     [ServiceSubdomain("svcregistry")]
     public class ServiceRegistryService : ApplicationProxyableService
@@ -233,7 +233,7 @@ namespace Bam.Net.CoreServices
                 try
                 {
                     ServiceRegistryLoaderAttribute loaderAttr = method.GetCustomAttributeOfType<ServiceRegistryLoaderAttribute>();
-                    if(loaderAttr.ProcessModes.Contains(Bam.Net.ProcessMode.Current.Mode))
+                    if (loaderAttr.ProcessModes.Contains(Bam.Net.ProcessMode.Current.Mode))
                     {
                         string registryName = loaderAttr.RegistryName ?? $"{type.Namespace}.{type.Name}.{method.Name}";
                         string description = loaderAttr.Description ?? registryName;

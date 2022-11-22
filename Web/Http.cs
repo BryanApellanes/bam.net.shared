@@ -20,59 +20,6 @@ namespace Bam.Net.Web
             DefaultUserAgent = UserAgents.FF10;
         }
 
-        public static Func<string, T> JsonParser<T>()
-        {
-            return (s) => s.FromJson<T>();
-        }
-
-        public static Func<string, T> XmlParser<T>()
-        {
-            return (s) => s.FromXml<T>();
-        }
-
-        public static Func<string, T> YamlParser<T>()
-        {
-            return (s) => s.FromYaml<T>();
-        }
-
-        public static T GetYaml<T>(string url, Dictionary<string, string> headers = null)
-        {
-            return GetYaml<T>(url, null, headers);
-        }
-        
-        public static T GetYaml<T>(string url, string userAgent, Dictionary<string, string> headers = null)
-        {
-            return Get(url, YamlParser<T>(), userAgent, headers);
-        }
-
-        public static T GetJson<T>(string url, Dictionary<string, string> headers = null)
-        {
-            return GetJson<T>(url, null, headers);
-        }
-        
-        /// <summary>
-        /// Gets the specified url and parses the result as Json into the specified
-        /// generic type T
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="url"></param>
-        /// <param name="headers"></param>
-        /// <returns></returns>
-        public static T GetJson<T>(string url, string userAgent, Dictionary<string, string> headers = null)
-        {
-            return Get(url, JsonParser<T>(), userAgent, headers);
-        }
-
-        public static T GetXml<T>(string url, Dictionary<string, string> headers = null)
-        {
-            return GetXml<T>(url, null, headers);
-        }
-        
-		public static T GetXml<T>(string url, string userAgent, Dictionary<string, string> headers = null)
-		{
-			return Get(url, XmlParser<T>(), userAgent, headers);
-		}
-
         public static T Get<T>(string url, Func<string, T> parser, Dictionary<string, string> headers = null)
         {
             return Get<T>(url, parser, null, headers);
@@ -92,10 +39,12 @@ namespace Bam.Net.Web
         {
             return parser(GetString(url.ToString(), userAgent, headers));
         }
+
         public static string Get(Uri url, Dictionary<string, string> headers = null)
         {
             return Get(url.ToString(), headers);
         }
+
         public static string Get(string url, Dictionary<string, string>  headers = null)
         {
             return GetString(url, headers);
@@ -103,7 +52,7 @@ namespace Bam.Net.Web
 
         public static T Post<T>(string url, string postData, Dictionary<string, string> headers = null)
         {
-            return Post(url, postData, JsonParser<T>(), headers);
+            return Post(url, postData, JsonHttp.GetParser<T>(), headers);
         }
 
         public static T Post<T>(string url, string postData, Func<string, T> parser, Dictionary<string, string> headers = null)

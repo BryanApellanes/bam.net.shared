@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Bam.Net.Services
 {
-    public class HomeRoute
+/*    public class HomeRoute
     {
         public HomeRoute(string url)
         {
@@ -37,8 +37,11 @@ namespace Bam.Net.Services
 
         private void Parse()
         {
-            RouteParser parser = new RouteParser("{Protocol}://{Domain}");
-            values = parser.ParseRouteInstance(Uri.ToString());
+            // RouteParser doesn't work; implment with ReadUntil
+
+            throw new NotImplementedException();
+            *//*     RouteParser parser = new RouteParser("{Protocol}://{Domain}");
+                 values = parser.ParseRouteInstance(Uri.ToString());*//*
         }
-    }
+    }*/
 }

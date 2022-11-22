@@ -30,7 +30,6 @@ namespace Bam.Net.Application.Verbs
                     {
                         case OSNames.Windows:
                             return new WindowsRemoteFileHandler();
-                            break;
                         case OSNames.Linux:
                         case OSNames.OSX:
                             return new ScpRemoteFileHandler();
@@ -78,7 +77,7 @@ namespace Bam.Net.Application.Verbs
             }
             catch (Exception ex)
             {
-                Log.Error("Exception copying {0} to remote host {1}", LocalPath, Remote?.HostName);
+                Log.Error("Exception copying {0} to remote host {1}: {2}", LocalPath, Remote?.HostName, ex.Message);
             }
 
             return false;

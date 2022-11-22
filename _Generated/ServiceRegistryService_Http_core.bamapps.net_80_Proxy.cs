@@ -8,7 +8,7 @@ namespace Bam.Net.CoreServices
 	using System;
 	using Bam.Net.Configuration;
 	using Bam.Net.ServiceProxy;
-	using Bam.Net.ServiceProxy.Secure;
+	using Bam.Net.ServiceProxy.Encryption;
 	using Bam.Net.CoreServices.Contracts;
 	using Bam.Net.CoreServices.ServiceRegistration.Data;
 	using System.Collections.Generic;
@@ -16,8 +16,8 @@ namespace Bam.Net.CoreServices
 	using Bam.Net.UserAccounts;
 
     
-		[ApiKeyRequired]
-    public class ServiceRegistryServiceClient: SecureServiceProxyClient<Bam.Net.CoreServices.Contracts.IServiceRegistryService>, Bam.Net.CoreServices.Contracts.IServiceRegistryService
+		[ApiHmacKeyRequired]
+    public class ServiceRegistryServiceClient: EncryptedServiceProxyClient<Bam.Net.CoreServices.Contracts.IServiceRegistryService>, Bam.Net.CoreServices.Contracts.IServiceRegistryService
     {
         public ServiceRegistryServiceClient(): base(DefaultConfiguration.GetAppSetting("ServiceRegistryServiceUrl", "http://core.bamapps.net/"))
         {
@@ -31,62 +31,62 @@ namespace Bam.Net.CoreServices
         public ServiceRegistryDescriptor GetServiceRegistryDescriptor(System.String name)
         {
             object[] parameters = new object[] { name };
-            return Invoke<ServiceRegistryDescriptor>("GetServiceRegistryDescriptor", parameters);
+            return InvokeServiceMethod<ServiceRegistryDescriptor>("GetServiceRegistryDescriptor", parameters);
         }
         public ServiceRegistryLoaderDescriptor GetServiceRegistryLoaderDescriptor(System.String name)
         {
             object[] parameters = new object[] { name };
-            return Invoke<ServiceRegistryLoaderDescriptor>("GetServiceRegistryLoaderDescriptor", parameters);
+            return InvokeServiceMethod<ServiceRegistryLoaderDescriptor>("GetServiceRegistryLoaderDescriptor", parameters);
         }
         public ServiceRegistryDescriptor RegisterServiceRegistryDescriptor(Bam.Net.CoreServices.ServiceRegistration.Data.ServiceRegistryDescriptor registry, System.Boolean overwrite)
         {
             object[] parameters = new object[] { registry, overwrite };
-            return Invoke<ServiceRegistryDescriptor>("RegisterServiceRegistryDescriptor", parameters);
+            return InvokeServiceMethod<ServiceRegistryDescriptor>("RegisterServiceRegistryDescriptor", parameters);
         }
         public ServiceRegistryLoaderDescriptor RegisterServiceRegistryLoaderDescriptor(Bam.Net.CoreServices.ServiceRegistration.Data.ServiceRegistryLoaderDescriptor loader, System.Boolean overwrite)
         {
             object[] parameters = new object[] { loader, overwrite };
-            return Invoke<ServiceRegistryLoaderDescriptor>("RegisterServiceRegistryLoaderDescriptor", parameters);
+            return InvokeServiceMethod<ServiceRegistryLoaderDescriptor>("RegisterServiceRegistryLoaderDescriptor", parameters);
         }
         public void LockServiceRegistry(System.String name)
         {
             object[] parameters = new object[] { name };
-            Invoke("LockServiceRegistry", parameters);
+            InvokeServiceMethod("LockServiceRegistry", parameters);
         }
         public void UnlockServiceRegistry(System.String name)
         {
             object[] parameters = new object[] { name };
-            Invoke("UnlockServiceRegistry", parameters);
+            InvokeServiceMethod("UnlockServiceRegistry", parameters);
         }
         public Boolean IsLocked(System.String name)
         {
             object[] parameters = new object[] { name };
-            return Invoke<Boolean>("IsLocked", parameters);
+            return InvokeServiceMethod<Boolean>("IsLocked", parameters);
         }
         public Dictionary<System.String, System.String> GetSettings()
         {
             object[] parameters = new object[] {  };
-            return Invoke<Dictionary<System.String, System.String>>("GetSettings", parameters);
+            return InvokeServiceMethod<Dictionary<System.String, System.String>>("GetSettings", parameters);
         }
         public LoginResponse ConnectClient(Bam.Net.CoreServices.ApplicationRegistration.Data.Client client)
         {
             object[] parameters = new object[] { client };
-            return Invoke<LoginResponse>("ConnectClient", parameters);
+            return InvokeServiceMethod<LoginResponse>("ConnectClient", parameters);
         }
         public LoginResponse Login(System.String userName, System.String passHash)
         {
             object[] parameters = new object[] { userName, passHash };
-            return Invoke<LoginResponse>("Login", parameters);
+            return InvokeServiceMethod<LoginResponse>("Login", parameters);
         }
         public SignOutResponse EndSession()
         {
             object[] parameters = new object[] {  };
-            return Invoke<SignOutResponse>("EndSession", parameters);
+            return InvokeServiceMethod<SignOutResponse>("EndSession", parameters);
         }
         public String WhoAmI()
         {
             object[] parameters = new object[] {  };
-            return Invoke<String>("WhoAmI", parameters);
+            return InvokeServiceMethod<String>("WhoAmI", parameters);
         }
     }
 
@@ -96,7 +96,7 @@ namespace Bam.Net.CoreServices.Contracts
 	using System;
 	using Bam.Net.Configuration;
 	using Bam.Net.ServiceProxy;
-	using Bam.Net.ServiceProxy.Secure;
+	using Bam.Net.ServiceProxy.Encryption;
 	using Bam.Net.CoreServices.Contracts;
 	using Bam.Net.CoreServices.ServiceRegistration.Data;
 	using System.Collections.Generic;
@@ -131,7 +131,7 @@ namespace Bam.Net.CoreServices
     using System;
     using Bam.Net;
     using Bam.Net.ServiceProxy;
-    using Bam.Net.ServiceProxy.Secure;
+    using Bam.Net.ServiceProxy.Encryption;
     using Bam.Net.CoreServices.Contracts;
 	using Bam.Net.CoreServices.ServiceRegistration.Data;
 	using System;
@@ -167,11 +167,11 @@ namespace Bam.Net.CoreServices
 			}
 		}
 
-		public IApiKeyResolver ApiKeyResolver 
+		public IApiHmacKeyResolver ApiKeyResolver 
 		{
 			get
 			{
-				return (IApiKeyResolver)_proxyClient.Property("ApiKeyResolver", false);
+				return (IApiHmacKeyResolver)_proxyClient.Property("ApiKeyResolver", false);
 			}
 			set
 			{

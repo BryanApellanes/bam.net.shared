@@ -61,7 +61,7 @@ namespace Bam.Net.CommandLine
             {
                 if (!arg.StartsWith(prefix))
                 {
-                    CommandLineInterface.OutLineFormat("Unrecognized argument: {0}", ConsoleColor.Yellow, arg);
+                    Message.PrintLine("Unrecognized argument: {0}", ConsoleColor.Yellow, arg);
                     continue;
                 }
 

@@ -11,12 +11,13 @@ using Bam.Net;
 using Bam.Net.Logging;
 using System.Threading.Tasks;
 using System.Collections.Concurrent;
+using Bam.Net.ServiceProxy;
 
 namespace Bam.Net.Server
 {
     public class HttpServer : Loggable, IDisposable
     {
-        private static readonly ConcurrentDictionary<HostPrefix, HttpServer> _listening = new ConcurrentDictionary<HostPrefix, HttpServer>();
+        private static readonly ConcurrentDictionary<HostBinding, HttpServer> _listening = new ConcurrentDictionary<HostBinding, HttpServer>();
         private readonly HttpListener _listener;
         private readonly Thread _handlerThread;
         private readonly ILogger _logger;
@@ -28,14 +29,14 @@ namespace Bam.Net.Server
             _listener = new HttpListener();
             _handlerThread = new Thread(HandleRequests);
             _logger = logger;
-            _hostPrefixes = new HashSet<HostPrefix>();
+            _hostBindings = new HashSet<HostBinding>();
         }
 
-        HashSet<HostPrefix> _hostPrefixes;
-        public HostPrefix[] HostPrefixes
+        HashSet<HostBinding> _hostBindings;
+        public HostBinding[] HostBindings
         {
-            get => _hostPrefixes.ToArray();
-            set => _hostPrefixes = new HashSet<HostPrefix>(value);
+            get => _hostBindings.ToArray();
+            set => _hostBindings = new HashSet<HostBinding>(value);
         }
         
         /// <summary>
@@ -63,50 +64,50 @@ namespace Bam.Net.Server
 
         public void Start()
         {
-            Start(HostPrefixes);
+            Start(HostBindings);
         }
 
-        public void Start(params HostPrefix[] hostPrefixes)
+        public void Start(params HostBinding[] hostBindings)
         {
-            Start(Usurped, hostPrefixes);
+            Start(Usurped, hostBindings);
         }
 
         static readonly object _startLock = new object();
-        public void Start(bool usurped, params HostPrefix[] hostPrefixes)
+        public void Start(bool usurped, params HostBinding[] hostBindings)
         {
-            if(hostPrefixes.Length == 0)
+            if(hostBindings.Length == 0)
             {
-                hostPrefixes = HostPrefixes;
+                hostBindings = HostBindings;
             }
             lock (_startLock)
             {
-                hostPrefixes.Each(hp =>
+                hostBindings.Each(hp =>
                 {
                     if (!_listening.ContainsKey(hp))
                     {
-                        AddHostPrefix(hp);
+                        AddHostBinding(hp);
                     }
                     else if (usurped && _listening.ContainsKey(hp))
                     {
-                        FireEvent(Usurping, new HttpServerEventArgs { HostPrefixes = new HostPrefix[] { hp } });
+                        FireEvent(Usurping, new HttpServerEventArgs { HostBindings = new HostBinding[] { hp } });
                         _listening[hp].Stop();                        
                         _listening.TryRemove(hp, out HttpServer ignore);
-                        AddHostPrefix(hp);
+                        AddHostBinding(hp);
                     }
                     else
                     {
                         _logger.AddEntry("HttpServer: Another HttpServer is already listening for host {0}", LogEventType.Warning, hp.ToString());
                     }
                 });
-                FireEvent(Starting, new HttpServerEventArgs { HostPrefixes = HostPrefixes });
+                FireEvent(Starting, new HttpServerEventArgs { HostBindings = HostBindings });
                 _stopRequested = false;
                 _listener.Start();
                 _handlerThread.Start();
-                FireEvent(Started, new HttpServerEventArgs { HostPrefixes = HostPrefixes });
+                FireEvent(Started, new HttpServerEventArgs { HostBindings = HostBindings });
             }
         }
 
-        private void AddHostPrefix(HostPrefix hp)
+        private void AddHostBinding(HostBinding hp)
         {
             _listening.TryAdd(hp, this);
             string path = hp.ToString();
@@ -121,7 +122,7 @@ namespace Bam.Net.Server
                 string protocol = hp.Ssl ? "https" : "http";
                 _listener.Prefixes.Add($"{protocol}://*:{hp.Port}/");
             }
-            FireEvent(HostPrefixAdded, new HttpServerEventArgs { HostPrefixes = new HostPrefix[] { hp } });
+            FireEvent(HostPrefixAdded, new HttpServerEventArgs { HostBindings = new HostBinding[] { hp } });
         }
 
         public void Dispose()
@@ -146,7 +147,7 @@ namespace Bam.Net.Server
                 _logger.AddEntry("Error stopping HttpServer: {0}", ex, ex.Message);
             }
 
-            foreach (HostPrefix hp in _listening.Keys)
+            foreach (HostBinding hp in _listening.Keys)
             {
                 try
                 {
@@ -154,9 +155,9 @@ namespace Bam.Net.Server
                     {
                         if (_listening.TryRemove(hp, out HttpServer server))
                         {
-                            FireEvent(Stopping, new HttpServerEventArgs { HostPrefixes = new HostPrefix[] { hp } });
+                            FireEvent(Stopping, new HttpServerEventArgs { HostBindings = new HostBinding[] { hp } });
                             server.Stop();
-                            FireEvent(Stopped, new HttpServerEventArgs { HostPrefixes = new HostPrefix[] { hp } });
+                            FireEvent(Stopped, new HttpServerEventArgs { HostBindings = new HostBinding[] { hp } });
                         }
                     }
                 }
@@ -180,7 +181,8 @@ namespace Bam.Net.Server
             {
                 try
                 {
-                    HttpListenerContext context = _listener.GetContext();
+                    HttpListenerContext listenerContext = _listener.GetContext();
+                    IHttpContext context = new HttpContextWrapper(listenerContext);
                     Task.Run(() =>
                     {
                         try
@@ -198,7 +200,7 @@ namespace Bam.Net.Server
             }
         }
 
-        public event Action<HttpListenerContext> PreProcessRequest;
-        public event Action<HttpListenerContext> ProcessRequest;
+        public event Action<IHttpContext> PreProcessRequest;
+        public event Action<IHttpContext> ProcessRequest;
     }
 }

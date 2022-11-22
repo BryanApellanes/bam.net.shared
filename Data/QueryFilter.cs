@@ -62,7 +62,7 @@ namespace Bam.Net.Data
         protected internal string ColumnName { get; set; }
 
         public IEnumerable<IFilterToken> Filters => this._filters;
-        IEnumerable<IParameterInfo> parameters;
+        IEnumerable<IParameterInfo> _parameters;
         public virtual IParameterInfo[] Parameters
         {
             get
@@ -78,7 +78,7 @@ namespace Bam.Net.Data
 
                 return temp.ToArray();
             }
-            set => parameters = value;
+            set => _parameters = value;
         }
 
         /// <summary>
@@ -280,27 +280,13 @@ namespace Bam.Net.Data
         
         public static QueryFilter operator ==(QueryFilter c, int value)
         {
-            if(value == null)
-            {
-                c.Add(new NullComparison(c.ColumnName, "IS"));
-            }
-            else
-            {
-                c.Add(new Comparison(c.ColumnName, "=", value));
-            }
+            c.Add(new Comparison(c.ColumnName, "=", value));
             return c;
         }
 
         public static QueryFilter operator !=(QueryFilter c, int value)
         {
-            if(value == null)
-            {
-                c.Add(new NullComparison(c.ColumnName, "IS NOT"));
-            }
-            else
-            {
-                c.Add(new Comparison(c.ColumnName, "<>", value));
-            }
+            c.Add(new Comparison(c.ColumnName, "<>", value));
             return c;
         }
 
@@ -354,14 +340,7 @@ namespace Bam.Net.Data
             
         public static QueryFilter operator ==(QueryFilter c, uint value)
         {
-            if(value == null)
-            {
-                c.Add(new NullComparison(c.ColumnName, "IS"));
-            }
-            else
-            {
-                c.Add(new Comparison(c.ColumnName, "=", value));
-            }
+            c.Add(new Comparison(c.ColumnName, "=", value));
             return c;
         }
 
@@ -415,14 +394,7 @@ namespace Bam.Net.Data
 
         public static QueryFilter operator !=(QueryFilter c, ulong value)
         {
-            if(value == null)
-            {
-                c.Add(new NullComparison(c.ColumnName, "IS NOT"));
-            }
-            else
-            {
-                c.Add(new Comparison(c.ColumnName, "<>", value));
-            }
+            c.Add(new Comparison(c.ColumnName, "<>", value));
             return c;
         }
 
@@ -458,14 +430,7 @@ namespace Bam.Net.Data
 
         public static QueryFilter operator !=(QueryFilter c, long value)
         {
-            if(value == null)
-            {
-                c.Add(new NullComparison(c.ColumnName, "IS NOT"));
-            }
-            else
-            {
-                c.Add(new Comparison(c.ColumnName, "<>", value));
-            }
+            c.Add(new Comparison(c.ColumnName, "<>", value));
             return c;
         }
 
@@ -501,14 +466,7 @@ namespace Bam.Net.Data
 
         public static QueryFilter operator !=(QueryFilter c, decimal value)
         {
-            if(value == null)
-            {
-                c.Add(new NullComparison(c.ColumnName, "IS NOT"));
-            }
-            else
-            {
-                c.Add(new Comparison(c.ColumnName, "<>", value));
-            }
+            c.Add(new Comparison(c.ColumnName, "<>", value));
             return c;
         }
 
@@ -577,6 +535,56 @@ namespace Bam.Net.Data
         public static QueryFilter operator <=(QueryFilter c, int? value)
         {
             c.Add(new Comparison(c.ColumnName, "<=", value));
+            return c;
+        }
+
+        public static QueryFilter operator ==(QueryFilter c, long? value)
+        {
+            if (value == null)
+            {
+                c.Add(new NullComparison(c.ColumnName, "IS"));
+            }
+            else
+            {
+                c.Add(new Comparison(c.ColumnName, "=", value));
+            }
+            return c;
+        }
+
+        public static QueryFilter operator !=(QueryFilter c, long? value)
+        {
+            if (value == null)
+            {
+                c.Add(new NullComparison(c.ColumnName, "IS NOT"));
+            }
+            else
+            {
+                c.Add(new Comparison(c.ColumnName, "<>", value));
+            }
+            return c;
+        }
+
+        public static QueryFilter operator <(QueryFilter c, long? value)
+        {
+            c.Add(new Comparison(c.ColumnName, "<", value));
+            return c;
+        }
+
+        public static QueryFilter operator >(QueryFilter c, long? value)
+        {
+            c.Add(new Comparison(c.ColumnName, ">", value));
+            return c;
+        }
+
+        public static QueryFilter operator <=(QueryFilter c, long? value)
+        {
+            c.Add(new Comparison(c.ColumnName, "<=", value));
+            return c;
+        }
+
+        public static QueryFilter operator >=(QueryFilter c, long? value)
+        {
+            c.Add(new Comparison(c.ColumnName, ">=", value));
             return c;
         }
 
@@ -801,14 +809,7 @@ namespace Bam.Net.Data
 
         public static QueryFilter operator !=(QueryFilter c, DateTime value)
         {
-            if(value == null)
-            {
-                c.Add(new NullComparison(c.ColumnName, "IS NOT"));
-            }
-            else
-            {
-                c.Add(new Comparison(c.ColumnName, "<>", value));
-            }
+            c.Add(new Comparison(c.ColumnName, "<>", value));
             return c;
         }
 
@@ -950,7 +951,7 @@ namespace Bam.Net.Data
         {
         }
         
-        public QueryFilter<C> Add(IFilterToken c)
+        public new QueryFilter<C> Add(IFilterToken c)
         {
             this._filters.Add(c);            
             return this;
@@ -958,15 +959,16 @@ namespace Bam.Net.Data
 
         internal QueryValue ToQueryValue(ulong value)
         {
-            QueryFilter keyColumnFilter = this.Property<QueryFilter>("KeyColumn"); 
+            QueryFilter keyColumnFilter = this.Property<QueryFilter>("KeyColumn");
             if ((keyColumnFilter?.ColumnName?.Equals(ColumnName)).Value)
             {
-                return new DaoId(value, this){IdentifierName = keyColumnFilter.ColumnName};
+                return new DaoId(value, this) {IdentifierName = keyColumnFilter.ColumnName};
             }
+
             return new QueryValue(value, this);
         }
         
-        internal QueryFilter<C> AddRange(IEnumerable<IFilterToken> filters)
+        internal new QueryFilter<C> AddRange(IEnumerable<IFilterToken> filters)
         {
             this._filters.AddRange(filters);
             return this;
@@ -978,13 +980,13 @@ namespace Bam.Net.Data
             return this;
         }
 
-        public QueryFilter<C> StartsWith(object value)
+        public new QueryFilter<C> StartsWith(object value)
         {
             this.Add(new StartsWithComparison(this.ColumnName, value));
             return this;
         }
 
-        public QueryFilter<C> DoesntStartWith(object value)
+        public new QueryFilter<C> DoesntStartWith(object value)
         {
             this.Add(new DoesntStartWithComparison(this.ColumnName, value));
             return this;
@@ -996,19 +998,19 @@ namespace Bam.Net.Data
             return this;
         }
 
-        public QueryFilter<C> DoesntContain(object value)
+        public new QueryFilter<C> DoesntContain(object value)
         {
             this.Add(new DoesntContainComparison(this.ColumnName, value));
             return this;
         }
 
-        public QueryFilter<C> EndsWith(object value)
+        public new QueryFilter<C> EndsWith(object value)
         {
             this.Add(new EndsWithComparison(this.ColumnName, value));
             return this;
         }
 
-        public QueryFilter<C> Contains(object value)
+        public new QueryFilter<C> Contains(object value)
         {
             this.Add(new ContainsComparison(this.ColumnName, value));
             return this;
@@ -1046,7 +1048,7 @@ namespace Bam.Net.Data
         /// <summary>
         /// Adds an InComparison if the specified object array is not null and is not empty.
         /// </summary>
-        public QueryFilter<C> In(params object[] values)
+        public new QueryFilter<C> In(params object[] values)
         {
             if (values != null && values.Length > 0)
             {
@@ -1064,7 +1066,7 @@ namespace Bam.Net.Data
             return this;
         }
 
-        public QueryFilter<C> In(long[] values)
+        public new QueryFilter<C> In(long[] values)
         {
             if (values != null && values.Length > 0)
             {
@@ -1073,7 +1075,7 @@ namespace Bam.Net.Data
             return this;
         }
 
-        public QueryFilter<C> In(string[] values)
+        public new QueryFilter<C> In(string[] values)
         {
             if (values != null && values.Length > 0)
             {
@@ -1602,27 +1604,13 @@ namespace Bam.Net.Data
             
         public static QueryFilter<C> operator ==(QueryFilter<C> c, DateTime value)
         {
-            if(value == null)
-            {
-                c.Add(new NullComparison(c.ColumnName, "IS"));
-            }
-            else
-            {
-                c.Add(new Comparison(c.ColumnName, "=", value));
-            }
+            c.Add(new Comparison(c.ColumnName, "=", value));
             return c;
         }
 
         public static QueryFilter<C> operator !=(QueryFilter<C> c, DateTime value)
         {
-            if(value == null)
-            {
-                c.Add(new NullComparison(c.ColumnName, "IS NOT"));
-            }
-            else
-            {
-                c.Add(new Comparison(c.ColumnName, "<>", value));
-            }
+            c.Add(new Comparison(c.ColumnName, "<>", value));
             return c;
         }
 

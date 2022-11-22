@@ -1,5 +1,7 @@
+using Bam.Net.CoreServices;
 using Bam.Net.Incubation;
 using Bam.Net.ServiceProxy;
+using Bam.Net.Services;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -17,6 +19,7 @@ namespace Bam.Net.Server.JsonRpc
         {
             this.RpcParams = new JsonRpcParameters();
         }
+        
         [Exclude]
         public object Clone()
         {
@@ -29,16 +32,16 @@ namespace Bam.Net.Server.JsonRpc
 
         public string Method { get; set; }
 
-        Incubator _incubator;
-        protected internal Incubator Incubator
+        WebServiceRegistry _serviceRegistry;
+        protected internal WebServiceRegistry ServiceRegistry
         {
             get
             {
-                return _incubator;
+                return _serviceRegistry;
             }
             set
             {
-                _incubator = value;
+                _serviceRegistry = value;
             }
         }
 
@@ -58,7 +61,7 @@ namespace Bam.Net.Server.JsonRpc
         {
             get
             {
-                return _methodsLock.DoubleCheckLock(ref _methods, () => Incubator.ClassNameTypes.SelectMany(type => type.GetMethodsWithAttributeOfType<JsonRpcMethodAttribute>()).ToArray());
+                return _methodsLock.DoubleCheckLock(ref _methods, () => ServiceRegistry.ClassNameTypes.SelectMany(type => type.GetMethodsWithAttributeOfType<JsonRpcMethodAttribute>()).ToArray());
             }
         }
 
@@ -66,7 +69,7 @@ namespace Bam.Net.Server.JsonRpc
         {
             get
             {
-                return Incubator.ClassNameTypes.SelectMany(type => type.GetMethods()).ToArray();
+                return ServiceRegistry.ClassNameTypes.SelectMany(type => type.GetMethods()).ToArray();
             }
         }
 
@@ -119,16 +122,16 @@ namespace Bam.Net.Server.JsonRpc
             return results.ToArray();
         }
 
-        public static JsonRpcNotification Create<T>(Incubator serviceProvider, string methodName, params object[] parameters)
+        public static JsonRpcNotification Create<T>(WebServiceRegistry serviceProvider, string methodName, params object[] parameters)
         {
             JsonRpcNotification result = Create<T>(methodName, parameters);
-            result.Incubator = serviceProvider;
+            result.ServiceRegistry = serviceProvider;
             return result;
         }
 
         public static JsonRpcNotification Create(MethodInfo method, params object[] parameters)
         {
-            return Create(Incubator.Default, method, parameters);
+            return Create(new WebServiceRegistry(), method, parameters);
         }
 
         public static JsonRpcNotification Create<T>(string methodName, params object[] parameters)
@@ -136,10 +139,10 @@ namespace Bam.Net.Server.JsonRpc
             return Create(typeof(T).GetMethod(methodName, parameters.Select(p => p.GetType()).ToArray()), parameters);
         }
 
-        public static JsonRpcNotification Create(Incubator serviceProvider, MethodInfo method, params object[] parameters)
+        public static JsonRpcNotification Create(WebServiceRegistry serviceProvider, MethodInfo method, params object[] parameters)
         {
             JsonRpcNotification result = new JsonRpcNotification();
-            result.Incubator = serviceProvider;
+            result.ServiceRegistry = serviceProvider;
             result.Method = method.Name;
             result.RpcParams.By.Position = parameters;
             result.Params = JToken.Parse(parameters.ToJson());

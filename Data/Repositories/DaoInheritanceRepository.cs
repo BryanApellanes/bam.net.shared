@@ -36,8 +36,7 @@ namespace Bam.Net.Data.Repositories
             TypeSchemaGenerator.Subscribe(Logger);
         }
         
-        TypeSchema _typeSchema;
-        public TypeSchema TypeSchema
+        public new TypeSchema TypeSchema
         {
             get
             {
@@ -150,7 +149,7 @@ namespace Bam.Net.Data.Repositories
 
             // TODO: implement transaction functionality in sqlstringbuilder            
             List<SqlStringBuilder> sqls = SqlWriter.GetInsertStatements(toCreate, Database); // due to supporting some database types that don't allow for (or make it easy to do) multiline scripts or multi table inserts, each insert is returned as a separate sqlstring builder
-            long id = Database.QuerySingle<long>(sqls[0]);
+            ulong id = Database.QuerySingle<ulong>(sqls[0]);
             toCreate.Property("Id", id);
             sqls.Rest(1, sql =>
             {
@@ -209,7 +208,7 @@ namespace Bam.Net.Data.Repositories
                 foreach(object child in coll)
                 {
                     TypeSchemaPropertyManager.SetParentProperties(parent, child);
-                    if(child.Property<long>("Id") > 0)
+                    if(child.Property<ulong>("Id") > 0)
                     {
                         sqls.AddRange(SqlWriter.GetUpdateStatements(child, Database));
                     }

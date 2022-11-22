@@ -25,8 +25,12 @@ namespace Bam.Net.ServiceProxy
 
         public RequestWrapper(HttpListenerRequest request)
         {
+            if (request.ContentLength64 > 0)
+            {
+                this.Content = request.InputStream?.ReadToEnd();
+            }
             DefaultConfiguration.CopyProperties(request, this);
-            this.Wrapped = request;
+            this.Wrapped = request;            
         }
 
         internal RequestWrapper(object requestToBeWrapped)
@@ -56,6 +60,12 @@ namespace Bam.Net.ServiceProxy
         {
             get;
             private set;
+        }
+
+        public string Content
+        {
+            get;
+            set;
         }
 
         private void Set(string name, object value)

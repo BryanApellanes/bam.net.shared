@@ -14,7 +14,7 @@ using Bam.Net.Javascript;
 using Bam.Net.Logging;
 using Bam.Net.Server.Renderers;
 using Bam.Net.ServiceProxy;
-using Bam.Net.ServiceProxy.Secure;
+using Bam.Net.ServiceProxy.Encryption;
 using Bam.Net.UserAccounts.Data;
 using Newtonsoft.Json.Linq;
 using System.Reflection;
@@ -35,7 +35,7 @@ namespace Bam.Net.Server
         public const string CommonFolder = "common";
         
         static string contentRootConfigKey = "ContentRoot";
-        static readonly string defaultRoot = BamHome.Content;
+        static readonly string defaultRoot = BamHome.ContentPath;
         public const string IncludeFileName = "include.js";
         public const string LayoutFileExtension = ".layout";
         public const string HostAppMapFile = "hostAppMaps.json";
@@ -268,7 +268,7 @@ namespace Bam.Net.Server
         {
             OnCommonTemplateRendererInitializing();
 
-            CommonTemplateManager = new CommonDustRenderer(this);
+            CommonTemplateManager = new CommonHandlebarsRenderer(this);
 
             OnCommonTemplateRendererInitialized();
         }
@@ -401,8 +401,7 @@ namespace Bam.Net.Server
 
                 IRequest request = context.Request;
                 IResponse response = context.Response;
-                Session.Init(context);
-                SecureSession.Init(context);
+                Session.Init(context);                
 
                 bool handled = false;
                 string relativePathFromUrl = request.Url.AbsolutePath;
@@ -487,7 +486,7 @@ namespace Bam.Net.Server
             {
                 return HostAppMappings[context.Request.Url.Host].AppName;
             }
-            return ApplicationNameResolver.ResolveApplicationName(context);
+            return ApplicationNameResolver.ResolveApplicationName(context.Request);
         }
 
         protected void LogContentNotFound(string path, string appName, string[] checkedPaths)

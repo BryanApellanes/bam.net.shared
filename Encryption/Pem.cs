@@ -65,8 +65,8 @@ namespace Bam.Net.Encryption
         }
 
         /// <summary>
-        /// Returns the private portion of the specified keyPair in
-        /// pem format (compaitble with openssl)
+        /// Returns the specified keyPair in
+        /// pem format.
         /// </summary>
         /// <param name="keyPair"></param>
         /// <returns></returns>
@@ -86,14 +86,6 @@ namespace Bam.Net.Encryption
             return (AsymmetricKeyParameter)pemObject;
         }
 
-        public static T FromPem<T>(this string pemString)
-        {
-            TextReader reader = new StringReader(pemString);
-            PemReader pemReader = new PemReader(reader);
-            object pemObject = pemReader.ReadObject();
-            return (T)pemObject;
-        }
-
         public static AsymmetricCipherKeyPair FromPem(this string pemString)
         {
             return pemString.ToKeyPair();
@@ -105,19 +97,6 @@ namespace Bam.Net.Encryption
             PemReader pemReader = new PemReader(reader);
             object pemObject = pemReader.ReadObject();
             return (AsymmetricCipherKeyPair)pemObject;
-        }
-
-        public static T Read<T>(string pemString)
-        {
-            return ReadPem<T>(pemString);
-        }
-
-        public static T ReadPem<T>(this string pemString)
-        {
-            TextReader reader = new StringReader(pemString);
-            PemReader pemReader = new PemReader(reader);
-            object pemObject = pemReader.ReadObject();
-            return (T)pemObject;
         }
     }
 }

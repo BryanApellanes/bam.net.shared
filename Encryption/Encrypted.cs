@@ -12,39 +12,36 @@ using Org.BouncyCastle.Security;
 
 namespace Bam.Net.Encryption
 {
+    /// <summary>
+    /// A salted encryption cipher.
+    /// </summary>
     public class Encrypted
     {
-        protected static string DefaultIV = Convert.ToBase64String(new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 });
+        protected static readonly int DefaultSaltLength = 8;
 
         public Encrypted()
         {
+            this.SaltLength = DefaultSaltLength;
             SecureRandom random = new SecureRandom();
             this.Key = random.GenerateSeed(16);
             this.IV = random.GenerateSeed(16);
             this.Plain = string.Empty;
         }
 
-        public Encrypted(string data)
-            : this()
+        public Encrypted(string plainText): this()
         {
-            this.Plain = data;
-        }
-
-        public Encrypted(string data, string b64Key)
-            : this(data, b64Key, DefaultIV)
-        {
+            this.Plain = plainText;
         }
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="data">The plain text data to be encrypted</param>
-        /// <param name="b64Key">A plaintext value to derive a key from</param>
-        /// <param name="b64IV">A plain text vlaue to derive 
-        /// the initialization vector from</param>
-        public Encrypted(string data, string b64Key, string b64IV)
+        /// <param name="plainText">The plain text data to be encrypted</param>
+        /// <param name="b64Key">A base 64 encoded key</param>
+        /// <param name="b64IV">A base 64 encoded initialization vector</param>
+        public Encrypted(string plainText, string b64Key, string b64IV) : this()
         {
-            this.Plain = data;
+            this.Plain = plainText;
 
             this.Base64Key = b64Key;
             this.Base64IV = b64IV;
@@ -52,7 +49,7 @@ namespace Bam.Net.Encryption
             this.Cipher = Encrypt();
         }
 
-        public Encrypted(byte[] cipher, byte[] key, byte[] iv)
+        protected Encrypted(byte[] cipher, byte[] key, byte[] iv) : this()
         {
             this.Key = key;
             this.Cipher = cipher;
@@ -64,13 +61,7 @@ namespace Bam.Net.Encryption
             return enc.Value;
         }
 
-        public string Value
-        {
-            get
-            {
-                return Base64Cipher;
-            }
-        }
+        public virtual string Value => Base64Cipher;
 
         public byte[] Key
         {
@@ -81,15 +72,13 @@ namespace Bam.Net.Encryption
         public byte[] IV
         {
             get;
-            set;
+            private set;
         }
 
-        public string Salt
+        public int SaltLength
         {
-            get
-            {
-                return ";".RandomLetters(1);
-            }
+            get;
+            set;
         }
 
         public string Plain
@@ -101,7 +90,7 @@ namespace Bam.Net.Encryption
         public byte[] Cipher
         {
             get;
-            set;
+            private set;
         }
 
         public string Base64Cipher
@@ -115,49 +104,33 @@ namespace Bam.Net.Encryption
 
                 return Convert.ToBase64String(Cipher);
             }
-            set
-            {
-                Cipher = Convert.FromBase64String(value);
-            }
+            protected set => Cipher = Convert.FromBase64String(value);
         }
 
-        public string Base64Key
+        /// <summary>
+        /// Gets the base64 encoded key.
+        /// </summary>
+        protected string Base64Key
         {
-            get
-            {
-                if (Key != null)
-                {
-                    return Convert.ToBase64String(Key);
-                }
-
-                return string.Empty;
-            }
-            set
-            {
-                Key = Convert.FromBase64String(value);
-            }
+            get => Key != null ? Convert.ToBase64String(Key) : string.Empty;
+            set => Key = Convert.FromBase64String(value);
         }
 
-        public string Base64IV
+        /// <summary>
+        /// Gets the base64 encoded initialization vector.
+        /// </summary>
+        protected string Base64IV
         {
-            get
-            {
-                if (IV != null)
-                {
-                    return Convert.ToBase64String(IV);
-                }
-
-                return string.Empty;
-            }
+            get => IV != null ? Convert.ToBase64String(IV) : string.Empty;
             set
             {
                 IV = Convert.FromBase64String(value);
             }
         }
 
-        protected byte[] Encrypt()
+        private byte[] Encrypt()
         {
-            Base64Cipher = Aes.Encrypt(string.Concat(Plain, Salt), Base64Key, Base64IV);
+            Base64Cipher = Aes.Encrypt(string.Concat(Plain, SaltLength.RandomLetters()), Base64Key, Base64IV);
             return Cipher;
         }
     }

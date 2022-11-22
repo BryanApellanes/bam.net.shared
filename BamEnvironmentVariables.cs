@@ -5,10 +5,10 @@ namespace Bam.Net
 {
     public static class BamEnvironmentVariables
     {
-        const string BAM_HOME = "BAM_HOME";
-        const string BAM_APPLICATION_NAME = "BAM_APPLICATION_NAME";
-        const string BAM_APP_KIND = "BAM_APP_KIND";
-        const string BAM_PROCESS_MODE = "BAM_PROCESS_MODE";
+        public const string BAM_HOME = "BAM_HOME";
+        public const string BAM_APPLICATION_NAME = "BAM_APPLICATION_NAME";
+        public const string BAM_APP_KIND = "BAM_APP_KIND";
+        public const string BAM_PROCESS_MODE = "BAM_PROCESS_MODE";
 
         public static string Home(string value = null)
         {
@@ -70,15 +70,25 @@ namespace Bam.Net
         {
             Set($"BAM_{name}", value);
         }
-        
-        private static void Set(string name, string value)
-        {
-            Environment.SetEnvironmentVariable(name, value);
-        }
 
-        private static string Get(string name)
+        /// <summary>
+        /// Get the value of the specified environment variable.  Delegates to Environment.GetEnvironmentVariable, provided as convenience.
+        /// </summary>
+        /// <param name="name">The name of the en</param>
+        /// <returns></returns>
+        public static string Get(string name)
         {
             return Environment.GetEnvironmentVariable(name);
+        }
+
+        /// <summary>
+        /// Set the value of the specified environment variable.  Delegates to Environment.SetEnvironmentVariable, provided as convenience.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="value"></param>
+        public static void Set(string name, string value)
+        {
+            Environment.SetEnvironmentVariable(name, value);
         }
     }
 }

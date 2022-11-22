@@ -21,12 +21,12 @@ namespace Bam.Net.Server
         public HttpHeaderResponder(BamConf conf)
             : base(conf)
         {
-            RespondToHeaderValue = ResponderSignificantName;
+            RespondToHeaderValue = ResponderName;
         }
 
         public HttpHeaderResponder(BamConf conf, ILogger logger) : base(conf, logger)
         {
-            RespondToHeaderValue = ResponderSignificantName;
+            RespondToHeaderValue = ResponderName;
         }
 
         /// <summary>

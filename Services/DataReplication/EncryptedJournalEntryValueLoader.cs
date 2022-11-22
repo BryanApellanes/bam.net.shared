@@ -15,15 +15,15 @@ namespace Bam.Net.Services.DataReplication
     /// <seealso cref="Bam.Net.Services.DataReplication.JournalEntryValueLoader" />
     public class EncryptedJournalEntryValueLoader : JournalEntryValueLoader
     {
-        public EncryptedJournalEntryValueLoader() : this(KeySet.ForApplication)
+        public EncryptedJournalEntryValueLoader() : this(Bam.Net.Encryption.Data.Files.KeySetFile.ForApplication)
         { }
 
-        public EncryptedJournalEntryValueLoader(KeySet keySet)
+        public EncryptedJournalEntryValueLoader(IKeySet keySet)
         {
             KeySet = keySet;        
         }
 
-        public KeySet KeySet { get; set; }
+        public IKeySet KeySet { get; set; }
 
         public override string LoadValue(string filePath)
         {

@@ -358,14 +358,5 @@ namespace Bam.Net.Automation.Testing
                 return result;
             }
 		}
-		#region IRequiresHttpContext Members
-
-		public IHttpContext HttpContext
-		{
-			get;
-			set;
-		}
-
-        #endregion
     }
 }

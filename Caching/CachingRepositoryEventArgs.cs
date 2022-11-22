@@ -10,5 +10,6 @@ namespace Bam.Net.Caching
     {
         public string PropertyName { get; set; }
         public object ParameterValue { get; set; }
+        public string DifferingTypes { get; set; }
     }
 }

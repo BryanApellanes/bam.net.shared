@@ -32,14 +32,14 @@ namespace Bam.Net.Server
     /// </summary>
     public partial class BamServer : Loggable, IInitialize<BamServer>
     {
-        private readonly HashSet<IResponder> _responders;
-        private readonly Dictionary<string, IResponder> _respondersByName;
+        private readonly HashSet<IHttpResponder> _responders;
+        private readonly Dictionary<string, IHttpResponder> _respondersByName;
         private HttpServer _server;
 
         public BamServer(BamConf conf)
         {
-            _responders = new HashSet<IResponder>();
-            _respondersByName = new Dictionary<string, IResponder>();
+            _responders = new HashSet<IHttpResponder>();
+            _respondersByName = new Dictionary<string, IHttpResponder>();
             Initialized += HandlePostInitialization;
             SetConf(conf);
             BindEventListeners(conf);
@@ -48,12 +48,21 @@ namespace Bam.Net.Server
 
             SQLiteRegistrar.RegisterFallback();
             AppDomain.CurrentDomain.DomainUnload += (s, a) => Stop();
-            LoadApplicationServiceRegistry();
+            _ = LoadApplicationServiceRegistryAsync();
+        }
+
+        private static BamServer _bamServer;
+        private static object _bamServerSync = new object();
+        public static BamServer Current
+        {
+            get
+            {
+                return _bamServerSync.DoubleCheckLock(ref _bamServer, () => new BamServer(BamConf.Load()));
+            }
         }
 
         private ApplicationServiceRegistry _appServiceRegistry;
-
-        public async Task<ApplicationServiceRegistry> LoadApplicationServiceRegistry()
+        public async Task<ApplicationServiceRegistry> LoadApplicationServiceRegistryAsync()
         {
             return await Task.Run(() => 
             {
@@ -77,82 +86,102 @@ namespace Bam.Net.Server
         /// The event that fires when server initialization begins
         /// </summary>
         public event Action<BamServer> Initializing;
+        
         /// <summary>
         /// The event that fires when server initialization is complete
         /// </summary>
         public event Action<BamServer> Initialized;
+        
         /// <summary>
         /// The event that fires when a schema is about to be initialized
         /// </summary>
         public event Action<BamServer, SchemaInitializer> SchemaInitializing;
+        
         /// <summary>
         /// The event that fires when a schema is done initializing
         /// </summary>
-        public event Action<BamServer, SchemaInitializer> SchemaInitialized;        
+        public event Action<BamServer, SchemaInitializer> SchemaInitialized; 
+        
         /// <summary>
         /// The event that fires before beginning any schema initialization
         /// </summary>
         public event Action<BamServer> SchemasInitializing;
+        
         /// <summary>
         /// The event that fires when all schemas have completed initialization
         /// </summary>
         public event Action<BamServer> SchemasInitialized;
+        
         /// <summary>
         /// The event that fires before loading the server configuration
         /// </summary>
         public event Action<BamServer, BamConf> LoadingConf;
+        
         /// <summary>
         /// the event that fires when loading the server configuration is complete
         /// </summary>
         public event Action<BamServer, BamConf> LoadedConf; 
+        
         /// <summary>
         /// The event that fires before creating an application
         /// </summary>
         public event Action<BamServer, AppConf> CreatingApp;
+        
         /// <summary>
         /// The event that fires when creating an application is complete
         /// </summary>
         public event Action<BamServer, AppConf> CreatedApp;
+        
         /// <summary>
-        /// The event that fires when a response has been sent
+        /// The event that fires before a response is flushed.
         /// </summary>
-        public event Action<BamServer, IResponder, IResponse> Responding;
+        public event Action<BamServer, IHttpResponder, IResponse> ResponseFlushing;
+        
         /// <summary>
-        /// The event that fires when a response has been sent
+        /// The event that fires when a response is flushed.
         /// </summary>
-        public event Action<BamServer, IResponder, IRequest> Responded;
+        public event Action<BamServer, IHttpResponder, IRequest> ResponseFlushed;
+        
         /// <summary>
         /// The event that fires when a response is not sent
         /// </summary>
         public event Action<BamServer, IRequest> NotResponded;
+        
         /// <summary>
         /// The event that fires when a responder is added
         /// </summary>
-        public event Action<BamServer, IResponder> ResponderAdded;
+        public event Action<BamServer, IHttpResponder> ResponderAdded;
+        
         /// <summary>
         /// The event that fires before setting the configuration
         /// </summary>
         public event Action<BamServer, BamConf> SettingConf;
+        
         /// <summary>
         /// The event that fires when setting the configuration is complete
         /// </summary>
-        public event Action<BamServer, BamConf> SettedConf;        
+        public event Action<BamServer, BamConf> SettedConf; 
+        
         /// <summary>
         /// The event that fires when the configuration is saved
         /// </summary>
         public event Action<BamServer, BamConf> SavedConf;
+        
         /// <summary>
         /// The event that fires before starting the server
         /// </summary>
         public event Action<BamServer> Starting;
+        
         /// <summary>
         /// The event that fires when the server has started
         /// </summary>
         public event Action<BamServer> Started;
+        
         /// <summary>
         /// The event that fires before the server is stopped
         /// </summary>
         public event Action<BamServer> Stopping;
+        
         /// <summary>
         /// The event that fires when the server has stopped
         /// </summary>
@@ -160,6 +189,7 @@ namespace Bam.Net.Server
 
         private readonly object _requestLogLock = new object();
         private RequestLog _requestLog;
+        
         public RequestLog RequestLog
         {
             get { return _requestLogLock.DoubleCheckLock(ref _requestLog, () => new RequestLog()); }
@@ -384,7 +414,7 @@ namespace Bam.Net.Server
 
         protected virtual void InitializeResponders()
         {
-            foreach (IResponder responder in _responders)
+            foreach (IHttpResponder responder in _responders)
             {
                 responder.Subscribe(MainLogger);
                 responder.Initialize();
@@ -401,22 +431,19 @@ namespace Bam.Net.Server
         /// <param name="logger"></param>
         protected virtual void SubscribeResponders(ILogger logger)
         {
-            foreach (IResponder responder in _responders)
+            foreach (IHttpResponder responder in _responders)
             {
                 responder.Subscribe(logger);
             }
         }
 
-        HashSet<ILogger> _subscribers = new HashSet<ILogger>();
-        object _subscriberLock = new object();
-        public ILogger[] Subscribers
+        private HashSet<ILogger> _subscribers = new HashSet<ILogger>();
+        private readonly object _subscriberLock = new object();
+        public override ILogger[] Subscribers
         {
             get
             {
-                if (_subscribers == null)
-                {
-                    _subscribers = new HashSet<ILogger>();
-                }
+                _subscribers = _subscribers ?? new HashSet<ILogger>();
                 lock (_subscriberLock)
                 {
                     return _subscribers.ToArray();
@@ -424,7 +451,7 @@ namespace Bam.Net.Server
             }
         }
 
-        public bool IsSubscribed(ILogger logger)
+        public override bool IsSubscribed(ILogger logger)
         {
             lock (_subscriberLock)
             {
@@ -437,7 +464,7 @@ namespace Bam.Net.Server
         /// events of the current BamServer
         /// </summary>
         /// <param name="logger"></param>
-        public void Subscribe(ILogger logger)
+        public override void Subscribe(ILogger logger)
         {
             if (!IsSubscribed(logger))
             {
@@ -445,7 +472,7 @@ namespace Bam.Net.Server
                 {
                     _subscribers.Add(logger);
                 }
-                string className = typeof(BamServer).Name;
+                const string className = nameof(BamServer);
 
                 this.Initializing += (s) =>
                 {
@@ -536,22 +563,22 @@ namespace Bam.Net.Server
 
         public ILogger[] AdditionalLoggers { get; set; }
 
-        public HostPrefix[] GetHostPrefixes()
+        public HostBinding[] GetHostBindings()
         {
             BamConf serverConfig = GetCurrentConf(false);
-            HashSet<HostPrefix> results = new HashSet<HostPrefix> {DefaultHostPrefix};
+            HashSet<HostBinding> results = new HashSet<HostBinding> {DefaultHostBinding};
             serverConfig.AppsToServe.Each(appConf => { appConf.Bindings.Each(hp => results.Add(hp)); });
 
             return results.ToArray();
         }
 
-        HostPrefix _defaultHostPrefix;
+        HostBinding _defaultHostPrefix;
         readonly object _defaultHostPrefixLock = new object();
-        public HostPrefix DefaultHostPrefix
+        public HostBinding DefaultHostBinding
         {
             get
             {
-                return _defaultHostPrefixLock.DoubleCheckLock(ref _defaultHostPrefix, () => new HostPrefix("localhost", 8080));
+                return _defaultHostPrefixLock.DoubleCheckLock(ref _defaultHostPrefix, () => new HostBinding("localhost", 8080));
             }
             set => _defaultHostPrefix = value;
         }
@@ -729,7 +756,7 @@ namespace Bam.Net.Server
             }
         }
 
-        public void SubscribeToResponded<T>(ResponderEventHandler subscriber) where T : class, IResponder
+        public void SubscribeToResponded<T>(ResponderEventHandler subscriber) where T : class, IHttpResponder
         {
             Responders.Each(r =>
             {
@@ -740,7 +767,7 @@ namespace Bam.Net.Server
             });
         }
 
-        public void SubscribeToNotResponded<T>(ResponderEventHandler subscriber) where T : class, IResponder
+        public void SubscribeToNotResponded<T>(ResponderEventHandler subscriber) where T : class, IHttpResponder
         {
             Responders.Each(r =>
             {
@@ -763,10 +790,10 @@ namespace Bam.Net.Server
 
         public void Start(bool usurpedKnownListeners = false)
         {
-            Start(usurpedKnownListeners, new HostPrefix[] { });
+            Start(usurpedKnownListeners, new HostBinding[] { });
         }
 
-        public void Start(bool usurpedKnownListeners, params HostPrefix[] hostPrefixes)
+        public void Start(bool usurpedKnownListeners, params HostBinding[] hostPrefixes)
         {
             if (!IsRunning)
             {
@@ -923,9 +950,9 @@ namespace Bam.Net.Server
         /// <param name="responder"></param>
         public void AddResponder(Responder responder)
         {
-            if (!_respondersByName.ContainsKey(responder.ResponderSignificantName))
+            if (!_respondersByName.ContainsKey(responder.ResponderName))
             {
-                _respondersByName.AddMissing(responder.ResponderSignificantName, responder);
+                _respondersByName.AddMissing(responder.ResponderName, responder);
                 _responders.Add(responder);
                 ResponderAdded?.Invoke(this, responder);
             }
@@ -941,13 +968,13 @@ namespace Bam.Net.Server
             {
                 _responders.Remove(responder);
             }
-            if (_respondersByName.ContainsKey(responder.ResponderSignificantName))
+            if (_respondersByName.ContainsKey(responder.ResponderName))
             {
-                _respondersByName.Remove(responder.ResponderSignificantName);
+                _respondersByName.Remove(responder.ResponderName);
             }
         }
 
-        public IResponder[] Responders => _responders.ToArray();
+        public IHttpResponder[] Responders => _responders.ToArray();
 
         Action<IHttpContext> _responderNotFoundHandler;
         readonly object _responderNotFoundHandlerLock = new object();
@@ -992,6 +1019,7 @@ namespace Bam.Net.Server
         {
             IRequest request = context.Request;
             IResponse response = context.Response;
+
             ResponderList responder = new ResponderList(_conf, _responders);
             try
             {   
@@ -1002,9 +1030,9 @@ namespace Bam.Net.Server
                 }
                 else
                 {
-                    TriggerResponding(response, responder.HandlingResponder);
-                    Respond(response);
-                    TriggerResponded(request, responder.HandlingResponder);
+                    TriggerResponseFlushing(response, responder.HandlingResponder);
+                    FlushResponse(response);
+                    TriggerResponseFlushed(request, responder.HandlingResponder);
                 }
             }
             catch (Exception ex)
@@ -1027,20 +1055,20 @@ namespace Bam.Net.Server
             }
         }
 
-        private static void Respond(IResponse response)
+        private static void FlushResponse(IResponse response)
         {
-            response.OutputStream.Flush();
-            response.OutputStream.Close();
+            response?.OutputStream?.Flush();
+            response?.OutputStream?.Close();
         }
 
-        private void TriggerResponded(IRequest request, IResponder responder)
+        private void TriggerResponseFlushed(IRequest request, IHttpResponder responder)
         {
-            Responded?.Invoke(this, responder, request);
+            ResponseFlushed?.Invoke(this, responder, request);
         }
 
-        private void TriggerResponding(IResponse response, IResponder responder)
+        private void TriggerResponseFlushing(IResponse response, IHttpResponder responder)
         {
-            Responding?.Invoke(this, responder, response);
+            ResponseFlushing?.Invoke(this, responder, response);
         }
 
         BamConf _conf;
@@ -1220,7 +1248,7 @@ namespace Bam.Net.Server
         {
             _server = new HttpServer(MainLogger)
             {
-                HostPrefixes = GetHostPrefixes()
+                HostBindings = GetHostBindings()
             };
             _server.PreProcessRequest += PreProcessRequest;
             _server.ProcessRequest += ProcessRequest;

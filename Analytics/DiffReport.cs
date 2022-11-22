@@ -28,8 +28,8 @@ namespace Bam.Net.Analytics
             inserted = new List<InsertedDiffReportToken>();
             deleted = new List<DeletedDiffReportToken>();
             Dictionary<string, Action<string>> savers = new Dictionary<string, Action<string>>();
-            savers.Add(".json", (s) => this.ToJsonFile(s));
-            savers.Add(".xml", (s) => this.ToXmlFile(s));
+            savers.Add(".json", this.ToJsonFile);
+            savers.Add(".xml", this.ToXmlFile);
             this._savers = savers;
             
         }
@@ -37,7 +37,7 @@ namespace Bam.Net.Analytics
         List<DiffReportToken> tokens;
         public DiffReportToken[] Tokens
         {
-            get { return tokens.ToArray(); }
+            get => tokens.ToArray();
             set
             {
                 tokens.Clear();
@@ -46,16 +46,11 @@ namespace Bam.Net.Analytics
         }
 
         List<InsertedDiffReportToken> inserted;
-        public InsertedDiffReportToken[] Inserted
-        {
-            get { return inserted.ToArray(); }
-        }
+        public InsertedDiffReportToken[] Inserted => inserted.ToArray();
 
         List<DeletedDiffReportToken> deleted;
-        public DeletedDiffReportToken[] Deleted
-        {
-            get { return deleted.ToArray(); }
-        }
+        public DeletedDiffReportToken[] Deleted => deleted.ToArray();
+
         /// <summary>
         /// Saves this Report to the specified file overwriting if the file exists.
         /// </summary>
@@ -90,11 +85,24 @@ namespace Bam.Net.Analytics
 
         }
                 
+        /// <summary>
+        /// Create report of differences between the two strings specified.
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
         public static DiffReport Create(string a, string b)
         {
             return Create(a, b, '\n');
         }
 
+        /// <summary>
+        /// Create report of differences between the two strings specified. 
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <param name="separators"></param>
+        /// <returns></returns>
         public static DiffReport Create(string a, string b, params char[] separators)
         {
             DiffReport report = new DiffReport();

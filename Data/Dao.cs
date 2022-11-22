@@ -513,13 +513,13 @@ namespace Bam.Net.Data
             _childCollections.Clear();
         }
 
-        public virtual ValidationResult Validate()
+        public virtual DaoValidationResult Validate()
         {
             return Validator(this);
         }
 
-        Func<Dao, ValidationResult> _validator;
-        public Func<Dao, ValidationResult> Validator
+        Func<Dao, DaoValidationResult> _validator;
+        public Func<Dao, DaoValidationResult> Validator
         {
             get
             {
@@ -533,14 +533,14 @@ namespace Bam.Net.Data
             set => _validator = value;
         }
 
-        static Func<Dao, ValidationResult> _globalValidator;
-        public static Func<Dao, ValidationResult> GlobalValidator
+        static Func<Dao, DaoValidationResult> _globalValidator;
+        public static Func<Dao, DaoValidationResult> GlobalValidator
         {
             get
             {
                 if (_globalValidator == null)
                 {
-                    return (dao) => new ValidationResult();
+                    return (dao) => new DaoValidationResult();
                 }
 
                 return _globalValidator;
@@ -997,7 +997,7 @@ namespace Bam.Net.Data
 
         /// <summary>
         /// Returns the connection name for the specified type or the proxied
-        /// name if the connection name for the specified type has been proxied
+        /// name if the connection name for the specified type is proxied.
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
@@ -1175,52 +1175,38 @@ namespace Bam.Net.Data
             }
         }
         
-        public virtual ulong? GetId()
-        {
-            object value = PrimaryKey;
-            if (value != null && value != DBNull.Value)
-            {
-                if (value.IsNumber() || value is string)
-                {
-                    _id = new ulong?(Convert.ToUInt64(value));
-                }
-            }
-
-            return _id;
-        }
-
         public virtual void SetId(ulong? id)
         {
             _id = id;
         }
         
-        // TODO: deprecate this property in favor of GetId() method
-        // TODO: update code generation templates to address the above
-        [Obsolete("Use GetId() instead")]
+        public virtual ulong? GetId()
+        {
+            object value = PrimaryKey;
+            if (value != null && value != DBNull.Value)
+            {
+                try
+                {
+                    if (value.IsNumber() || value is string)
+                    {
+                        _id = new ulong?(Convert.ToUInt64(value));
+                    }                        
+                }
+                catch (Exception ex)
+                {
+                    Type type = GetType();
+                    Assembly assembly = type.Assembly;
+                    Log.AddEntry("Exception getting IdValue for Dao instance of type ({0}.{1}) in Assembly ({2}) with hash (sha256) ({3})", ex, type.Namespace, type.Name, assembly.FullName, assembly.GetFileInfo().Sha256());
+                }
+            }
+
+            return _id;
+        }
+        
         [Exclude]
         public ulong? IdValue
         {
-            get
-            {
-                object value = PrimaryKey;
-                if (value != null && value != DBNull.Value)
-                {
-                    try
-                    {
-                        if (value.IsNumber() || value is string)
-                        {
-                            _id = new ulong?(Convert.ToUInt64(value));
-                        }                        
-                    }
-                    catch (Exception ex)
-                    {
-                        Type type = GetType();
-                        Assembly assembly = type.Assembly;
-                        Log.AddEntry("Exception getting IdValue for Dao instance of type ({0}.{1}) in Assembly ({2}) with hash (sha256) ({3})", ex, type.Namespace, type.Name, assembly.FullName, assembly.GetFileInfo().Sha256());
-                    }
-                }
-                return _id;
-            }
+            get => GetId();
             set => _id = value;
         }
 
@@ -1622,7 +1608,7 @@ namespace Bam.Net.Data
 
         private void ThrowIfInvalid()
         {
-            ValidationResult valid = this.Validate();
+            DaoValidationResult valid = this.Validate();
             if (!valid.Success)
             {
                 throw new ValidationException(valid.Message, valid.Exception);

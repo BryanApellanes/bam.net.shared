@@ -14,12 +14,14 @@ namespace Bam.Net.Server
             Code = 200;
             Handle = () => DefaultResponse;
         }
+
         public HttpStatusCodeHandler(int code, string defaultResponse)
         {
             DefaultResponse = defaultResponse;
             Code = code;
             Handle = () => DefaultResponse;
         }
+
         public HttpStatusCodeHandler(int code, Func<string> handler)
         {
             Code = code;

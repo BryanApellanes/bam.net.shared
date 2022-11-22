@@ -14,48 +14,29 @@ namespace Bam.Net.Data.Repositories // shared
 {
 	public partial class BackedupDatabase: Database
 	{
-
 		public IRepository Repository { get; private set; }
 
-		protected Database Database
-		{
-			get
-			{
-				return Backup.DatabaseToBackup;
-			}
-		}
+		protected Database Database => Backup.DatabaseToBackup;
 
 		public DaoBackup Backup { get; set; }
 
 		#region IDatabase Members
 
-		public DaoTransaction BeginTransaction()
+		public new DaoTransaction BeginTransaction()
 		{
 			return Database.BeginTransaction();
 		}
 
 		public new string ConnectionName
 		{
-			get
-			{
-				return Database.ConnectionName;
-			}
-			set
-			{
-				Database.ConnectionName = value;
-			}
+			get => Database.ConnectionName;
+			set => Database.ConnectionName = value;
 		}
 
 		public override string ConnectionString
 		{
-			get
-			{
-				return Database.ConnectionString;
-			}
-			set
-			{
-				Database.ConnectionString = value;
-			}
+			get => Database.ConnectionString;
+			set => Database.ConnectionString = value;
 		}
 
 		public override System.Data.Common.DbCommand CreateCommand()
@@ -83,32 +64,32 @@ namespace Bam.Net.Data.Repositories // shared
 			Database.ExecuteSql(sqlStatement, commandType, dbParameters);
 		}
 
-		public void ExecuteSql<T>(SqlStringBuilder builder) where T : Dao
+		public new void ExecuteSql<T>(SqlStringBuilder builder) where T : Dao
 		{
 			Database.ExecuteSql<T>(builder);
 		}
 
-		public Dictionary<EnumType, T> FillEnumDictionary<EnumType, T>(Dictionary<EnumType, T> dictionary, string nameColumn) where T : Dao, new()
+		public new Dictionary<EnumType, T> FillEnumDictionary<EnumType, T>(Dictionary<EnumType, T> dictionary, string nameColumn) where T : Dao, new()
 		{
 			return Database.FillEnumDictionary<EnumType, T>(dictionary, nameColumn);
 		}
 
-		public System.Data.DataSet GetDataSetFromSql(string sqlStatement, System.Data.CommandType commandType, params System.Data.Common.DbParameter[] dbParamaters)
+		public new System.Data.DataSet GetDataSetFromSql(string sqlStatement, System.Data.CommandType commandType, params System.Data.Common.DbParameter[] dbParamaters)
 		{
 			return Database.GetDataSetFromSql(sqlStatement, commandType, dbParamaters);
 		}
 
-		public System.Data.DataSet GetDataSetFromSql(string sqlStatement, System.Data.CommandType commandType, bool releaseConnection, params System.Data.Common.DbParameter[] dbParamaters)
+		public new System.Data.DataSet GetDataSetFromSql(string sqlStatement, System.Data.CommandType commandType, bool releaseConnection, params System.Data.Common.DbParameter[] dbParamaters)
 		{
 			return Database.GetDataSetFromSql(sqlStatement, commandType, releaseConnection, dbParamaters);
 		}
 
-		public System.Data.DataSet GetDataSetFromSql(string sqlStatement, System.Data.CommandType commandType, bool releaseConnection, System.Data.Common.DbConnection conn, params System.Data.Common.DbParameter[] dbParamaters)
+		public new System.Data.DataSet GetDataSetFromSql(string sqlStatement, System.Data.CommandType commandType, bool releaseConnection, System.Data.Common.DbConnection conn, params System.Data.Common.DbParameter[] dbParamaters)
 		{
 			return Database.GetDataSetFromSql(sqlStatement, commandType, releaseConnection, dbParamaters);
 		}
 
-		public System.Data.DataSet GetDataSetFromSql(string sqlStatement, System.Data.CommandType commandType, bool releaseConnection, System.Data.Common.DbConnection conn, System.Data.Common.DbTransaction tx, params System.Data.Common.DbParameter[] dbParamaters)
+		public new System.Data.DataSet GetDataSetFromSql(string sqlStatement, System.Data.CommandType commandType, bool releaseConnection, System.Data.Common.DbConnection conn, System.Data.Common.DbTransaction tx, params System.Data.Common.DbParameter[] dbParamaters)
 		{
 			return Database.GetDataSetFromSql(sqlStatement, commandType, releaseConnection, dbParamaters);
 		}
@@ -118,43 +99,28 @@ namespace Bam.Net.Data.Repositories // shared
 			return Database.GetDataTable(sqlStatement, commandType, dbParamaters);
 		}
 
-		public System.Data.Common.DbConnection GetDbConnection()
+		public new System.Data.Common.DbConnection GetDbConnection()
 		{
 			return Database.GetDbConnection();
 		}
 
-		public void TryEnsureSchema(Type type, ILogger logger = null)
+		public new void TryEnsureSchema(Type type, ILogger logger = null)
 		{
 			Database.TryEnsureSchema(type, logger);
 		}
 
-		public int MaxConnections
+		public new int MaxConnections
 		{
-			get
-			{
-				return Database.MaxConnections;
-			}
-			set
-			{
-				Database.MaxConnections = value;
-			}
+			get => Database.MaxConnections;
+			set => Database.MaxConnections = value;
 		}
 
-		public string Name
-		{
-			get { return Database.Name; }
-		}
+		public new string Name => Database.Name;
 
-		public Incubator ServiceProvider
+		public new Incubator ServiceProvider
 		{
-			get
-			{
-				return Database.ServiceProvider;
-			}
-			set
-			{
-				Database.ServiceProvider = value;
-			}
+			get => Database.ServiceProvider;
+			set => Database.ServiceProvider = value;
 		}
 
 		#endregion

@@ -65,7 +65,7 @@ namespace Bam.Net.Caching
     }
 
     /// <summary>
-    /// 
+    /// An object cache
     /// </summary>
     /// <seealso cref="Bam.Net.Caching.Cache" />
     public class Cache: Loggable
@@ -219,7 +219,7 @@ namespace Bam.Net.Caching
         /// Retrieves the specified instance using the Meta.Uuid.
         /// </summary>
         /// <param name="instance">The instance.</param>
-        /// <returns></returns>
+        /// <returns>CacheItem</returns>
         public CacheItem Retrieve(object instance)
         {
             Meta meta = MetaProvider.GetMeta(instance);
@@ -227,10 +227,10 @@ namespace Bam.Net.Caching
         }
 
         /// <summary>
-        /// Retrieves the specified identifier.
+        /// Retrieves the item with the specified identifier.
         /// </summary>
         /// <param name="id">The identifier.</param>
-        /// <returns></returns>
+        /// <returns>CacheItem</returns>
         public CacheItem Retrieve(ulong id)
         {
             if (ItemsById.TryGetValue(id, out CacheItem result))
@@ -244,7 +244,7 @@ namespace Bam.Net.Caching
         /// Retrieves the specified UUID.
         /// </summary>
         /// <param name="uuid">The UUID.</param>
-        /// <returns></returns>
+        /// <returns>CacheItem</returns>
         public CacheItem Retrieve(string uuid)
         {
             if (ItemsByUuid.TryGetValue(uuid, out CacheItem result))
@@ -262,7 +262,7 @@ namespace Bam.Net.Caching
         /// <typeparam name="T"></typeparam>
         /// <param name="name">The name.</param>
         /// <param name="sourceRetriever">The source retriever.</param>
-        /// <returns></returns>
+        /// <returns>T</returns>
         public virtual T RetrieveByName<T>(string name, Func<T> sourceRetriever)
         {
             CacheItem item = RetrieveByName(name);
@@ -279,10 +279,10 @@ namespace Bam.Net.Caching
         /// Retrieves the CacheItem by the specified name.
         /// </summary>
         /// <param name="name">The name.</param>
-        /// <returns></returns>
+        /// <returns>CacheItem</returns>
         public CacheItem RetrieveByName(string name)
         {
-            if(ItemsByName.TryGetValue(name, out CacheItem result))
+            if (ItemsByName.TryGetValue(name, out CacheItem result))
             {
                 result.IncrementHits();
             }
@@ -308,7 +308,7 @@ namespace Bam.Net.Caching
         /// Adds the specified value.
         /// </summary>
         /// <param name="value">The value.</param>
-        /// <returns></returns>
+        /// <returns>CacheItem</returns>
         public virtual CacheItem Add(object value)
         {
             HashSet<CacheItem> itemsCopy = new HashSet<CacheItem>(Items);
@@ -333,7 +333,6 @@ namespace Bam.Net.Caching
         /// <returns></returns>
         public virtual IEnumerable<CacheItem> Add<T>(params T[] values)
         {
-            List<CacheItem> results = new List<CacheItem>();
             HashSet<CacheItem> itemsCopy = new HashSet<CacheItem>(Items);
             foreach (object value in values)
             {
@@ -611,7 +610,6 @@ namespace Bam.Net.Caching
         /// <returns></returns>
 		protected int GetEvictableTailCount()
 		{
-			uint maxBytes = MaxBytes;
 			uint bytesOver = ItemsMemorySize - MaxBytes;
 			int result = 0;
 			if(bytesOver > 0)
@@ -651,9 +649,15 @@ namespace Bam.Net.Caching
 		
 		private void StopGrooming()
 		{
-			_keepGrooming = false;
-			_groomerThread.Abort();
-			_groomerThread.Join(3000);
+			try
+			{
+				_keepGrooming = false;
+				_groomerThread.Abort();
+				_groomerThread.Join(3000);
+			}
+			catch
+			{
+			}
 		}
 
         protected async void Organize()

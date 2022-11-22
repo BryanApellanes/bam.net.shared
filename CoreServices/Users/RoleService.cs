@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Bam.Net.Server;
 using Bam.Net.UserAccounts;
 using Bam.Net.ServiceProxy;
+using Bam.Net.Encryption;
 
 namespace Bam.Net.CoreServices
 {

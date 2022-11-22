@@ -33,21 +33,10 @@ namespace Bam.Net.Server.Renderers
             set;
         }
 
-        public string ApplicationName
-        {
-            get
-            {
-                return AppContentResponder.ApplicationName;
-            }
-        }
+        public string ApplicationName => AppContentResponder.ApplicationName;
 
-        public string Render(string templateName, object data)
-        {
-            throw new NotImplementedException();
-        }
-        
-        string _combinedCompiledTemplates;
-        object _combinedCompiledTemplatesLock = new object();
+        private string _combinedCompiledTemplates;
+        private readonly object _combinedCompiledTemplatesLock = new object();
         /// <summary>
         /// All application compiled dust templates including Server level
         /// layouts, templates.
@@ -77,8 +66,8 @@ namespace Bam.Net.Server.Renderers
             }
         }
 
-        string _combinedCompiledLayoutTemplates;
-        object _combinedCompiledLayoutTemplatesLock = new object();
+        private string _combinedCompiledLayoutTemplates;
+        private readonly object _combinedCompiledLayoutTemplatesLock = new object();
         /// <summary>
         /// Represents the compiled javascript result of doing dust.compile
         /// against all the files found in ~s:/common/views/layouts.
@@ -104,8 +93,8 @@ namespace Bam.Net.Server.Renderers
             }
         }
 
-        List<ICompiledTemplate> _compiledTemplates;
-        object _compiledTemplatesLock = new object();
+        private List<ICompiledTemplate> _compiledTemplates;
+        private readonly object _compiledTemplatesLock = new object();
         public override IEnumerable<ICompiledTemplate> CompiledTemplates
         {
             get

@@ -14,6 +14,7 @@ using Bam.Net.Services.AsyncCallback.Data;
 using Bam.Net.Services.AsyncCallback.Data.Dao.Repository;
 using System.Threading;
 using Bam.Net.CoreServices.ApplicationRegistration.Data;
+using Bam.Net.Encryption;
 
 namespace Bam.Net.Services
 {
@@ -32,7 +33,7 @@ namespace Bam.Net.Services
 
         public AsyncCallbackService(AsyncCallbackRepository repo, AppConf conf) : base(repo, conf)
         {
-            HostPrefix = new HostPrefix { HostName = Machine.Current.DnsName, Port = RandomNumber.Between(49152, 65535) };                 
+            HostPrefix = new HostBinding { HostName = Machine.Current.DnsName, Port = RandomNumber.Between(49152, 65535) };                 
             AsyncCallbackRepository = repo;
             _pendingRequests = new ConcurrentDictionary<string, Action<AsyncExecutionResponse>>();
         }
@@ -119,7 +120,7 @@ namespace Bam.Net.Services
             }
         }
 
-        public HostPrefix HostPrefix
+        public HostBinding HostPrefix
         {
             get;set;
         }
@@ -140,7 +141,7 @@ namespace Bam.Net.Services
                 Ssl = HostPrefix.Ssl,
                 ClassName = type.Name,
                 MethodName = methodName,
-                JsonParams = ApiParameters.ParametersToJsonParamsArray(arguments).ToJson()
+                JsonArgs = ApiArgumentEncoder.ArgumentsToJsonArgumentsArray(arguments).ToJson()
             };
         }
 
@@ -229,7 +230,7 @@ namespace Bam.Net.Services
                     RequestHash = requestHash,
                     ClassName = request.ClassName,
                     MethodName = request.MethodName,
-                    JsonParams = request.JsonParams
+                    JsonArgs = request.JsonArgs
                 };
                 Expect.AreEqual(requestHash, requestData.GetRequestHash());
                 AsyncCallbackRepository.Save(requestData);

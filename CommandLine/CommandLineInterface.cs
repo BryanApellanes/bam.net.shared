@@ -115,6 +115,16 @@ namespace Bam.Net.CommandLine
             return GetArgument(name, promptMessage, (p) => PasswordPrompt(p));
         }
 
+        public static int GetIntArgumentOrDefault(string name, int defaultValue)
+        {
+            string arg = Arguments.Contains(name) ? Arguments[name] : string.Empty;
+            if (string.IsNullOrEmpty(arg))
+            {
+                return defaultValue;
+            }
+            return int.Parse(arg);
+        }
+
         /// <summary>
         /// Get the value specified for the specified argument, returning ifNotSpecified
         /// if the specified argument was not supplied.
@@ -246,8 +256,7 @@ namespace Bam.Net.CommandLine
         {
             Process process = Process.GetCurrentProcess();
             FileInfo main = new FileInfo(process.MainModule.FileName);
-            string commandLineArgs = string.Join(" ", Environment.GetCommandLineArgs());
-            string info = $"{process.Id}~{commandLineArgs}";
+            string commandLineArgs = string.Join(" ", Environment.GetCommandLineArgs());            
             string pidFileName = $"{Path.GetFileNameWithoutExtension(main.Name)}.pid";
             string pidFilePath = Path.Combine(main.Directory.FullName, pidFileName);
             KillExistingProcess(pidFilePath, commandLineArgs);
@@ -258,8 +267,7 @@ namespace Bam.Net.CommandLine
             if (File.Exists(pidFilePath))
             {
                 string readInfo = pidFilePath.SafeReadFile();
-                string argsInFile = string.Empty;
-                string pid = readInfo.ReadUntil('~', out argsInFile);
+                string pid = readInfo.ReadUntil('~', out string argsInFile);
                 if (argsInFile.Equals(commandLineArgs))
                 {
                     try
@@ -675,8 +683,8 @@ namespace Bam.Net.CommandLine
                 versionInfo.AppendFormat("Commit: AssemblyCommitAttribute not found on specified assembly: {0}\r\n",
                     assembly.Location);
             }
-            
-            OutLine(versionInfo.ToString(), ConsoleColor.Cyan);
+
+            Message.PrintLine(versionInfo.ToString(), ConsoleColor.Cyan);
         }
 
         public static void Usage(Assembly assembly)
@@ -876,7 +884,7 @@ File Version: {1}
         /// <param name="message"></param>
         /// <param name="color"></param>
         /// <param name="formatArgs"></param>
-        [Obsolete("Use Message.PrintLine instead")]
+        [Obsolete("Use Message.PrintLine instead.")]
         public static void OutLineFormat(string message, ConsoleColor color, params object[] formatArgs)
         {
             Message.PrintLine(message, color, formatArgs);
@@ -891,6 +899,7 @@ File Version: {1}
         /// <param name="foreground"></param>
         /// <param name="background"></param>
         /// <param name="formatArgs"></param>
+        [Obsolete("Use Message.PrintLine instead.")]
         public static void OutLineFormat(string message, ConsoleColor foreground, ConsoleColor background, params object[] formatArgs)
         {
             OutLine(string.Format(message, formatArgs), new ConsoleColorCombo(foreground, background));
@@ -900,7 +909,7 @@ File Version: {1}
         {
             OutLine(string.Format(message, formatArgs), colors);
         }
-        //
+
         public static void OutFormat(string message, params object[] formatArgs)
         {
             Out(string.Format(message, formatArgs));
@@ -987,9 +996,10 @@ File Version: {1}
             ColoredBackgroundMessageProvider(message, colors);
         }
 
+        [Obsolete("Use Message.PrintLine instead.")]
         public static void OutLine(string message, ConsoleColor color = ConsoleColor.Gray)
         {
-            Out($"{message}\r\n", color);
+            Message.PrintLine(message, color);
         }
 
         public static void OutLine(string message, ConsoleColor foreground, ConsoleColor background)
@@ -1102,7 +1112,7 @@ File Version: {1}
                     ConstructorInfo ctor = method.DeclaringType.GetConstructor(Type.EmptyTypes);
                     if (ctor == null)
                     {
-                        ExceptionHelper.Throw<InvalidOperationException>("Specified non-static method is declared on a type that has no parameterless constructor. {0}.{1}", method.DeclaringType.Name, method.Name);
+                        ExceptionExtensions.Throw<InvalidOperationException>("Specified non-static method is declared on a type that has no parameterless constructor. {0}.{1}", method.DeclaringType.Name, method.Name);
                     }
 
                     action.Provider = ctor.Invoke(null);

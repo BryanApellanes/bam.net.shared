@@ -27,12 +27,6 @@ namespace Bam.Net.CoreServices
             return clone;
         }
 
-        public IHttpContext HttpContext
-        {
-            get;
-            set;
-        }
-
         public virtual void SetToken(string accessToken)
         {
             Session["accessToken"] = accessToken;            

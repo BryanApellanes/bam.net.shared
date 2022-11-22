@@ -12,7 +12,7 @@ namespace Bam.Net.ServiceProxy
 {
     /// <summary>
     /// Provides meta data to code generators about a
-    /// particular method
+    /// particular method.
     /// </summary>
     public class MethodGenerationInfo
     {

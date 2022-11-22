@@ -8,10 +8,7 @@ using System.Text;
 using Bam.Net.Logging;
 using System.IO;
 using Bam.Net.ServiceProxy;
-using Bam.Net.Server;
 using Bam.Net.Server.Renderers;
-using Bam.Net.Configuration;
-using System.IO.Compression;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using Bam.Net.Logging.Http;
@@ -20,7 +17,7 @@ using DefaultNamespace;
 
 namespace Bam.Net.Server
 {
-    public abstract class Responder : Loggable, IResponder
+    public abstract class Responder : Loggable, IHttpResponder
     {
         readonly Dictionary<string, string> _contentTypes;        
         public Responder(BamConf conf)
@@ -43,8 +40,9 @@ namespace Bam.Net.Server
             _respondToPrefixes = new List<string>();
             _ignorePrefixes = new List<string>();
 
-            AddRespondToPrefix(ResponderSignificantName);
-            ApplicationServiceRegistry = conf?.Server?.LoadApplicationServiceRegistry()?.Result;
+            AddRespondToPrefix(ResponderName);
+            BamServer bamServer = conf?.Server ?? BamServer.Current;
+            ApplicationServiceRegistry = bamServer.LoadApplicationServiceRegistryAsync()?.Result;
         }
 
         public Responder(BamConf conf, ILogger logger)
@@ -108,16 +106,10 @@ namespace Bam.Net.Server
         }
 
         Fs _serverRoot;
-        public Fs ServerRoot
+        public virtual Fs ServerRoot
         {
-            get
-            {
-                return _serverRoot ?? BamConf.Fs;
-            }
-            protected set
-            {
-                _serverRoot = value;
-            }
+            get => _serverRoot ?? BamConf.Fs;
+            protected set => _serverRoot = value;
         }
 
         /// <summary>
@@ -158,12 +150,6 @@ namespace Bam.Net.Server
         }
 
         public abstract bool TryRespond(IHttpContext context);
-
-        public static void SendResponse(IHttpContext context, int code, object dynamicObjectHeaders = null)
-        {
-            SendResponse(context, HttpStatusCodeHandler.Get(code), dynamicObjectHeaders ?? new object());
-        }
-
         public static void SendResponse(IHttpContext context, HttpStatusCodeHandler handler)
         {
             SendResponse(context, handler.Handle(), handler.Code);
@@ -218,7 +204,6 @@ namespace Bam.Net.Server
 
         protected string GetContentTypeForPath(string path)
         {
-            string contentType = string.Empty;
             string ext = Path.GetExtension(path);
             return GetContentTypeForExtension(ext);
         }
@@ -278,24 +263,7 @@ namespace Bam.Net.Server
             context.Response.OutputStream.Close();
         }
 
-        protected static void WireResponseLogging(IResponder responder, ILogger logger)
-        {
-            responder.Responded += (r, context) => logger.AddEntry("*** ({0}) Responded ***\r\n{1}", LogEventType.Information, r.Name, context.Request.PropertiesToString());
-            responder.DidNotRespond += (r, context) => logger.AddEntry("*** ({0}) Didn't Respond ***\r\n{1}", LogEventType.Warning, r.Name, context.Request.PropertiesToString());
-            responder.ContentNotFound += (r, context, paths) =>
-            {
-                StringBuilder formattedPaths = new StringBuilder();
-                paths.Each(path => formattedPaths.AppendLine($"{path}"));
-                logger.AddEntry("*** ({0}) Content Not Found ***\r\n{1}\r\n{2}", LogEventType.Warning, r.Name, formattedPaths.ToString(), context.Request.PropertiesToString());
-            };
-        }
-
-        protected void WireResponseLogging(ILogger logger)
-        {
-            WireResponseLogging(this, logger);
-        }
-
-        protected internal void OnResponded(IResponder responder, IHttpContext context)
+        protected internal void OnResponded(IHttpResponder responder, IHttpContext context)
         {
             Task.Run(() => Responded?.Invoke(responder, context));
         }
@@ -310,12 +278,12 @@ namespace Bam.Net.Server
             Task.Run(() => DidNotRespond?.Invoke(this, context));
         }
 
-        protected internal void OnDidNotRespond(IResponder responder, IHttpContext context)
+        protected internal void OnDidNotRespond(IHttpResponder responder, IHttpContext context)
         {
             Task.Run(() => DidNotRespond?.Invoke(responder, context));
         }
         
-        protected internal void OnContentNotFound(IResponder responder, IHttpContext context, string[] checkedPaths)
+        protected internal void OnContentNotFound(IHttpResponder responder, IHttpContext context, string[] checkedPaths)
         {
             Task.Run(() =>
             {
@@ -334,6 +302,17 @@ namespace Bam.Net.Server
             }
 
             _respondToPrefixes.Add(prefix);
+        }
+        protected static void WireResponseLogging(IHttpResponder responder, ILogger logger)
+        {
+            responder.Responded += (r, context) => logger.AddEntry("*** ({0}) Responded ***\r\n{1}", LogEventType.Information, r.Name, context.Request.PropertiesToString());
+            responder.DidNotRespond += (r, context) => logger.AddEntry("*** ({0}) Didn't Respond ***\r\n{1}", LogEventType.Warning, r.Name, context.Request.PropertiesToString());
+            responder.ContentNotFound += (r, context, paths) =>
+            {
+                StringBuilder formattedPaths = new StringBuilder();
+                paths.Each(path => formattedPaths.AppendLine($"{path}"));
+                logger.AddEntry("*** ({0}) Content Not Found ***\r\n{1}\r\n{2}", LogEventType.Warning, r.Name, formattedPaths.ToString(), context.Request.PropertiesToString());
+            };
         }
 
         readonly List<string> _ignorePrefixes;
@@ -390,22 +369,22 @@ namespace Bam.Net.Server
         /// <summary>
         /// The name of the current responder with the "Responder" suffix removed.
         /// </summary>
-        protected internal virtual string ResponderSignificantName
+        protected internal virtual string ResponderName
         {
             get
             {
-                string responderSignificantName = this.Name;
-                if (responderSignificantName.EndsWith("Responder", StringComparison.InvariantCultureIgnoreCase))
+                string responderName = this.Name;
+                if (responderName.EndsWith("Responder", StringComparison.InvariantCultureIgnoreCase))
                 {
-                    responderSignificantName = responderSignificantName.Truncate(9);
+                    responderName = responderName.Truncate(9);
                 }
-                return responderSignificantName;
+                return responderName;
             }
         }
 
         protected static bool ShouldZip(IRequest request)
         {
-            if (request.Headers["Accept-Encoding"].DelimitSplit(",").ToList().Contains("gzip"))
+            if ((bool)request.Headers["Accept-Encoding"]?.DelimitSplit(",").ToList().Contains("gzip"))
             {
                 return true;
             }

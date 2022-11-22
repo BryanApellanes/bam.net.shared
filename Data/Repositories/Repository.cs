@@ -215,7 +215,7 @@ namespace Bam.Net.Data.Repositories
                 FireEvent(Created, new RepositoryEventArgs(result, type));
 			}
 
-            if(result is RepoData data)
+            if (result is RepoData data)
             {
                 data.IsPersisted = true;
                 data.Repository = this;
@@ -374,7 +374,7 @@ namespace Bam.Net.Data.Repositories
             {
                 IEnumerable<object> toDelete = Query(type, filter);
                 count = 0;
-                if(toDelete != null)
+                if (toDelete != null)
                 {
                     object[] arr = toDelete.ToArray();
                     count = arr.Length;

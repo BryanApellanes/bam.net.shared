@@ -29,8 +29,8 @@ namespace Bam.Net.Automation
             Args.ThrowIf(string.IsNullOrEmpty(daemonInfo.Host), "Host not specified");
             Args.ThrowIf(string.IsNullOrEmpty(daemonInfo.Name), "Name not specified");
 
-            string directoryPathOnRemote = Path.Combine(Paths.Sys, daemonInfo.Name);
-            FileInfo daemonFile = new FileInfo(daemonInfo.FileName);
+            string directoryPathOnRemote = Path.Combine(BamHome.SystemRoot, daemonInfo.Name);
+            
             KillRemoteProcess(daemonInfo.Host, daemonInfo.FileName);
             if (daemonInfo.Copy)
             {

@@ -13,29 +13,34 @@ using Bam.Net.Yaml;
 using System.IO;
 using System.Reflection;
 using Bam.Net.ServiceProxy;
-using Bam.Net.ServiceProxy.Secure;
+using Bam.Net.ServiceProxy.Encryption;
 using Bam.Net.Web;
 using Bam.Net.Server.Renderers;
 using Bam.Net.Presentation.Html;
 using Bam.Net.Configuration;
-
 using System.Threading.Tasks;
 using Bam.Net.Application;
 using Bam.Net.Presentation;
-//using Bam.Net.Schema.Org.Things;
 using Bam.Net.Server.PathHandlers;
 using Bam.Net.Services;
+using Bam.Net.CoreServices;
+using Bam.Net.Server.ServiceProxy;
 
 namespace Bam.Net.Server
 {
     /// <summary>
     /// Responder responsible for generating service proxies
-    /// and responding to service proxy requests
+    /// and responding to service proxy requests.
     /// </summary>
-    public partial class ServiceProxyResponder : Responder, IInitialize<ServiceProxyResponder>
+    public class ServiceProxyResponder : Responder, IInitialize<ServiceProxyResponder>
     {
         public const string ServiceProxyRelativePath = "~/services";
         const string MethodFormPrefixFormat = "/{0}/MethodForm";
+
+        private ResponderContextHandlerResolver<ServiceProxyResponder> _requestHandlerResolver;
+
+        public ServiceProxyResponder() : base(new BamConf(), Log.Default)
+        { }
 
         public ServiceProxyResponder(BamConf conf, ILogger logger)
             : base(conf, logger)
@@ -43,38 +48,49 @@ namespace Bam.Net.Server
             _commonServiceProvider = new Incubator();
             _appServiceProviders = new Dictionary<string, Incubator>();
             _appSecureChannels = new Dictionary<string, SecureChannel>();
-            _commonSecureChannel = new SecureChannel();
+            
             _clientProxyGenerators = new Dictionary<string, IClientProxyGenerator>();
+            _requestHandlerResolver = new ResponderContextHandlerResolver<ServiceProxyResponder>(this);
+
             RendererFactory = new WebRendererFactory(logger);
-            ExecutionRequestResolver = new ExecutionRequestResolver();
+            WebServiceProxyDescriptorsProvider = new WebServiceProxyDescriptorsProvider(this);
+            _commonSecureChannel = new SecureChannel() { WebServiceProxyDescriptorsProvider = WebServiceProxyDescriptorsProvider };
+
+            SecureChannelSessionDataManager = new SecureChannelSessionDataManager();               
+            ServiceProxyInvocationReader = new ServiceProxyInvocationReader(SecureChannelSessionDataManager);
             ApplicationServiceSourceResolver = new ApplicationServiceSourceResolver();
             ApplicationServiceRegistryResolver = new ApplicationServiceRegistryResolver();
             ServiceCompilationExceptionReporter = new ServiceCompilationExceptionReporter();
+
+            _requestHandlerResolver.AddPathNameHandler<MethodFormContextHandler>("MethodForm");
+            _requestHandlerResolver.AddPathNameHandler<ProxyCodeContextHandler>("ProxyCode");
+            _requestHandlerResolver.AddPathNameHandler<ServiceProxyContextHandler>("Invoke", true);
 
             AddCommonService(_commonSecureChannel);
             AddClientProxyGenerator(new CsClientProxyGenerator(), "proxies.cs", "csproxies", "csharpproxies");
             AddClientProxyGenerator(new JsClientProxyGenerator(), "proxies.js", "jsproxies", "javascriptproxies");
             AddClientProxyGenerator(new JsWebServiceProxyGenerator(), "webservices.js", "webservices", "webproxies.js", "webproxies");
 
-            CommonServiceAdded += (type, obj) =>
-            {
-                CommonSecureChannel.ServiceProvider.Set(type, obj);
-            };
-            CommonServiceRemoved += (type) =>
-            {
-                CommonSecureChannel.ServiceProvider.Remove(type);
-            };
+            CommonServiceAdded += (type, obj) => CommonSecureChannel.WebServiceRegistry.Set(type, obj);
+            CommonServiceRemoved += (type) => CommonSecureChannel.WebServiceRegistry.Remove(type);
             AppServiceAdded += (appName, type, instance) =>
             {
                 if (!AppSecureChannels.ContainsKey(appName))
                 {
-                    SecureChannel channel = new SecureChannel();
-                    channel.ServiceProvider.CopyFrom(CommonServiceProvider, true);
+                    SecureChannel channel = new SecureChannel() { WebServiceProxyDescriptorsProvider = WebServiceProxyDescriptorsProvider };
+                    channel.WebServiceRegistry.CopyFrom(CommonServiceProvider, true);
                     AppSecureChannels.Add(appName, channel);
                 }
 
-                AppSecureChannels[appName].ServiceProvider.Set(type, instance, false);
+                AppSecureChannels[appName].WebServiceRegistry.Set(type, instance, false);
             };
+        }
+
+        private bool SendMethodForm(IHttpContext context)
+        {
+            // TODO: use InputFormProvider to send method form
+            Logger.AddEntry("{0} method is not currently supported by this platform", nameof(SendMethodForm));
+            return false;
         }
 
         protected virtual void HandleCompilationException(object sender, RoslynCompilationExceptionEventArgs args)
@@ -88,12 +104,32 @@ namespace Bam.Net.Server
                 svcCompilationErrors.Directory.Create();
             }
             info.ToYaml().SafeWriteToFile(svcCompilationErrors.FullName);
+
+            CompilationException?.Invoke(this, args);
         }
-        
+
+        ApplicationServiceRegistry _dependencyInjectionServiceRegistry;
+        public ApplicationServiceRegistry DependencyInjectionServiceRegistry
+        {
+            get
+            {
+                if(_dependencyInjectionServiceRegistry == null)
+                {
+                    _dependencyInjectionServiceRegistry = ApplicationServiceRegistry.Current;
+                }
+                return _dependencyInjectionServiceRegistry;
+            }
+            set
+            {
+                _dependencyInjectionServiceRegistry = value;
+            }
+        }
+
         [Inject]
-        public IExecutionRequestResolver ExecutionRequestResolver { get; set; }
+        public IServiceProxyInvocationReader ServiceProxyInvocationReader { get; set; }
 
         private IApplicationServiceSourceResolver _applicationServiceSourceResolver;
+
         [Inject]
         public IApplicationServiceSourceResolver ApplicationServiceSourceResolver
         {
@@ -104,6 +140,12 @@ namespace Bam.Net.Server
                 _applicationServiceSourceResolver.SubscribeOnce( nameof(_applicationServiceSourceResolver.CompilationException),(o, a) => HandleCompilationException(o, (RoslynCompilationExceptionEventArgs) a));
             }
         }
+
+        [Inject]
+        public IWebServiceProxyDescriptorsProvider WebServiceProxyDescriptorsProvider { get; set; }
+
+        [Inject]
+        public ISecureChannelSessionDataManager SecureChannelSessionDataManager { get; set; }
 
         [Inject]
         public IApplicationServiceRegistryResolver ApplicationServiceRegistryResolver { get; set; }
@@ -138,14 +180,14 @@ namespace Bam.Net.Server
         {
             webServiceRegistry.Set(typeof(SecureChannel), CommonSecureChannel);
             _commonServiceProvider = webServiceRegistry;
-            CommonSecureChannel.ServiceProvider = webServiceRegistry;
+            CommonSecureChannel.WebServiceRegistry = webServiceRegistry;
         }
 
         public void SetApplicationWebServices(string applicationName, WebServiceRegistry webServiceRegistry)
         {
             webServiceRegistry.Set(typeof(SecureChannel), _appSecureChannels[applicationName]);
             _appServiceProviders[applicationName] = webServiceRegistry;
-            _appSecureChannels[applicationName].ServiceProvider = webServiceRegistry;
+            _appSecureChannels[applicationName].WebServiceRegistry = webServiceRegistry;
         }
 
         public void AddClientProxyGenerator<T>(T proxyGenerator, params string[] fileNames) where T : IClientProxyGenerator
@@ -276,6 +318,7 @@ namespace Bam.Net.Server
             _commonServiceProvider.Set(type, instanciator);
             OnCommonServiceAdded(type, instanciator);
         }
+
         /// <summary>
         /// Add the specified instance as an executor
         /// </summary>
@@ -329,7 +372,7 @@ namespace Bam.Net.Server
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public bool Contains<T>()
+        public bool ContainsService<T>()
         {
             return _commonServiceProvider.Contains<T>();
         }
@@ -366,7 +409,7 @@ namespace Bam.Net.Server
         /// this responder is last in line.
         /// </summary>
         /// <param name="context"></param>
-        ///// <returns></returns>
+        /// <returns></returns>
         public override bool MayRespond(IHttpContext context)
         {
             return true;
@@ -466,7 +509,6 @@ namespace Bam.Net.Server
         
         public void RegisterProxiedClasses()
         {
-            string serviceProxyRelativePath = ServiceProxyRelativePath;
             List<string> registered = new List<string>();
             ForEachProxiedClass((type) =>
             {
@@ -520,98 +562,36 @@ namespace Bam.Net.Server
             });
         }
 
-        private void SubscribeIfLoggable(object instance)
+        public override bool TryRespond(IHttpContext httpContext)
         {
-            if (instance is Loggable loggable)
-            {
-                loggable.Subscribe(Logger);
-            }
+            return TryRespond(httpContext, out _);
         }
 
-        private void ForEachProxiedClass(Action<Type> doForEachProxiedType)
-        {
-            string serviceProxyRelativePath = ServiceProxyRelativePath;
-            DirectoryInfo serviceDir = new DirectoryInfo(ServerRoot.GetAbsolutePath(serviceProxyRelativePath));
-            if (serviceDir.Exists)
-            {
-                ForEachProxiedClass(serviceDir, doForEachProxiedType);
-            }
-            else
-            {
-                Logger.AddEntry("{0}:{1} directory was not found", LogEventType.Warning, this.Name, serviceDir.FullName);
-            }
-        }
-
-        private void ForEachProxiedClass(AppConf appConf, DirectoryInfo serviceDir, Action<Type> doForEachProxiedType)
-        {
-            foreach (string searchPattern in appConf.ServiceSearchPattern)
-            {
-                ForEachProxiedClass(searchPattern, serviceDir, doForEachProxiedType);
-            }
-        }
-
-        private void ForEachProxiedClass(DirectoryInfo serviceDir, Action<Type> doForEachProxiedType)
-        {
-            foreach (string searchPattern in BamConf.ServiceSearchPattern.DelimitSplit(",", "|"))
-            {
-                ForEachProxiedClass(searchPattern, serviceDir, doForEachProxiedType);
-            }
-        }
-
-        private void ForEachProxiedClass(string searchPattern, DirectoryInfo serviceDir, Action<Type> doForEachProxiedType)
-        {
-            Bam.Net.ServiceProxy.ApplicationServiceSourceResolver.ForEachProxiedClass(BamConf, searchPattern, serviceDir, doForEachProxiedType);
-        }
-        
-        public override bool TryRespond(IHttpContext context)
+        public bool TryRespond(IHttpContext httpContext, out IHttpResponse response)
         {
             try
             {
-                RequestWrapper request = context.Request as RequestWrapper;
-                ResponseWrapper response = context.Response as ResponseWrapper;
-                string appName = ApplicationNameResolver.ResolveApplicationName(context);
+                ResponderContextHandler<ServiceProxyResponder> contextHandler = _requestHandlerResolver.ResolveHandler(httpContext);
 
-                bool responded = false;
+                response = contextHandler.HandleContextAsync(httpContext).Result;
 
-                if (request != null && response != null)
+                if (response.StatusCode >= 200 && response.StatusCode <= 299)
                 {
-                    string path = request.Url.AbsolutePath.ToLowerInvariant();
-
-                    if (path.StartsWith("/{0}"._Format(ResponderSignificantName.ToLowerInvariant())))
-                    {
-                        responded = path.StartsWith(MethodFormPrefixFormat._Format(ResponderSignificantName).ToLowerInvariant()) ? SendMethodForm(context) : SendProxyCode(context);
-                    }
-                    
-                    if(!responded)
-                    {
-                        ExecutionRequest execRequest = ResolveExecutionRequest(context, appName);
-                        
-                        responded = execRequest.Execute();
-                        if (responded)
-                        {
-                            // TODO: make this configurable
-                            response.AddHeader("Access-Control-Allow-Origin", "*");
-                            response.AddHeader("Access-Control-Allow-Headers", "Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
-                            response.AddHeader("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
-                            // ---
-                            RenderResult(appName, path, execRequest);
-                        }
-                    }
+                    response.Send(httpContext.Response);
+                    OnResponded(httpContext);
+                    return true;
                 }
-                if (responded)
+                else if (response.StatusCode == 404 || (response.StatusCode >= 500 || response.StatusCode <= 599))
                 {
-                    OnResponded(context);
+                    OnDidNotRespond(httpContext);
                 }
-                else
-                {
-                    OnDidNotRespond(context);
-                }
-                return responded;
+                return false;
             }
             catch (Exception ex)
             {
+                response = null;
                 Logger.AddEntry("An error occurred in {0}.{1}: {2}", ex, this.GetType().Name, MethodBase.GetCurrentMethod().Name, ex.Message);
-                OnDidNotRespond(context);
+                OnDidNotRespond(httpContext);
                 return false;
             }
         }
@@ -699,77 +679,14 @@ namespace Bam.Net.Server
             }
         }
 
-        public virtual ExecutionRequest ResolveExecutionRequest(IHttpContext httpContext, string appName)
-        {
-            GetServiceProxies(appName, out Incubator proxiedClasses, out List<ProxyAlias> aliases);
-
-            return ExecutionRequestResolver.ResolveExecutionRequest(httpContext, proxiedClasses, aliases.ToArray());
-        }
-
-        private void RenderResult(string appName, string path, ExecutionRequest execRequest)
-        {
-            string ext = Path.GetExtension(path).ToLowerInvariant();
-            if (string.IsNullOrEmpty(ext))
-            {
-                AppConf appConf = this.BamConf[appName];
-                if (appConf != null)
-                {
-                    LayoutConf pageConf = new LayoutConf(appConf);
-                    string fileName = Path.GetFileName(path);
-                    string json = pageConf.ToJson(true);
-                    appConf.AppRoot.WriteFile($"~/{appConf.HtmlDir}/{fileName}.layout", json);
-                }
-            }
-
-            RendererFactory.Respond(execRequest, ContentResponder);
-        }
-
-        private void GetServiceProxies(string appName, out Incubator proxiedClasses, out List<ProxyAlias> aliases)
-        {
-            proxiedClasses = new Incubator();
-
-            aliases = new List<ProxyAlias>(GetProxyAliases(ServiceProxySystem.Incubator));
-            proxiedClasses.CopyFrom(ServiceProxySystem.Incubator, true);
-
-            aliases.AddRange(GetProxyAliases(CommonServiceProvider));
-            proxiedClasses.CopyFrom(CommonServiceProvider, true);
-
-            if (AppServiceProviders.ContainsKey(appName))
-            {
-                Incubator appIncubator = AppServiceProviders[appName];
-                aliases.AddRange(GetProxyAliases(appIncubator));
-                proxiedClasses.CopyFrom(appIncubator, true);
-            }
-        }
-
-        private ProxyAlias[] GetProxyAliases(Incubator incubator)
-        {
-            List<ProxyAlias> results = new List<ProxyAlias>();
-            results.AddRange(BamConf.ProxyAliases);
-            incubator.ClassNames.Each(cn =>
-            {
-                Type currentType = incubator[cn];
-                ProxyAttribute attr;
-                if (currentType.HasCustomAttributeOfType<ProxyAttribute>(out attr))
-                {
-                    if (!string.IsNullOrEmpty(attr.VarName) && !attr.VarName.Equals(currentType.Name))
-                    {
-                        results.Add(new ProxyAlias(attr.VarName, currentType));
-                    }
-                }
-            });
-
-            return results.ToArray();
-        }
-
         readonly Dictionary<string, IClientProxyGenerator> _clientProxyGenerators;
         private bool SendProxyCode(IHttpContext context)
         {
             bool result = false;
             IRequest request = context.Request;
             string path = request.Url.AbsolutePath.ToLowerInvariant();
-            string appName = ApplicationNameResolver.ResolveApplicationName(context);
-            bool includeLocalMethods = request.UserHostAddress.StartsWith("127.0.0.1");
+            string appName = ApplicationNameResolver.ResolveApplicationName(context.Request);
+            //bool includeLocalMethods = request.UserHostAddress.StartsWith("127.0.0.1");
             string[] split = path.DelimitSplit("/", ".");
 
             if (split.Length >= 2)
@@ -791,12 +708,47 @@ namespace Bam.Net.Server
             return result;
         }
 
-        private LayoutModel GetLayoutModel(string appName)
+        private void ForEachProxiedClass(AppConf appConf, DirectoryInfo serviceDir, Action<Type> doForEachProxiedType)
         {
-            AppConf conf = BamConf.AppConfigs.FirstOrDefault(c => c.Name.Equals(appName));
-            LayoutConf defaultLayoutConf = new LayoutConf(conf);
-            LayoutModel layoutModel = defaultLayoutConf.CreateLayoutModel();
-            return layoutModel;
+            foreach (string searchPattern in appConf.ServiceSearchPattern)
+            {
+                ForEachProxiedClass(searchPattern, serviceDir, doForEachProxiedType);
+            }
+        }
+
+        private void ForEachProxiedClass(DirectoryInfo serviceDir, Action<Type> doForEachProxiedType)
+        {
+            foreach (string searchPattern in BamConf.ServiceSearchPattern.DelimitSplit(",", "|"))
+            {
+                ForEachProxiedClass(searchPattern, serviceDir, doForEachProxiedType);
+            }
+        }
+
+        private void ForEachProxiedClass(string searchPattern, DirectoryInfo serviceDir, Action<Type> doForEachProxiedType)
+        {
+            Bam.Net.ServiceProxy.ApplicationServiceSourceResolver.ForEachProxiedClass(BamConf, searchPattern, serviceDir, doForEachProxiedType);
+        }
+
+        private void SubscribeIfLoggable(object instance)
+        {
+            if (instance is Loggable loggable)
+            {
+                loggable.Subscribe(Logger);
+            }
+        }
+
+        private void ForEachProxiedClass(Action<Type> doForEachProxiedType)
+        {
+            string serviceProxyRelativePath = ServiceProxyRelativePath;
+            DirectoryInfo serviceDir = new DirectoryInfo(ServerRoot.GetAbsolutePath(serviceProxyRelativePath));
+            if (serviceDir.Exists)
+            {
+                ForEachProxiedClass(serviceDir, doForEachProxiedType);
+            }
+            else
+            {
+                Logger.AddEntry("{0}:{1} directory was not found", LogEventType.Warning, this.Name, serviceDir.FullName);
+            }
         }
     }
 }

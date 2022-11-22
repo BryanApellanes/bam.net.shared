@@ -44,12 +44,12 @@ namespace Bam.Net.Server
         }
         public string GetApplicationName()
         {
-            return ResolveApplicationName(HttpContext);
+            return ResolveApplicationName(HttpContext.Request);
         }
 
-        public string ResolveApplicationName(IHttpContext context)
+        public string ResolveApplicationName(IRequest request)
         {
-            return ResolveApplicationName(context.Request.Url, BamConf.AppConfigs);
+            return ResolveApplicationName(request.Url, BamConf.AppConfigs);
         }
 
         public static string ResolveApplicationName(Uri uri, AppConf[] appConfigs = null)

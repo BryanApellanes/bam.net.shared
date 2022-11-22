@@ -12,10 +12,18 @@ using System.IO;
 
 namespace Bam.Net.Encryption
 {
+    /// <summary>
+    /// Represents a class that encrypts data with a provided password.
+    /// </summary>
     public class PasswordEncrypted
     {
         protected PasswordEncrypted() { }
 
+        /// <summary>
+        /// Create a PasswordEncrypted instance.
+        /// </summary>
+        /// <param name="data">The data to encrypt.</param>
+        /// <param name="password">The password used to encrypt the data.</param>
         public PasswordEncrypted(string data, string password)
         {
             this.Data = data;
@@ -27,18 +35,12 @@ namespace Bam.Net.Encryption
             return p.Cipher;
         }
 
-        public string Value
-        {
-            get
-            {
-                return Cipher;
-            }
-        }
+        public virtual string Value => Cipher;
 
         public string Data
         {
-            internal get;
-            set;
+            get;
+            protected set;
         }
 
         public string Cipher
@@ -50,20 +52,14 @@ namespace Bam.Net.Encryption
         string _password;
         protected internal string Password
         {
-            get
-            {
-                return _password;
-            }
-            set
-            {
-                Encrypt(value);
-            }
+            get => _password;
+            set => Encrypt(value);
         }
 
         public string Encrypt(string password)
         {
             _password = password;
-            Cipher = Crypto.EncryptStringAES(Data, password);
+            Cipher = Rijndael.EncryptStringAES(Data, password);
             return Cipher;
         }
     }

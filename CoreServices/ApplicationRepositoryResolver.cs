@@ -31,7 +31,7 @@ namespace Bam.Net.CoreServices
         }
         public IRepository GetRepository(IHttpContext context, int retryCount = 3)
         {
-            string appName = ApplicationNameResolver.ResolveApplicationName(context);
+            string appName = ApplicationNameResolver.ResolveApplicationName(context.Request);
             if(_repositoriesByAppName.TryGetValue(appName, out IRepository repo))
             {
                 return repo;
@@ -58,7 +58,7 @@ namespace Bam.Net.CoreServices
             {
                 dbDirectory.Create();
             }
-            SQLiteDatabase db = new SQLiteDatabase(dbDirectory.FullName, ApplicationNameResolver.ResolveApplicationName(context));
+            SQLiteDatabase db = new SQLiteDatabase(dbDirectory.FullName, ApplicationNameResolver.ResolveApplicationName(request));
             return new DaoRepository(db, Logger);
         }
     }

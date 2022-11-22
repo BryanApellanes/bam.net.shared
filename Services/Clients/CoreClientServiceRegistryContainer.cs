@@ -32,28 +32,28 @@ namespace Bam.Net.Services.Clients
         {
             _factories = new Dictionary<ProcessModes, Func<ServiceRegistry>>()
             {
-                { ProcessModes.Dev, CreateTestingServicesRegistryForDev },
-                { ProcessModes.Test, CreateTestingServicesRegistryForTest },
-                { ProcessModes.Prod, CreateTestingServicesRegistryForProd }
+                { ProcessModes.Dev, CreateServiceRegistryForDev },
+                { ProcessModes.Test, CreateServiceRegistryForTest },
+                { ProcessModes.Prod, CreateServiceRegistryForProd }
             };
         }
 
         [ServiceRegistryLoader(RegistryName, ProcessModes.Dev)]
-        public static ServiceRegistry CreateTestingServicesRegistryForDev()
+        public static ServiceRegistry CreateServiceRegistryForDev()
         {
             CoreClient coreClient = new CoreClient(DefaultConfiguration.GetAppSetting("CoreHostName", "int-heart.bamapps.net"), DefaultConfiguration.GetAppSetting("CorePort", "80").ToInt());
             return GetServiceRegistry(coreClient);
         }
 
         [ServiceRegistryLoader(RegistryName, ProcessModes.Test)]
-        public static ServiceRegistry CreateTestingServicesRegistryForTest()
+        public static ServiceRegistry CreateServiceRegistryForTest()
         {
             CoreClient coreClient = new CoreClient("int-heart.bamapps.net", 80);
             return GetServiceRegistry(coreClient);
         }
 
         [ServiceRegistryLoader(RegistryName, ProcessModes.Prod)]
-        public static ServiceRegistry CreateTestingServicesRegistryForProd()
+        public static ServiceRegistry CreateServiceRegistryForProd()
         {
             CoreClient coreClient = new CoreClient("heart.bamapps.net", 80);
             return GetServiceRegistry(coreClient);
@@ -71,15 +71,19 @@ namespace Bam.Net.Services.Clients
 
         private static ServiceRegistry GetServiceRegistry(CoreClient coreClient)        
         {
-            string contentRoot = DefaultConfiguration.GetAppSetting("ContentRoot", "/bam/content");
+            string contentRoot = DefaultConfiguration.GetAppSetting("ContentRoot", BamHome.ContentPath);
+            
+            // TODO: do something with this information
             string organization = DefaultConfiguration.GetAppSetting("Organization", "PUBLIC");
-            string applicationName = DefaultConfiguration.GetAppSetting("ApplicationName", "UNKNOWN");
+            string applicationName = DefaultConfiguration.GetAppSetting("ApplicationName", CoreServices.ApplicationRegistration.Data.Application.Unknown.Name);
             string databasesPath = Path.Combine(contentRoot, "Databases");
+            // -- 
+
             string workspaceDirectory = Path.Combine(contentRoot, "Workspace");
 
             ApplicationLogDatabase logDb = new ApplicationLogDatabase(workspaceDirectory);
 
-            return (ServiceRegistry)(new ServiceRegistry())
+            return new ServiceRegistry()
                 .For<CoreClient>().Use(coreClient)
                 .For<ApplicationLogDatabase>().Use(logDb)
                 .For<ILogger>().Use<ApplicationLogger>()

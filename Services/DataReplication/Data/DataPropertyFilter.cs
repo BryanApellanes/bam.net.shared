@@ -49,7 +49,7 @@ namespace Bam.Net.Services.DataReplication.Data
             return filter;
         }
 
-        public static DataPropertyFilter Where(object property, QueryOperator queryOperator, object value)
+        public new static DataPropertyFilter Where(object property, QueryOperator queryOperator, object value)
         {
             return DataProperty.FilterWhere(property, queryOperator, value);
         }

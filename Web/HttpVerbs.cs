@@ -6,6 +6,9 @@ namespace Bam.Net.Web
         Get,
         Put,
         Patch,
-        Delete
+        Delete,
+        Head,
+        Options,
+        Trace,
     }
 }

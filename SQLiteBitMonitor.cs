@@ -28,7 +28,7 @@ namespace Bam.Net
                             {
                                 string assemblyDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
                                 string fileName = Path.Combine(assemblyDir, string.Format("SQLite\\{0}\\System.Data.SQLite.dll", IntPtr.Size == 4 ? "x86" : "x64"));
-                                Console.WriteLine("Loading SQLite from: {0}"._Format(fileName));
+                                Console.WriteLine($"Loading SQLite from: {fileName}");
                                 return Assembly.LoadFrom(fileName);
                             }
                             return null;

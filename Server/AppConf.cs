@@ -17,7 +17,7 @@ using Newtonsoft.Json;
 using System.Xml.Serialization;
 using Bam.Net.Incubation;
 using Bam.Net.Configuration;
-using Bam.Net.ServiceProxy.Secure;
+using Bam.Net.ServiceProxy.Encryption;
 using YamlDotNet.Serialization;
 
 namespace Bam.Net.Server
@@ -55,7 +55,7 @@ namespace Bam.Net.Server
         {
             Name = name;
             GenerateDao = true;
-            Bindings = new HostPrefix[] { new HostPrefix { HostName = name, Port = port, Ssl = ssl } };
+            Bindings = new HostBinding[] { new HostBinding { HostName = name, Port = port, Ssl = ssl } };
         }
 
         public AppConf(BamConf serverConf, string name)
@@ -66,7 +66,7 @@ namespace Bam.Net.Server
 
         public static AppConf FromDefaultConfig()
         {
-            return new AppConf { Name = DefaultConfiguration.GetAppSetting("ApplicationName", ServiceProxy.Secure.Application.Unknown.Name) };
+            return new AppConf { Name = DefaultConfiguration.GetAppSetting("ApplicationName", CoreServices.ApplicationRegistration.Data.Application.Unknown.Name) };
         }
 
         public static AppConf FromConfig()
@@ -175,23 +175,23 @@ namespace Bam.Net.Server
 
         public AppServerConf AppServerConf { get; set; }
         
-        List<HostPrefix> _bindings;
+        List<HostBinding> _bindings;
         readonly object _bindingsLock = new object();
-        public HostPrefix[] Bindings
+        public HostBinding[] Bindings
         {
             get
             {
                 return _bindingsLock.DoubleCheckLock(ref _bindings, () =>
                 {
-                    List<HostPrefix> result = new List<HostPrefix>
+                    List<HostBinding> result = new List<HostBinding>
                     {
-                        new HostPrefix
+                        new HostBinding
                         {
                             HostName = $"{Name}.bamapps.net",
                             Port = 80,
                             Ssl = false
                         },
-                        new HostPrefix
+                        new HostBinding
                         {
                             HostName = Name,
                             Port = 8080,
@@ -202,7 +202,7 @@ namespace Bam.Net.Server
                     return result;
                 }).ToArray();
             }
-            set => _bindings = new List<HostPrefix>(value);
+            set => _bindings = new List<HostBinding>(value);
         }
 
         public AppSetting[] AppSettings { get; set; }

@@ -13,9 +13,7 @@ namespace Bam.Net
     /// A portable moment in time down to the millisecond
     /// </summary>
     public class Instant
-    {
-        public const string InterpolationFormat = "{Month}/{Day}/{Year};{Hour}.{Minute}.{Second}.{Millisecond}";
-        
+    {        
         public Instant()
         {
             this.Initialize();

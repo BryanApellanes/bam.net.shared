@@ -9,7 +9,7 @@ using Bam.Net.Data.Repositories;
 using Bam.Net.Server;
 using Bam.Net.Logging;
 using Bam.Net.Data;
-using Bam.Net.ServiceProxy.Secure;
+using Bam.Net.ServiceProxy.Encryption;
 using Bam.Net.CoreServices.Files;
 using Bam.Net.CoreServices.AssemblyManagement.Data.Dao.Repository;
 using Bam.Net.CoreServices.ServiceRegistration.Data.Dao.Repository;
@@ -147,7 +147,7 @@ namespace Bam.Net.CoreServices
                 .For<EmailComposer>().Use(userMgr.EmailComposer)
                 .For<IApplicationNameProvider>().Use<ApplicationRegistryService>()
                 .For<ApplicationRegistryService>().Use<ApplicationRegistryService>()
-                .For<IApiKeyResolver>().Use<ApplicationRegistryService>()
+                .For<IApiHmacKeyResolver>().Use<ApplicationRegistryService>()
                 .For<ISmtpSettingsProvider>().Use(userMgr)
                 .For<UserRegistryService>().Use<UserRegistryService>()
                 .For<ConfigurationService>().Use(configSvc)

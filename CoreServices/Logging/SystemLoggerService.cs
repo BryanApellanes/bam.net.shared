@@ -7,14 +7,14 @@ using Bam.Net.Data;
 using Bam.Net.Logging;
 using Bam.Net.Logging.Data;
 using Bam.Net.Server;
-using Bam.Net.ServiceProxy.Secure;
+using Bam.Net.ServiceProxy.Encryption;
 using Bam.Net.ServiceProxy;
 using System.Threading.Tasks;
 
 namespace Bam.Net.CoreServices
 {
     [Proxy("sysLoggerSvc")]
-    [ApiKeyRequired]
+    [ApiHmacKeyRequired]
     [ServiceSubdomain("syslogger")]
     public class SystemLoggerService: ApplicationProxyableService, ILog, ILogEventCommitter
     {

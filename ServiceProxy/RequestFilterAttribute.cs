@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Bam.Net.Server.ServiceProxy;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,6 +10,6 @@ namespace Bam.Net.ServiceProxy
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
     public abstract class RequestFilterAttribute: Attribute
     {
-        public abstract bool RequestIsAllowed(ExecutionRequest request, out string failureMessage);
+        public abstract bool RequestIsAllowed(ServiceProxyInvocation request, out string failureMessage);
     }
 }

@@ -262,7 +262,7 @@ namespace Bam.Net.Testing
                 string typeName = consoleMethod.Method.DeclaringType.Name;
                 ConstructorInfo ctor = consoleMethod.Method.DeclaringType.GetConstructor(Type.EmptyTypes);
                 if (ctor == null)
-                    ExceptionHelper.ThrowInvalidOperation("The declaring type {0} of method {1} does not have a parameterless constructor, test cannot be run.", typeName, consoleMethod.Method.Name);
+                    ExceptionExtensions.ThrowInvalidOperation("The declaring type {0} of method {1} does not have a parameterless constructor, test cannot be run.", typeName, consoleMethod.Method.Name);
 
                 object instance = ctor.Invoke(null);
                 instance.IsNotNull($"Unable to instantiate declaring type {typeName} of method {consoleMethod.Method.Name}");

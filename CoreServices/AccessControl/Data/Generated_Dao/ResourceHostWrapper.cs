@@ -25,11 +25,11 @@ namespace Bam.Net.CoreServices.AccessControl.Data.Wrappers
 
 		public ResourceHostWrapper(DaoRepository repository) : this()
 		{
-			this.Repository = repository;
+			this.DaoRepository = repository;
 		}
 
 		[JsonIgnore]
-		public DaoRepository Repository { get; set; }
+		public DaoRepository DaoRepository { get; set; }
 
 		[JsonIgnore]
 		public Dictionary<string, PropertyInfo> UpdatedXrefCollectionProperties { get; set; }
@@ -53,7 +53,7 @@ System.Collections.Generic.List<Bam.Net.CoreServices.AccessControl.Data.Resource
 			{
 				if (_resources == null)
 				{
-					_resources = Repository.ForeignKeyCollectionLoader<Bam.Net.CoreServices.AccessControl.Data.ResourceHost, Bam.Net.CoreServices.AccessControl.Data.Resource>(this).ToList();
+					_resources = DaoRepository.ForeignKeyCollectionLoader<Bam.Net.CoreServices.AccessControl.Data.ResourceHost, Bam.Net.CoreServices.AccessControl.Data.Resource>(this).ToList();
 				}
 				return _resources;
 			}

@@ -1,0 +1,2 @@
+Certificate generation - https://csharp.hotexamples.com/examples/Org.BouncyCastle.X509/X509V3CertificateGenerator/AddExtension/php-x509v3certificategenerator-addextension-method-examples.html
+Certificate generation and signing - https://gist.github.com/vivekkr12/c74f7ee08593a8c606ed96f4b62a208a

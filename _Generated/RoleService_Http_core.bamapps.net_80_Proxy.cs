@@ -8,14 +8,14 @@ namespace Bam.Net.CoreServices
 	using System;
 	using Bam.Net.Configuration;
 	using Bam.Net.ServiceProxy;
-	using Bam.Net.ServiceProxy.Secure;
+	using Bam.Net.ServiceProxy.Encryption;
 	using Bam.Net.CoreServices.Contracts;
 	using System.Collections.Generic;
 	using Bam.Net.CoreServices.ApplicationRegistration.Data;
 	using Bam.Net.UserAccounts;
 
     
-    public class RoleServiceClient: SecureServiceProxyClient<Bam.Net.CoreServices.Contracts.IRoleService>, Bam.Net.CoreServices.Contracts.IRoleService
+    public class RoleServiceClient: EncryptedServiceProxyClient<Bam.Net.CoreServices.Contracts.IRoleService>, Bam.Net.CoreServices.Contracts.IRoleService
     {
         public RoleServiceClient(): base(DefaultConfiguration.GetAppSetting("RoleServiceUrl", "http://core.bamapps.net/"))
         {
@@ -29,77 +29,77 @@ namespace Bam.Net.CoreServices
         public void AddUsersToRoles(System.String[] usernames, System.String[] roleNames)
         {
             object[] parameters = new object[] { usernames, roleNames };
-            Invoke("AddUsersToRoles", parameters);
+            InvokeServiceMethod("AddUsersToRoles", parameters);
         }
         public void CreateRole(System.String roleName)
         {
             object[] parameters = new object[] { roleName };
-            Invoke("CreateRole", parameters);
+            InvokeServiceMethod("CreateRole", parameters);
         }
         public Boolean DeleteRole(System.String roleName, System.Boolean throwOnPopulatedRole)
         {
             object[] parameters = new object[] { roleName, throwOnPopulatedRole };
-            return Invoke<Boolean>("DeleteRole", parameters);
+            return InvokeServiceMethod<Boolean>("DeleteRole", parameters);
         }
         public String[] FindUsersInRole(System.String roleName, System.String usernameToMatch)
         {
             object[] parameters = new object[] { roleName, usernameToMatch };
-            return Invoke<String[]>("FindUsersInRole", parameters);
+            return InvokeServiceMethod<String[]>("FindUsersInRole", parameters);
         }
         public String[] GetAllRoles()
         {
             object[] parameters = new object[] {  };
-            return Invoke<String[]>("GetAllRoles", parameters);
+            return InvokeServiceMethod<String[]>("GetAllRoles", parameters);
         }
         public String[] GetRolesForUser(System.String username)
         {
             object[] parameters = new object[] { username };
-            return Invoke<String[]>("GetRolesForUser", parameters);
+            return InvokeServiceMethod<String[]>("GetRolesForUser", parameters);
         }
         public String[] GetUsersInRole(System.String roleName)
         {
             object[] parameters = new object[] { roleName };
-            return Invoke<String[]>("GetUsersInRole", parameters);
+            return InvokeServiceMethod<String[]>("GetUsersInRole", parameters);
         }
         public Boolean IsUserInRole(System.String username, System.String roleName)
         {
             object[] parameters = new object[] { username, roleName };
-            return Invoke<Boolean>("IsUserInRole", parameters);
+            return InvokeServiceMethod<Boolean>("IsUserInRole", parameters);
         }
         public void RemoveUsersFromRoles(System.String[] usernames, System.String[] roleNames)
         {
             object[] parameters = new object[] { usernames, roleNames };
-            Invoke("RemoveUsersFromRoles", parameters);
+            InvokeServiceMethod("RemoveUsersFromRoles", parameters);
         }
         public Boolean RoleExists(System.String roleName)
         {
             object[] parameters = new object[] { roleName };
-            return Invoke<Boolean>("RoleExists", parameters);
+            return InvokeServiceMethod<Boolean>("RoleExists", parameters);
         }
         public Dictionary<System.String, System.String> GetSettings()
         {
             object[] parameters = new object[] {  };
-            return Invoke<Dictionary<System.String, System.String>>("GetSettings", parameters);
+            return InvokeServiceMethod<Dictionary<System.String, System.String>>("GetSettings", parameters);
         }
         public LoginResponse ConnectClient(Bam.Net.CoreServices.ApplicationRegistration.Data.Client client)
         {
             object[] parameters = new object[] { client };
-            return Invoke<LoginResponse>("ConnectClient", parameters);
+            return InvokeServiceMethod<LoginResponse>("ConnectClient", parameters);
         }
         public LoginResponse Login(System.String userName, System.String passHash)
         {
             object[] parameters = new object[] { userName, passHash };
-            return Invoke<LoginResponse>("Login", parameters);
+            return InvokeServiceMethod<LoginResponse>("Login", parameters);
         }
         public SignOutResponse EndSession()
         {
             object[] parameters = new object[] {  };
-            return Invoke<SignOutResponse>("EndSession", parameters);
+            return InvokeServiceMethod<SignOutResponse>("EndSession", parameters);
         }
         public String WhoAmI()
         {
             object[] parameters = new object[] {  };
-            return Invoke<String>("WhoAmI", parameters);
+            return InvokeServiceMethod<String>("WhoAmI", parameters);
         }
     }
 
@@ -109,7 +109,7 @@ namespace Bam.Net.CoreServices.Contracts
 	using System;
 	using Bam.Net.Configuration;
 	using Bam.Net.ServiceProxy;
-	using Bam.Net.ServiceProxy.Secure;
+	using Bam.Net.ServiceProxy.Encryption;
 	using Bam.Net.CoreServices.Contracts;
 	using System.Collections.Generic;
 	using Bam.Net.CoreServices.ApplicationRegistration.Data;
@@ -146,7 +146,7 @@ namespace Bam.Net.CoreServices
     using System;
     using Bam.Net;
     using Bam.Net.ServiceProxy;
-    using Bam.Net.ServiceProxy.Secure;
+    using Bam.Net.ServiceProxy.Encryption;
     using Bam.Net.CoreServices.Contracts;
 	using System;
 	using System.Collections.Generic;
@@ -181,11 +181,11 @@ namespace Bam.Net.CoreServices
 			}
 		}
 
-		public IApiKeyResolver ApiKeyResolver 
+		public IApiHmacKeyResolver ApiKeyResolver 
 		{
 			get
 			{
-				return (IApiKeyResolver)_proxyClient.Property("ApiKeyResolver", false);
+				return (IApiHmacKeyResolver)_proxyClient.Property("ApiKeyResolver", false);
 			}
 			set
 			{

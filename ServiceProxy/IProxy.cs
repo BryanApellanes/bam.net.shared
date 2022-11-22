@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Bam.Net.ServiceProxy.Secure;
+using Bam.Net.ServiceProxy.Encryption;
 
 namespace Bam.Net.ServiceProxy
 {
@@ -11,7 +11,7 @@ namespace Bam.Net.ServiceProxy
     {
         Type ProxiedType { get; }
         ServiceProxyClient Client { get; }
-        IApiKeyResolver ApiKeyResolver { get; set; }
+        IApiHmacKeyResolver ApiKeyResolver { get; set; }
         IApplicationNameProvider ClientApplicationNameProvider { get; set; }
         void SubscribeToClientEvent(string eventName, EventHandler handler);
     }

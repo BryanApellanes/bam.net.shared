@@ -11,11 +11,11 @@ namespace Bam.Net.Services.DataReplication
     public class EncryptedJournalManager : JournalManager
     {
         public EncryptedJournalManager(Journal journal, ISequenceProvider sequenceProvider, ITypeConverter typeConverter, ILogger logger = null) 
-            : this(journal, KeySet.ForApplication, sequenceProvider, typeConverter, logger)
+            : this(journal, Bam.Net.Encryption.Data.Files.KeySetFile.ForApplication, sequenceProvider, typeConverter, logger)
         {
         }
 
-        public EncryptedJournalManager(Journal journal, KeySet keySet, ISequenceProvider sequenceProvider, ITypeConverter typeConverter, ILogger logger = null)
+        public EncryptedJournalManager(Journal journal, IKeySet keySet, ISequenceProvider sequenceProvider, ITypeConverter typeConverter, ILogger logger = null)
             : base(sequenceProvider, new EncryptedJournalEntryValueFlusher(keySet), new EncryptedJournalEntryValueLoader(keySet), typeConverter, logger)
         {
             Journal = Journal;
@@ -26,6 +26,6 @@ namespace Bam.Net.Services.DataReplication
             journal.Loader = Loader;
         }
         
-        public KeySet KeySet { get; }
+        public IKeySet KeySet { get; }
     }
 }

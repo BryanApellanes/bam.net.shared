@@ -66,7 +66,7 @@ namespace Bam.Net.CoreServices
             get
             {
                 bool isVoidReturn = MethodGenerationInfo.IsVoidReturn;
-                string returnOrBlank = MethodGenerationInfo.IsVoidReturn ? "" : "return ";                
+                string returnOrBlank = isVoidReturn ? "" : "return ";                
                 return string.Format("{0}_proxyClient.{1}", returnOrBlank, MethodGenerationInfo.Method.Name);
             }
         }

@@ -80,7 +80,7 @@ namespace Bam.Net.Caching
         }
 
         /// <summary>
-        /// Queries the source repository and adds the results to the internal cache
+        /// Queries the source repository and adds the results to the internal cache.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="query"></param>
@@ -101,7 +101,7 @@ namespace Bam.Net.Caching
         /// </summary>
         /// <param name="type"></param>
         /// <param name="query"></param>
-        /// <returns></returns>
+        /// <returns>IEnumerable{object}</returns>
         public override IEnumerable<object> Query(Type type, QueryFilter query)
         {
             IEnumerable<object> results = DelegateOrThrow<IEnumerable<object>>("Query", type, query).CopyAs(type);
@@ -251,14 +251,12 @@ namespace Bam.Net.Caching
         [Verbosity(VerbosityLevel.Information, SenderMessageFormat="Different types were found with the same property name and value: \r\n{DifferingTypes}")]
 		public event EventHandler DifferringTypesFound;
 
-		public string Types { get; private set; }
-
 		public string PropertyName { get; set; }
 		public string Value { get; set; }
         /// <summary>
         /// Event that fires when a non typed query is executed.  Used as a 
         /// warning that the type cannot be determined and will have to be
-        /// resolved by the caller
+        /// resolved by the caller.
         /// </summary>
         public event EventHandler<CachingRepositoryEventArgs> TypelessQuery;
 
@@ -266,11 +264,12 @@ namespace Bam.Net.Caching
         {
             QueriedSource?.Invoke(this, new CacheQueryEventArgs<T> { Type = typeof(T), Results = results });
         }
+        
         /// <summary>
-        /// Query the cache and the SourceRepository and return the results
+        /// 
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="query"></param>
+        /// <param name="predicate"></param>
         /// <returns></returns>
         public override IEnumerable<T> Query<T>(Func<T, bool> predicate)
         {
@@ -348,6 +347,12 @@ namespace Bam.Net.Caching
             return HandleResults(cache, resultsHashes.Result);
         }
 
+        /// <summary>
+        /// Query 
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="query"></param>
+        /// <returns></returns>
         public override IEnumerable<object> Query(Type type, dynamic query)
         {
             Cache cache = _cacheManager.CacheFor(type);
@@ -381,6 +386,12 @@ namespace Bam.Net.Caching
             return results;
         }
 
+        /// <summary>
+        /// Prime the cache with the results of the specified query.
+        /// </summary>
+        /// <typeparam name="T">The type to cache.</typeparam>
+        /// <param name="predicate">The predicate.</param>
+        /// <returns>Task{IEnumerable{T}}</returns>
         public Task<IEnumerable<T>> CacheAsync<T>(Func<T, bool> predicate)
         {
             return Task.Run(() => Cache<T>(predicate));
@@ -398,11 +409,23 @@ namespace Bam.Net.Caching
             return HandleResults(cache, new HashSet<T>(DelegateGenericOrThrow<IEnumerable<T>, T>("Query", predicate)));
         }
 
+        /// <summary>
+        /// Prime the cache with the results of the specified query.
+        /// </summary>
+        /// <param name="type">The type to cache.</param>
+        /// <param name="predicate">The predicate identifying what to cache.</param>
+        /// <returns>Task{IEnumerable{object}}</returns>
         public Task<IEnumerable<object>> CacheAysync(Type type, Func<object, bool> predicate)
         {
             return Task.Run(() => Cache(type, predicate));
         }
 
+        /// <summary>
+        /// Prime the cache with the results of the specified query.
+        /// </summary>
+        /// <param name="type">The type to cache.</param>
+        /// <param name="predicate">The predicate identifying what to cache.</param>
+        /// <returns>IEnumerable{object}</returns>
         public IEnumerable<object> Cache(Type type, Func<object, bool> predicate)
         {
             Cache cache = _cacheManager.CacheFor(type);
@@ -550,6 +573,7 @@ namespace Bam.Net.Caching
         {
             return Update(toUpdate.GetType(), toUpdate);
         }
+
         public override object Update(Type type, object toUpdate)
 		{
             Task.Run(() =>
@@ -583,10 +607,10 @@ namespace Bam.Net.Caching
 
         public IRepository SourceRepository { get; private set; }
 
-        private static HashSet<T> HandleResults<T>(Cache cache, params HashSet<T>[] arrayOfHashes)
+        private static HashSet<T> HandleResults<T>(Cache cache, params HashSet<T>[] arrayOfHashSets)
         {
             HashSet<T> results = new HashSet<T>();
-            foreach (HashSet<T> hs in arrayOfHashes)
+            foreach (HashSet<T> hs in arrayOfHashSets)
             {
                 results.UnionWith(hs);
             }
@@ -605,10 +629,12 @@ namespace Bam.Net.Caching
                 {
                     typeHash.Add(o.GetType());
                 });
-                Types = differingTypes.ToArray().ToDelimited(t => t.Name, ", ");
-                PropertyName = propertyName;
-                Value = value == null ? "null" : value.ToString();
-                FireEvent(DifferringTypesFound, EventArgs.Empty);
+                FireEvent(DifferringTypesFound, new CachingRepositoryEventArgs 
+                {
+                    PropertyName = propertyName, 
+                    ParameterValue = value == null ? "null" : value.ToString(), 
+                    DifferingTypes = differingTypes.ToArray().ToDelimited(t => t.Name, ", ") 
+                });
             }
         }
 

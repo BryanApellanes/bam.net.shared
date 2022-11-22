@@ -8,7 +8,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Bam.Net.Data.Repositories;
 using System.Net.Sockets;
-//using Bam.Net.CoreServices.ApplicationRegistration.Data.Dao.Repository;
 using Newtonsoft.Json;
 using Bam.Net.CoreServices.ApplicationRegistration.Data.Dao.Repository;
 
@@ -51,6 +50,7 @@ namespace Bam.Net.CoreServices.ApplicationRegistration.Data
         {
             return this.ToString().GetHashCode();
         }
+
         public override bool Equals(object obj)
         {
             if(!(obj is ProcessDescriptor))
@@ -115,6 +115,28 @@ namespace Bam.Net.CoreServices.ApplicationRegistration.Data
         public override string ToString()
         {
             return $"{MachineName}~{ProcessId}~{FilePath}~::{CommandLine}";
+        }
+
+        public static ProcessDescriptor Parse(string processDescriptor)
+        {
+            string[] split = processDescriptor.Split('~');
+            if(split.Length >= 3)
+            {
+
+                ProcessDescriptor result = new ProcessDescriptor
+                {
+                    MachineName = split[0],
+                    ProcessId = int.Parse(split[1]),
+                    FilePath = split[2],
+                };
+
+                if(split.Length >= 4)
+                {
+                    result.CommandLine = split[3];
+                }
+                return result;
+            }
+            return new ProcessDescriptor();
         }
     }
 }

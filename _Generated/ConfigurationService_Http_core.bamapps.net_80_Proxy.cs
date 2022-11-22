@@ -8,7 +8,7 @@ namespace Bam.Net.CoreServices
 	using System;
 	using Bam.Net.Configuration;
 	using Bam.Net.ServiceProxy;
-	using Bam.Net.ServiceProxy.Secure;
+	using Bam.Net.ServiceProxy.Encryption;
 	using Bam.Net.CoreServices.Contracts;
 	using Bam.Net.CoreServices;
 	using System.Collections.Generic;
@@ -16,8 +16,8 @@ namespace Bam.Net.CoreServices
 	using Bam.Net.UserAccounts;
 
     
-		[ApiKeyRequired]
-    public class ConfigurationServiceClient: SecureServiceProxyClient<Bam.Net.CoreServices.Contracts.IConfigurationService>, Bam.Net.CoreServices.Contracts.IConfigurationService
+		[ApiHmacKeyRequired]
+    public class ConfigurationServiceClient: EncryptedServiceProxyClient<Bam.Net.CoreServices.Contracts.IConfigurationService>, Bam.Net.CoreServices.Contracts.IConfigurationService
     {
         public ConfigurationServiceClient(): base(DefaultConfiguration.GetAppSetting("ConfigurationServiceUrl", "http://core.bamapps.net/"))
         {
@@ -31,67 +31,67 @@ namespace Bam.Net.CoreServices
         public ApplicationConfiguration GetConfiguration(System.String applicationName, System.String machineName, System.String configurationName)
         {
             object[] parameters = new object[] { applicationName, machineName, configurationName };
-            return Invoke<ApplicationConfiguration>("GetConfiguration", parameters);
+            return InvokeServiceMethod<ApplicationConfiguration>("GetConfiguration", parameters);
         }
         public void SetCommonConfiguration(System.Collections.Generic.Dictionary<System.String, System.String> settings)
         {
             object[] parameters = new object[] { settings };
-            Invoke("SetCommonConfiguration", parameters);
+            InvokeServiceMethod("SetCommonConfiguration", parameters);
         }
         public Dictionary<System.String, System.String> GetCommonConfiguration()
         {
             object[] parameters = new object[] {  };
-            return Invoke<Dictionary<System.String, System.String>>("GetCommonConfiguration", parameters);
+            return InvokeServiceMethod<Dictionary<System.String, System.String>>("GetCommonConfiguration", parameters);
         }
         public void SetApplicationConfiguration(System.String applicationName, System.Collections.Generic.Dictionary<System.String, System.String> configuration, System.String configurationName)
         {
             object[] parameters = new object[] { applicationName, configuration, configurationName };
-            Invoke("SetApplicationConfiguration", parameters);
+            InvokeServiceMethod("SetApplicationConfiguration", parameters);
         }
         public void SetApplicationConfiguration(System.Collections.Generic.Dictionary<System.String, System.String> settings, System.String applicationName, System.String configurationName)
         {
             object[] parameters = new object[] { settings, applicationName, configurationName };
-            Invoke("SetApplicationConfiguration", parameters);
+            InvokeServiceMethod("SetApplicationConfiguration", parameters);
         }
         public void SetMachineConfiguration(System.String machineName, System.Collections.Generic.Dictionary<System.String, System.String> settings, System.String configurationName)
         {
             object[] parameters = new object[] { machineName, settings, configurationName };
-            Invoke("SetMachineConfiguration", parameters);
+            InvokeServiceMethod("SetMachineConfiguration", parameters);
         }
         public Dictionary<System.String, System.String> GetApplicationConfiguration(System.String applicationName, System.String configurationName)
         {
             object[] parameters = new object[] { applicationName, configurationName };
-            return Invoke<Dictionary<System.String, System.String>>("GetApplicationConfiguration", parameters);
+            return InvokeServiceMethod<Dictionary<System.String, System.String>>("GetApplicationConfiguration", parameters);
         }
         public Dictionary<System.String, System.String> GetMachineConfiguration(System.String machineName, System.String configurationName)
         {
             object[] parameters = new object[] { machineName, configurationName };
-            return Invoke<Dictionary<System.String, System.String>>("GetMachineConfiguration", parameters);
+            return InvokeServiceMethod<Dictionary<System.String, System.String>>("GetMachineConfiguration", parameters);
         }
         public Dictionary<System.String, System.String> GetSettings()
         {
             object[] parameters = new object[] {  };
-            return Invoke<Dictionary<System.String, System.String>>("GetSettings", parameters);
+            return InvokeServiceMethod<Dictionary<System.String, System.String>>("GetSettings", parameters);
         }
         public LoginResponse ConnectClient(Bam.Net.CoreServices.ApplicationRegistration.Data.Client client)
         {
             object[] parameters = new object[] { client };
-            return Invoke<LoginResponse>("ConnectClient", parameters);
+            return InvokeServiceMethod<LoginResponse>("ConnectClient", parameters);
         }
         public LoginResponse Login(System.String userName, System.String passHash)
         {
             object[] parameters = new object[] { userName, passHash };
-            return Invoke<LoginResponse>("Login", parameters);
+            return InvokeServiceMethod<LoginResponse>("Login", parameters);
         }
         public SignOutResponse EndSession()
         {
             object[] parameters = new object[] {  };
-            return Invoke<SignOutResponse>("EndSession", parameters);
+            return InvokeServiceMethod<SignOutResponse>("EndSession", parameters);
         }
         public String WhoAmI()
         {
             object[] parameters = new object[] {  };
-            return Invoke<String>("WhoAmI", parameters);
+            return InvokeServiceMethod<String>("WhoAmI", parameters);
         }
     }
 
@@ -101,7 +101,7 @@ namespace Bam.Net.CoreServices.Contracts
 	using System;
 	using Bam.Net.Configuration;
 	using Bam.Net.ServiceProxy;
-	using Bam.Net.ServiceProxy.Secure;
+	using Bam.Net.ServiceProxy.Encryption;
 	using Bam.Net.CoreServices.Contracts;
 	using Bam.Net.CoreServices;
 	using System.Collections.Generic;
@@ -137,7 +137,7 @@ namespace Bam.Net.CoreServices
     using System;
     using Bam.Net;
     using Bam.Net.ServiceProxy;
-    using Bam.Net.ServiceProxy.Secure;
+    using Bam.Net.ServiceProxy.Encryption;
     using Bam.Net.CoreServices.Contracts;
 	using Bam.Net.CoreServices;
 	using System;
@@ -173,11 +173,11 @@ namespace Bam.Net.CoreServices
 			}
 		}
 
-		public IApiKeyResolver ApiKeyResolver 
+		public IApiHmacKeyResolver ApiKeyResolver 
 		{
 			get
 			{
-				return (IApiKeyResolver)_proxyClient.Property("ApiKeyResolver", false);
+				return (IApiHmacKeyResolver)_proxyClient.Property("ApiKeyResolver", false);
 			}
 			set
 			{

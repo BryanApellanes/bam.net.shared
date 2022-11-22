@@ -19,13 +19,13 @@ namespace Bam.Net.Automation.Testing
 
         public static ProcessOutput Run(string outputDirectoryPath)
         {
-            DirectoryInfo coverageFolder = new DirectoryInfo(System.IO.Path.Combine(Paths.Tests, TestConstants.CoverageXmlFolder));
+            DirectoryInfo coverageFolder = new DirectoryInfo(System.IO.Path.Combine(BamHome.TestsPath, TestConstants.CoverageXmlFolder));
             if (!coverageFolder.Exists)
             {
                 coverageFolder.Create();
             }
             string[] reportXmlFilePaths = coverageFolder.GetFiles("*_coverage.xml").Select(fi => fi.FullName).ToArray(); //bamtest.exe will output xml files to this folder 
-            return Run(outputDirectoryPath, reportXmlFilePaths, System.IO.Path.Combine(Paths.Tests, TestConstants.HistoryFolder));
+            return Run(outputDirectoryPath, reportXmlFilePaths, System.IO.Path.Combine(BamHome.TestsPath, TestConstants.HistoryFolder));
         }
 
         public static ProcessOutput Run(string outputDirectoryPath, string[] reportXmlFilePaths, string historyDirectoryPath = null)
@@ -51,9 +51,9 @@ namespace Bam.Net.Automation.Testing
 
         private static string GetCommand(string outputDirectoryPath, string historyDirectoryPath = null)
         {
-            DirectoryInfo coverageFolder = new DirectoryInfo(System.IO.Path.Combine(Paths.Tests, TestConstants.CoverageXmlFolder));
+            DirectoryInfo coverageFolder = new DirectoryInfo(System.IO.Path.Combine(BamHome.TestsPath, TestConstants.CoverageXmlFolder));
             string[] reportXmlFilePaths = coverageFolder.GetFiles("*_coverage.xml").Select(fi => fi.FullName).ToArray(); //bamtestrunner.exe will output xml files to this folder 
-            historyDirectoryPath = historyDirectoryPath ?? System.IO.Path.Combine(Paths.Tests, "CoverageHistory");
+            historyDirectoryPath = historyDirectoryPath ?? System.IO.Path.Combine(BamHome.TestsPath, "CoverageHistory");
             return $"{Path} -reports:{string.Join(";", reportXmlFilePaths)} -targetdir:{outputDirectoryPath} -historydir:{historyDirectoryPath}";
         }
     }

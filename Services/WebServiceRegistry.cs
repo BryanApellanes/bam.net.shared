@@ -9,7 +9,7 @@ using System.Linq;
 namespace Bam.Net.Services
 {
     /// <summary>
-    /// A service registry for proxyable services.
+    /// A service registry used to construct instances of classes addorned with the custom attribute `ProxyAttribute`.
     /// </summary>
     public class WebServiceRegistry: ServiceRegistry
     {
@@ -39,6 +39,11 @@ namespace Bam.Net.Services
             return fromAssembly.CopyWebServices(applicationServiceRegistry);
         }
 
+        /// <summary>
+        /// Gets a WebServiceRegistry that contains all types addorned with the ProxyAttribute from the entry assembly.
+        /// </summary>
+        /// <param name="serviceRegistry"></param>
+        /// <returns></returns>
         public static WebServiceRegistry FromEntryAssembly(ServiceRegistry serviceRegistry = null)
         {
             WebServiceRegistry webServiceRegistry = new WebServiceRegistry();
@@ -68,6 +73,35 @@ namespace Bam.Net.Services
             WebServiceRegistry result = new WebServiceRegistry();
             result.CopyWebServices(incubator);
             return result;
+        }
+
+        public object Get(string className, ApplicationServiceRegistry applicationServiceRegistry)
+        {
+            return Get(className, applicationServiceRegistry, out _);
+        }
+
+        public object Get(string className, ApplicationServiceRegistry applicationServiceRegistry, out Type type)
+        {
+            type = this[className];
+            if (type != null)
+            {
+                object result = this[type];
+                if (result is Func<object> fn)
+                {
+                    return fn() ?? Get(type, applicationServiceRegistry.GetCtorParams(type));
+                }
+                else if (result is Func<Type, object> typeFn)
+                {
+                    return typeFn(type) ?? Get(type, applicationServiceRegistry.GetCtorParams(type));
+                }
+                else if (result == null)
+                {
+                    result = Get(type, applicationServiceRegistry.GetCtorParams(type));
+                }
+                return result;
+            }
+
+            return null;
         }
     }
 }

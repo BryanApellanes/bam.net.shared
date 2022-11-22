@@ -85,7 +85,6 @@ namespace Bam.Net.Services.Clients
             {
                 OrganizationName = OrganizationNameProvider.GetOrganizationName(),
                 ApplicationName = ApplicationNameProvider.GetApplicationName(),
-                Paths = SystemPaths.Get(DataDirectoryProvider),
                 Configuration = ConfigurationProvider.GetApplicationConfiguration(ApplicationNameProvider.GetApplicationName())
             };
         }

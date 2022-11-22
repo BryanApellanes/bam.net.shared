@@ -3,14 +3,14 @@ using Bam.Net.CoreServices.ApplicationRegistration;
 using Bam.Net.Data;
 using Bam.Net.Data.Repositories;
 using Bam.Net.Server;
-using Bam.Net.ServiceProxy.Secure;
+using Bam.Net.ServiceProxy.Encryption;
 using Bam.Net.Services.Events;
 using System;
 using System.Linq;
 
 namespace Bam.Net.Services.DataReplication
 {
-    [ApiKeyRequired]
+    [ApiHmacKeyRequired]
     [Proxy("writeEventSvc")]
     public class WriteEventService : ApplicationProxyableService
     {

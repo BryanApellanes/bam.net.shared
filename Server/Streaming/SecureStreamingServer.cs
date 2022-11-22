@@ -1,5 +1,5 @@
 ﻿using Bam.Net.Encryption;
-using Bam.Net.ServiceProxy.Secure;
+using Bam.Net.ServiceProxy.Encryption;
 using Org.BouncyCastle.Security;
 using System;
 using System.Collections.Generic;
@@ -162,8 +162,7 @@ namespace Bam.Net.Server.Streaming
             AesKeyVectorPair aesKey = new AesKeyVectorPair { Key = session.PlainSymmetricKey, IV = session.PlainSymmetricIV };
             string encryptedBase64Message = Encoding.GetString(request.Body);
             string messageBase64 = aesKey.Decrypt(encryptedBase64Message);
-            string hmac = messageBase64.HmacHexString(aesKey.Key, HmacAlgorithm, Encoding);
-            byte[] messageBytes = messageBase64.FromBase64();                       
+            string hmac = messageBase64.HmacHexString(aesKey.Key, HmacAlgorithm, Encoding);                     
 
             request.Validated = hmac.Equals(request.Hmac);
             if (request.Validated)

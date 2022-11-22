@@ -1,5 +1,5 @@
 ﻿using Bam.Net.Server.Streaming;
-using Bam.Net.ServiceProxy.Secure;
+using Bam.Net.ServiceProxy.Encryption;
 using Org.BouncyCastle.Security;
 using System;
 using System.Collections.Generic;

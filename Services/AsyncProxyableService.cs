@@ -11,7 +11,7 @@ using Bam.Net.Incubation;
 using Bam.Net.Logging;
 using Bam.Net.Server;
 using Bam.Net.ServiceProxy;
-using Bam.Net.ServiceProxy.Secure;
+using Bam.Net.ServiceProxy.Encryption;
 using Bam.Net.Services.AsyncCallback;
 using Bam.Net.Services.AsyncCallback.Data;
 using Bam.Net.Web;
@@ -25,8 +25,8 @@ namespace Bam.Net.Services
     /// This component can optionally wait for responses in a non blocking way using Tasks.
     /// </summary>
     /// <seealso cref="Bam.Net.CoreServices.ApplicationProxyableService" />
-    /// <seealso cref="Bam.Net.ServiceProxy.IHasServiceProvider" />
-    public abstract partial class AsyncProxyableService : ApplicationProxyableService, IHasServiceProvider
+    /// <seealso cref="Bam.Net.ServiceProxy.IHasWebServiceRegistry" />
+    public abstract partial class AsyncProxyableService : ApplicationProxyableService, IHasWebServiceRegistry
     {
         ProxyFactory _proxyFactory;
 
@@ -51,7 +51,7 @@ namespace Bam.Net.Services
         public AsyncCallbackService CallbackService { get; set; }
 
         public Action<AsyncExecutionResponse> DefaultResponseHandler { get; set; }
-        public Incubator ServiceProvider { get; set; }
+        public WebServiceRegistry WebServiceRegistry { get; set; }
 
         /// <summary>
         /// The number of milliseconds to wait for async tasks to complete

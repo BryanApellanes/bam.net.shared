@@ -1,7 +1,7 @@
 ﻿using Bam.Net.Encryption;
 using Bam.Net.Messaging;
 using Bam.Net.ServiceProxy;
-using Bam.Net.ServiceProxy.Secure;
+using Bam.Net.ServiceProxy.Encryption;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Bam.Net.CoreServices
 {
-    [ApiKeyRequired]
+    [ApiHmacKeyRequired]
     [Proxy("credentialSvc")]
     [ServiceSubdomain("creds")]
     public class CredentialManagementService : ApplicationProxyableService, ICredentialManager

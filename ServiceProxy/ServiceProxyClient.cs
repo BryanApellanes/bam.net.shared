@@ -14,22 +14,144 @@ using Bam.Net.Logging;
 using Bam.Net.Web;
 using Bam.Net.Configuration;
 using Bam.Net.Incubation;
+using System.Net.Http;
 
 namespace Bam.Net.ServiceProxy
 {
-    public abstract class ServiceProxyClient : CookieEnabledWebClient
+    public abstract class ServiceProxyClient : IServiceProxyClient
     {
-        public ServiceProxyClient()
-            : base() //Ensure that the cookiecontainer is initialized
+        public const string DefaultBaseAddress = "http://localhost:8080";
+
+        public ServiceProxyClient(Type serviceType, string baseAddress = DefaultBaseAddress)
+            : base() 
         {
+            this.ServiceType = serviceType;
+            this.BaseAddress = baseAddress;
+            this.HttpClient = new HttpClient() { BaseAddress = new Uri(baseAddress) };
+            this.Headers = new Dictionary<string, string>()
+            {
+                { "User-Agent", UserAgents.ServiceProxyClient() }
+            };
+
+            this.HttpMethods = new Dictionary<ServiceProxyVerbs, HttpMethod>()
+            {
+                { ServiceProxyVerbs.Get, HttpMethod.Get },
+                { ServiceProxyVerbs.Post, HttpMethod.Post }
+            };
         }
 
-        public ServiceProxyClient(string baseAddress)
-            : this()
+        public ServiceProxyClient(HttpClient httpClient, Type serviceType): this(serviceType)
         {
-            this.BaseAddress = baseAddress;
-            this.Headers["User-Agent"] = UserAgents.ServiceProxyClient();
-            this.UseDefaultCredentials = true;
+            this.HttpClient = httpClient;
+            this.BaseAddress = httpClient.BaseAddress.ToString();
+        }
+
+        public event EventHandler<ServiceProxyInvocationRequestEventArgs> PostStarted;
+        public event EventHandler<ServiceProxyInvocationRequestEventArgs> PostComplete;
+        public event EventHandler<ServiceProxyInvocationRequestEventArgs> PostCanceled;
+        public event EventHandler<ServiceProxyInvocationRequestEventArgs> GetStarted;
+        public event EventHandler<ServiceProxyInvocationRequestEventArgs> GetComplete;
+
+        public string BaseAddress
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Fires the Getting event 
+        /// </summary>
+        /// <param name="args"></param>
+        protected void OnGetStarted(ServiceProxyInvocationRequestEventArgs args)
+        {
+            if (GetStarted != null)
+            {
+                GetStarted(this, args);
+            }
+        }
+        public event EventHandler<ServiceProxyInvocationRequestEventArgs> GetCanceled;
+        protected void OnGetCanceled(ServiceProxyInvocationRequestEventArgs args)
+        {
+            if (GetCanceled != null)
+            {
+                GetCanceled(this, args);
+            }
+
+            OnInvocationCanceled(args);
+        }
+
+        /// <summary>
+        /// Fires the Got event
+        /// </summary>
+        /// <param name="args"></param>
+        protected void OnGetComplete(ServiceProxyInvocationRequestEventArgs args)
+        {
+            if (GetComplete != null)
+            {
+                GetComplete(this, args);
+            }
+        }
+
+        /// <summary>
+        /// Fires the Posting event 
+        /// </summary>
+        /// <param name="args"></param>
+        protected void OnPostStarted(ServiceProxyInvocationRequestEventArgs args)
+        {
+            if (PostStarted != null)
+            {
+                PostStarted(this, args);
+            }
+        }
+
+        protected void OnPostCanceled(ServiceProxyInvocationRequestEventArgs args)
+        {
+            if (PostCanceled != null)
+            {
+                PostCanceled(this, args);
+            }
+
+            OnInvocationCanceled(args);
+        }
+
+        /// <summary>
+        /// Fires the `PostComplete` event
+        /// </summary>
+        /// <param name="args"></param>
+        protected void OnPostComplete(ServiceProxyInvocationRequestEventArgs args)
+        {
+            if (PostComplete != null)
+            {
+                PostComplete(this, args);
+            }
+        }
+
+        protected Dictionary<ServiceProxyVerbs, HttpMethod> HttpMethods
+        {
+            get;
+            set;
+        }
+
+        public Type ServiceType { get; internal set; }
+
+        protected Dictionary<string, string> Headers
+        {
+            get;
+            set;
+        }
+
+        IApiArgumentEncoder _apiArgumentProvider;
+        object _apiArgumentProviderLock = new object();
+        public IApiArgumentEncoder ApiArgumentEncoder
+        {
+            get
+            {
+                return _apiArgumentProviderLock.DoubleCheckLock(ref _apiArgumentProvider, () => new DefaultApiArgumentEncoder() { ServiceType = ServiceType });
+            }
+            set
+            {
+                _apiArgumentProvider = value;
+            }
         }
 
         ILogger _logger;
@@ -46,12 +168,6 @@ namespace Bam.Net.ServiceProxy
             }
         }
 
-        /// <summary>
-        /// The class responsible for providing the name of the
-        /// current application.
-        /// </summary>
-        public IApplicationNameProvider ClientApplicationNameProvider { get; set; }
-
         public string UserAgent
         {
             get
@@ -63,181 +179,140 @@ namespace Bam.Net.ServiceProxy
                 this.Headers["User-Agent"] = value;
             }
         }
+        
+        protected string LastResponse { get; set; }
+
+        protected internal HttpClient HttpClient { get; set; }
 
         /// <summary>
-        /// Convert the specified type into a string or a json string if
-        /// it is something other than a string or number (int, decimal, long)
+        /// The event that is raised when an exception occurs during method invocation.
         /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        internal static protected string TranslateParameter(object value)
-        {
-            if (value == null)
-            {
-                return "null";
-            }
+        public event EventHandler<ServiceProxyInvocationRequestEventArgs> InvocationException;
 
-            Type type = value.GetType();
-            if (type == typeof(string) ||
-                type == typeof(int) ||
-                type == typeof(decimal) ||
-                type == typeof(long))
-            {
-                return value.ToString();
-            }
-            else
-            {
-                return WebUtility.UrlEncode(value.ToJson());
-            }
-        }
-
-        internal static protected string ParametersToQueryString(Dictionary<string, object> parameters)
-        {
-            StringBuilder result = new StringBuilder();
-            bool first = true;
-            foreach (string key in parameters.Keys)
-            {
-                if (!first)
-                {
-                    result.Append("&");
-                }
-
-                result.AppendFormat("{0}={1}", key, TranslateParameter(parameters[key]));
-                first = false;
-            }
-            
-            return result.ToString();            
-        }
-
-        internal static protected string ParametersToQueryString(object[] parameters)
-        {
-            StringBuilder result = new StringBuilder();
-            for (int i = 0; i < parameters.Length; i++)
-            {
-                if (i != 0)
-                {
-                    result.Append("&");
-                }
-
-                result.AppendFormat("{0}={1}", i, TranslateParameter(parameters[i]));
-            }
-
-            return result.ToString();            
-        }
-
-        protected internal static Dictionary<string, object> NameParameters(MethodInfo method, object[] parameters)
-        {
-            List<ParameterInfo> parameterInfos = new List<ParameterInfo>(method.GetParameters());
-            parameterInfos.Sort((l, r) => l.MetadataToken.CompareTo(r.MetadataToken));
-
-            if (parameters.Length != parameterInfos.Count)
-            {
-                throw new InvalidOperationException("Parameter count mismatch");
-            }
-
-            Dictionary<string, object> result = new Dictionary<string, object>();
-            parameterInfos.Each((pi, i) =>
-            {
-                result[pi.Name] = parameters[i];
-            });
-            return result;
-        }
-
-        /// <summary>
-        /// Make a GET request to the specified path expecting json
-        /// and deserialize it as the specified generic type T
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="pathAndQuery"></param>
-        /// <returns></returns>
-        public T GetFromJson<T>(string pathAndQuery)
-        {
-            string url = GetUrl(pathAndQuery);
-            string result = DownloadString(url);
-            return result.FromJson<T>();
-        }
-
-        /// <summary>
-        /// Make a GET request to the specified pathAndQuery expecting xml
-        /// and deserialize it as the specified generic type T
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="pathAndQuery"></param>
-        /// <param name="encoding"></param>
-        /// <returns></returns>
-        public T GetFromXml<T>(string pathAndQuery, Encoding encoding = null)
-        {
-            if (encoding == null)
-            {
-                encoding = Encoding.Default;
-            }
-            string url = GetUrl(pathAndQuery);
-            string result = DownloadString(url);
-            return result.FromXml<T>(encoding);
-        }
-
-        /// <summary>
-        /// Post the specified postData to the specified pathAndQuery expecting
-        /// json and deserializing it as the specified generic type T
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="pathAndQuery"></param>
-        /// <param name="postData"></param>
-        /// <returns></returns>
-        public T PostFromJson<T>(string pathAndQuery, string postData)
-        {
-            string url = GetUrl(pathAndQuery);
-            string result = UploadString(url, postData);
-            return result.FromJson<T>();
-        }
-
-        /// <summary>
-        /// Post the specified postData to the specified pathAndQuery expecting
-        /// xml and deserializing it as the specified generic typ T
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="pathAndQuery"></param>
-        /// <param name="postData"></param>
-        /// <returns></returns>
-        public T PostFromXml<T>(string pathAndQuery, string postData)
-        {
-            string url = GetUrl(pathAndQuery);
-            string result = UploadString(url, postData);
-            return result.FromXml<T>();
-        }
-
-        private string GetUrl(string pathAndQuery)
-        {
-            string url = string.Format("{0}{1}", BaseAddress, pathAndQuery);
-            return url;
-        }
-        /// <summary>
-        /// The event that will occur if an exception occurs during
-        /// method invocation
-        /// </summary>
-        public event EventHandler<ServiceProxyInvokeEventArgs> InvocationException;
-        protected void OnInvocationException(ServiceProxyInvokeEventArgs args)
+        protected void OnInvocationException(ServiceProxyInvocationRequestEventArgs args)
         {
             InvocationException?.Invoke(this, args);
         }
-        public event EventHandler<ServiceProxyInvokeEventArgs> InvokingMethod;
-        protected void OnInvokingMethod(ServiceProxyInvokeEventArgs args)
+
+        public event EventHandler<ServiceProxyInvocationRequestEventArgs> InvocationStarted;
+        protected void OnInvocationStarted(ServiceProxyInvocationRequestEventArgs args)
         {
-            InvokingMethod?.Invoke(this, args);
+            InvocationStarted?.Invoke(this, args);
         }
 
-        public event EventHandler<ServiceProxyInvokeEventArgs> InvokedMethod;
-        protected void OnInvokedMethod(ServiceProxyInvokeEventArgs args)
+        public event EventHandler<ServiceProxyInvocationRequestEventArgs> InvocationComplete;
+        protected void OnInvocationComplete(ServiceProxyInvocationRequestEventArgs args)
         {
-            InvokedMethod?.Invoke(this, args);
+            InvocationComplete?.Invoke(this, args);
         }
 
-        public event EventHandler<ServiceProxyInvokeEventArgs> InvokeCanceled;
-        protected void OnInvokeCanceled(ServiceProxyInvokeEventArgs args)
+        public event EventHandler<ServiceProxyInvocationRequestEventArgs> InvocationCanceled;
+        protected void OnInvocationCanceled(ServiceProxyInvocationRequestEventArgs args)
         {
-            InvokeCanceled?.Invoke(this, args);
+            InvocationCanceled?.Invoke(this, args);
         }
 
-        public abstract string Invoke(string methodName, object[] parameters);
+        public async Task<string> ReceivePostResponseAsync(string methodName, params object[] arguments)
+        {
+            return await ReceivePostResponseAsync(new ServiceProxyInvocationRequest(this, ServiceType.Name, methodName, arguments));
+        }
+
+        public virtual async Task<string> ReceivePostResponseAsync(ServiceProxyInvocationRequest serviceProxyInvocationRequest)
+        {
+            ServiceProxyInvocationRequestEventArgs args = new ServiceProxyInvocationRequestEventArgs(serviceProxyInvocationRequest);
+            args.Client = this;
+
+            OnPostStarted(args);
+            string result = string.Empty;
+            if (args.CancelInvoke)
+            {
+                OnPostCanceled(args);
+            }
+            else
+            {
+                IServiceProxyInvocationRequestWriter serviceProxyInvocationRequestWriter = GetRequestWriter();
+                HttpRequestMessage request = await serviceProxyInvocationRequestWriter.WriteRequestMessageAsync(serviceProxyInvocationRequest);
+
+                try
+                {
+                    HttpResponseMessage response = await HttpClient.SendAsync(request);
+                    args.RequestMessage = request;
+                    args.ResponseMessage = response;
+                    result = await response.Content.ReadAsStringAsync();
+                    response.EnsureSuccessStatusCode();
+                    OnPostComplete(args);
+                }
+                catch (Exception ex)
+                {
+                    args.Exception = ex;
+                    OnInvocationException(args);
+                }
+            }
+            return result;
+        }
+
+        public async Task<string> ReceiveGetResponseAsync(string methodName, params object[] arguments)
+        {
+            MethodInfo methodInfo = ServiceType.GetMethod(methodName, arguments.Select(argument => argument.GetType()).ToArray());
+            return await ReceiveGetResponseAsync(new ServiceProxyInvocationRequest(this, ServiceType.Name, methodName, arguments));
+        }
+
+        public virtual async Task<string> ReceiveGetResponseAsync(ServiceProxyInvocationRequest request)
+        {
+            ServiceProxyInvocationRequestEventArgs args = request.CopyAs<ServiceProxyInvocationRequestEventArgs>();
+            args.Client = this;
+
+            OnGetStarted(args);
+            string result = string.Empty;
+            if (args.CancelInvoke)
+            {
+                OnGetCanceled(args);
+            }
+            else
+            {
+                HttpRequestMessage requestMessage = await CreateServiceProxyInvocationRequestMessageAsync(request);
+                HttpResponseMessage response = await HttpClient.SendAsync(requestMessage);
+                args.RequestMessage = requestMessage;
+                args.ResponseMessage = response;
+                result = await response.Content.ReadAsStringAsync();
+                response.EnsureSuccessStatusCode();
+                OnGetComplete(args);
+            }
+            return result;
+        }
+
+        public virtual async Task<HttpRequestMessage> CreateServiceProxyInvocationRequestMessageAsync(ServiceProxyInvocationRequest serviceProxyInvocationRequest)
+        {
+            if (serviceProxyInvocationRequest == null)
+            {
+                throw new ArgumentNullException(nameof(serviceProxyInvocationRequest));
+            }
+
+            if (serviceProxyInvocationRequest.ServiceType == null)
+            {
+                throw new ArgumentNullException("ServiceType not specified");
+            }
+
+            IServiceProxyInvocationRequestWriter requestWriter = GetRequestWriter();
+
+            HttpRequestMessage httpRequestMessage = await requestWriter.WriteRequestMessageAsync(serviceProxyInvocationRequest);
+            Headers.Keys.Each(key => httpRequestMessage.Headers.Add(key, Headers[key]));
+            return httpRequestMessage;
+        }
+
+        protected virtual IServiceProxyInvocationRequestWriter GetRequestWriter()
+        {
+            return new ServiceProxyInvocationRequestWriter();
+        }
+
+        public abstract string InvokeServiceMethod(string methodName, params object[] arguments);
+
+        public abstract Task<string> InvokeServiceMethodAsync(string baseAddress, string className, string methodName, object[] arguments);
+
+        public abstract string InvokeServiceMethod(string className, string methodName, object[] arguments);
+
+        public abstract Task<string> InvokeServiceMethodAsync(string className, string methodName, object[] arguments);
+
+        public abstract Task<string> InvokeServiceMethodAsync(string methodName, object[] arguments);
     }
 }

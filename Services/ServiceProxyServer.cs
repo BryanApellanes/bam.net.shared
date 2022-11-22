@@ -7,7 +7,7 @@ using Bam.Net.Logging;
 using Bam.Net.Server;
 using Bam.Net.CoreServices;
 using Bam.Net.ServiceProxy;
-using Bam.Net.ServiceProxy.Secure;
+using Bam.Net.ServiceProxy.Encryption;
 
 namespace Bam.Net.Services
 {
@@ -37,18 +37,18 @@ namespace Bam.Net.Services
                     ServiceSubdomains.Add(attr);
                 }
             }
-            SetApiKeyResolver(serviceRegistry, requireApiKeyResolver ? ApiKeyResolver.Default : null);
+            SetApiKeyResolver(serviceRegistry, requireApiKeyResolver ? ApiHmacKeyResolver.Default : null);
         }
 
         public override void Start()
         {
-            HostPrefix[] copy = new HostPrefix[HostPrefixes.Count];
-            HostPrefixes.CopyTo(copy);
+            HostBinding[] copy = new HostBinding[HostBindings.Count];
+            HostBindings.CopyTo(copy);
             ServiceSubdomains.Each(sub =>
             {
                 copy.Each(hp =>
                 {
-                    HostPrefixes.Add(hp.FromServiceSubdomain(sub));
+                    HostBindings.Add(hp.FromServiceSubdomain(sub));
                 });
             });
             base.Start();
@@ -57,11 +57,11 @@ namespace Bam.Net.Services
         public HashSet<ServiceSubdomainAttribute> ServiceSubdomains { get; set; }
         protected WebServiceRegistry ServiceRegistry { get; set; }
 
-        protected void SetApiKeyResolver(ServiceRegistry registry, IApiKeyResolver ifNull)
+        protected void SetApiKeyResolver(ServiceRegistry registry, IApiHmacKeyResolver ifNull)
         {
-            IApiKeyResolver apiKeyResolver = registry.Get(ifNull);
-            Responder.CommonSecureChannel.ApiKeyResolver = apiKeyResolver;
-            Responder.AppSecureChannels.Values.Each(sc => sc.ApiKeyResolver = apiKeyResolver);
+            IApiHmacKeyResolver apiKeyResolver = registry.Get(ifNull);
+            Responder.CommonSecureChannel.ApiHmacKeyResolver = apiKeyResolver;
+            Responder.AppSecureChannels.Values.Each(sc => sc.ApiHmacKeyResolver = apiKeyResolver);
         }
     }
 }

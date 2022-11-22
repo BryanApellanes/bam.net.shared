@@ -217,24 +217,6 @@ namespace Bam.Net
                 throw new ExpectationFailedException(expected.ToString(), actual.ToString(), ShouldHtmlEncodeExceptions);
             }
         }
-
-        public static void ReferenceEquals(object one, object two)
-        {
-            ReferenceEquals(one, two, string.Empty);
-        }
-
-        public static void ReferenceEquals(object one, object two, string failureMessage)
-        {
-            if (!object.ReferenceEquals(one, two))
-            {
-                if (string.IsNullOrWhiteSpace(failureMessage))
-                {
-                    throw new ExpectationFailedException("References weren't equal");
-                }
-
-                throw new ExpectationFailedException(failureMessage, ShouldHtmlEncodeExceptions);
-            }
-        }
         
         public static void IsEqualTo(this int actual, int expected, string failureMessage = "")
         {
@@ -255,7 +237,7 @@ namespace Bam.Net
                 }
             }
         }
-        
+                        
         public static void IsEqualTo(this long actual, long expected)
         {
             AreEqual(expected, actual);
@@ -277,6 +259,32 @@ namespace Bam.Net
                 else
                 {
                     throw new ExpectationFailedException(failureMessage);
+                }
+            }
+        }
+
+        public static void AreEqual(byte[] x, byte[] y)
+        {
+            if (x.Length != y.Length)
+            {
+                throw new ExpectationFailedException("byte arrays are different lengths");
+            }
+
+            if (x == null && y != null)
+            {
+                throw new ExpectationFailedException("byte arrays are different");
+            }
+
+            if (x != null && y == null)
+            {
+                throw new ExpectationFailedException("byte arrays are different");
+            }
+
+            for (int i = 0; i < x.Length; i++)
+            {
+                if (x[i] != y[i])
+                {
+                    throw new ExpectationFailedException("byte arrays are different");
                 }
             }
         }

@@ -12,7 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Bam.Net.Data.Repositories;
 using Bam.Net.Server;
-using Bam.Net.ServiceProxy;
+using Bam.Net.Server.ServiceProxy;
 
 namespace Bam.Net.Services
 {
@@ -104,6 +104,7 @@ namespace Bam.Net.Services
             {
                 Configurer = configure;
             }
+
             ApplicationServiceRegistry appRegistry = new ApplicationServiceRegistry();
             appRegistry.CombineWith(CoreClientServiceRegistryContainer.Current);
             appRegistry
@@ -114,7 +115,7 @@ namespace Bam.Net.Services
                 .For<IIncludesResolver>().Use<IncludesResolver>()
                 .For<IViewModelProvider>().Use<DefaultViewModelProvider>()
                 .For<IPersistenceModelProvider>().Use<DefaultPersistenceModelProvider>()
-                .For<IExecutionRequestResolver>().Use<ExecutionRequestResolver>()
+                .For<IServiceProxyInvocationReader>().Use<ServiceProxyInvocationReader>()
                 .For<ApplicationModel>().Use<ApplicationModel>();
 
             configure(appRegistry);

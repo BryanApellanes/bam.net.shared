@@ -9,11 +9,10 @@ using System.Threading.Tasks;
 using System.IO;
 using Bam.Net.Web;
 using Bam.Net.Presentation.Html;
-using Bam.Net.Server;
-using Bam.Net.ServiceProxy;
 using System.Reflection;
 using System.Collections.Concurrent;
 using Bam.Net.Server.PathHandlers;
+using Bam.Net.Server.ServiceProxy;
 
 namespace Bam.Net.Server.Renderers
 {
@@ -21,24 +20,24 @@ namespace Bam.Net.Server.Renderers
     {
         ConcurrentDictionary<string, byte[]> _cache;
         ConcurrentDictionary<string, byte[]> _minCache;
-        public ScriptRenderer(ExecutionRequest request, ContentResponder content)
+        public ScriptRenderer(ServiceProxyInvocation request, ContentResponder content)
             : base(request, content, "application/javascript", Extensions)
         {
             this._cache = new ConcurrentDictionary<string, byte[]>();
             this._minCache = new ConcurrentDictionary<string,byte[]>();
             string path = request.Request.Url.AbsolutePath;
 
-            if (!request.WasExecuted)
+/*            if (!request.WasExecuted)
             {
                 request.Execute();
-            }
+            }*/
 
-            if (request.Success && request.Result is AppMetaResult result)
+            if (request.Result is AppMetaResult result)
             {
                 request.Result = result.Data;
             }
 
-            HandlePrependAndPostpend();
+            //HandlePrependAndPostpend();
 
             string script = request.Result as string;
             if (script == null)
@@ -61,59 +60,62 @@ namespace Bam.Net.Server.Renderers
 
         private void SetResult()
         {
-            string path = ExecutionRequest.Request.Url.AbsolutePath;
-            if (!string.IsNullOrEmpty(ExecutionRequest.Ext) && ExecutionRequest.Ext.Equals(".min"))
+            string path = ServiceProxyInvocation.Request.Url.AbsolutePath;
+            ServiceProxyInvocation.Result = _cache[path];
+            /*
+            if (!string.IsNullOrEmpty(ServiceProxyInvocation.Ext) && ServiceProxyInvocation.Ext.Equals(".min"))
             {
-                ExecutionRequest.Result = _minCache[path];
+                ServiceProxyInvocation.Result = _minCache[path];
             }
             else
             {
-                ExecutionRequest.Result = _cache[path];
-            }
+                ServiceProxyInvocation.Result = _cache[path];
+            }*/
         }
 
-        protected virtual void HandlePrependAndPostpend()
+/*        protected virtual void HandlePrependAndPostpend()
         {
-            string ext = ExecutionRequest.Ext;
+            *//*string ext = ServiceProxyInvocation.Ext;
             // if ext is jsonp
             if (!string.IsNullOrEmpty(ext) && ext.ToLowerInvariant().Equals(".jsonp"))
             {
                 HandleJsonp();
             }
-            else if (ExecutionRequest.HasCallback)
+            else *//*
+            if (ServiceProxyInvocation.HasCallback)
             {
-                Postpend("\r\n;{0}"._Format(ExecutionRequest.Callback));
+                Postpend("\r\n;{0}"._Format(ServiceProxyInvocation.Callback));
             }
-        }
-
+        }*/
+/*
         protected virtual void HandleJsonp()
         {
-            string callBack = ExecutionRequest.HasCallback ? ExecutionRequest.Callback : "alert";
+            string callBack = ServiceProxyInvocation.HasCallback ? ServiceProxyInvocation.Callback : "alert";
             Prepend("{0}('"._Format(callBack));
             Postpend("');\r\n");
-        }
-
+        }*/
+/*
         protected virtual void Prepend(string prepend)
         {
             StringBuilder newResult = new StringBuilder();
             newResult.Append(prepend);
-            newResult.Append(ExecutionRequest.Result);
+            newResult.Append(ServiceProxyInvocation.Result);
             
-            ExecutionRequest.Result = newResult.ToString();
-        }
+            ServiceProxyInvocation.Result = newResult.ToString();
+        }*/
 
-        protected virtual void Postpend(string postpend)
+/*        protected virtual void Postpend(string postpend)
         {
             StringBuilder newResult = new StringBuilder();
-            newResult.Append(ExecutionRequest.Result);
+            newResult.Append(ServiceProxyInvocation.Result);
             newResult.Append(postpend);
 
-            ExecutionRequest.Result = newResult.ToString();
-        }
+            ServiceProxyInvocation.Result = newResult.ToString();
+        }*/
 
         public override void Render(object toRender, Stream output)
         {
-            Expect.AreSame(ExecutionRequest.Result, toRender, "Attempt to render unexpected value");
+            Expect.AreSame(ServiceProxyInvocation.Result, toRender, "Attempt to render unexpected value");
             byte[] data = toRender as byte[];
             if (data == null)
             {

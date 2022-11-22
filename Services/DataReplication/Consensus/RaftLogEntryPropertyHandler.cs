@@ -46,7 +46,7 @@ namespace Bam.Net.Services.DataReplication
                 Args.ThrowIfNull(setOn, "setOn");
                 
                 string propertyName = TypeMap.GetPropertyShortName(raftLogEntry.PropertyId);
-                long requestedTypeId = TypeMap.GetTypeId(type);
+                ulong requestedTypeId = TypeMap.GetTypeId(type);
                 Expect.AreEqual(raftLogEntry.TypeId, requestedTypeId, "Types don't match");
                 
                 PropertyInfo propertyInfo = type.GetProperty(propertyName);

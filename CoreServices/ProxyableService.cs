@@ -11,12 +11,13 @@ using Bam.Net.Logging;
 using Bam.Net.Server;
 using Bam.Net.Server.Renderers;
 using Bam.Net.ServiceProxy;
-using Bam.Net.ServiceProxy.Secure;
+using Bam.Net.ServiceProxy.Encryption;
 using Bam.Net.UserAccounts;
 using Bam.Net.Web;
 using U = Bam.Net.UserAccounts.Data;
 using Bam.Net.CoreServices.Diagnostic;
 using Bam.Net.Presentation;
+using Bam.Net.Encryption;
 
 namespace Bam.Net.CoreServices
 {
@@ -69,6 +70,7 @@ namespace Bam.Net.CoreServices
             return proxyFactory.GetProxy<T>(hostName, port, Logger);
         }
         
+        public IApiArgumentEncoder ApiArgumentEncoder { get; set; }
         public IDatabaseProvider DatabaseProvider { get; set; }
         public IRepositoryResolver RepositoryResolver { get; set; }
         
@@ -92,7 +94,7 @@ namespace Bam.Net.CoreServices
         /// <returns>
         ///   <c>true</c> if the current user is in the specified role name; otherwise, <c>false</c>.
         /// </returns>
-        protected bool IsInRole(string roleName)
+        public virtual bool IsInRole(string roleName)
         {
             return RoleResolver.IsInRole(UserResolver, roleName);
         }
@@ -193,9 +195,6 @@ namespace Bam.Net.CoreServices
 
         [Exclude]
         public U.Session Session => U.Session.Init(HttpContext);
-
-        [Exclude]
-        public SecureSession SecureSession => SecureSession.Init(HttpContext);
 
         [Exclude]
         public U.User CurrentUser => UserManager.GetUser(HttpContext);

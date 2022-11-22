@@ -7,12 +7,12 @@ namespace Bam.Net.Server
 {
     public class HttpServerEventArgs: EventArgs
     {
-        public HostPrefix[] HostPrefixes { get; set; }
-        public string HostPrefixString
+        public HostBinding[] HostBindings { get; set; }
+        public string HostBindingString
         {
             get
             {
-                return string.Join("\r\n", HostPrefixes.Select(hp => hp.ToString()).ToArray());
+                return string.Join("\r\n", HostBindings.Select(hp => hp.ToString()).ToArray());
             }
         }
     }

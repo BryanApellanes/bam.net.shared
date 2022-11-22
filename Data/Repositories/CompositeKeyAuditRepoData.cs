@@ -69,14 +69,9 @@ namespace Bam.Net.Data.Repositories
             set => _compositeKey = value;
         }
 
-        public ulong Key()
+        public virtual ulong Key()
         {
             return CompositeKeyId;
-        }
-        
-        public bool ExistsIn<T>(IRepository repository) where T : CompositeKeyAuditRepoData, new()
-        {
-            return ExistsIn<T>(repository, out T ignore);
         }
         
         public bool ExistsIn<T>(IRepository repository, out T existing) where T: CompositeKeyAuditRepoData, new()

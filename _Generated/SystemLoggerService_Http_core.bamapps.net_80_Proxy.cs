@@ -8,7 +8,7 @@ namespace Bam.Net.CoreServices
 	using System;
 	using Bam.Net.Configuration;
 	using Bam.Net.ServiceProxy;
-	using Bam.Net.ServiceProxy.Secure;
+	using Bam.Net.ServiceProxy.Encryption;
 	using Bam.Net.CoreServices.Contracts;
 	using Bam.Net.Logging;
 	using System.Collections.Generic;
@@ -16,8 +16,8 @@ namespace Bam.Net.CoreServices
 	using Bam.Net.UserAccounts;
 
     
-		[ApiKeyRequired]
-    public class SystemLoggerServiceClient: SecureServiceProxyClient<Bam.Net.CoreServices.Contracts.ISystemLoggerService>, Bam.Net.CoreServices.Contracts.ISystemLoggerService
+		[ApiHmacKeyRequired]
+    public class SystemLoggerServiceClient: EncryptedServiceProxyClient<Bam.Net.CoreServices.Contracts.ISystemLoggerService>, Bam.Net.CoreServices.Contracts.ISystemLoggerService
     {
         public SystemLoggerServiceClient(): base(DefaultConfiguration.GetAppSetting("SystemLoggerServiceUrl", "http://core.bamapps.net/"))
         {
@@ -31,47 +31,47 @@ namespace Bam.Net.CoreServices
         public void CommitLogEvent(Bam.Net.Logging.LogEvent logEvent)
         {
             object[] parameters = new object[] { logEvent };
-            Invoke("CommitLogEvent", parameters);
+            InvokeServiceMethod("CommitLogEvent", parameters);
         }
         public void Info(System.String messageSignature, System.Object[] formatArguments)
         {
             object[] parameters = new object[] { messageSignature, formatArguments };
-            Invoke("Info", parameters);
+            InvokeServiceMethod("Info", parameters);
         }
         public void Warning(System.String messageSignature, System.Object[] formatArguments)
         {
             object[] parameters = new object[] { messageSignature, formatArguments };
-            Invoke("Warning", parameters);
+            InvokeServiceMethod("Warning", parameters);
         }
         public void Error(System.String messageSignature, System.Object[] formatArguments)
         {
             object[] parameters = new object[] { messageSignature, formatArguments };
-            Invoke("Error", parameters);
+            InvokeServiceMethod("Error", parameters);
         }
         public Dictionary<System.String, System.String> GetSettings()
         {
             object[] parameters = new object[] {  };
-            return Invoke<Dictionary<System.String, System.String>>("GetSettings", parameters);
+            return InvokeServiceMethod<Dictionary<System.String, System.String>>("GetSettings", parameters);
         }
         public LoginResponse ConnectClient(Bam.Net.CoreServices.ApplicationRegistration.Data.Client client)
         {
             object[] parameters = new object[] { client };
-            return Invoke<LoginResponse>("ConnectClient", parameters);
+            return InvokeServiceMethod<LoginResponse>("ConnectClient", parameters);
         }
         public LoginResponse Login(System.String userName, System.String passHash)
         {
             object[] parameters = new object[] { userName, passHash };
-            return Invoke<LoginResponse>("Login", parameters);
+            return InvokeServiceMethod<LoginResponse>("Login", parameters);
         }
         public SignOutResponse EndSession()
         {
             object[] parameters = new object[] {  };
-            return Invoke<SignOutResponse>("EndSession", parameters);
+            return InvokeServiceMethod<SignOutResponse>("EndSession", parameters);
         }
         public String WhoAmI()
         {
             object[] parameters = new object[] {  };
-            return Invoke<String>("WhoAmI", parameters);
+            return InvokeServiceMethod<String>("WhoAmI", parameters);
         }
     }
 
@@ -81,7 +81,7 @@ namespace Bam.Net.CoreServices.Contracts
 	using System;
 	using Bam.Net.Configuration;
 	using Bam.Net.ServiceProxy;
-	using Bam.Net.ServiceProxy.Secure;
+	using Bam.Net.ServiceProxy.Encryption;
 	using Bam.Net.CoreServices.Contracts;
 	using Bam.Net.Logging;
 	using System.Collections.Generic;
@@ -113,7 +113,7 @@ namespace Bam.Net.CoreServices
     using System;
     using Bam.Net;
     using Bam.Net.ServiceProxy;
-    using Bam.Net.ServiceProxy.Secure;
+    using Bam.Net.ServiceProxy.Encryption;
     using Bam.Net.CoreServices.Contracts;
 	using System;
 	using System.Collections.Generic;
@@ -148,11 +148,11 @@ namespace Bam.Net.CoreServices
 			}
 		}
 
-		public IApiKeyResolver ApiKeyResolver 
+		public IApiHmacKeyResolver ApiKeyResolver 
 		{
 			get
 			{
-				return (IApiKeyResolver)_proxyClient.Property("ApiKeyResolver", false);
+				return (IApiHmacKeyResolver)_proxyClient.Property("ApiKeyResolver", false);
 			}
 			set
 			{

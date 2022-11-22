@@ -12,30 +12,45 @@ using Bam.Net.Configuration;
 namespace Bam.Net.Encryption
 {
     [Serializable]
-    public class AesKeyVectorPair
+    public class AesKeyVectorPair : IAesKeySource
     {
+        public const string SystemKeyFileName = "bamkey.aes";
+
         public AesKeyVectorPair()
         {
             SetKeyAndIv();
         }
 
-        static object _aesLock = new object();
+        public AesKeyVectorPair(string base64EncodedKey, string base64EncdoedIV)
+        {
+            this.Key = base64EncodedKey;
+            this.IV = base64EncdoedIV;
+        }
+
+        static readonly object _aesLock = new object();
         static volatile AesKeyVectorPair _key;
-        public static AesKeyVectorPair AppKey
+
+        /// <summary>
+        /// Gets the advanced encryption key vector pair for the currently running bam system.
+        /// </summary>
+        public static AesKeyVectorPair SystemKey
         {
             get
             {
                 if (_key == null)
                 {
-                    string fileName = Path.Combine(Paths.Local, "appkey.aes");
-                    if (File.Exists(fileName))
+                    lock(_aesLock)
                     {
-                        _key = AesKeyVectorPair.Load(fileName);
-                    }
-                    else
-                    {
-                        _key = new AesKeyVectorPair();
-                        _key.Save(fileName);
+                        string fileName = Path.Combine(BamHome.Local, SystemKeyFileName);
+                        if (File.Exists(fileName))
+                        {
+                            _key = Load(fileName);
+                        }
+                        else
+                        {
+                            _key = new AesKeyVectorPair();
+                            _key.Save(fileName);
+                        }
                     }
                 }
 
@@ -75,7 +90,7 @@ namespace Bam.Net.Encryption
         }
 
         /// <summary>
-        /// Gets or sets the key.
+        /// Gets or sets the base 64 encoded key.
         /// </summary>
         /// <value>
         /// The key.
@@ -83,7 +98,7 @@ namespace Bam.Net.Encryption
         public string Key { get; set; }
 
         /// <summary>
-        /// Gets or sets the initialization vector.
+        /// Gets or sets the base 64 encoded initialization vector.
         /// </summary>
         /// <value>
         /// The iv.
@@ -92,21 +107,36 @@ namespace Bam.Net.Encryption
 
         /// <summary>
         /// Gets a Base64 encoded value representing the cypher of the specified
-        /// value using the specified key.
+        /// value using the current key.
         /// </summary>
-        public string Encrypt(string value)
+        public string Encrypt(string plainText)
         {
-            return Aes.Encrypt(value, this);
+            return Aes.Encrypt(plainText, this);
         }
 
         /// <summary>
         /// Decrypts the specified base64 encoded value.
         /// </summary>
-        /// <param name="base64EncodedValue">The base64 encoded value.</param>
+        /// <param name="base64EncodedCipher">The base64 encoded value.</param>
         /// <returns></returns>
-        public string Decrypt(string base64EncodedValue)
+        public string Decrypt(string base64EncodedCipher)
         {
-            return Aes.Decrypt(base64EncodedValue, this);
+            return Aes.Decrypt(base64EncodedCipher, this);
+        }
+
+        public byte[] EncryptBytes(byte[] data)
+        {
+            return Aes.EncryptBytes(data, this.Key, this.IV);
+        }
+
+        public byte[] DecryptBytes(byte[] cipherData)
+        {
+            return Aes.DecryptBytes(cipherData, this.Key, this.IV);
+        }
+
+        public AesKeyVectorPair GetAesKey()
+        {
+            return this;
         }
     }
 }

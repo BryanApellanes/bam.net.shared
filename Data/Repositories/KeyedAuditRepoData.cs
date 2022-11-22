@@ -19,18 +19,18 @@ namespace Bam.Net.Data.Repositories
             return repoData.Key;
         }
         
-        ulong key = Convert.ToUInt64(0);
-        public ulong Key
+        ulong _key = Convert.ToUInt64(0);
+        public new ulong Key
         {
             get
             {
-                if (key == 0)
+                if (_key == 0)
                 {
-                    key = GetULongKeyHash();
+                    _key = GetULongKeyHash();
                 }
-                return key;
+                return _key;
             }
-            set => key = value;
+            set => _key = value;
         }
 
         readonly object _saveLock = new object();

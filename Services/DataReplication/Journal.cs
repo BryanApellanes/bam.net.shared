@@ -41,10 +41,7 @@ namespace Bam.Net.Services.DataReplication
         SystemPaths _paths;
         protected internal SystemPaths Paths
         {
-            get
-            {
-                return _paths;
-            }
+            get => _paths;
             set
             {
                 _journalDirectory = null;
@@ -85,22 +82,22 @@ namespace Bam.Net.Services.DataReplication
 
         public ILogger Logger { get; set; }
 
-        public string GetTypeName(long typeId)
+        public string GetTypeName(ulong typeId)
         {
             return TypeMap.GetTypeName(typeId);
         }
 
-        public string GetPropertyName(long propId)
+        public string GetPropertyName(ulong propId)
         {
             return TypeMap.GetPropertyName(propId);
         }
 
-        public string GetTypeShortName(long typeId)
+        public string GetTypeShortName(ulong typeId)
         {
             return TypeMap.GetTypeShortName(typeId);
         }
 
-        public string GetPropertyShortName(long propId)
+        public string GetPropertyShortName(ulong propId)
         {
             return TypeMap.GetPropertyShortName(propId);
         }
@@ -224,7 +221,7 @@ namespace Bam.Net.Services.DataReplication
             }
         }
 
-        public DirectoryInfo GetTypeDirectory(long typeId)
+        public DirectoryInfo GetTypeDirectory(ulong typeId)
         {
             return JournalEntry.GetTypeDirectory(this, typeId);
         }
