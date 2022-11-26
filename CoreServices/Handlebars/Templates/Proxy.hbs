@@ -42,15 +42,15 @@ namespace {{Namespace}}
 			}
 		}
 
-		public IApiKeyResolver ApiKeyResolver
+		public IApiHmacKeyResolver ApiHmacKeyResolver
 		{
 			get
 			{
-				return (IApiKeyResolver)_proxyClient.Property("ApiKeyResolver", false);
+				return (IApiHmacKeyResolver)_proxyClient.Property("ApiHmacKeyResolver", false);
 			}
 			set
 			{
-				_proxyClient.Property("ApiKeyResolver", value, false);
+				_proxyClient.Property("ApiHmacKeyResolver", value, false);
 			}
 		}
 

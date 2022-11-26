@@ -259,7 +259,7 @@ namespace Bam.Net.ServiceProxy
 
         public virtual async Task<string> ReceiveGetResponseAsync(ServiceProxyInvocationRequest request)
         {
-            ServiceProxyInvocationRequestEventArgs args = request.CopyAs<ServiceProxyInvocationRequestEventArgs>();
+            ServiceProxyInvocationRequestEventArgs args = request.CopyAs<ServiceProxyInvocationRequestEventArgs>(request);
             args.Client = this;
 
             OnGetStarted(args);

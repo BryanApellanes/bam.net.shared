@@ -12,6 +12,7 @@ namespace Bam.Net.ServiceProxy
     public interface IClientProxyGenerator
     {
         string GetProxyCode(Incubator serviceProvider, IHttpContext context);
+        string GetCachedProxyCode(Incubator serviceProvider, IHttpContext context);
         void SendProxyCode(Incubator serviceProvider, IHttpContext context);
     }
 }

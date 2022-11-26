@@ -35,6 +35,7 @@ namespace Bam.Net.Server
         /// to use for the server
         /// </summary>
         public const string ContentRootConfigKey = "ContentRoot";
+        public const string DefaultServiceSearchPattern = "*Services.dll,*Proxyables.dll";
 
         public BamConf()
         {
@@ -44,7 +45,7 @@ namespace Bam.Net.Server
             this.DaoSearchPattern = "*Dao.dll";
             this.LoggerPaths = new string[] { "." };
             this.LoggerSearchPattern = "*Logging.dll";
-            this.ServiceSearchPattern = "*Services.dll,*Proxyables.dll";
+            this.ServiceSearchPattern = DefaultServiceSearchPattern;
             this.ServerEventListenerSearchPath = $"{Path.Combine(BamHome.ContentPath, "server-listeners")},{Path.Combine(BamHome.ContentPath, "server-listeners-temp")}";
             this.ServerEventListenerAssemblySearchPattern = "*ServerListeners.dll,*ServerEventListeners.dll";
             this.MainLoggerName = "ConsoleLogger";

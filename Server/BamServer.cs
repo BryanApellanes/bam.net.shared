@@ -250,9 +250,12 @@ namespace Bam.Net.Server
                             result.Add(appToServe.Name, new List<AppPageRendererManager>());
                         }
 
-                        if (AppContentResponders[appToServe.Name].PageRenderer is AppPageRendererManager current)
+                        if (AppContentResponders.ContainsKey(appToServe.Name))
                         {
-                            result[appToServe.Name].Add(current);
+                            if (AppContentResponders[appToServe.Name].PageRenderer is AppPageRendererManager current)
+                            {
+                                result[appToServe.Name].Add(current);
+                            }
                         }
                     }
                     return result;

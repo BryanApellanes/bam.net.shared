@@ -47,8 +47,17 @@ namespace Bam.Net.Server.ServiceProxy
         protected void SetHttpMethodHandlers()
         {
             HttpMethodHandlers = new HttpMethodHandlers();
-            HttpMethodHandlers.SetHandler("Get", ExecuteInvocation);
+            HttpMethodHandlers.SetHandler("Get", CreateGetResponse);
             HttpMethodHandlers.SetHandler("Post", ExecuteInvocation);
+        }
+
+        protected IHttpResponse CreateGetResponse(IHttpContext context)
+        {
+            if (ServiceProxyResponder.IsProxyCodeRequest(context))
+            {
+                return new HttpResponse(ServiceProxyResponder.GetProxyCode(context), 200);
+            }
+            return ExecuteInvocation(context);
         }
 
         protected IHttpResponse ExecuteInvocation(IHttpContext context)

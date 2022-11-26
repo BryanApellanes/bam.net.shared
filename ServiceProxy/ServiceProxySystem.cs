@@ -289,7 +289,7 @@ namespace {0}
             get
             {
                 return @"{0}
-    public class {1}Client: ServiceProxyClient<{2}.I{3}>, {2}.I{3}
+    public class {1}Client: ServiceProxyClient<{2}.{3}>, {6}.{7}
     {{
         public {1}Client(): base(DefaultConfiguration.GetAppSetting(""{3}Url"", ""{4}""))
         {{            
@@ -310,7 +310,7 @@ namespace {0}
             get
             {
                 return @"{0}
-    public class {1}Client: EncryptedServiceProxyClient<{2}.I{3}>, {2}.I{3}
+    public class {1}Client: EncryptedServiceProxyClient<{2}.{3}>, {6}.{7}
     {{
         public {1}Client(): base(DefaultConfiguration.GetAppSetting(""{3}Url"", ""{4}""))
         {{
@@ -415,8 +415,8 @@ namespace {0}
                 }
 
                 string classFormatToUse = type.HasCustomAttributeOfType<EncryptAttribute>() ? EncryptedClassFormat : ClassFormat;
-                string typeApiKeyRequired = type.HasCustomAttributeOfType<ApiHmacKeyRequiredAttribute>() ? "\r\n\t\t[ApiHmacKeyRequired]" : "";
-                classes.AppendFormat(classFormatToUse, typeApiKeyRequired, clientName, contractNamespace, serverName, defaultBaseAddress, methods.ToString());
+                string typeApiKeyRequired = type.HasCustomAttributeOfType<ApiHmacKeyRequiredAttribute>() ? $"\r\n\t\t[ApiHmacKeyRequired]" : "";
+                classes.AppendFormat(classFormatToUse, typeApiKeyRequired, clientName, type.Namespace, serverName, defaultBaseAddress, methods.ToString(), contractNamespace, $"I{serverName}");
                 interfaces.AppendFormat(InterfaceFormat, serverName, interfaceMethods.ToString());
             }
 

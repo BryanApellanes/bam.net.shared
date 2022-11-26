@@ -107,6 +107,20 @@ namespace Bam.Net
             return Compile(assemblyName, sourceCode, GetMetaDataReferences);
         }
         
+        public byte[] Compile(string assemblyName, string sourceCode, params Type[] referenceTypes)
+        {
+            return Compile(assemblyName, sourceCode, () =>
+            {
+                MetadataReference[] metadataReferences = GetMetaDataReferences();
+                HashSet<MetadataReference> metaDataHashSet = new HashSet<MetadataReference>(metadataReferences);
+                foreach(Type referenceType in referenceTypes)
+                {
+                    metaDataHashSet.Add(MetadataReference.CreateFromFile(referenceType.Assembly.Location));
+                }
+                return metaDataHashSet.ToArray();
+            });
+        }
+
         public byte[] Compile(string assemblyName, string sourceCode, Func<MetadataReference[]> getMetaDataReferences)
         {
             SyntaxTree tree = SyntaxFactory.ParseSyntaxTree(sourceCode);

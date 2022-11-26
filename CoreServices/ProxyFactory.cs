@@ -235,7 +235,7 @@ namespace Bam.Net.CoreServices
 
         /// <summary>
         /// Gets a generated proxy Assembly for the specified type downloading it from the specified
-        /// host and port
+        /// host and port.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="hostName"></param>
