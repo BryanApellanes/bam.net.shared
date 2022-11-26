@@ -410,6 +410,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Automation\ZipFolderWorker.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)BackgroundThreadQueue.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)BackgroundThreadQueueEventArgs.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)BamPlatform.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)BamDir.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)BamEnvironmentVariables.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)BamHome.cs" />
@@ -590,6 +591,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)JsonValueConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\RsaBase64ReverseTransformer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\RsaBase64Transformer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Server\IManagedServer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Server\ServiceProxy\IWebServiceProxyDescriptorsProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Server\ServiceProxy\SecureChannelServiceProxyInvocationArgumentReader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Server\ServiceProxy\WebServiceProxyDescriptorsProvider.cs" />

@@ -28,13 +28,15 @@ using Bam.Net.Logging.Http;
 namespace Bam.Net.Server
 {
     /// <summary>
-    /// The core BamServer
+    /// The core BamServer.
     /// </summary>
-    public partial class BamServer : Loggable, IInitialize<BamServer>
+    public partial class BamServer : Loggable, IInitialize<BamServer>, IManagedServer
     {
         private readonly HashSet<IHttpResponder> _responders;
         private readonly Dictionary<string, IHttpResponder> _respondersByName;
         private HttpServer _server;
+
+        public BamServer() : this(new BamConf()) { }
 
         public BamServer(BamConf conf)
         {
@@ -45,10 +47,14 @@ namespace Bam.Net.Server
             BindEventListeners(conf);
             EnableDao = true;
             EnableServiceProxy = true;
-
             SQLiteRegistrar.RegisterFallback();
             AppDomain.CurrentDomain.DomainUnload += (s, a) => Stop();
             _ = LoadApplicationServiceRegistryAsync();
+        }
+
+        public BamServer(HostBinding hostBinding): this()
+        {
+            this.DefaultHostBinding = hostBinding;
         }
 
         private static BamServer _bamServer;
@@ -572,15 +578,15 @@ namespace Bam.Net.Server
             return results.ToArray();
         }
 
-        HostBinding _defaultHostPrefix;
-        readonly object _defaultHostPrefixLock = new object();
+        HostBinding _defaultHostBinding;
+        readonly object _defaultHostBindingLock = new object();
         public HostBinding DefaultHostBinding
         {
             get
             {
-                return _defaultHostPrefixLock.DoubleCheckLock(ref _defaultHostPrefix, () => new HostBinding("localhost", 8080));
+                return _defaultHostBindingLock.DoubleCheckLock(ref _defaultHostBinding, () => new HostBinding("localhost", 8080));
             }
-            set => _defaultHostPrefix = value;
+            set => _defaultHostBinding = value;
         }
 
         // config values here to ensure proper sync
@@ -786,6 +792,11 @@ namespace Bam.Net.Server
         public void SubscribeToNotResponded(ResponderEventHandler subscriber)
         {
             Responders.Each(r => r.DidNotRespond += subscriber);
+        }
+
+        public void Start()
+        {
+            Start(false);
         }
 
         public void Start(bool usurpedKnownListeners = false)

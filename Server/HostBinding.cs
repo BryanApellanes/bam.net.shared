@@ -14,12 +14,24 @@ namespace Bam.Net.Server
 {
     public class HostBinding
     {
+        /// <summary>
+        /// Instanciate a HostBinding with the hostname of "localhost" and port set to 8080.
+        /// </summary>
         public HostBinding()
         {
             this.HostName = "localhost";
             this.Port = 8080;
         }
 
+        public HostBinding(int port) : this("localhost", port)
+        {
+        }
+
+        /// <summary>
+        /// Instanciate a HostBinding with the specified hostname and port.
+        /// </summary>
+        /// <param name="hostName"></param>
+        /// <param name="port"></param>
         public HostBinding(string hostName, int port)
         {
             this.HostName = hostName;

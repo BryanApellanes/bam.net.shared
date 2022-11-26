@@ -1381,7 +1381,24 @@ namespace Bam.Net
         }
 
         /// <summary>
-        /// Iterate over the current IEnumerable passing
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="arr"></param>
+        /// <param name="action"></param>
+        /// <returns></returns>
+        public static Task[] EachAsync<T>(this IEnumerable<T> arr, Action<T> action)
+        {
+            List<Task> results = new List<Task>();
+            foreach (T item in arr)
+            {
+                results.Add(Task.Run(() => action(item)));
+            };
+            return results.ToArray();
+        }
+
+        /// <summary>
+        /// Iterate over the current IEnumerable using `foreach`, passing
         /// each element to the specified action
         /// </summary>
         /// <typeparam name="T"></typeparam>

@@ -402,7 +402,7 @@ namespace {0}
 
                     string methodParams = methodGenInfo.MethodSignature;
                     string wrapped = parameters.ToDelimited(p => p.Name.CamelCase()); // wrapped as object array
-                    string methodApiKeyRequired = method.HasCustomAttributeOfType<ApiHmacKeyRequiredAttribute>() ? "\r\n\t\t[ApiKeyRequired]" : "";
+                    string methodApiKeyRequired = method.HasCustomAttributeOfType<ApiHmacKeyRequiredAttribute>() ? "\r\n\t\t[ApiHmacKeyRequired]" : "";
                     methods.AppendFormat(MethodFormat, methodApiKeyRequired, returnType, method.Name, methodParams, wrapped, invoke);
                     interfaceMethods.AppendFormat(InterfaceMethodFormat, returnType, method.Name, methodParams);
                 }

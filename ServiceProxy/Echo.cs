@@ -21,7 +21,7 @@ namespace Bam.Net.ServiceProxy
     }
 
     /// <summary>
-    /// Echo class that requires an api key
+    /// Echo class that requires an api hmac key.
     /// </summary>
     [ApiHmacKeyRequired]
     public class ApiKeyRequiredEcho : Echo
@@ -29,6 +29,9 @@ namespace Bam.Net.ServiceProxy
 
     }
 
+    /// <summary>
+    /// Echo class addorned with the ServiceSubdomain attribute.
+    /// </summary>
     [ServiceSubdomain("echo")]
     public class ServiceSubdomainEcho: Echo
     {
@@ -36,7 +39,7 @@ namespace Bam.Net.ServiceProxy
     }
 
     /// <summary>
-    /// Echo class that requires encryption when used as a service
+    /// Echo class that requires encryption when used as a service.
     /// </summary>
     [Proxy]
     [Encrypt]
@@ -47,7 +50,7 @@ namespace Bam.Net.ServiceProxy
 
 
     /// <summary>
-    /// Used specifically for testing ServiceProxy calls
+    /// Used specifically for testing ServiceProxy calls.
     /// </summary>
     [Proxy("srvrEcho")]
     public class Echo
