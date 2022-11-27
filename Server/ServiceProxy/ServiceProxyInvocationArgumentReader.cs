@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace Bam.Net.Server.ServiceProxy
 {
@@ -23,6 +24,22 @@ namespace Bam.Net.Server.ServiceProxy
 
         public virtual object DecodeValue(Type type, string encodedValue)
         {
+            if (type == typeof(string))
+            {
+                return encodedValue;
+            }
+            if (type == typeof(int))
+            {
+                return int.Parse(encodedValue);
+            }
+            if (type == typeof(decimal))
+            {
+                return decimal.Parse(encodedValue);
+            }
+            if (type == typeof(long))
+            {
+                return long.Parse(encodedValue);
+            }
             return encodedValue.FromJson(type);
         }
 

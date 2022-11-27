@@ -21,10 +21,8 @@ namespace Bam.Net.Testing
     /// </remarks>
     public class SetupContext: Incubator
     {
-        Dictionary<Type, object> dictionary;
         internal SetupContext()
         {
-            this.dictionary = new Dictionary<Type, object>();
             this.Set<IBecauseWriter>(new ConsoleBecauseWriter());
         }
                       
