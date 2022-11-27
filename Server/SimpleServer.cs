@@ -1,4 +1,5 @@
 using Bam.Net.Logging;
+using Bam.Net.Logging.Http;
 using Bam.Net.ServiceProxy;
 using System;
 using System.Collections.Generic;
@@ -101,7 +102,9 @@ namespace Bam.Net.Server
         protected void WireEventHandlers()
         {
             _server = new HttpServer(Logger ?? Log.Default);
-            WireServerRequestHandler();
+            _server.ProcessRequest += ProcessRequest;
+            _server.PreProcessRequest += PreProcessRequest;
+
             WireResponderEventHandlers();
             MonitorDirectories.Each(directory =>
             {
@@ -116,13 +119,31 @@ namespace Bam.Net.Server
             });
         }
 
-        private void WireServerRequestHandler()
+        private readonly object _requestLogLock = new object();
+        private RequestLog _requestLog;
+
+        public RequestLog RequestLog
         {
-            _server.ProcessRequest += (context) =>
-            {
-                Responder.Respond(new HttpContextWrapper(context));
-            };
+            get { return _requestLogLock.DoubleCheckLock(ref _requestLog, () => new RequestLog()); }
+            set => _requestLog = value;
         }
+
+        protected void PreProcessRequest(IHttpContext context)
+        {
+            if(context?.Request == null)
+            {
+                return;
+            }
+
+            context.SetRequestId();
+            RequestLog.LogRequest(context);
+        }
+
+        protected void ProcessRequest(IHttpContext context)
+        {
+            Responder.Respond(context);
+        }
+
 
         private void WireResponderEventHandlers()
         {

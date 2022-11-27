@@ -4030,6 +4030,10 @@ namespace Bam.Net
         /// <returns></returns>
         public static string[] DelimitSplit(this string valueToSplit, string[] delimiters, bool trimValues)
         {
+            if (string.IsNullOrEmpty(valueToSplit))
+            {
+                return new string[] { };
+            }
             string[] split = valueToSplit.Split(delimiters, StringSplitOptions.RemoveEmptyEntries);
             if (trimValues)
             {

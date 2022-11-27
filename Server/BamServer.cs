@@ -883,6 +883,10 @@ namespace Bam.Net.Server
             DaoResponder.RegisterAppDaoFromDirectory(appName, daoDir);
         }
 
+        /// <summary>
+        /// Adds a service available to all applications served by this server.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
         public void AddCommonService<T>()
         {
             ServiceProxyResponder.AddCommonService<T>((T)typeof(T).Construct());

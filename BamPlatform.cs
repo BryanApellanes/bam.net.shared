@@ -11,6 +11,7 @@ namespace Bam.Net
     {
         static BamPlatform()
         {
+            AppDomain.CurrentDomain.DomainUnload += async (o, a) => await StopServersAsync();
             Servers = new HashSet<IManagedServer>();
         }
 
@@ -26,16 +27,30 @@ namespace Bam.Net
             });
         }
 
+        /// <summary>
+        /// Create a BamServer that listens for requests to "localhost" on a random port from 8080 to 65535.
+        /// </summary>
+        /// <returns>BamServer</returns>
         public static async Task<BamServer> CreateServerAsync()
         {
             return await CreateServerAsync(RandomNumber.Between(8079, 65535));
         }
 
+        /// <summary>
+        /// Create a BamServer that listens for request to "localhost" on the specified port.
+        /// </summary>
+        /// <param name="port"></param>
+        /// <returns></returns>
         public static async Task<BamServer> CreateServerAsync(int port)
         {
             return await CreateServerAsync(new HostBinding(port));
         }
 
+        /// <summary>
+        /// Create a BamServer that listens for request on the specified HostBinding.
+        /// </summary>
+        /// <param name="hostBinding"></param>
+        /// <returns></returns>
         public static async Task<BamServer> CreateServerAsync(HostBinding hostBinding)
         {
             return await Task.Run(() =>

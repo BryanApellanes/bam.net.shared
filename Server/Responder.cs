@@ -178,6 +178,10 @@ namespace Bam.Net.Server
             {
                 headers.Keys.Each(key =>
                 {
+                    if(response.Headers == null)
+                    {
+                        response.Headers = new System.Net.WebHeaderCollection();
+                    }
                     response.Headers.Add(key, headers[key]);
                 });
             }

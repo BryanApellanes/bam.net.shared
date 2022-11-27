@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Bam.Net.Incubation;
 using Bam.Net.Data.Repositories;
+using YamlDotNet.Serialization;
 
 namespace Bam.Net.CoreServices
 {
@@ -66,6 +67,11 @@ namespace Bam.Net.CoreServices
 
         public new static ServiceRegistry Default { get; set; }
 
+        public static Func<object> GetServiceLoader(Type type, object orDefault = null)
+        {
+            return GetServiceLoader(type, type.Assembly, orDefault);
+        }
+
         /// <summary>
         /// Gets a function that returns a `ServiceRegistry` instance.  The function returned
         /// is a reference to the `Get` method of the first class found addorned with the
@@ -75,11 +81,11 @@ namespace Bam.Net.CoreServices
         /// <param name="type">The type whose assembly is searched.</param>
         /// <param name="orDefault"></param>
         /// <returns></returns>
-        public static Func<object> GetServiceLoader(Type type, object orDefault = null)
+        public static Func<object> GetServiceLoader(Type type, Assembly assembly, object orDefault = null)
         {
             if (Default == null)
             {
-                Type coreRegistryContainer = type.Assembly.GetTypes().FirstOrDefault(t => t.HasCustomAttributeOfType<ServiceRegistryContainerAttribute>());
+                Type coreRegistryContainer = assembly.GetTypes().FirstOrDefault(t => t.HasCustomAttributeOfType<ServiceRegistryContainerAttribute>());
                 if (coreRegistryContainer != null)
                 {
                     MethodInfo provider = coreRegistryContainer.GetMethods().FirstOrDefault(mi => CustomAttributeExtension.HasCustomAttributeOfType<ServiceRegistryLoaderAttribute>(mi) || mi.Name.Equals("Get"));
