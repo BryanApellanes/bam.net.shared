@@ -6,6 +6,6 @@ namespace Bam.Net.Encryption
 {
     public interface IHttpRequest<TContent> : IHttpRequest
     {
-        new TContent Content { get; set; }
+        new TContent TypedContent { get; set; }
     }
 }

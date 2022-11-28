@@ -27,7 +27,7 @@ namespace Bam.Net.Encryption
         {
             EncryptedHttpRequest<TContent> copy = new EncryptedHttpRequest<TContent>();
             copy.Copy(request);
-            ContentCipher<TContent> cipher = ContentEncryptor.GetContentCipher(request.Content);
+            ContentCipher<TContent> cipher = ContentEncryptor.GetContentCipher(request.TypedContent);
             HeaderEncryptor.EncryptHeaders(copy);
             copy.ContentCipher = cipher;
             copy.ContentType = cipher.ContentType;

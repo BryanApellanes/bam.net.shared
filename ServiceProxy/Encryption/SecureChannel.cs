@@ -120,7 +120,19 @@ namespace Bam.Net.ServiceProxy.Encryption
         {
             WebServiceProxyDescriptors webServiceProxyDescriptors = WebServiceProxyDescriptorsProvider.GetWebServiceProxyDescriptors(ApplicationNameProvider.GetApplicationName());
             ServiceProxyInvocation serviceProxyInvocation = secureChannelRequestMessage.ToServiceProxyInvocation(webServiceProxyDescriptors, new InputStreamServiceProxyInvocationArgumentReader());
-            return serviceProxyInvocation.Execute();
+            if(serviceProxyInvocation.Execute())
+            {
+                throw new NotImplementedException("This method is not complete, see notes");
+                return serviceProxyInvocation.Result; 
+                // create SecureChannelResponseMessage with invocation result as data
+                // convert it to json
+                // encrypt it with the current session aes key
+                // return the base64 cipher;
+            }
+            else
+            {
+                return serviceProxyInvocation.Exception;
+            }
         }
 
         public void EndSession(string sessionIdentifier)

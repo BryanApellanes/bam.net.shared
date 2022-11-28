@@ -15,7 +15,7 @@ namespace Bam.Net.Encryption
         {
         }
 
-        public new TContent Content
+        public TContent TypedContent
         {
             get
             {
@@ -28,14 +28,14 @@ namespace Bam.Net.Encryption
             set
             {
                 this.content = value;
-                base.Content = this.Content.ToJson();
+                base.Content = this.TypedContent.ToJson();
             }
         }
 
         public void Copy(IHttpRequest<TContent> request)
         {
             this.Uri = request.Uri;
-            this.Content = request.Content;
+            this.TypedContent = request.TypedContent;
             this.ContentType = request.ContentType;
             this.Verb =  request.Verb;
             foreach (string key in request.Headers.Keys)

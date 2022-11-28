@@ -2,6 +2,7 @@
 using Bam.Net.Incubation;
 using Bam.Net.Server.PathHandlers;
 using Bam.Net.ServiceProxy;
+using Bam.Net.ServiceProxy.Encryption;
 using Bam.Net.Services;
 using Bam.Net.Web;
 using System;
@@ -63,7 +64,7 @@ namespace Bam.Net.Server.ServiceProxy
         protected IHttpResponse ExecuteInvocation(IHttpContext context)
         {
             ServiceProxyInvocation serviceProxyInvocation = ReadServiceProxyInvocation(context);
-
+            
             bool success = serviceProxyInvocation.Execute(out object result);
             if (success)
             {

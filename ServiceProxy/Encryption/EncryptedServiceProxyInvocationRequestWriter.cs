@@ -41,7 +41,7 @@ namespace Bam.Net.ServiceProxy.Encryption
             HttpRequestMessage httpRequestMessage = await CreateServiceProxyInvocationRequestMessageAsync(serviceProxyInvocationRequest);
 
             HttpRequest<SecureChannelRequestMessage> request = HttpRequest.FromHttpRequestMessage<SecureChannelRequestMessage>(httpRequestMessage);
-            request.Content = new SecureChannelRequestMessage(serviceProxyInvocationRequest);
+            request.TypedContent = new SecureChannelRequestMessage(serviceProxyInvocationRequest);
             IHttpRequest encryptedRequest = HttpRequestEncryptor.EncryptRequest(request);
             return encryptedRequest.ToHttpRequestMessage();
         }

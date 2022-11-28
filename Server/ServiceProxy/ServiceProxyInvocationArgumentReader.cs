@@ -19,7 +19,7 @@ namespace Bam.Net.Server.ServiceProxy
 
         public virtual ServiceProxyInvocationArgument DecodeArgument(ParameterInfo parameterInfo, string jsonValue)
         {
-            return new ServiceProxyInvocationArgument(this, parameterInfo, jsonValue);
+            return new ServiceProxyInvocationArgument(this, parameterInfo, jsonValue.FromJson(parameterInfo.ParameterType));
         }
 
         public virtual object DecodeValue(Type type, string encodedValue)

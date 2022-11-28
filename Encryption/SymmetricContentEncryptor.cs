@@ -16,7 +16,8 @@ namespace Bam.Net.Encryption
 
         public ContentCipher<TContent> GetContentCipher(TContent content)
         {
-            return new SymmetricContentCipher<TContent>(Encrypt(content));
+            Cipher<TContent> cipher = Encrypt(content);
+            return new SymmetricContentCipher<TContent>(cipher);
         }
     }
 }
