@@ -53,11 +53,11 @@ namespace Bam.Net.ServiceProxy
             this.ServiceProxyClient = client;
             if (Verb == ServiceProxyVerbs.Post)
             {
-                return await client.ReceivePostResponseAsync(this);
+                return (await client.ReceivePostResponseAsync(this)).Content;
             }
             else
             {
-                return await client.ReceiveGetResponseAsync(this);
+                return (await client.ReceiveGetResponseAsync(this)).Content;
             }
         }
     }

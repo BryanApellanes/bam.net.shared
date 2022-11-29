@@ -458,6 +458,13 @@ namespace Bam.Net.Server.ServiceProxy
             return Execute(InvocationTarget, true);
         }
 
+        public bool Execute<T>(out T result)
+        {
+            bool wasSuccessful = Execute(out object innerResult);
+            result = (T)innerResult;
+            return wasSuccessful;
+        }
+
         public bool Execute(out object result)
         {
             bool success = Execute(InvocationTarget, true);

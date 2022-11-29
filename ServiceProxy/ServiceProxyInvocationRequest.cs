@@ -111,13 +111,13 @@ namespace Bam.Net.ServiceProxy
             });
         }
 
-        public virtual ServiceProxyClient GetClient()
+/*        public virtual ServiceProxyClient GetClient()
         {
             this.ServiceProxyClient = this.ServiceProxyClient ?? this.CopyAs<ServiceProxyClient>(this.ServiceType, this.BaseAddress);
             return this.ServiceProxyClient;
-        }
+        }*/
 
-        public async Task<TResult> ExecuteAsync<TService, TResult>(params object[] arguments)
+        /*public async Task<TResult> ExecuteAsync<TService, TResult>(params object[] arguments)
         {
             this.ServiceType = typeof(TService);
             string response = await this.ExecuteAsync(this.GetClient());
@@ -135,6 +135,6 @@ namespace Bam.Net.ServiceProxy
             {
                 return await client.ReceiveGetResponseAsync(this);
             }
-        }
+        }*/
     }
 }

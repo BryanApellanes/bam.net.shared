@@ -2,6 +2,7 @@
 	Copyright © Bryan Apellanes 2015  
 */
 using Bam.Net.Logging;
+using Bam.Net.Web;
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -36,9 +37,9 @@ namespace Bam.Net.ServiceProxy
         Task<string> InvokeServiceMethodAsync(string className, string methodName, object[] arguments);
 
         Task<string> InvokeServiceMethodAsync(string baseAddress, string className, string methodName, object[] arguments);
-        Task<string> ReceiveGetResponseAsync(ServiceProxyInvocationRequest request);
-        Task<string> ReceiveGetResponseAsync(string methodName, params object[] arguments);
-        Task<string> ReceivePostResponseAsync(ServiceProxyInvocationRequest serviceProxyInvocationRequest);
-        Task<string> ReceivePostResponseAsync(string methodName, params object[] arguments);
+        Task<IGetResponse> ReceiveGetResponseAsync(ServiceProxyInvocationRequest request);
+        Task<IGetResponse> ReceiveGetResponseAsync(string methodName, params object[] arguments);
+        Task<IPostResponse> ReceivePostResponseAsync(ServiceProxyInvocationRequest serviceProxyInvocationRequest);
+        Task<IPostResponse> ReceivePostResponseAsync(string methodName, params object[] arguments);
     }
 }

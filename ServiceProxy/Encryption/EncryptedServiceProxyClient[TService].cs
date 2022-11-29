@@ -2,7 +2,9 @@
 	Copyright © Bryan Apellanes 2015  
 */
 using Bam.Net.Encryption;
+using Bam.Net.Server.Rest;
 using Bam.Net.Services;
+using Bam.Net.Web;
 using System;
 using System.Linq;
 using System.Net.Http;
@@ -81,6 +83,7 @@ namespace Bam.Net.ServiceProxy.Encryption
                 _sessionInfo = value;
             }
         }
+
         Type _type;
         /// <summary>
         /// The proxied type
@@ -193,15 +196,22 @@ namespace Bam.Net.ServiceProxy.Encryption
 
         protected internal override async Task<string> ReceiveServiceMethodResponseAsync(ServiceProxyInvocationRequest<TService> request)
         {
+            ServiceProxyInvocationRequestEventArgs<TService> args = new ServiceProxyInvocationRequestEventArgs<TService>(request);
+            args.Client = this;
+            OnInvocationStarted(args);
+
             try
             {
                 _startSessionTask.Wait();
-                string responseString = await ReceivePostResponseAsync(request);
-                SecureChannelResponseMessage<string> result = responseString.FromJson<SecureChannelResponseMessage<string>>();
+                IPostResponse postResponse = await ReceivePostResponseAsync(request);
+                throw new NotImplementedException("need to complete decyryption implementation");
+                // postResponse.Content should be a base64 cipher of a SecureChannelResponseMessage
+                SecureChannelResponseMessage result = postResponse.Content.FromJson<SecureChannelResponseMessage>();
                 if (result.Success)
                 {
-                    Decrypted decrypted = new Decrypted(result.Data, ClientSessionInfo.AesKey, ClientSessionInfo.AesIV);
-                    return decrypted.Value;
+                    //Decrypted decrypted = new Decrypted(result.Data, ClientSessionInfo.AesKey, ClientSessionInfo.AesIV);
+                    //OnInvocationComplete()
+                    //return decrypted.Value;
                 }
                 else
                 {
@@ -211,7 +221,6 @@ namespace Bam.Net.ServiceProxy.Encryption
             }
             catch (Exception ex)
             {
-                ServiceProxyInvocationRequestEventArgs<TService> args = new ServiceProxyInvocationRequestEventArgs<TService>(request);
                 args.Exception = ex;
                 args.Message = ex.Message;
                 OnInvocationException(args);
@@ -220,16 +229,12 @@ namespace Bam.Net.ServiceProxy.Encryption
             return string.Empty;
         }
 
-        public async Task<TResult> ReceivePostResponseAsync<TResult>(string className, string methodName, params object[] arguments)
+        public override async Task<IPostResponse> ReceivePostResponseAsync(ServiceProxyInvocationRequest request)
         {
-            return (await ReceivePostResponseAsync(new ServiceProxyInvocationRequest(this, className,  methodName, arguments))).FromJson<TResult>();
-        }
-
-        public override async Task<string> ReceivePostResponseAsync(ServiceProxyInvocationRequest serviceProxyInvocationRequest)
-        {
-            ServiceProxyInvocationRequestEventArgs args = new ServiceProxyInvocationRequestEventArgs(serviceProxyInvocationRequest);
+            ServiceProxyInvocationRequestEventArgs args = new ServiceProxyInvocationRequestEventArgs(request);
             args.Client = this;
             OnPostStarted(args);
+            PostResponse postResponse = new PostResponse();
             string response = string.Empty;
             if (args.CancelInvoke)
             {
@@ -239,18 +244,23 @@ namespace Bam.Net.ServiceProxy.Encryption
             {
                 try
                 {
-                    EncryptedServiceProxyInvocationRequest secureServiceProxyInvocationRequest = serviceProxyInvocationRequest as EncryptedServiceProxyInvocationRequest; 
-                    if(secureServiceProxyInvocationRequest == null)
+                    EncryptedServiceProxyInvocationRequest secureServiceProxyInvocationRequest = request as EncryptedServiceProxyInvocationRequest;
+                    if (secureServiceProxyInvocationRequest == null)
                     {
-                        secureServiceProxyInvocationRequest = serviceProxyInvocationRequest.CopyAs<EncryptedServiceProxyInvocationRequest>();
+                        secureServiceProxyInvocationRequest = request.CopyAs<EncryptedServiceProxyInvocationRequest>();
                     }
                     HttpRequestMessage requestMessage = await CreateServiceProxyInvocationRequestMessageAsync(secureServiceProxyInvocationRequest);
 
                     HttpResponseMessage responseMessage = await HttpClient.SendAsync(requestMessage);
                     args.RequestMessage = requestMessage;
                     args.ResponseMessage = responseMessage;
-                    response = await responseMessage.Content.ReadAsStringAsync();
+                    postResponse.Content = await responseMessage.Content.ReadAsStringAsync();
                     responseMessage.EnsureSuccessStatusCode();
+                    postResponse.Url = requestMessage.RequestUri;
+                    postResponse.StatusCode = (int)responseMessage.StatusCode;
+                    postResponse.ContentType = responseMessage.Content.Headers?.ContentType?.MediaType;
+                    responseMessage.Headers?.Each(header => postResponse.Headers.Add(header.Key, string.Join(", ", header.Value)));
+                    OnPostComplete(args);
                 }
                 catch (Exception ex)
                 {
@@ -258,7 +268,7 @@ namespace Bam.Net.ServiceProxy.Encryption
                     OnInvocationException(args);
                 }
             }
-            return response;
+            return postResponse;
         }
 
         public virtual async Task<HttpRequestMessage> CreateServiceProxyInvocationRequestMessageAsync(EncryptedServiceProxyInvocationRequest serviceProxyInvocationRequest)

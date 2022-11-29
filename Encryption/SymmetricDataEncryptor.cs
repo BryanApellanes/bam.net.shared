@@ -21,7 +21,7 @@ namespace Bam.Net.Encryption
         }
 
         /// <summary>
-        /// Encrypts and gzips the json representation of the specified data.
+        /// Encrypts the json representation of the specified data.
         /// </summary>
         /// <param name="data">The object data to encrypt.</param>
         /// <returns>byte[]</returns>

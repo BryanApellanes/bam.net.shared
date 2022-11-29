@@ -31,7 +31,7 @@ namespace Bam.Net.ServiceProxy.Encryption
             this.Success = success;
         }
 
-        public T Data
+        public new T Data
         {
             get;
             set;
@@ -63,6 +63,8 @@ namespace Bam.Net.ServiceProxy.Encryption
             this.Message = ex.Message;
             this.Success = false;
         }
+
+        public object Data { get; set; }
 
         public string Message { get; set; }
         public bool Success { get; set; }
