@@ -911,32 +911,32 @@ namespace Bam.Net.Data
 
 		public virtual EnsureSchemaStatus TryEnsureSchema(Type type, bool force, out Exception ex, ILogger logger = null)
 		{
-			EnsureSchemaStatus result = EnsureSchemaStatus.Invalid;
-			ex = null;
-			try
-			{
-				string schemaName = Dao.RealConnectionName(type);
-				if (!SchemaNames.Contains(schemaName) || force)
-				{
-					_schemaNames.Add(schemaName);
-					SchemaWriter schema = ServiceProvider.Get<SchemaWriter>();
-					schema.WriteSchemaScript(type);
-					ExecuteSql(schema, ServiceProvider.Get<IParameterBuilder>());					
-					result = EnsureSchemaStatus.Success;
-				}
-				else
-				{
-					result = EnsureSchemaStatus.AlreadyDone;
-				}
-			}
-			catch (Exception e)
-			{
-				ex = e;
-				result = EnsureSchemaStatus.Error;
-				logger = logger ?? Log.Default;
-				logger.AddEntry("Non fatal error occurred trying to write schema for type {0}: {1}", LogEventType.Warning, ex, type.Name, ex.Message);
-			}
-			return result;
+            ex = null;
+            EnsureSchemaStatus result;
+            try
+            {
+                string schemaName = Dao.RealConnectionName(type);
+                if (!SchemaNames.Contains(schemaName) || force)
+                {
+                    _schemaNames.Add(schemaName);
+                    SchemaWriter schema = ServiceProvider.Get<SchemaWriter>();
+                    schema.WriteSchemaScript(type);
+                    ExecuteSql(schema, ServiceProvider.Get<IParameterBuilder>());
+                    result = EnsureSchemaStatus.Success;
+                }
+                else
+                {
+                    result = EnsureSchemaStatus.AlreadyDone;
+                }
+            }
+            catch (Exception e)
+            {
+                ex = e;
+                result = EnsureSchemaStatus.Error;
+                logger = logger ?? Log.Default;
+                logger.AddEntry("Non fatal error occurred trying to write schema for type {0}: {1}", LogEventType.Warning, ex, type.Name, ex.Message);
+            }
+            return result;
 		}
 
 		Func<ColumnAttribute, string> _columnNameProvider;

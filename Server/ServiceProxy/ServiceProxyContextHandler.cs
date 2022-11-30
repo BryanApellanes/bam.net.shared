@@ -81,7 +81,7 @@ namespace Bam.Net.Server.ServiceProxy
 
         protected IHttpResponse ExecuteInvocation(IHttpContext context)
         {
-            if (IsSecureChannelRequest(context, out ServiceProxyInvocation serviceProxyInvocation))
+            if (IsSecureChannelExecutionRequest(context, out ServiceProxyInvocation serviceProxyInvocation))
             {
                 // if it's a securechannel request the type of the result will always be 
                 // SecureChannelResponseMessage
@@ -104,15 +104,15 @@ namespace Bam.Net.Server.ServiceProxy
             return new HttpErrorResponse(serviceProxyInvocation.Exception) { StatusCode = 500 };
         }
 
-        public bool IsSecureChannelRequest(IHttpContext context, out ServiceProxyInvocation serviceProxyInvocation)
+        public bool IsSecureChannelExecutionRequest(IHttpContext context, out ServiceProxyInvocation serviceProxyInvocation)
         {
             serviceProxyInvocation = ReadServiceProxyInvocation(context);
-            return serviceProxyInvocation.TargetType == typeof(SecureChannel);
+            return serviceProxyInvocation.TargetType == typeof(SecureChannel) && serviceProxyInvocation.MethodName.Equals(nameof(SecureChannel.Execute));
         }
 
         protected IHttpResponse CreateResponse<T>(IHttpContext context, T result, Func<IHttpResponse> defaultResponseProvider)
         {
-            HashSet<string> acceptTypes = new HashSet<string>(context?.Request?.AcceptTypes);
+            HashSet<string> acceptTypes = context?.Request.AcceptTypes == null ? new HashSet<string>(): new HashSet<string>(context?.Request?.AcceptTypes);
             if (acceptTypes.Contains(MediaTypes.SymmetricCipher))
             {
                 return EncryptedHttpResponse.ForData(result, GetClientSessionInfo(context), EncryptionSchemes.Symmetric);

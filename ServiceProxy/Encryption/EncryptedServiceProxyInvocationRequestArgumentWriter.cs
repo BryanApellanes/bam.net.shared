@@ -88,7 +88,6 @@ namespace Bam.Net.ServiceProxy.Encryption
                     default:
                         encryptor = GetSymmetricEncryptor();
                         break;
-
                 }
             }
 

@@ -204,7 +204,7 @@ namespace Bam.Net.ServiceProxy.Encryption
             {
                 _startSessionTask.Wait();
                 IPostResponse postResponse = await ReceivePostResponseAsync(request);
-                throw new NotImplementedException("need to complete decyryption implementation");
+                throw new NotImplementedException("need to complete decryption implementation");
                 // postResponse.Content should be a base64 cipher of a SecureChannelResponseMessage
                 SecureChannelResponseMessage result = postResponse.Content.FromJson<SecureChannelResponseMessage>();
                 if (result.Success)

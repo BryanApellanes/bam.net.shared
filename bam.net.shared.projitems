@@ -597,6 +597,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)JsonValueConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\RsaBase64ReverseTransformer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\RsaBase64Transformer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PipelineFactoryConstructorAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Server\EncryptedHttpResponse.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Server\IManagedServer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Server\ServiceProxy\IWebServiceProxyDescriptorsProvider.cs" />
@@ -618,6 +619,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\Encryption\SecureServiceProxy_Generated\SecureSessionColumns.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\Encryption\ValidationToken.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServiceProxy\IHasApplicationServiceRegistry.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PipelineFactoryTransformerNameAttribute.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ValueTransformerPipelineFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Web\GetResponse.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Web\IGetResponse.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Web\IPostResponse.cs" />
