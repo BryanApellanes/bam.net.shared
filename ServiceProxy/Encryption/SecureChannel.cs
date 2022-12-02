@@ -121,12 +121,15 @@ namespace Bam.Net.ServiceProxy.Encryption
 
             ServiceProxyInvocation serviceProxyInvocation = secureChannelRequestMessage.ToServiceProxyInvocation(webServiceProxyDescriptors, new InputStreamServiceProxyInvocationArgumentReader());
 
-            ClientSessionInfo clientSessionInfo = GetClientSessionInfo();
             if (serviceProxyInvocation.Execute())
             {
+                ClientSessionInfo clientSessionInfo = GetClientSessionInfo();
+                AesKeyVectorPair aesKey = clientSessionInfo.GetAesKey();
+                string resultJson = serviceProxyInvocation.Result?.ToJson();
+                string jsonCipher = aesKey.Encrypt(resultJson);
                 return new SecureChannelResponseMessage(true)
                 {
-                    Data = serviceProxyInvocation.Result
+                    Data = jsonCipher
                 };
             }
 

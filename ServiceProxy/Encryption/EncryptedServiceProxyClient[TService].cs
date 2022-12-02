@@ -194,7 +194,7 @@ namespace Bam.Net.ServiceProxy.Encryption
             }
         }
 
-        protected internal override async Task<string> ReceiveServiceMethodResponseAsync(ServiceProxyInvocationRequest<TService> request)
+        protected internal override async Task<HttpClientResponse> ReceiveServiceMethodResponseAsync(ServiceProxyInvocationRequest<TService> request)
         {
             ServiceProxyInvocationRequestEventArgs<TService> args = new ServiceProxyInvocationRequestEventArgs<TService>(request);
             args.Client = this;
@@ -203,15 +203,14 @@ namespace Bam.Net.ServiceProxy.Encryption
             try
             {
                 _startSessionTask.Wait();
-                IPostResponse postResponse = await ReceivePostResponseAsync(request);
-                throw new NotImplementedException("need to complete decryption implementation");
-                // postResponse.Content should be a base64 cipher of a SecureChannelResponseMessage
-                SecureChannelResponseMessage result = postResponse.Content.FromJson<SecureChannelResponseMessage>();
+                IHttpClientResponse postResponse = await ReceivePostResponseAsync(request);
+                AesKeyVectorPair aesKey = ClientSessionInfo.GetAesKey();
+                string json = aesKey.Decrypt(postResponse.Content);
+                SecureChannelResponseMessage result = json.FromJson<SecureChannelResponseMessage>();
                 if (result.Success)
                 {
-                    //Decrypted decrypted = new Decrypted(result.Data, ClientSessionInfo.AesKey, ClientSessionInfo.AesIV);
-                    //OnInvocationComplete()
-                    //return decrypted.Value;
+                    EncryptedHttpClientResponse response = new EncryptedHttpClientResponse(ClientSessionInfo, (string)result.Data);
+                    return response;
                 }
                 else
                 {
@@ -226,10 +225,10 @@ namespace Bam.Net.ServiceProxy.Encryption
                 OnInvocationException(args);
             }
 
-            return string.Empty;
+            return HttpClientResponse.Empty;
         }
 
-        public override async Task<IPostResponse> ReceivePostResponseAsync(ServiceProxyInvocationRequest request)
+        public override async Task<HttpClientResponse> ReceivePostResponseAsync(ServiceProxyInvocationRequest request)
         {
             ServiceProxyInvocationRequestEventArgs args = new ServiceProxyInvocationRequestEventArgs(request);
             args.Client = this;

@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Bam.Net.Web
 {
-    public interface IPostResponse
+    public interface IHttpClientResponse
     {
         Dictionary<string, string> Headers { get; }
 

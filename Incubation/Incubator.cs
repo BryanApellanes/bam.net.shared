@@ -795,7 +795,7 @@ namespace Bam.Net.Incubation
 
         public List<object> GetCtorParams(Type type)
         {
-            return GetCtorParams(type, out ConstructorInfo ctor);
+            return GetCtorParams(type, out _);
         }
 
         public List<object> GetCtorParams(Type type, out ConstructorInfo ctorInfo)
@@ -811,9 +811,9 @@ namespace Bam.Net.Incubation
                     foreach (ParameterInfo paramInfo in parameters)
                     {
                         object ctorParam = GetCtorParameterValue(type, paramInfo.Name);
-                        if(ctorParam != null)
+                        if (ctorParam != null)
                         {
-                            if(ctorParam is Delegate d)
+                            if (ctorParam is Delegate d)
                             {
                                 ctorParam = d.DynamicInvoke();
                             }
@@ -824,7 +824,7 @@ namespace Bam.Net.Incubation
                             object existing = this[paramInfo.ParameterType] ?? Get(paramInfo.ParameterType, GetCtorParams(paramInfo.ParameterType).ToArray());
                             if (existing != null)
                             {
-                                if(existing is Delegate d)
+                                if (existing is Delegate d)
                                 {
                                     existing = d.DynamicInvoke();
                                 }

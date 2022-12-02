@@ -30,16 +30,13 @@ namespace Bam.Net.ServiceProxy
 
         Task<HttpRequestMessage> CreateServiceProxyInvocationRequestMessageAsync(ServiceProxyInvocationRequest serviceProxyInvocationRequest);
 
-        string InvokeServiceMethod(string methodName, params object[] parameters);
-        Task<string> InvokeServiceMethodAsync(string methodName, object[] arguments);
-
-
-        Task<string> InvokeServiceMethodAsync(string className, string methodName, object[] arguments);
-
-        Task<string> InvokeServiceMethodAsync(string baseAddress, string className, string methodName, object[] arguments);
-        Task<IGetResponse> ReceiveGetResponseAsync(ServiceProxyInvocationRequest request);
-        Task<IGetResponse> ReceiveGetResponseAsync(string methodName, params object[] arguments);
-        Task<IPostResponse> ReceivePostResponseAsync(ServiceProxyInvocationRequest serviceProxyInvocationRequest);
-        Task<IPostResponse> ReceivePostResponseAsync(string methodName, params object[] arguments);
+        HttpClientResponse InvokeServiceMethod(string methodName, params object[] parameters);
+        Task<HttpClientResponse> InvokeServiceMethodAsync(string methodName, object[] arguments);
+        Task<HttpClientResponse> InvokeServiceMethodAsync(string className, string methodName, object[] arguments);
+        Task<HttpClientResponse> InvokeServiceMethodAsync(string baseAddress, string className, string methodName, object[] arguments);
+        Task<HttpClientResponse> ReceiveGetResponseAsync(ServiceProxyInvocationRequest request);
+        Task<HttpClientResponse> ReceiveGetResponseAsync(string methodName, params object[] arguments);
+        Task<HttpClientResponse> ReceivePostResponseAsync(ServiceProxyInvocationRequest serviceProxyInvocationRequest);
+        Task<HttpClientResponse> ReceivePostResponseAsync(string methodName, params object[] arguments);
     }
 }
