@@ -1,9 +1,9 @@
-﻿using Bam.Net.Web;
+﻿using Bam.Net.ServiceProxy;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Bam.Net.ServiceProxy
+namespace Bam.Net.Web
 {
     public class JsonResponseConverter : IResponseConverter
     {

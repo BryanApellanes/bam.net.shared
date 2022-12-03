@@ -8,7 +8,7 @@ namespace Bam.Net
     {
         public const string Json = "application/json; charset=utf-8";
         public const string BamPipeline = "application/vnd.bam.pipeline";
-        public const string AsymmetricCipher = "application/vnd.bam.pipeline+json+rsa";
-        public const string SymmetricCipher = "application/vnd.bam.pipeline+json+aes";
+        public const string AsymmetricCipher = "application/vnd.bam.pipeline+rsa";
+        public const string SymmetricCipher = "application/vnd.bam.pipeline+aes";
     }
 }

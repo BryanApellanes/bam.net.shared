@@ -1,3 +1,4 @@
+using Bam.Net.CoreServices.ApplicationRegistration.Data;
 using Bam.Net.Logging;
 using Bam.Net.Logging.Http;
 using Bam.Net.ServiceProxy;
@@ -90,6 +91,16 @@ namespace Bam.Net.Server
             Logger.StopLoggingThread();
             _server.Stop();
         }
+
+        public void TryStop()
+        {
+            try
+            {
+                Stop();
+            }
+            catch { }
+        }
+
         /// <summary>
         /// The delegate that is subscribed to the renamed event of the underlying
         /// FileSystemWatcher(s)

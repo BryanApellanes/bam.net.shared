@@ -21,6 +21,7 @@ namespace Bam.Net.ServiceProxy.Encryption
         public EncryptedServiceProxyClient(string baseAddress)
             : base(baseAddress)
         {
+            this.ResponseConverter = new EncryptedServiceProxyResponseConverter();
             this.Initialize();
         }
 
@@ -54,6 +55,12 @@ namespace Bam.Net.ServiceProxy.Encryption
             }
         }
 
+        protected new EncryptedServiceProxyResponseConverter ResponseConverter
+        {
+            get;
+            set;
+        }
+
         /// <summary>
         /// Gets the exception that occurred during session start.  May be null if session started successfully.
         /// </summary>
@@ -81,6 +88,7 @@ namespace Bam.Net.ServiceProxy.Encryption
             set
             {
                 _sessionInfo = value;
+                ResponseConverter.ClientSessionInfo = value;
             }
         }
 
@@ -203,20 +211,7 @@ namespace Bam.Net.ServiceProxy.Encryption
             try
             {
                 _startSessionTask.Wait();
-                IHttpClientResponse postResponse = await ReceivePostResponseAsync(request);
-                AesKeyVectorPair aesKey = ClientSessionInfo.GetAesKey();
-                string json = aesKey.Decrypt(postResponse.Content);
-                SecureChannelResponseMessage result = json.FromJson<SecureChannelResponseMessage>();
-                if (result.Success)
-                {
-                    EncryptedHttpClientResponse response = new EncryptedHttpClientResponse(ClientSessionInfo, (string)result.Data);
-                    return response;
-                }
-                else
-                {
-                    string properties = result.TryPropertiesToString();
-                    throw new ServiceProxyInvocationFailedException($"{result.Message}:\r\n\t{properties}");
-                }
+                return await ReceivePostResponseAsync(request);
             }
             catch (Exception ex)
             {
@@ -226,6 +221,11 @@ namespace Bam.Net.ServiceProxy.Encryption
             }
 
             return HttpClientResponse.Empty;
+        }
+
+        protected override T ConvertResponse<T>(HttpClientResponse clientResponse)
+        {
+            return this.ResponseConverter.ConvertResponse<T>(clientResponse);          
         }
 
         public override async Task<HttpClientResponse> ReceivePostResponseAsync(ServiceProxyInvocationRequest request)

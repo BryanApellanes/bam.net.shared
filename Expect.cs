@@ -192,6 +192,14 @@ namespace Bam.Net
                 throw new ExpectationFailedException(failureMessage);
         }
 
+        public static void IsLessThanOrEqualTo(int left, int right, string failureMessage = null)
+        {
+            if (!(left <= right))
+            {
+                throw new ExpectationFailedException(failureMessage ?? $"{left} is not less than or equal to {right}");
+            }
+        }
+
         /// <summary>
         /// Checks if the specified objects are the same using == (!=).
         /// </summary>

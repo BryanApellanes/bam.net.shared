@@ -36,7 +36,12 @@ namespace Bam.Net.Server
         private readonly Dictionary<string, IHttpResponder> _respondersByName;
         private HttpServer _server;
 
-        public BamServer() : this(new BamConf()) { }
+        public BamServer() : this(new BamConf()) 
+        {
+            Type type = this.GetType();
+            this.ServerName = $"{type.Namespace}.{type.Name}_{Environment.MachineName}_{Guid.NewGuid()}";
+            this.DefaultHostBinding = new ManagedServerHostBinding(this);
+        }
 
         public BamServer(BamConf conf)
         {
@@ -66,6 +71,8 @@ namespace Bam.Net.Server
                 return _bamServerSync.DoubleCheckLock(ref _bamServer, () => new BamServer(BamConf.Load()));
             }
         }
+
+        public string ServerName { get; private set; }
 
         private ApplicationServiceRegistry _appServiceRegistry;
         public async Task<ApplicationServiceRegistry> LoadApplicationServiceRegistryAsync()
@@ -807,7 +814,7 @@ namespace Bam.Net.Server
             Start(usurpedKnownListeners, new HostBinding[] { });
         }
 
-        public void Start(bool usurpedKnownListeners, params HostBinding[] hostPrefixes)
+        public void Start(bool usurpedKnownListeners, params HostBinding[] hostBindings)
         {
             if (!IsRunning)
             {
@@ -817,7 +824,7 @@ namespace Bam.Net.Server
                 Initialize();
 
                 OnStarting();
-                _server.Start(usurpedKnownListeners, hostPrefixes);
+                _server.Start(usurpedKnownListeners, hostBindings);
                 IsRunning = true;
                 OnStarted();
             }
@@ -834,6 +841,14 @@ namespace Bam.Net.Server
                 IsRunning = false;
                 OnStopped();
             }
+        }
+        public void TryStop()
+        {
+            try
+            {
+                Stop();
+            }
+            catch { }
         }
 
         public void Restart()

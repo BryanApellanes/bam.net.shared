@@ -39,7 +39,7 @@ namespace Bam.Net.Server
         }
 
         public string HostName { get; set; }
-        public int Port { get; set; }
+        public virtual int Port { get; set; }
 
         public bool Ssl { get; set; }
 
@@ -82,7 +82,7 @@ namespace Bam.Net.Server
             List<HostBinding> results = new List<HostBinding>();
             foreach (string hostName in Config.Current["HostNames"].Or(defaultHostName).DelimitSplit(",", true))
             {
-                AddHostPrefix(hostName, port, ssl, results);
+                AddHostBinding(hostName, port, ssl, results);
             }
             return results.ToArray();
         }
@@ -94,12 +94,12 @@ namespace Bam.Net.Server
             List<HostBinding> results = new List<HostBinding>();
             foreach (string hostName in DefaultConfiguration.GetAppSetting("HostNames").Or(defaultHostName).DelimitSplit(",", true))
             {
-                AddHostPrefix(hostName, port, ssl, results);
+                AddHostBinding(hostName, port, ssl, results);
             }
             return results.ToArray();
         }
         
-        private static void AddHostPrefix(string hostName, int port, bool ssl, List<HostBinding> results)
+        private static void AddHostBinding(string hostName, int port, bool ssl, List<HostBinding> results)
         {
             HostBinding hostPrefix = new HostBinding()
             {

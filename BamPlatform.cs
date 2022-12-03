@@ -1,4 +1,5 @@
-﻿using Bam.Net.Server;
+﻿using Bam.Net.Analytics;
+using Bam.Net.Server;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,6 +26,22 @@ namespace Bam.Net
                 Servers.Add(server);
                 return server;
             });
+        }
+
+        /// <summary>
+        /// Gets an integer value between 1024 and 65535 for the specified string.  Returns
+        /// the same value for repeated calls with the same string.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public static int GetUnprivilegedPortForName(string name)
+        {
+            return name.ToHashIntBetween(HashAlgorithms.SHA256, 1024, 65535);
+        }
+
+        public static async Task<BamServer> CreateServerAsync(string name)
+        {
+            return await CreateServerAsync(new ManagedServerHostBinding(name));
         }
 
         /// <summary>
