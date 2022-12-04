@@ -39,6 +39,8 @@ namespace Bam.Net.Server
 
         private ResponderContextHandlerResolver<ServiceProxyResponder> _requestHandlerResolver;
 
+        public ServiceProxyResponder() : base(new BamConf(), Log.Default) { }
+
         public ServiceProxyResponder(BamConf conf, ILogger logger)
             : base(conf, logger)
         {

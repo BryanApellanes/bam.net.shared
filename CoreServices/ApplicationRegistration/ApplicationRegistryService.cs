@@ -20,6 +20,7 @@ using Bam.Net.Web;
 
 namespace Bam.Net.CoreServices
 {
+    // TODO: Rename this class to ApplicationRegistrationService
     [Proxy("appRegistrationSvc")]
     [Encrypt]
     [ServiceSubdomain("appregistration")]

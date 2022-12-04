@@ -495,7 +495,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\ClientKeySetDataManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\ContentCipher.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\ContentCipher{T}.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Encryption\Crc32.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\Data\ClientKeySet.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\Data\Files\KeySetFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Encryption\Data\Generated_Dao\ClientKeySet.cs" />
