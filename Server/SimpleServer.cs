@@ -47,6 +47,14 @@ namespace Bam.Net.Server
         }
 
         /// <summary>
+        /// Gets a value indicating whether this server is listening.
+        /// </summary>
+        public bool IsListening
+        {
+            get => (bool)_server?.IsListening;
+        }
+
+        /// <summary>
         /// An array of hosts that this server will respond to
         /// </summary>
         public HashSet<HostBinding> HostBindings { get; set; }

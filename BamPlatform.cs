@@ -29,7 +29,7 @@ namespace Bam.Net
         }
 
         /// <summary>
-        /// Gets an integer value between 1024 and 65535 for the specified string.  Returns
+        /// Gets a deterministic integer value between 1024 and 65535 for the specified string.  Returns
         /// the same value for repeated calls with the same string.
         /// </summary>
         /// <param name="name"></param>
@@ -39,7 +39,12 @@ namespace Bam.Net
             return name.ToHashIntBetween(HashAlgorithms.SHA256, 1024, 65535);
         }
 
-        public static async Task<BamServer> CreateServerAsync(string name)
+        /// <summary>
+        /// Creates a named server.  The server name is used to logically identify the server and should not be confused with the hostname the server responds to.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public static async Task<BamServer> CreateNamedServerAsync(string name)
         {
             return await CreateServerAsync(new ManagedServerHostBinding(name));
         }

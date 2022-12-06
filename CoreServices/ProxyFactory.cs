@@ -118,6 +118,14 @@ namespace Bam.Net.CoreServices
             return result;
         }
 
+        /// <summary>
+        /// Get a proxy of the specified eneric 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="hostName"></param>
+        /// <param name="port"></param>
+        /// <param name="logger"></param>
+        /// <returns></returns>
         public T GetProxy<T>(string hostName, int port, ILogger logger = null)
         {
             logger = logger ?? Log.Default;
@@ -143,8 +151,8 @@ namespace Bam.Net.CoreServices
         /// Get a proxy instance using locally available
         /// assemblies
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
+        /// <typeparam name="T">The type of the instance that is returned.</typeparam>
+        /// <returns>A proxy instance of T.</returns>
         public T GetProxy<T>()
         {
             Assembly assembly = GetAssembly<T>();
@@ -184,7 +192,7 @@ namespace Bam.Net.CoreServices
 
         /// <summary>
         /// Get a proxy instance downloading source from the
-        /// specified hostName and port
+        /// specified hostName and port if not already downloaded and compiled.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="hostName"></param>

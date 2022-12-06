@@ -39,7 +39,7 @@ namespace Bam.Net.Services
             CatalogRepository catalogRepo = new CatalogRepository(repo, Log.Default);
             ServiceRegistry coreReg = CoreServiceRegistryContainer.Create();
 
-            ServiceRegistry reg = (ServiceRegistry)(new ServiceRegistry())
+            ServiceRegistry reg = new ServiceRegistry()
                 .For<ILogger>().Use(Log.Default)
                 .For<AppConf>().Use(conf)
                 .For<IRepository>().Use(catalogRepo)

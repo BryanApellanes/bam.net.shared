@@ -11,6 +11,9 @@ using Bam.Net.ServiceProxy.Encryption;
 
 namespace Bam.Net.Services
 {
+    /// <summary>
+    /// Used to enable the AsyncCallbackService.
+    /// </summary>
     public class ServiceProxyServer : SimpleServer<ServiceProxyResponder>
     {
         public ServiceProxyServer(ServiceRegistry serviceRegistry, ILogger logger = null) : this(serviceRegistry,

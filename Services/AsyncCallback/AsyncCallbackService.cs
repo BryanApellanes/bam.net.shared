@@ -19,7 +19,7 @@ using Bam.Net.Encryption;
 namespace Bam.Net.Services
 {
     /// <summary>
-    /// A service that will catch async responses
+    /// A service that catches async responses.
     /// </summary>
     [Proxy("asyncCallbackSvc")]
     [Encrypt]
