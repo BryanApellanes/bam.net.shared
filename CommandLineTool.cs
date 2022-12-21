@@ -20,6 +20,7 @@ using Bam.Net.Testing.Specification;
 
 namespace Bam.Net
 {
+    // TODO: Refactor/rewrite/extract the menu capabilities defined in this class 
     [Serializable]
     public abstract class CommandLineTool: CommandLineInterface
     {
