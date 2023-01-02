@@ -50,7 +50,7 @@ namespace Bam.Net.Services.DataReplication.Data
                     _identifierSetters = new Dictionary<UniversalIdentifiers, Action<object>>()
                     {
                         {UniversalIdentifiers.Uuid, (data) => { ForEachDataProperty(dp=> dp.InstanceIdentifier = Guid.NewGuid().ToString()); }},
-                        {UniversalIdentifiers.Cuid, (data) => { ForEachDataProperty(dp=> dp.InstanceIdentifier = NCuid.Cuid.Generate());}},
+                        {UniversalIdentifiers.Cuid, (data) => { ForEachDataProperty(dp=> dp.InstanceIdentifier = Bam.Net.Cuid.Generate());}},
                         {UniversalIdentifiers.CKey, (data) => { ForEachDataProperty(dp=> dp.InstanceIdentifier = GetKey(data));}}
                     };
                 }

@@ -314,7 +314,7 @@ namespace Bam.Net.UserAccounts.Data
         {
             User user = new User
             {
-                Cuid = NCuid.Cuid.Generate(),
+                Cuid = Bam.Net.Cuid.Generate(),
                 CreationDate = DateTime.UtcNow,
                 UserName = userName,
                 IsApproved = true,
@@ -328,7 +328,7 @@ namespace Bam.Net.UserAccounts.Data
         {
             User user = new User
             {
-                Cuid = NCuid.Cuid.Generate(),
+                Cuid = Bam.Net.Cuid.Generate(),
                 CreationDate = DateTime.UtcNow,
                 UserName = userName,
                 Email = email,

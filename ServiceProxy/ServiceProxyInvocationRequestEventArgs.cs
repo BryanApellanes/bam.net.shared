@@ -17,7 +17,7 @@ namespace Bam.Net.ServiceProxy
         public ServiceProxyInvocationRequestEventArgs(ServiceProxyInvocationRequest serviceProxyInvokeRequest) : base(serviceProxyInvokeRequest)
         {
             this.InvocationRequest = serviceProxyInvokeRequest;
-            this.Cuid = NCuid.Cuid.Generate();
+            this.Cuid = Bam.Net.Cuid.Generate();
         }
 
         public ServiceProxyInvocationRequestEventArgs(ServiceProxyInvocationRequest serviceProxyInvokeRequest, bool cancelInvoke = false) : this(serviceProxyInvokeRequest)
@@ -37,7 +37,7 @@ namespace Bam.Net.ServiceProxy
         public ServiceProxyInvocationRequestEventArgs(ServiceProxyInvocationRequest serviceProxyInvokeRequest)
         {
             this.InvocationRequest = serviceProxyInvokeRequest;
-            this.Cuid = NCuid.Cuid.Generate();
+            this.Cuid = Bam.Net.Cuid.Generate();
         }
 
         public ServiceProxyInvocationRequest InvocationRequest { get; set; }

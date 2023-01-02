@@ -12,7 +12,7 @@ namespace Bam.Net.ServiceProxy
         public ServiceProxyInvocationRequest() { }
         public ServiceProxyInvocationRequest(ServiceProxyClient serviceProxyClient, string className, string methodName, params object[] arguments)
         {
-            this.Cuid = NCuid.Cuid.Generate();
+            this.Cuid = Bam.Net.Cuid.Generate();
             this.ServiceProxyClient = serviceProxyClient;
             this.ServiceType = serviceProxyClient.ServiceType;
             this.BaseAddress = serviceProxyClient.BaseAddress;
