@@ -38,22 +38,24 @@ namespace Bam.Net
         public virtual Type ResolveType(string typeName)
         {
             Type type = Type.GetType(typeName);
-            if(type == null && ScanAssemblies)
+            if (type == null && ScanAssemblies)
             {
-                foreach(Assembly a in Assemblies)
+                foreach (Assembly a in Assemblies)
                 {
                     type = a.GetType(typeName);
-                    if(type == null)
+                    if (type == null)
                     {
-                        type = a.GetTypes().FirstOrDefault(t => t.Name.Equals(typeName) || $"{t.Namespace}.{t.Name}".Equals(typeName));
+                        type = a.GetTypes().FirstOrDefault(t =>
+                            t.Name.Equals(typeName) || $"{t.Namespace}.{t.Name}".Equals(typeName));
                     }
 
-                    if(type != null)
+                    if (type != null)
                     {
                         break;
                     }
                 }
             }
+
             return type;
         }
 

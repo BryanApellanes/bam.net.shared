@@ -24,10 +24,10 @@ namespace Bam.Net
                 {
                     _names.Add(args.Name);
                     string messageFormat = @"AppDomain.CurrentDomain.AssemblyResolve event fired and assembly was not found:
-\tRequesting Assembly: {0}
-\tRequesting Assembly Location: {1}
-\tRequested Assembly: {2}
-\tEvent sender: {3}";
+    Requesting Assembly: {0}
+    Requesting Assembly Location: {1}
+    Requested Assembly: {2}
+    Event sender: {3}";
                     logger.AddEntry(messageFormat, LogEventType.Warning, args.RequestingAssembly?.FullName.Or("[null]"), args.RequestingAssembly?.GetFileInfo().FullName.Or("[null]"), args.Name.Or("[null]"), sender?.ToString().Or("[null]"));
                 }
                 return null;

@@ -612,6 +612,26 @@ namespace Bam.Net
                 }
             }
         }
+
+        public static void ShouldBeTrue(this bool? valueToCheck, string failureMessage = null)
+        {
+            IsTrue(valueToCheck, failureMessage);
+        }
+        
+        public static void IsTrue(this bool? valueToCheck, string failureMessage = null)
+        {
+            if (valueToCheck != true)
+            {
+                if (!string.IsNullOrEmpty(failureMessage))
+                {
+                    throw new ExpectationFailedException(failureMessage);
+                }
+                else
+                {
+                    throw new ExpectationFailedException("true", "false");
+                }
+            }
+        }
         
         public static void ShouldBeNull(this object objectToCheck, string failureMessage = null)
         {

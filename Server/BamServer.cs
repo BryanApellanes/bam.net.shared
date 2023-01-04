@@ -28,7 +28,7 @@ using Bam.Net.Logging.Http;
 namespace Bam.Net.Server
 {
     /// <summary>
-    /// The core BamServer.
+    /// The core monolithic BamServer.
     /// </summary>
     public partial class BamServer : Loggable, IInitialize<BamServer>, IManagedServer
     {

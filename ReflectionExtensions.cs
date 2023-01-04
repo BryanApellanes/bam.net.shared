@@ -313,7 +313,7 @@ namespace Bam.Net
         /// Subscribe the specified handler to the named event emitted by the instance, making sure it is only subscribed once.  The specified event handler will only fire once per event occurrance.
         /// </summary>
         /// <typeparam name="T">The type of the instance.</typeparam>
-        /// <param name="instance">The event emmitting instance.</param>
+        /// <param name="instance">The event emitting instance.</param>
         /// <param name="eventName">The name of the event to subscribe to .</param>
         /// <param name="handler">The event handler.</param>
         /// <returns></returns>
