@@ -8,12 +8,12 @@ namespace Bam.Net.Server
 {
     public class IncludesResolver : IIncludesResolver
     {
-        public IncludesResolver(BamServer server)
+        public IncludesResolver(BamAppServer appServer)
         {
-            BamServer = server;
+            BamAppServer = appServer;
         }
 
-        public BamServer BamServer { get; set; }
+        public BamAppServer BamAppServer { get; set; }
 
         public Includes ResolveApplicationIncludes(string applicationName, string contentRoot)
         {

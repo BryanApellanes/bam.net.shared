@@ -19,13 +19,13 @@ namespace Bam.Net.Server
 {
     public abstract partial class TemplateInitializer : IInitialize<TemplateInitializer>, IPostServerInitialize
     {
-        public TemplateInitializer(BamServer server)
+        public TemplateInitializer(BamAppServer appServer)
         {
-            Server = server;
+            AppServer = appServer;
             _subscribers = new List<ILogger>();
         }
 
-        public BamServer Server
+        public BamAppServer AppServer
         {
             get; set;
         }

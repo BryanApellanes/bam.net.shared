@@ -906,7 +906,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Server\AppMetaResult.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Server\AppServerConf.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Server\AppPageRenderer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Server\BamRoutingServer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Server\BamAppRoutingServer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Server\HostProcessInfo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Server\IActionProviderResolver.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Server\IDataDomainResolver.cs" />
@@ -2241,9 +2241,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Server\AppSetting.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Server\BamApplicationNameProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Server\BamConf.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Server\BamDaoServer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Server\BamServer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Server\BamServiceProxyServer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Server\BamAppDaoServer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Server\BamAppServer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Server\BamAppServiceProxyServer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Server\ColorScheme.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Server\ConfFormat.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Server\ContentEventArgs.cs" />

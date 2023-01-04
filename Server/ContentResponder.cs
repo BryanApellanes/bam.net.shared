@@ -495,7 +495,7 @@ namespace Bam.Net.Server
             // worth logging that this request was not handled.  If the content was not 
             // found because the request was intended for a different responder then 
             // no log entry should be made.
-            string[] svcNames = BamConf?.Server?.ServiceProxyResponder?.AppServices(appName).Select(s => s.ToLowerInvariant()).ToArray();
+            string[] svcNames = BamConf?.AppServer?.ServiceProxyResponder?.AppServices(appName).Select(s => s.ToLowerInvariant()).ToArray();
             List<string> serviceNames = new List<string>();
             if(svcNames != null)
             {

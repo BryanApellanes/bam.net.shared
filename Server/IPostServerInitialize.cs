@@ -8,6 +8,6 @@ namespace Bam.Net.Server
 {
     public interface IPostServerInitialize: IInitialize
     {
-        BamServer Server { get; set; }
+        BamAppServer AppServer { get; set; }
     }
 }

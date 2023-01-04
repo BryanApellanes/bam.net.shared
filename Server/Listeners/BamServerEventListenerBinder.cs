@@ -19,24 +19,24 @@ namespace Bam.Net.Server.Listeners
             this.BamConf = conf;
         }
 
-        public BamServerEventListenerBinder(BamServer server)
+        public BamServerEventListenerBinder(BamAppServer appServer)
         {
-            this.BamConf = server.GetCurrentConf();
+            this.BamConf = appServer.GetCurrentConf();
         }
 
         public BamConf BamConf { get; private set; }
-        protected internal BamServer Server
+        protected internal BamAppServer AppServer
         {
             get
             {
-                return BamConf.Server;
+                return BamConf.AppServer;
             }
         }
         public ILogger Logger
         {
             get
             {
-                return Server.MainLogger;
+                return AppServer.MainLogger;
             }
         }
         /// <summary>
@@ -46,7 +46,7 @@ namespace Bam.Net.Server.Listeners
         public void Bind()
         {
             ILogger logger = Logger;
-            Type serverType = typeof(BamServer);
+            Type serverType = typeof(BamAppServer);
             BamServerEventListener[] listeners = BamConf.GetServerEventListeners(logger);
             listeners.Each(listener =>
             {
@@ -58,7 +58,7 @@ namespace Bam.Net.Server.Listeners
                     EventInfo eventInfo = serverType.GetEvent(eventName);
                     if (eventInfo != null)
                     {
-                        eventInfo.AddEventHandler(Server, Delegate.CreateDelegate(listenerType, method));
+                        eventInfo.AddEventHandler(AppServer, Delegate.CreateDelegate(listenerType, method));
                     }
                     else
                     {

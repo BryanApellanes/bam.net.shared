@@ -41,8 +41,8 @@ namespace Bam.Net.Server
             _ignorePrefixes = new List<string>();
 
             AddRespondToPrefix(ResponderName);
-            BamServer bamServer = conf?.Server ?? BamServer.Current;
-            ApplicationServiceRegistry = bamServer.LoadApplicationServiceRegistryAsync()?.Result;
+            BamAppServer bamAppServer = conf?.AppServer ?? BamAppServer.Current;
+            ApplicationServiceRegistry = bamAppServer.LoadApplicationServiceRegistryAsync()?.Result;
         }
 
         public Responder(BamConf conf, ILogger logger)
