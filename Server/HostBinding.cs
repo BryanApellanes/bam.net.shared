@@ -21,6 +21,7 @@ namespace Bam.Net.Server
         {
             this.HostName = "localhost";
             this.Port = 8080;
+            this.Ssl = true;
         }
 
         public HostBinding(int port) : this("localhost", port)
@@ -40,6 +41,7 @@ namespace Bam.Net.Server
         {
             this.HostName = hostName;
             this.Port = port;
+            this.Ssl = true;
         }
 
         public string HostName { get; set; }
