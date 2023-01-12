@@ -4,6 +4,7 @@ using System.Text;
 
 namespace Bam.Net
 {
+    [PipelineFactoryTransformerName("gzip")]
     public class GZipByteTransformer : ValueTransformer<byte[], byte[]>
     {
         public GZipByteTransformer()

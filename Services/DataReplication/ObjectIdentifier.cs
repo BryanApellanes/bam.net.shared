@@ -21,7 +21,7 @@ namespace Bam.Net.Services.DataReplication
         public ObjectIdentifier()
         {
             Uuid = Guid.NewGuid().ToString();
-            Cuid = NCuid.Cuid.Generate();
+            Cuid = Bam.Net.Cuid.Generate();
         }
 
         Type _type;

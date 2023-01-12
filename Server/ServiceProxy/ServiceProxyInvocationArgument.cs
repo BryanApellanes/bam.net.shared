@@ -56,6 +56,9 @@ namespace Bam.Net.Server.ServiceProxy
             }
         }
 
+        /// <summary>
+        /// Gets the name of the parameter.
+        /// </summary>
         public string Name
         {
             get

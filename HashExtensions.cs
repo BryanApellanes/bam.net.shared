@@ -236,6 +236,12 @@ namespace Bam.Net
             return BitConverter.ToUInt32(hashBytes, 0);
         }
         
+        public static int ToHashIntBetween(this string toBeHashed, HashAlgorithms algorithm, int lowerBound, int upperBound, Encoding encoding = null)
+        {
+            int mod = upperBound - lowerBound;
+            return (ToHashInt(toBeHashed, algorithm, encoding) % mod) + lowerBound;
+        }
+
         public static int ToHashInt(this string toBeHashed, HashAlgorithms algorithm, Encoding encoding = null)
         {
             byte[] hashBytes = ToHashBytes(toBeHashed, algorithm, encoding);

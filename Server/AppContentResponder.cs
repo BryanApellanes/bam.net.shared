@@ -328,7 +328,7 @@ namespace Bam.Net.Server
 
         public User GetUser(IHttpContext context)
         {
-            UserManager mgr = BamConf.Server.GetAppService<UserManager>(ApplicationName).Clone<UserManager>();
+            UserManager mgr = BamConf.AppServer.GetAppService<UserManager>(ApplicationName).Clone<UserManager>();
             mgr.HttpContext = context;
             return mgr.GetUser(context);
         }

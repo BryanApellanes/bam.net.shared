@@ -59,6 +59,12 @@ namespace Bam.Net.CoreServices
         }
 
         [Local]
+        public static ServiceRegistryService GetLocalServiceRegistryService(ServiceRegistry dependencyRegistry)
+        {
+            return GetLocalServiceRegistryService(dependencyRegistry.Get<DataProvider>(), dependencyRegistry.Get<IApplicationNameProvider>(), BamConf.DefaultServiceSearchPattern, Log.Default);
+        }
+
+        [Local]
         public static ServiceRegistryService GetLocalServiceRegistryService(DataProvider dataProvider, IApplicationNameProvider appNameProvider, string assemblySearchPattern, ILogger logger = null)
         {
             logger = logger ?? Log.Default;
@@ -438,7 +444,7 @@ namespace Bam.Net.CoreServices
 
         /// <summary>
         /// Lock the ServiceRegistry with the specified name.  This effectively
-        /// disables updates
+        /// disables updates to the specified registry.
         /// </summary>
         /// <param name="name"></param>
         [RoleRequired("/", "Admin")]

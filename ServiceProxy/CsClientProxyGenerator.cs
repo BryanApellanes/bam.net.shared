@@ -26,7 +26,7 @@ namespace Bam.Net.ServiceProxy
             IResponse response = context.Response;
             string defaultBaseAddress = ServiceProxySystem.GetBaseAddress(request);
             string nameSpace = request.QueryString["namespace"] ?? "ServiceProxyClients";
-            string contractNameSpace = "{0}.Contracts"._Format(nameSpace);
+            string contractNameSpace = $"{nameSpace}.Contracts";
             string[] classNames = request.QueryString["classes"] == null ? serviceProvider.ClassNames : request.QueryString["classes"].DelimitSplit(",", ";");
             bool includeLocalMethods = request.UserHostAddress.StartsWith("127.0.0.1");
 

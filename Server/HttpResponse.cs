@@ -23,6 +23,8 @@ namespace Bam.Net.Server
 
         public string Content { get; set; }
 
+        public string ContentType { get; set; }
+
         public int StatusCode { get; set; }
 
         public void Send(IResponse response, int statusCode = 0)
@@ -34,6 +36,10 @@ namespace Bam.Net.Server
             if (statusCode == 0)
             {
                 statusCode = 200;
+            }
+            if (!string.IsNullOrEmpty(ContentType))
+            {
+                response.ContentType = ContentType;
             }
 
             byte[] outputData = GetOutput();

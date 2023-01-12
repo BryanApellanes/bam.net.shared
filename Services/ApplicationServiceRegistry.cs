@@ -88,7 +88,7 @@ namespace Bam.Net.Services
         [ServiceRegistryLoader]
         public static ApplicationServiceRegistry Configure(Action<ApplicationServiceRegistry> configure, bool setConfigurer = true)
         {
-            return Configure(null, configure, setConfigurer);
+            return Configure(new AppConf(), configure, setConfigurer);
         }
         
         [ServiceRegistryLoader]

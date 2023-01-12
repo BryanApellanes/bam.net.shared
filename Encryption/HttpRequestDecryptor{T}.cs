@@ -31,7 +31,7 @@ namespace Bam.Net.Encryption
                 copy.Headers.Add(key, request.Headers[key]);
             }
             copy.Headers.Add("Content-Type", MediaTypes.Json);
-            copy.Content = ContentDecryptor.DecryptContentCipher(request.ContentCipher);
+            copy.TypedContent = ContentDecryptor.DecryptContentCipher(request.ContentCipher);
             return copy;
         }
     }

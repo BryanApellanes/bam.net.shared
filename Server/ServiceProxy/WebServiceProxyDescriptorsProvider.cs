@@ -9,7 +9,7 @@ using System.Text;
 namespace Bam.Net.Server.ServiceProxy
 {
     /// <summary>
-    /// Provides WebServiceProxyDescriptors.
+    /// Provides WebServiceProxyDescriptors for a ServiceProxyResponder.
     /// </summary>
     public class WebServiceProxyDescriptorsProvider : IWebServiceProxyDescriptorsProvider
     {

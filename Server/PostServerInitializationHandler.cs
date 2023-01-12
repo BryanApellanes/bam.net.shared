@@ -17,11 +17,11 @@ namespace Bam.Net.Server
             InitializationHandlers = new List<IPostServerInitialize>();
         }
         public List<IPostServerInitialize> InitializationHandlers { get; set; }
-        public void HandleInitialization(BamServer server)
+        public void HandleInitialization(BamAppServer appServer)
         {
             foreach(IPostServerInitialize handler in InitializationHandlers)
             {
-                handler.Server = server;
+                handler.AppServer = appServer;
                 handler.Initialize();
             }
         }

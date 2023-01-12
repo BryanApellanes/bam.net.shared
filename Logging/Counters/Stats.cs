@@ -27,7 +27,8 @@ namespace Bam.Net.Logging.Counters
             timer.End();
             if(endHandler != null)
             {
-                Task.Run(() => endHandler(timer));
+                Task.Run(() => 
+                endHandler(timer));
             }
             return timer;
         }

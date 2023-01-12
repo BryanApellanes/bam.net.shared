@@ -11,6 +11,9 @@ using Bam.Net.ServiceProxy.Encryption;
 
 namespace Bam.Net.Services
 {
+    /// <summary>
+    /// Used to enable the AsyncCallbackService.
+    /// </summary>
     public class ServiceProxyServer : SimpleServer<ServiceProxyResponder>
     {
         public ServiceProxyServer(ServiceRegistry serviceRegistry, ILogger logger = null) : this(serviceRegistry,
@@ -37,7 +40,7 @@ namespace Bam.Net.Services
                     ServiceSubdomains.Add(attr);
                 }
             }
-            SetApiKeyResolver(serviceRegistry, requireApiKeyResolver ? ApiHmacKeyResolver.Default : null);
+            SetApiHmacKeyResolver(serviceRegistry, requireApiKeyResolver ? ApiHmacKeyResolver.Default : null);
         }
 
         public override void Start()
@@ -57,7 +60,7 @@ namespace Bam.Net.Services
         public HashSet<ServiceSubdomainAttribute> ServiceSubdomains { get; set; }
         protected WebServiceRegistry ServiceRegistry { get; set; }
 
-        protected void SetApiKeyResolver(ServiceRegistry registry, IApiHmacKeyResolver ifNull)
+        protected void SetApiHmacKeyResolver(ServiceRegistry registry, IApiHmacKeyResolver ifNull)
         {
             IApiHmacKeyResolver apiKeyResolver = registry.Get(ifNull);
             Responder.CommonSecureChannel.ApiHmacKeyResolver = apiKeyResolver;

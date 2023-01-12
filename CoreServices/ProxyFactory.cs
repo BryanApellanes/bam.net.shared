@@ -118,6 +118,14 @@ namespace Bam.Net.CoreServices
             return result;
         }
 
+        /// <summary>
+        /// Get a proxy of the specified eneric 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="hostName"></param>
+        /// <param name="port"></param>
+        /// <param name="logger"></param>
+        /// <returns></returns>
         public T GetProxy<T>(string hostName, int port, ILogger logger = null)
         {
             logger = logger ?? Log.Default;
@@ -143,8 +151,8 @@ namespace Bam.Net.CoreServices
         /// Get a proxy instance using locally available
         /// assemblies
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
+        /// <typeparam name="T">The type of the instance that is returned.</typeparam>
+        /// <returns>A proxy instance of T.</returns>
         public T GetProxy<T>()
         {
             Assembly assembly = GetAssembly<T>();
@@ -184,7 +192,7 @@ namespace Bam.Net.CoreServices
 
         /// <summary>
         /// Get a proxy instance downloading source from the
-        /// specified hostName and port
+        /// specified hostName and port if not already downloaded and compiled.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="hostName"></param>
@@ -193,7 +201,7 @@ namespace Bam.Net.CoreServices
         public T GetProxy<T>(string hostName, int port = 9100, HashSet<Assembly> addedReferenceAssemblies = null)
         {
             Assembly assembly = GetAssembly<T>(MungeHostName(typeof(T), hostName), port, addedReferenceAssemblies);
-            return ConstructProxy<T>(assembly, ServiceProvider);
+            return ConstructProxy<T>(assembly, ServiceProvider, hostName, port);
         }
 
         public object GetProxy(Type type, string hostName, int port = 9100)
@@ -235,7 +243,7 @@ namespace Bam.Net.CoreServices
 
         /// <summary>
         /// Gets a generated proxy Assembly for the specified type downloading it from the specified
-        /// host and port
+        /// host and port.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="hostName"></param>
@@ -276,7 +284,7 @@ namespace Bam.Net.CoreServices
             return generator.GetAssembly();
         }
 
-        private static T ConstructProxy<T>(Assembly assembly, Incubator serviceProvider = null)
+        private static T ConstructProxy<T>(Assembly assembly, Incubator serviceProvider = null, string hostName = "localhost", int port = 9100)
         {
             string proxyTypeName = $"{typeof(T).Name}Proxy";
             Type proxyType = assembly.GetTypes().FirstOrDefault(t => t.Name.Equals(proxyTypeName));
@@ -284,7 +292,13 @@ namespace Bam.Net.CoreServices
             {
                 Args.Throw<ArgumentException>("The proxy {0} for type {1} was not found in the specified assembly: {2}", proxyTypeName, typeof(T).Name, assembly.FullName);
             }
-            T result = proxyType.Construct<T>();
+            return ConstructProxy<T>(serviceProvider, proxyType, hostName, port);
+        }
+
+        private static T ConstructProxy<T>(Incubator serviceProvider, Type proxyType, string hostName = "localhost", int port = 9100, bool ssl = false)
+        {
+            string protocol = ssl ? "https" : "http";
+            T result = proxyType.Construct<T>($"{protocol}://{hostName}:{port}");
             serviceProvider?.SetProperties(result);
             return result;
         }

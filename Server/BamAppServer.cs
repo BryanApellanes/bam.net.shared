@@ -28,15 +28,22 @@ using Bam.Net.Logging.Http;
 namespace Bam.Net.Server
 {
     /// <summary>
-    /// The core BamServer
+    /// The core monolithic BamServer.
     /// </summary>
-    public partial class BamServer : Loggable, IInitialize<BamServer>
+    public partial class BamAppServer : Loggable, IInitialize<BamAppServer>, IManagedServer
     {
         private readonly HashSet<IHttpResponder> _responders;
         private readonly Dictionary<string, IHttpResponder> _respondersByName;
         private HttpServer _server;
 
-        public BamServer(BamConf conf)
+        public BamAppServer() : this(new BamConf()) 
+        {
+            Type type = this.GetType();
+            this.ServerName = $"{type.Namespace}.{type.Name}_{Environment.MachineName}_{Guid.NewGuid()}";
+            this.DefaultHostBinding = new ManagedServerHostBinding(this);
+        }
+
+        public BamAppServer(BamConf conf)
         {
             _responders = new HashSet<IHttpResponder>();
             _respondersByName = new Dictionary<string, IHttpResponder>();
@@ -45,21 +52,27 @@ namespace Bam.Net.Server
             BindEventListeners(conf);
             EnableDao = true;
             EnableServiceProxy = true;
-
             SQLiteRegistrar.RegisterFallback();
             AppDomain.CurrentDomain.DomainUnload += (s, a) => Stop();
             _ = LoadApplicationServiceRegistryAsync();
         }
 
-        private static BamServer _bamServer;
+        public BamAppServer(HostBinding hostBinding): this()
+        {
+            this.DefaultHostBinding = hostBinding;
+        }
+
+        private static BamAppServer _bamAppServer;
         private static object _bamServerSync = new object();
-        public static BamServer Current
+        public static BamAppServer Current
         {
             get
             {
-                return _bamServerSync.DoubleCheckLock(ref _bamServer, () => new BamServer(BamConf.Load()));
+                return _bamServerSync.DoubleCheckLock(ref _bamAppServer, () => new BamAppServer(BamConf.Load()));
             }
         }
+
+        public string ServerName { get; private set; }
 
         private ApplicationServiceRegistry _appServiceRegistry;
         public async Task<ApplicationServiceRegistry> LoadApplicationServiceRegistryAsync()
@@ -85,107 +98,107 @@ namespace Bam.Net.Server
         /// <summary>
         /// The event that fires when server initialization begins
         /// </summary>
-        public event Action<BamServer> Initializing;
+        public event Action<BamAppServer> Initializing;
         
         /// <summary>
         /// The event that fires when server initialization is complete
         /// </summary>
-        public event Action<BamServer> Initialized;
+        public event Action<BamAppServer> Initialized;
         
         /// <summary>
         /// The event that fires when a schema is about to be initialized
         /// </summary>
-        public event Action<BamServer, SchemaInitializer> SchemaInitializing;
+        public event Action<BamAppServer, SchemaInitializer> SchemaInitializing;
         
         /// <summary>
         /// The event that fires when a schema is done initializing
         /// </summary>
-        public event Action<BamServer, SchemaInitializer> SchemaInitialized; 
+        public event Action<BamAppServer, SchemaInitializer> SchemaInitialized; 
         
         /// <summary>
         /// The event that fires before beginning any schema initialization
         /// </summary>
-        public event Action<BamServer> SchemasInitializing;
+        public event Action<BamAppServer> SchemasInitializing;
         
         /// <summary>
         /// The event that fires when all schemas have completed initialization
         /// </summary>
-        public event Action<BamServer> SchemasInitialized;
+        public event Action<BamAppServer> SchemasInitialized;
         
         /// <summary>
         /// The event that fires before loading the server configuration
         /// </summary>
-        public event Action<BamServer, BamConf> LoadingConf;
+        public event Action<BamAppServer, BamConf> LoadingConf;
         
         /// <summary>
         /// the event that fires when loading the server configuration is complete
         /// </summary>
-        public event Action<BamServer, BamConf> LoadedConf; 
+        public event Action<BamAppServer, BamConf> LoadedConf; 
         
         /// <summary>
         /// The event that fires before creating an application
         /// </summary>
-        public event Action<BamServer, AppConf> CreatingApp;
+        public event Action<BamAppServer, AppConf> CreatingApp;
         
         /// <summary>
         /// The event that fires when creating an application is complete
         /// </summary>
-        public event Action<BamServer, AppConf> CreatedApp;
+        public event Action<BamAppServer, AppConf> CreatedApp;
         
         /// <summary>
         /// The event that fires before a response is flushed.
         /// </summary>
-        public event Action<BamServer, IHttpResponder, IResponse> ResponseFlushing;
+        public event Action<BamAppServer, IHttpResponder, IResponse> ResponseFlushing;
         
         /// <summary>
         /// The event that fires when a response is flushed.
         /// </summary>
-        public event Action<BamServer, IHttpResponder, IRequest> ResponseFlushed;
+        public event Action<BamAppServer, IHttpResponder, IRequest> ResponseFlushed;
         
         /// <summary>
         /// The event that fires when a response is not sent
         /// </summary>
-        public event Action<BamServer, IRequest> NotResponded;
+        public event Action<BamAppServer, IRequest> NotResponded;
         
         /// <summary>
         /// The event that fires when a responder is added
         /// </summary>
-        public event Action<BamServer, IHttpResponder> ResponderAdded;
+        public event Action<BamAppServer, IHttpResponder> ResponderAdded;
         
         /// <summary>
         /// The event that fires before setting the configuration
         /// </summary>
-        public event Action<BamServer, BamConf> SettingConf;
+        public event Action<BamAppServer, BamConf> SettingConf;
         
         /// <summary>
         /// The event that fires when setting the configuration is complete
         /// </summary>
-        public event Action<BamServer, BamConf> SettedConf; 
+        public event Action<BamAppServer, BamConf> SettedConf; 
         
         /// <summary>
         /// The event that fires when the configuration is saved
         /// </summary>
-        public event Action<BamServer, BamConf> SavedConf;
+        public event Action<BamAppServer, BamConf> SavedConf;
         
         /// <summary>
         /// The event that fires before starting the server
         /// </summary>
-        public event Action<BamServer> Starting;
+        public event Action<BamAppServer> Starting;
         
         /// <summary>
         /// The event that fires when the server has started
         /// </summary>
-        public event Action<BamServer> Started;
+        public event Action<BamAppServer> Started;
         
         /// <summary>
         /// The event that fires before the server is stopped
         /// </summary>
-        public event Action<BamServer> Stopping;
+        public event Action<BamAppServer> Stopping;
         
         /// <summary>
         /// The event that fires when the server has stopped
         /// </summary>
-        public event Action<BamServer> Stopped;
+        public event Action<BamAppServer> Stopped;
 
         private readonly object _requestLogLock = new object();
         private RequestLog _requestLog;
@@ -244,9 +257,12 @@ namespace Bam.Net.Server
                             result.Add(appToServe.Name, new List<AppPageRendererManager>());
                         }
 
-                        if (AppContentResponders[appToServe.Name].PageRenderer is AppPageRendererManager current)
+                        if (AppContentResponders.ContainsKey(appToServe.Name))
                         {
-                            result[appToServe.Name].Add(current);
+                            if (AppContentResponders[appToServe.Name].PageRenderer is AppPageRendererManager current)
+                            {
+                                result[appToServe.Name].Add(current);
+                            }
                         }
                     }
                     return result;
@@ -316,13 +332,13 @@ namespace Bam.Net.Server
             }
         }
 
-        public event Action<BamServer, AppConf> AppInitializing;
+        public event Action<BamAppServer, AppConf> AppInitializing;
         protected void OnAppInitializing(AppConf conf)
         {
             AppInitializing?.Invoke(this, conf);
         }
         
-        public event Action<BamServer, AppConf> AppInitialized;
+        public event Action<BamAppServer, AppConf> AppInitialized;
         protected void OnAppInitialized(AppConf conf)
         {
             AppInitialized?.Invoke(this, conf);
@@ -472,7 +488,7 @@ namespace Bam.Net.Server
                 {
                     _subscribers.Add(logger);
                 }
-                const string className = nameof(BamServer);
+                const string className = nameof(BamAppServer);
 
                 this.Initializing += (s) =>
                 {
@@ -572,15 +588,15 @@ namespace Bam.Net.Server
             return results.ToArray();
         }
 
-        HostBinding _defaultHostPrefix;
-        readonly object _defaultHostPrefixLock = new object();
+        HostBinding _defaultHostBinding;
+        readonly object _defaultHostBindingLock = new object();
         public HostBinding DefaultHostBinding
         {
             get
             {
-                return _defaultHostPrefixLock.DoubleCheckLock(ref _defaultHostPrefix, () => new HostBinding("localhost", 8080));
+                return _defaultHostBindingLock.DoubleCheckLock(ref _defaultHostBinding, () => new HostBinding("localhost", 8080));
             }
-            set => _defaultHostPrefix = value;
+            set => _defaultHostBinding = value;
         }
 
         // config values here to ensure proper sync
@@ -685,7 +701,7 @@ namespace Bam.Net.Server
                 MainLogger.AddEntry("Configured MainLogger was ({0}) but the Logger found was ({1})", LogEventType.Warning, conf.MainLoggerName, loggerType.Name);
             }
             this.TryAddAdditionalLoggers(conf);
-            conf.Server = this;
+            conf.AppServer = this;
 
             DefaultConfiguration.CopyProperties(conf, this);
             SetWorkspace();
@@ -788,12 +804,17 @@ namespace Bam.Net.Server
             Responders.Each(r => r.DidNotRespond += subscriber);
         }
 
+        public void Start()
+        {
+            Start(false);
+        }
+
         public void Start(bool usurpedKnownListeners = false)
         {
             Start(usurpedKnownListeners, new HostBinding[] { });
         }
 
-        public void Start(bool usurpedKnownListeners, params HostBinding[] hostPrefixes)
+        public void Start(bool usurpedKnownListeners, params HostBinding[] hostBindings)
         {
             if (!IsRunning)
             {
@@ -803,7 +824,7 @@ namespace Bam.Net.Server
                 Initialize();
 
                 OnStarting();
-                _server.Start(usurpedKnownListeners, hostPrefixes);
+                _server.Start(usurpedKnownListeners, hostBindings);
                 IsRunning = true;
                 OnStarted();
             }
@@ -821,6 +842,14 @@ namespace Bam.Net.Server
                 OnStopped();
             }
         }
+        public void TryStop()
+        {
+            try
+            {
+                Stop();
+            }
+            catch { }
+        }
 
         public void Restart()
         {
@@ -829,12 +858,12 @@ namespace Bam.Net.Server
             Start();
         }
 
-        public static BamServer Serve(string contentRoot)
+        public static BamAppServer Serve(string contentRoot)
         {
             BamConf conf = BamConf.Load(contentRoot);
-            BamServer server = new BamServer(conf);
-            server.Start();
-            return server;
+            BamAppServer appServer = new BamAppServer(conf);
+            appServer.Start();
+            return appServer;
         }
 
         public Incubator CommonServiceProvider => ServiceProxyResponder.CommonServiceProvider;
@@ -869,6 +898,10 @@ namespace Bam.Net.Server
             DaoResponder.RegisterAppDaoFromDirectory(appName, daoDir);
         }
 
+        /// <summary>
+        /// Adds a service available to all applications served by this server.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
         public void AddCommonService<T>()
         {
             ServiceProxyResponder.AddCommonService<T>((T)typeof(T).Construct());
@@ -1085,7 +1118,7 @@ namespace Bam.Net.Server
                 if (reload || _conf == null)
                 {
                     BamConf conf = this.CopyAs<BamConf>();
-                    conf.Server = this;
+                    conf.AppServer = this;
                     _conf = conf;
                 }
             }
@@ -1235,7 +1268,7 @@ namespace Bam.Net.Server
             private set;
         }
 
-        private void HandlePostInitialization(BamServer server)
+        private void HandlePostInitialization(BamAppServer appServer)
         {
             PostInitializationHandler = new PostServerInitializationHandler(); // TODO: get this from ServiceRegistry (DI)
 

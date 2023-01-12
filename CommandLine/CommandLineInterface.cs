@@ -407,7 +407,7 @@ namespace Bam.Net.CommandLine
             Out(message, color);
             if (allowQuit)
             {
-                OutLine(" [q] ");
+                Message.PrintLine(" [q] ");
             }
             else
             {
@@ -696,12 +696,12 @@ File Version: {1}
 
 {2} [arguments]";
             FileInfo info = new FileInfo(assembly.Location);
-            OutLineFormat(usageFormat, assemblyVersion, fileVersion, info.Name);
+            Message.PrintLine(usageFormat, assemblyVersion, fileVersion, info.Name);
             Thread.Sleep(3);
             foreach (ArgumentInfo argInfo in ValidArgumentInfo)
             {
                 string valueExample = string.IsNullOrEmpty(argInfo.ValueExample) ? string.Empty : string.Format(":{0}\r\n", argInfo.ValueExample);
-                OutLineFormat("/{0}{1}\r\n    {2}", argInfo.Name, valueExample, argInfo.Description);
+                Message.PrintLine("/{0}{1}\r\n    {2}", argInfo.Name, valueExample, argInfo.Description);
             }
             Thread.Sleep(30);
         }
@@ -751,7 +751,7 @@ File Version: {1}
         /// file and adds them all as valid arguments so that they may be 
         /// specified on the command line.
         /// </summary>
-        protected static void AddConfigurationSwitches()
+        public static void AddConfigurationSwitches()
         {
             DefaultConfiguration.GetAppSettings().AllKeys.Each(key =>
             {
@@ -778,7 +778,7 @@ File Version: {1}
             }
             catch (Exception ex)
             {
-                OutLine("An error occurred: " + ex.Message, ConsoleColor.Red);
+                Message.PrintLine("An error occurred: " + ex.Message, ConsoleColor.Red);
                 if (Arguments.Contains("stacktrace"))
                 {
                     if (ex.InnerException != null)
@@ -806,7 +806,9 @@ File Version: {1}
             string answer = Console.ReadLine();
             Console.WriteLine();
             if (answer.Trim().ToLower().Equals("q"))
+            {
                 Environment.Exit(0);
+            }
 
             ShowSelectedMenu(otherMenus, answer);
             return answer;
@@ -832,7 +834,7 @@ File Version: {1}
                 {
                     if (menu.MenuKey.ToString().ToLower().Equals(answer.Trim().ToLower()))
                     {
-                        menu.MenuWriter(menu.AssemblyToAnalyze, otherMenus, menu.HeaderText);//menu.Menu.Method.Invoke(menu.AssemblyToAnalyze, otherMenus, menu.HeaderText);
+                        menu.MenuWriter(menu.AssemblyToAnalyze, otherMenus, menu.HeaderText);
                     }
                 }
                 Console.WriteLine();

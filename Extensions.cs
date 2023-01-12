@@ -330,6 +330,13 @@ namespace Bam.Net
                    value.Equals("bye", StringComparison.InvariantCultureIgnoreCase);
         }
 
+        /// <summary>
+        /// If the specified file exists, a new FileInfo with 
+        /// an underscore and a number appended is 
+        /// returned where the new FileInfo does not exist.
+        /// </summary>
+        /// <param name="file">The file.</param>
+        /// <returns>A new FileInfo with a number appended or the specified FileInfo.</returns>
         public static FileInfo GetNextFile(this FileInfo file)
         {
             return new FileInfo(GetNextFileName(file.FullName));
@@ -340,8 +347,8 @@ namespace Bam.Net
         /// an underscore and a number appended is 
         /// returned where the new path does not exist.
         /// </summary>
-        /// <param name="path"></param>
-        /// <returns></returns>
+        /// <param name="path">The path.</param>
+        /// <returns>A file path with a number appended or the specified path.</returns>
         public static string GetNextFileName(this string path)
         {
             return GetNextFileName(path, out int num);
@@ -1381,7 +1388,24 @@ namespace Bam.Net
         }
 
         /// <summary>
-        /// Iterate over the current IEnumerable passing
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="arr"></param>
+        /// <param name="action"></param>
+        /// <returns></returns>
+        public static Task[] EachAsync<T>(this IEnumerable<T> arr, Action<T> action)
+        {
+            List<Task> results = new List<Task>();
+            foreach (T item in arr)
+            {
+                results.Add(Task.Run(() => action(item)));
+            };
+            return results.ToArray();
+        }
+
+        /// <summary>
+        /// Iterate over the current IEnumerable using `foreach`, passing
         /// each element to the specified action
         /// </summary>
         /// <typeparam name="T"></typeparam>
@@ -4013,6 +4037,10 @@ namespace Bam.Net
         /// <returns></returns>
         public static string[] DelimitSplit(this string valueToSplit, string[] delimiters, bool trimValues)
         {
+            if (string.IsNullOrEmpty(valueToSplit))
+            {
+                return new string[] { };
+            }
             string[] split = valueToSplit.Split(delimiters, StringSplitOptions.RemoveEmptyEntries);
             if (trimValues)
             {

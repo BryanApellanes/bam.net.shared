@@ -192,6 +192,14 @@ namespace Bam.Net
                 throw new ExpectationFailedException(failureMessage);
         }
 
+        public static void IsLessThanOrEqualTo(int left, int right, string failureMessage = null)
+        {
+            if (!(left <= right))
+            {
+                throw new ExpectationFailedException(failureMessage ?? $"{left} is not less than or equal to {right}");
+            }
+        }
+
         /// <summary>
         /// Checks if the specified objects are the same using == (!=).
         /// </summary>
@@ -585,7 +593,7 @@ namespace Bam.Net
                 }
                 else
                 {
-                    throw new ExpectationFailedException($"Expected {objectToCheck?.ToString()} == {compareTo?.ToString()}");
+                    throw new ExpectationFailedException($"Expected {objectToCheck?.ToString()}.Equals({compareTo?.ToString()}) to be true");
                 }
             }
         }
@@ -601,6 +609,26 @@ namespace Bam.Net
                 else
                 {
                     throw new ExpectationFailedException($"Expected {objectToCheck?.ToString()} == {compareTo?.ToString()}");
+                }
+            }
+        }
+
+        public static void ShouldBeTrue(this bool? valueToCheck, string failureMessage = null)
+        {
+            IsTrue(valueToCheck, failureMessage);
+        }
+        
+        public static void IsTrue(this bool? valueToCheck, string failureMessage = null)
+        {
+            if (valueToCheck != true)
+            {
+                if (!string.IsNullOrEmpty(failureMessage))
+                {
+                    throw new ExpectationFailedException(failureMessage);
+                }
+                else
+                {
+                    throw new ExpectationFailedException("true", "false");
                 }
             }
         }

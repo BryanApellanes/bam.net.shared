@@ -41,8 +41,8 @@ namespace Bam.Net.Server
             _ignorePrefixes = new List<string>();
 
             AddRespondToPrefix(ResponderName);
-            BamServer bamServer = conf?.Server ?? BamServer.Current;
-            ApplicationServiceRegistry = bamServer.LoadApplicationServiceRegistryAsync()?.Result;
+            BamAppServer bamAppServer = conf?.AppServer ?? BamAppServer.Current;
+            ApplicationServiceRegistry = bamAppServer.LoadApplicationServiceRegistryAsync()?.Result;
         }
 
         public Responder(BamConf conf, ILogger logger)
@@ -184,6 +184,10 @@ namespace Bam.Net.Server
             {
                 headers.Keys.Each(key =>
                 {
+                    if(response.Headers == null)
+                    {
+                        response.Headers = new System.Net.WebHeaderCollection();
+                    }
                     response.Headers.Add(key, headers[key]);
                 });
             }

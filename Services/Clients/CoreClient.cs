@@ -40,7 +40,7 @@ namespace Bam.Net.Services.Clients
             int port = 9100;
             SetMainProperties(organizationName, applicationName, hostName, port, workingDirectory, logger);
             SetLocalServiceProxies();
-            SetApiKeyResolvers();
+            SetApiHmacKeyResolvers();
             SetClientApplicationNameProvider();
             SetLocalProperties(organizationName, applicationName, hostName, port);
             WireInvocationEventHandlers();
@@ -62,7 +62,7 @@ namespace Bam.Net.Services.Clients
         {
             SetMainProperties(organizationName, applicationName, hostName, port, workingDirectory, logger);
             SetDownloadedServiceProxies();
-            SetApiKeyResolvers();
+            SetApiHmacKeyResolvers();
             SetClientApplicationNameProvider();
             SetLocalProperties(organizationName, applicationName, hostName, port);
             WireInvocationEventHandlers();
@@ -602,9 +602,9 @@ namespace Bam.Net.Services.Clients
             }
         }
 
-        private void SetApiKeyResolvers()
+        private void SetApiHmacKeyResolvers()
         {
-            SetProperty("ApiKeyResolver");
+            SetProperty("ApiHmacKeyResolver");
         }
 
         private void SetClientApplicationNameProvider()

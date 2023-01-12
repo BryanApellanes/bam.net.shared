@@ -11,7 +11,11 @@ namespace Bam.Net.Application
         public ApiConf()
         {
             BamConf = BamConf.Load();
+            Verbose = true;
         }
+
+        public bool Verbose { get; set; }
+
         public int SessionExpirationMinutes { get; set; }
 
         public BamConf BamConf { get; private set; }

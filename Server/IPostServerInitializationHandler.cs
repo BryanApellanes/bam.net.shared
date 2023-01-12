@@ -8,6 +8,6 @@ namespace Bam.Net.Server
 {
     public interface IPostServerInitializationHandler
     {
-        void HandleInitialization(BamServer server);
+        void HandleInitialization(BamAppServer appServer);
     }
 }

@@ -27,7 +27,8 @@ namespace Bam.Net.Server.ServiceProxy
             OnAnyInstanciated(this);
         }
 
-        public ServiceProxyInvocation(string className, string methodName, IHttpContext context = null) : this(new WebServiceProxyDescriptors { WebServiceRegistry = Services.WebServiceRegistry.ForApplicationServiceRegistry(ApplicationServiceRegistry.ForProcess()) }, className, methodName, context)
+        public ServiceProxyInvocation(string className, string methodName, IHttpContext context = null) 
+            : this(new WebServiceProxyDescriptors { WebServiceRegistry = Services.WebServiceRegistry.ForApplicationServiceRegistry(ApplicationServiceRegistry.ForProcess()) }, className, methodName, context)
         {
         }
 
@@ -456,6 +457,13 @@ namespace Bam.Net.Server.ServiceProxy
         public bool Execute()
         {
             return Execute(InvocationTarget, true);
+        }
+
+        public bool Execute<T>(out T result)
+        {
+            bool wasSuccessful = Execute(out object innerResult);
+            result = (T)innerResult;
+            return wasSuccessful;
         }
 
         public bool Execute(out object result)

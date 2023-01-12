@@ -14,20 +14,38 @@ namespace Bam.Net.Server
 {
     public class HostBinding
     {
+        /// <summary>
+        /// Instantiate a HostBinding with the hostname of "localhost" and port set to 8080.
+        /// </summary>
         public HostBinding()
         {
             this.HostName = "localhost";
             this.Port = 8080;
+            this.Ssl = true;
         }
 
+        public HostBinding(int port) : this("localhost", port)
+        {
+        }
+
+        public HostBinding(string hostName) : this(hostName, 8080)
+        {
+        }
+
+        /// <summary>
+        /// Instantiate a HostBinding with the specified hostname and port.
+        /// </summary>
+        /// <param name="hostName"></param>
+        /// <param name="port"></param>
         public HostBinding(string hostName, int port)
         {
             this.HostName = hostName;
             this.Port = port;
+            this.Ssl = true;
         }
 
         public string HostName { get; set; }
-        public int Port { get; set; }
+        public virtual int Port { get; set; }
 
         public bool Ssl { get; set; }
 
@@ -70,7 +88,7 @@ namespace Bam.Net.Server
             List<HostBinding> results = new List<HostBinding>();
             foreach (string hostName in Config.Current["HostNames"].Or(defaultHostName).DelimitSplit(",", true))
             {
-                AddHostPrefix(hostName, port, ssl, results);
+                AddHostBinding(hostName, port, ssl, results);
             }
             return results.ToArray();
         }
@@ -82,12 +100,12 @@ namespace Bam.Net.Server
             List<HostBinding> results = new List<HostBinding>();
             foreach (string hostName in DefaultConfiguration.GetAppSetting("HostNames").Or(defaultHostName).DelimitSplit(",", true))
             {
-                AddHostPrefix(hostName, port, ssl, results);
+                AddHostBinding(hostName, port, ssl, results);
             }
             return results.ToArray();
         }
         
-        private static void AddHostPrefix(string hostName, int port, bool ssl, List<HostBinding> results)
+        private static void AddHostBinding(string hostName, int port, bool ssl, List<HostBinding> results)
         {
             HostBinding hostPrefix = new HostBinding()
             {

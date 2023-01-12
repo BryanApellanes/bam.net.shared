@@ -15,6 +15,8 @@ using Bam.Net.Web;
 using Bam.Net.Configuration;
 using Bam.Net.Incubation;
 using System.Net.Http;
+using MongoDB.Driver.Core.WireProtocol.Messages.Encoders;
+using Bam.Net.Server.Rest;
 
 namespace Bam.Net.ServiceProxy
 {
@@ -38,6 +40,8 @@ namespace Bam.Net.ServiceProxy
                 { ServiceProxyVerbs.Get, HttpMethod.Get },
                 { ServiceProxyVerbs.Post, HttpMethod.Post }
             };
+
+            this.ResponseConverter = new JsonResponseConverter();
         }
 
         public ServiceProxyClient(HttpClient httpClient, Type serviceType): this(serviceType)
@@ -126,6 +130,12 @@ namespace Bam.Net.ServiceProxy
             }
         }
 
+        protected IResponseConverter ResponseConverter
+        {
+            get;
+            set;
+        }
+
         protected Dictionary<ServiceProxyVerbs, HttpMethod> HttpMethods
         {
             get;
@@ -184,6 +194,11 @@ namespace Bam.Net.ServiceProxy
 
         protected internal HttpClient HttpClient { get; set; }
 
+        protected virtual T ConvertResponse<T>(HttpClientResponse clientResponse)
+        {
+            return ResponseConverter.ConvertResponse<T>(clientResponse);
+        }
+
         /// <summary>
         /// The event that is raised when an exception occurs during method invocation.
         /// </summary>
@@ -212,18 +227,18 @@ namespace Bam.Net.ServiceProxy
             InvocationCanceled?.Invoke(this, args);
         }
 
-        public async Task<string> ReceivePostResponseAsync(string methodName, params object[] arguments)
+        public async Task<HttpClientResponse> ReceivePostResponseAsync(string methodName, params object[] arguments)
         {
             return await ReceivePostResponseAsync(new ServiceProxyInvocationRequest(this, ServiceType.Name, methodName, arguments));
         }
 
-        public virtual async Task<string> ReceivePostResponseAsync(ServiceProxyInvocationRequest serviceProxyInvocationRequest)
+        public virtual async Task<HttpClientResponse> ReceivePostResponseAsync(ServiceProxyInvocationRequest serviceProxyInvocationRequest)
         {
             ServiceProxyInvocationRequestEventArgs args = new ServiceProxyInvocationRequestEventArgs(serviceProxyInvocationRequest);
             args.Client = this;
 
             OnPostStarted(args);
-            string result = string.Empty;
+            PostResponse postResponse = new PostResponse();
             if (args.CancelInvoke)
             {
                 OnPostCanceled(args);
@@ -238,8 +253,12 @@ namespace Bam.Net.ServiceProxy
                     HttpResponseMessage response = await HttpClient.SendAsync(request);
                     args.RequestMessage = request;
                     args.ResponseMessage = response;
-                    result = await response.Content.ReadAsStringAsync();
+                    postResponse.Content = await response.Content.ReadAsStringAsync();
                     response.EnsureSuccessStatusCode();
+                    postResponse.Url = request.RequestUri;
+                    postResponse.StatusCode = (int)response.StatusCode;
+                    postResponse.ContentType = response.Content.Headers?.ContentType?.MediaType;
+                    response.Headers?.Each(header => postResponse.Headers.Add(header.Key, string.Join(", ", header.Value)));
                     OnPostComplete(args);
                 }
                 catch (Exception ex)
@@ -248,21 +267,22 @@ namespace Bam.Net.ServiceProxy
                     OnInvocationException(args);
                 }
             }
-            return result;
+            return postResponse;
         }
 
-        public async Task<string> ReceiveGetResponseAsync(string methodName, params object[] arguments)
+        public async Task<HttpClientResponse> ReceiveGetResponseAsync(string methodName, params object[] arguments)
         {
             MethodInfo methodInfo = ServiceType.GetMethod(methodName, arguments.Select(argument => argument.GetType()).ToArray());
             return await ReceiveGetResponseAsync(new ServiceProxyInvocationRequest(this, ServiceType.Name, methodName, arguments));
         }
 
-        public virtual async Task<string> ReceiveGetResponseAsync(ServiceProxyInvocationRequest request)
+        public virtual async Task<HttpClientResponse> ReceiveGetResponseAsync(ServiceProxyInvocationRequest request)
         {
-            ServiceProxyInvocationRequestEventArgs args = request.CopyAs<ServiceProxyInvocationRequestEventArgs>();
+            ServiceProxyInvocationRequestEventArgs args = request.CopyAs<ServiceProxyInvocationRequestEventArgs>(request);
             args.Client = this;
 
             OnGetStarted(args);
+            GetResponse getResponse = new GetResponse();
             string result = string.Empty;
             if (args.CancelInvoke)
             {
@@ -274,11 +294,15 @@ namespace Bam.Net.ServiceProxy
                 HttpResponseMessage response = await HttpClient.SendAsync(requestMessage);
                 args.RequestMessage = requestMessage;
                 args.ResponseMessage = response;
-                result = await response.Content.ReadAsStringAsync();
+                getResponse.Content = await response.Content.ReadAsStringAsync();
                 response.EnsureSuccessStatusCode();
+                getResponse.Url = requestMessage.RequestUri;
+                getResponse.StatusCode = (int)response.StatusCode;
+                getResponse.ContentType = response.Content.Headers?.ContentType?.MediaType;
+                response.Headers?.Each(header => getResponse.Headers.Add(header.Key, string.Join(", ", header.Value)));
                 OnGetComplete(args);
             }
-            return result;
+            return getResponse;
         }
 
         public virtual async Task<HttpRequestMessage> CreateServiceProxyInvocationRequestMessageAsync(ServiceProxyInvocationRequest serviceProxyInvocationRequest)
@@ -305,14 +329,14 @@ namespace Bam.Net.ServiceProxy
             return new ServiceProxyInvocationRequestWriter();
         }
 
-        public abstract string InvokeServiceMethod(string methodName, params object[] arguments);
+        public abstract HttpClientResponse InvokeServiceMethod(string methodName, params object[] arguments);
 
-        public abstract Task<string> InvokeServiceMethodAsync(string baseAddress, string className, string methodName, object[] arguments);
+        public abstract Task<HttpClientResponse> InvokeServiceMethodAsync(string baseAddress, string className, string methodName, object[] arguments);
 
-        public abstract string InvokeServiceMethod(string className, string methodName, object[] arguments);
+        public abstract HttpClientResponse InvokeServiceMethod(string className, string methodName, object[] arguments);
 
-        public abstract Task<string> InvokeServiceMethodAsync(string className, string methodName, object[] arguments);
+        public abstract Task<HttpClientResponse> InvokeServiceMethodAsync(string className, string methodName, object[] arguments);
 
-        public abstract Task<string> InvokeServiceMethodAsync(string methodName, object[] arguments);
+        public abstract Task<HttpClientResponse> InvokeServiceMethodAsync(string methodName, object[] arguments);
     }
 }

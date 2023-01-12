@@ -106,20 +106,6 @@ namespace Bam.Net.ServiceProxy.Encryption
 
         #endregion
         
-/*        public void SetHmacHeader(HttpRequestMessage request, string stringToHash)
-        {
-            request.Headers.Add(Headers.Hmac, GetHmac(stringToHash));
-        }
-
-        public void SetHmacHeader(HttpWebRequest request, string stringToHash)
-        {
-            SetHmacHeader(request.Headers, stringToHash);
-        }
-       
-        public void SetHmacHeader(NameValueCollection headers, string stringToHash)
-        {
-            headers[Headers.Hmac] = GetHmac(stringToHash);
-        }*/
 
         public string GetHmac(string stringToHash)
         {
@@ -146,10 +132,10 @@ namespace Bam.Net.ServiceProxy.Encryption
             return result;
         }
         
-        public bool IsValidHmac(string stringToHash, string token)
+        public bool IsValidHmac(string stringToHash, string hmac)
         {
-            string checkToken = GetHmac(stringToHash);
-            return token.Equals(checkToken);
+            string checkHmac = GetHmac(stringToHash);
+            return hmac.Equals(checkHmac);
         }
     }
 }

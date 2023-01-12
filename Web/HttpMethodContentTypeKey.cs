@@ -3,28 +3,28 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Bam.Net.Server.ServiceProxy
+namespace Bam.Net.Web
 {
     public class HttpMethodContentTypeKey
     {
         public HttpMethodContentTypeKey(string httpVerb)
         {
-            this.HttpMethod = httpVerb.ToUpperInvariant();
+            HttpMethod = httpVerb.ToUpperInvariant();
         }
 
-        public HttpMethodContentTypeKey(string httpVerb, string contentType): this(httpVerb)
+        public HttpMethodContentTypeKey(string httpVerb, string contentType) : this(httpVerb)
         {
             if (!string.IsNullOrEmpty(contentType) && contentType.Contains("+"))
             {
-                this.ContentType = contentType.ReadUntil('+');
+                ContentType = contentType.ReadUntil('+');
             }
             else
             {
-                this.ContentType = contentType;
+                ContentType = contentType;
             }
         }
 
-        public HttpMethodContentTypeKey(IRequest request):this(request.HttpMethod, request.ContentType)
+        public HttpMethodContentTypeKey(IRequest request) : this(request.HttpMethod, request.ContentType)
         {
         }
 
@@ -33,16 +33,16 @@ namespace Bam.Net.Server.ServiceProxy
 
         public override bool Equals(object obj)
         {
-            if(obj is HttpMethodContentTypeKey value)
+            if (obj is HttpMethodContentTypeKey value)
             {
-                return value.ToString().Equals(this.ToString());
+                return value.ToString().Equals(ToString());
             }
             return base.Equals(obj);
         }
 
         public override int GetHashCode()
         {
-            return this.ToString().GetHashCode();
+            return ToString().GetHashCode();
         }
 
         public override string ToString()

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Bam.Net.Web;
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
@@ -26,7 +27,7 @@ namespace Bam.Net.ServiceProxy
         }
 
         ServiceProxyInvocationRequestArgumentWriter<TService> _serviceProxyArguments;
-        public new ServiceProxyInvocationRequestArgumentWriter<TService> ServiceProxyInvocationRequestArguments
+        public new ServiceProxyInvocationRequestArgumentWriter<TService> ServiceProxyInvocationRequestArgumentWriter
         {
             get
             {
@@ -38,13 +39,7 @@ namespace Bam.Net.ServiceProxy
             }
         }
 
-        public async Task<TResult> ExecuteAsync<TResult>(ServiceProxyClient<TService> client)
-        {
-            string response = await ExecuteAsync(client);
-            return response.FromJson<TResult>();
-        }
-
-        public async Task<string> ExecuteAsync(ServiceProxyClient<TService> client)
+        public async Task<HttpClientResponse> ExecuteAsync(ServiceProxyClient<TService> client)
         {
             if (!Methods.Contains(MethodName))
             {

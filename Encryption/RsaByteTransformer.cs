@@ -5,6 +5,7 @@ using System.Text;
 
 namespace Bam.Net.Encryption
 {
+    [PipelineFactoryTransformerName("rsa")]
     public class RsaByteTransformer : ValueTransformer<byte[], byte[]>
     {
         public RsaByteTransformer(Func<RsaPublicKey> publicKeyProvider, Func<RsaPublicPrivateKeyPair> privateKeyProvider)
@@ -17,6 +18,7 @@ namespace Bam.Net.Encryption
         { 
         }
 
+        [PipelineFactoryConstructor]
         public RsaByteTransformer(IRsaPublicKeySource rsaKeySource, IRsaKeySource rsaPublicPrivateKeySource) : this(() => rsaKeySource.GetRsaPublicKey(), () => rsaPublicPrivateKeySource.GetRsaKey())
         { 
         }

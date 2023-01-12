@@ -113,7 +113,7 @@ namespace Bam.Net.Encryption
             if (httpRequestMessage.Content != null && 
                 httpRequestMessage.Content.ReadAsStringAsync().Result.TryFromJson<TContent>(out TContent content))
             {
-                request.Content = content;
+                request.TypedContent = content;
             }
             foreach (System.Collections.Generic.KeyValuePair<string, IEnumerable<string>> kvp in httpRequestMessage.Headers)
             {

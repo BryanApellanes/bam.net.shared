@@ -110,17 +110,30 @@ namespace Bam.Net.ServiceProxy.Encryption
         /// <returns></returns>
         public SecureChannelResponseMessage<ClientSessionInfo> StartSession(Instant instant)
         {
-            SecureChannelSession secureChannelSession = SecureChannelSessionDataManager.GetSecureChannelSessionForContextAsync(HttpContext, instant).Result;
-            ClientSessionInfo clientSessionInfo = secureChannelSession.GetClientSession(false);
+            ClientSessionInfo clientSessionInfo = GetClientSessionInfo(instant);
 
             return new SecureChannelResponseMessage<ClientSessionInfo>(clientSessionInfo);
         }
 
-        public object Execute(SecureChannelRequestMessage secureChannelRequestMessage)
+        public SecureChannelResponseMessage Execute(SecureChannelRequestMessage secureChannelRequestMessage)
         {
             WebServiceProxyDescriptors webServiceProxyDescriptors = WebServiceProxyDescriptorsProvider.GetWebServiceProxyDescriptors(ApplicationNameProvider.GetApplicationName());
+
             ServiceProxyInvocation serviceProxyInvocation = secureChannelRequestMessage.ToServiceProxyInvocation(webServiceProxyDescriptors, new InputStreamServiceProxyInvocationArgumentReader());
-            return serviceProxyInvocation.Execute();
+
+            if (serviceProxyInvocation.Execute())
+            {
+                ClientSessionInfo clientSessionInfo = GetClientSessionInfo();
+                AesKeyVectorPair aesKey = clientSessionInfo.GetAesKey();
+                string resultJson = serviceProxyInvocation.Result?.ToJson();
+                string jsonCipher = aesKey.Encrypt(resultJson);
+                return new SecureChannelResponseMessage(true)
+                {
+                    Data = jsonCipher
+                };
+            }
+
+            return new SecureChannelResponseMessage(serviceProxyInvocation.Exception ?? new Exception($"{nameof(ServiceProxyInvocation)}.Execute() failed"));
         }
 
         public void EndSession(string sessionIdentifier)
@@ -195,6 +208,13 @@ namespace Bam.Net.ServiceProxy.Encryption
             {
                 _applicationServiceRegistry = value;
             }
+        }
+
+        private ClientSessionInfo GetClientSessionInfo(Instant instant = null)
+        {
+            SecureChannelSession secureChannelSession = SecureChannelSessionDataManager.GetSecureChannelSessionForContextAsync(HttpContext, instant).Result;
+            ClientSessionInfo clientSessionInfo = secureChannelSession.GetClientSession(false);
+            return clientSessionInfo;
         }
     }
 }

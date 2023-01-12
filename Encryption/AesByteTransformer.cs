@@ -7,6 +7,7 @@ using System.Text;
 
 namespace Bam.Net.Encryption
 {
+    [PipelineFactoryTransformerName("aes")]
     public class AesByteTransformer : ValueTransformer<byte[], byte[]>
     {
         public AesByteTransformer(Func<AesKeyVectorPair> keyProvider)
@@ -15,6 +16,7 @@ namespace Bam.Net.Encryption
             this.KeyProvider = keyProvider;
         }
 
+        [PipelineFactoryConstructor]
         public AesByteTransformer(IAesKeySource aesKeySource) : this(() => aesKeySource.GetAesKey())
         { 
         }

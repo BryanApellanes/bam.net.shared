@@ -11,6 +11,7 @@ using Bam.Net.ServiceProxy;
 using System.Collections.Generic;
 using Bam.Net.Services.Clients;
 using Bam.Net.Services;
+using System.Net.Http;
 
 namespace Bam.Net.CoreServices
 {
@@ -175,7 +176,7 @@ namespace Bam.Net.CoreServices
             // compile Code and save assembly
             RoslynCompiler compiler = new RoslynCompiler();
             compiler.AddAssemblyReference(typeof(System.ComponentModel.Component).Assembly);
-            byte[] assembly = compiler.Compile(GetAssemblyName(), Code.ToString());
+            byte[] assembly = compiler.Compile(GetAssemblyName(), Code.ToString(), typeof(HttpClient));
             string path = Path.Combine(BamProfile.GeneratedPath, GetAssemblyName());
             FileInfo assemblyFile = new FileInfo(path);
             if(!assemblyFile.Directory.Exists)

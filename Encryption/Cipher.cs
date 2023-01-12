@@ -32,6 +32,11 @@ namespace Bam.Net.Encryption
         {
             this.Data = base64Data.FromBase64();
         }
+
+        public Cipher(byte[] data)
+        {
+            this.Data = data;
+        }
     }
 
     public class Cipher
@@ -54,6 +59,13 @@ namespace Bam.Net.Encryption
         public static implicit operator Cipher(string data)
         {
             return new Cipher { Data = data.FromBase64() };
+        }
+
+        public Cipher() { }
+
+        public Cipher(byte[] data)
+        {
+            this.Data = data;
         }
 
         public byte[] Data { get; set; }

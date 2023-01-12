@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Bam.Net.Encryption
 {
-    public abstract class ContentCipher<TContent> : Cipher<TContent>
+    public abstract class ContentCipher<TContent> : Cipher<TContent>, IContentCipher
     {
         public static implicit operator byte[](ContentCipher<TContent> cipher)
         {

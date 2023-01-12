@@ -1,4 +1,6 @@
+using Bam.Net.CoreServices.ApplicationRegistration.Data;
 using Bam.Net.Logging;
+using Bam.Net.Logging.Http;
 using Bam.Net.ServiceProxy;
 using System;
 using System.Collections.Generic;
@@ -42,6 +44,14 @@ namespace Bam.Net.Server
                 new HostBinding { Port = 80, HostName = "localhost", Ssl = false }
             };
             MonitorDirectories = new string[] { Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) };
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether this server is listening.
+        /// </summary>
+        public bool IsListening
+        {
+            get => (bool)_server?.IsListening;
         }
 
         /// <summary>
@@ -89,6 +99,16 @@ namespace Bam.Net.Server
             Logger.StopLoggingThread();
             _server.Stop();
         }
+
+        public void TryStop()
+        {
+            try
+            {
+                Stop();
+            }
+            catch { }
+        }
+
         /// <summary>
         /// The delegate that is subscribed to the renamed event of the underlying
         /// FileSystemWatcher(s)
@@ -101,7 +121,9 @@ namespace Bam.Net.Server
         protected void WireEventHandlers()
         {
             _server = new HttpServer(Logger ?? Log.Default);
-            WireServerRequestHandler();
+            _server.ProcessRequest += ProcessRequest;
+            _server.PreProcessRequest += PreProcessRequest;
+
             WireResponderEventHandlers();
             MonitorDirectories.Each(directory =>
             {
@@ -116,13 +138,31 @@ namespace Bam.Net.Server
             });
         }
 
-        private void WireServerRequestHandler()
+        private readonly object _requestLogLock = new object();
+        private RequestLog _requestLog;
+
+        public RequestLog RequestLog
         {
-            _server.ProcessRequest += (context) =>
-            {
-                Responder.Respond(new HttpContextWrapper(context));
-            };
+            get { return _requestLogLock.DoubleCheckLock(ref _requestLog, () => new RequestLog()); }
+            set => _requestLog = value;
         }
+
+        protected void PreProcessRequest(IHttpContext context)
+        {
+            if(context?.Request == null)
+            {
+                return;
+            }
+
+            context.SetRequestId();
+            RequestLog.LogRequest(context);
+        }
+
+        protected void ProcessRequest(IHttpContext context)
+        {
+            Responder.Respond(context);
+        }
+
 
         private void WireResponderEventHandlers()
         {

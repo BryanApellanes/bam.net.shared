@@ -1,6 +1,7 @@
 /*
 	Copyright © Bryan Apellanes 2015  
 */
+using Bam.Net.Web;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -43,13 +44,13 @@ namespace Bam.Net.ServiceProxy
         /// <param name="methodName">The name of the method to invoke</param>
         /// <param name="arguments">parameters to be passed to the method</param>
         /// <returns></returns>
-        public TResult InvokeServiceMethod<TResult>(string methodName, params object[] arguments)
+        public virtual TResult InvokeServiceMethod<TResult>(string methodName, params object[] arguments)
         {
-            string result = InvokeServiceMethod(methodName, arguments);
-            return result.FromJson<TResult>();
+            HttpClientResponse response = InvokeServiceMethod(methodName, arguments);
+            return ConvertResponse<TResult>(response);
         }
 
-        public override Task<string> InvokeServiceMethodAsync(string methodName, object[] arguments)
+        public override Task<HttpClientResponse> InvokeServiceMethodAsync(string methodName, object[] arguments)
         {
             return Task.Run(() => InvokeServiceMethodAsync(BaseAddress, typeof(TService).Name, methodName, arguments));
         }
@@ -61,28 +62,28 @@ namespace Bam.Net.ServiceProxy
         /// <param name="methodName"></param>
         /// <param name="arguments"></param>
         /// <returns></returns>
-        public override string InvokeServiceMethod(string methodName, params object[] arguments)
+        public override HttpClientResponse InvokeServiceMethod(string methodName, params object[] arguments)
         {
             return InvokeServiceMethodAsync(BaseAddress, typeof(TService).Name, methodName, arguments).Result;
         }
 
-        public override string InvokeServiceMethod(string className, string methodName, object[] arguments)
+        public override HttpClientResponse InvokeServiceMethod(string className, string methodName, object[] arguments)
         {
             return InvokeServiceMethodAsync(BaseAddress, className, methodName, arguments).Result;
         }
 
-        public override Task<string> InvokeServiceMethodAsync(string className, string methodName, object[] arguments)
+        public override Task<HttpClientResponse> InvokeServiceMethodAsync(string className, string methodName, object[] arguments)
         {
             return InvokeServiceMethodAsync(BaseAddress, className, methodName, arguments);
         }
 
-        public override async Task<string> InvokeServiceMethodAsync(string baseAddress, string className, string methodName, params object[] arguments)
+        public override async Task<HttpClientResponse> InvokeServiceMethodAsync(string baseAddress, string className, string methodName, params object[] arguments)
         {
             ServiceProxyInvocationRequest<TService> request = new ServiceProxyInvocationRequest<TService>(this, methodName, arguments);
 
             ServiceProxyInvocationRequestEventArgs args = request.CopyAs<ServiceProxyInvocationRequestEventArgs<TService>>(request);
             OnInvocationStarted(args);
-            string response = string.Empty;
+            HttpClientResponse response = HttpClientResponse.Empty;
             if (args.CancelInvoke)
             {
                 OnInvocationCanceled(args);
@@ -102,9 +103,9 @@ namespace Bam.Net.ServiceProxy
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
-        protected internal virtual async Task<string> ReceiveServiceMethodResponseAsync(ServiceProxyInvocationRequest<TService> request)
+        protected internal virtual async Task<HttpClientResponse> ReceiveServiceMethodResponseAsync(ServiceProxyInvocationRequest<TService> request)
         {
-            string result = string.Empty;
+            HttpClientResponse response = HttpClientResponse.Empty;
             try
             {
                 return await request.ExecuteAsync(this);
@@ -115,7 +116,7 @@ namespace Bam.Net.ServiceProxy
                 args.Exception = ex;
                 OnInvocationException(args);
             }
-            return result;
+            return response;
         }
 
     }

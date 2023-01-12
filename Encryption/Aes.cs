@@ -147,7 +147,13 @@ namespace Bam.Net.Encryption
                 {
                     byte[] decrypted = new byte[encData.Length];
 
-                    decryptStream.Read(decrypted, 0, encData.Length);
+                    int totalBytesRead = 0;
+                    int bytesRead = 0;
+                    do
+                    {
+                        bytesRead = decryptStream.Read(decrypted, totalBytesRead, 1);
+                        totalBytesRead += bytesRead;
+                    } while (bytesRead > 0);                    
 
                     // This seems like a cheesy way to remove trailing 0 bytes
                     // but unless I know the expected length of the decrypted data

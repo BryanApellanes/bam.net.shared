@@ -39,12 +39,14 @@ namespace Bam.Net.Server
             set => _hostBindings = new HashSet<HostBinding>(value);
         }
         
+        public bool IsListening
+        {
+            get=> (bool)_listener?.IsListening;
+        }
+
         /// <summary>
-        /// If true will attempt to stop
-        /// other HttpServers that are listening on 
-        /// the same port and hostname as what
-        /// the current HttpServer is configured for
-        /// when it is started.
+        /// Gets or sets a value indicating whether this HttpServer, when started, will attempt to stop
+        /// other HttpServers that are listening on the same port and hostname.
         /// </summary>
         public bool Usurped
         {

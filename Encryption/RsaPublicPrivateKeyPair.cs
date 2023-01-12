@@ -48,6 +48,9 @@ namespace Bam.Net.Encryption
         /// </summary>
         public string Pem { get; private set; }
 
+        /// <summary>
+        /// Gets the public key as a pem string.
+        /// </summary>
         public string PublicKeyPem { get; private set; }
 
         /// <summary>
@@ -62,6 +65,12 @@ namespace Bam.Net.Encryption
             return Convert.ToBase64String(encrypted);
         }
 
+        /// <summary>
+        /// Deciphers the specifed base 64 encoded cipher text.
+        /// </summary>
+        /// <param name="base64Cipher"></param>
+        /// <param name="encoding"></param>
+        /// <returns></returns>
         public string Decrypt(string base64Cipher, Encoding encoding = null)
         {
             byte[] cipherBytes = base64Cipher.FromBase64();

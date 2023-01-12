@@ -39,8 +39,7 @@ namespace Bam.Net.Server
 
         private ResponderContextHandlerResolver<ServiceProxyResponder> _requestHandlerResolver;
 
-        public ServiceProxyResponder() : base(new BamConf(), Log.Default)
-        { }
+        public ServiceProxyResponder() : base(new BamConf(), Log.Default) { }
 
         public ServiceProxyResponder(BamConf conf, ILogger logger)
             : base(conf, logger)
@@ -680,32 +679,34 @@ namespace Bam.Net.Server
         }
 
         readonly Dictionary<string, IClientProxyGenerator> _clientProxyGenerators;
-        private bool SendProxyCode(IHttpContext context)
+        public bool IsProxyCodeRequest(IHttpContext context)
         {
-            bool result = false;
-            IRequest request = context.Request;
-            string path = request.Url.AbsolutePath.ToLowerInvariant();
-            string appName = ApplicationNameResolver.ResolveApplicationName(context.Request);
-            //bool includeLocalMethods = request.UserHostAddress.StartsWith("127.0.0.1");
-            string[] split = path.DelimitSplit("/", ".");
+            string path = context.Request.Url.AbsolutePath.ToLowerInvariant();
+            string fileName = Path.GetFileName(path);
+            return _clientProxyGenerators.ContainsKey(fileName);
+        }
 
-            if (split.Length >= 2)
-            {                
-                string fileName = Path.GetFileName(path);
-                if (_clientProxyGenerators.ContainsKey(fileName))
-                {
-                    Incubator combined = new Incubator();
-                    combined.CopyFrom(CommonServiceProvider);
-                    if (AppServiceProviders.ContainsKey(appName))
-                    {
-                        Incubator appProviders = AppServiceProviders[appName];
-                        combined.CopyFrom(appProviders, true);
-                    }
-                    _clientProxyGenerators[fileName].SendProxyCode(combined, context);
-                    result = true;
-                }
+        public string GetProxyCode(IHttpContext context)
+        {
+            string path = context.Request.Url.AbsolutePath.ToLowerInvariant();
+            string fileName = Path.GetFileName(path);
+            UriApplicationNameResolver appNameResolver = new UriApplicationNameResolver(BamConf);
+            appNameResolver.HttpContext = context;
+            Incubator serviceProvider = GetAppplicationServiceProvider(appNameResolver.GetApplicationName());
+            return _clientProxyGenerators[fileName].GetCachedProxyCode(serviceProvider, context);
+        }
+
+        protected Incubator GetAppplicationServiceProvider(string appName)
+        {
+            Incubator combined = new Incubator();
+            combined.CopyFrom(CommonServiceProvider);
+            if (AppServiceProviders.ContainsKey(appName))
+            {
+                Incubator appProviders = AppServiceProviders[appName];
+                combined.CopyFrom(appProviders, true);
             }
-            return result;
+
+            return combined;
         }
 
         private void ForEachProxiedClass(AppConf appConf, DirectoryInfo serviceDir, Action<Type> doForEachProxiedType)

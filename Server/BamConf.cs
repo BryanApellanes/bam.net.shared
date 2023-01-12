@@ -35,17 +35,18 @@ namespace Bam.Net.Server
         /// to use for the server
         /// </summary>
         public const string ContentRootConfigKey = "ContentRoot";
+        public const string DefaultServiceSearchPattern = "*Services.dll,*Proxyables.dll";
 
         public BamConf()
         {
-            this.Fs = new Fs(BamHome.Path);
+            this.Fs = new Fs(BamHome.ContentPath);
             this.GenerateDao = true;
             this.DaoConfigs = new DaoConf[] { };
             this.DaoSearchPattern = "*Dao.dll";
             this.LoggerPaths = new string[] { "." };
             this.LoggerSearchPattern = "*Logging.dll";
-            this.ServiceSearchPattern = "*Services.dll,*Proxyables.dll";
-            this.ServerEventListenerSearchPath = "/opt/bam/content/server-listeners,/opt/bam/content/server-listeners-temp";
+            this.ServiceSearchPattern = DefaultServiceSearchPattern;
+            this.ServerEventListenerSearchPath = $"{Path.Combine(BamHome.ContentPath, "server-listeners")},{Path.Combine(BamHome.ContentPath, "server-listeners-temp")}";
             this.ServerEventListenerAssemblySearchPattern = "*ServerListeners.dll,*ServerEventListeners.dll";
             this.MainLoggerName = "ConsoleLogger";
 
@@ -67,7 +68,7 @@ namespace Bam.Net.Server
             set;
         }
 
-        internal BamServer Server
+        internal BamAppServer AppServer
         {
             get;
             set;
@@ -131,7 +132,7 @@ namespace Bam.Net.Server
         }
         
         /// <summary>
-        /// The root of the filesystem that will be served
+        /// The root of the filesystem that is served
         /// </summary>
         public string ContentRoot
         {
