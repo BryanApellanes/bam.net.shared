@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using NCuid;
 using Bam.Net.Data;
 
 namespace Bam.Net.Data.Repositories
