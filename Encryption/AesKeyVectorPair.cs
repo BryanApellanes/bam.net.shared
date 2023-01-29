@@ -61,6 +61,7 @@ namespace Bam.Net.Encryption
         private void SetKeyAndIv()
         {
             AesManaged aes = new AesManaged();
+            aes.KeySize = 256;
             aes.GenerateKey();
             aes.GenerateIV();
             this.Key = Convert.ToBase64String(aes.Key);
@@ -69,24 +70,17 @@ namespace Bam.Net.Encryption
 
         public void Save(string filePath)
         {
-            string xml = SerializationExtensions.ToXml(this);
-            byte[] xmlBytes = Encoding.UTF8.GetBytes(xml);
-            string xmlBase64 = Convert.ToBase64String(xmlBytes);
-            using (StreamWriter sw = new StreamWriter(filePath))
-            {
-                sw.Write(xmlBase64);
-            }
+            this.ToJson(true).SafeWriteToFile(filePath);
         }
 
         public static AesKeyVectorPair Load(string filePath)
         {
-            using (StreamReader sr = new StreamReader(filePath))
+            if (string.IsNullOrEmpty(filePath))
             {
-                string xmlBase64 = sr.ReadToEnd();
-                byte[] xmlBytes = Convert.FromBase64String(xmlBase64);
-                string xml = Encoding.UTF8.GetString(xmlBytes);
-                return SerializationExtensions.FromXml<AesKeyVectorPair>(xml);
+                throw new ArgumentNullException(nameof(filePath));
             }
+
+            return filePath.SafeReadFile().FromJson<AesKeyVectorPair>();
         }
 
         /// <summary>
