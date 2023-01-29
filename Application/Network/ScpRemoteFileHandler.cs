@@ -2,11 +2,11 @@ using System;
 using System.IO;
 using Bam.Net.Automation;
 using Bam.Net.CommandLine;
-using Bam.Net.Testing;
+//using Bam.Net.Testing;
 
 namespace Bam.Net.Application.Network
 {
-    public class ScpRemoteFileHandler: CommandLineTool, IRemoteFileHandler
+    public class ScpRemoteFileHandler: IRemoteFileHandler
     {
         public string UserName { get; set; }
 
