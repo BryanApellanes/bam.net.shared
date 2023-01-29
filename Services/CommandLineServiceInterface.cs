@@ -1,9 +1,9 @@
 using Bam.Net.CoreServices;
-using Bam.Net.Testing;
+//using Bam.Net.Testing;
 
 namespace Bam.Net.Services
 {
-    public class CommandLineServiceInterface : CommandLineTool
+    public class CommandLineServiceInterface //: CommandLineTool
     {
         public CommandLineServiceInterface()
         {

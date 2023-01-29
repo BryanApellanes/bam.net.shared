@@ -10,7 +10,6 @@ using System.Reflection;
 using System.IO;
 using Bam.Net;
 using Bam.Net.Logging;
-using NCuid;
 
 namespace Bam.Net.Data.Repositories
 {

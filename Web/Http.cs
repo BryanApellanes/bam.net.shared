@@ -20,6 +20,11 @@ namespace Bam.Net.Web
             DefaultUserAgent = UserAgents.FF10;
         }
 
+        public static T GetJson<T>(string uri, Dictionary<string, string> headers = null)
+        {
+            return Get<T>(uri, (json) => json.FromJson<T>(), headers);
+        }
+
         public static T Get<T>(string url, Func<string, T> parser, Dictionary<string, string> headers = null)
         {
             return Get<T>(url, parser, null, headers);

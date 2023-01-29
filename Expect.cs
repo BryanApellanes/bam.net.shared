@@ -432,6 +432,12 @@ namespace Bam.Net
                 }
             }
         }
+
+        public static void ShouldBeNullOrEmpty(this string value)
+        {
+            IsNullOrEmpty(value);
+        }
+        
         /// <summary>
         /// Asserts that the specified string is null or empty.  Throws
         /// an exception if the assertion fails.

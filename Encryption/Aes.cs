@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Security.Cryptography;
 using System.IO;
+
 using Bam.Net.Configuration;
 
 namespace Bam.Net.Encryption

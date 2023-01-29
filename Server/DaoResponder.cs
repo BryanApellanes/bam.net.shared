@@ -19,7 +19,6 @@ using Bam.Net.ServiceProxy;
 using Bam.Net.Server.Renderers;
 using Bam.Net.Server;
 using Yahoo.Yui.Compressor;
-using NCuid;
 
 using System.Reflection;
 using Bam.Net.Data.Qi;

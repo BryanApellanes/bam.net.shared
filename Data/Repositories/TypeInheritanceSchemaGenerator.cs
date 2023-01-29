@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Reflection;
 using Bam.Net.Data.Schema;
-using NCuid;
 
 namespace Bam.Net.Data.Repositories
 {

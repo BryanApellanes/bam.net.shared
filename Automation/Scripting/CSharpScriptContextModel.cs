@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Bam.Net.Testing;
+//using Bam.Net.Testing;
 
 namespace Bam.Net.Automation.Scripting
 {
