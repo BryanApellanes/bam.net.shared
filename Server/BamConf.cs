@@ -68,7 +68,7 @@ namespace Bam.Net.Server
             set;
         }
 
-        internal BamServer Server
+        internal BamAppServer AppServer
         {
             get;
             set;

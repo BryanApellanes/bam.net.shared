@@ -751,7 +751,7 @@ File Version: {1}
         /// file and adds them all as valid arguments so that they may be 
         /// specified on the command line.
         /// </summary>
-        protected static void AddConfigurationSwitches()
+        public static void AddConfigurationSwitches()
         {
             DefaultConfiguration.GetAppSettings().AllKeys.Each(key =>
             {

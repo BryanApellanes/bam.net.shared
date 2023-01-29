@@ -87,14 +87,14 @@ namespace Bam.Net.Server
             }
         }
 
-        public BamServer GetServer()
+        public BamAppServer GetServer()
         {
-            return BamConf.Server;
+            return BamConf.AppServer;
         }
 
         public void AddServices(Incubator incubator)
         {
-            BamConf.Server.AddAppServices(Name, incubator);
+            BamConf.AppServer.AddAppServices(Name, incubator);
         }
 
         /// <summary>
@@ -105,7 +105,7 @@ namespace Bam.Net.Server
         /// <param name="serviceInstanciator"></param>
         public void AddService<T>(Func<T> serviceInstanciator)
         {
-            BamConf.Server.AddAppService<T>(Name, serviceInstanciator);
+            BamConf.AppServer.AddAppService<T>(Name, serviceInstanciator);
         }
 
         /// <summary>
@@ -116,7 +116,7 @@ namespace Bam.Net.Server
         /// <param name="instance"></param>
         public void AddService<T>(T instance)
         {
-            BamConf.Server.AddAppService<T>(Name);
+            BamConf.AppServer.AddAppService<T>(Name);
         }
 
         /// <summary>
@@ -343,7 +343,7 @@ namespace Bam.Net.Server
             set;
         }
 
-        internal ILogger Logger => BamConf?.Server?.MainLogger ?? Log.Default;
+        internal ILogger Logger => BamConf?.AppServer?.MainLogger ?? Log.Default;
 
         static Dictionary<string, string> _appNamesByDomAppId;
         static readonly object _domAppIdsSync = new object();

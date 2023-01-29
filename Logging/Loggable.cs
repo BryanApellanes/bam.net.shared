@@ -11,6 +11,7 @@ using Bam.Net.Configuration;
 using Newtonsoft.Json;
 using System.Diagnostics;
 using System.Xml.Serialization;
+using Bam.Net.CoreServices.ApplicationRegistration.Data;
 using YamlDotNet.Serialization;
 using EventInfo = System.Reflection.EventInfo;
 
@@ -39,6 +40,8 @@ namespace Bam.Net.Logging
         }
         
         public static IEnumerable<ILoggable> AllInstances => _allInstances.ToArray();
+
+        public string LoggableIdentifier => $"TypeName={GetType().Name};ProcessDescriptor={ProcessDescriptor.Current.ToString()}";
 
         /// <summary>
         /// A value from 0 - 5, represented by the LogEventType enum.
@@ -243,6 +246,23 @@ namespace Bam.Net.Logging
         protected void FireEventAsync(EventHandler eventHandler, object sender = null, EventArgs eventArgs = null)
         {
             Task.Run(() => FireEvent(eventHandler, sender ?? this, eventArgs ?? EventArgs.Empty));
+        }
+
+        protected void FireEvent<T>(EventHandler<T> eventHandler) where T: EventArgs, new()
+        {
+            FireEvent<T>(eventHandler, new T());
+        }
+        
+        protected void FireEvent<T>(EventHandler<T> eventHandler, T eventArgs) where T: EventArgs, new()
+        {
+            try
+            {
+                eventHandler?.Invoke(this, eventArgs);
+            }
+            catch (Exception ex)
+            {
+                Log.Trace("Exception in FireEvent<{0}>: {1}", typeof(T).Name, ex.Message);
+            }
         }
         
         /// <summary>

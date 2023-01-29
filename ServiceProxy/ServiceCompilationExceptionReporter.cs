@@ -1,10 +1,10 @@
 using System;
 using Bam.Net.CommandLine;
-using Bam.Net.Testing;
+// using Bam.Net.Testing;
 
 namespace Bam.Net.ServiceProxy
 {
-    public class ServiceCompilationExceptionReporter : CommandLineTool, IServiceCompilationExceptionReporter
+    public class ServiceCompilationExceptionReporter : IServiceCompilationExceptionReporter
     {
         public ServiceCompilationExceptionReporter()
         {

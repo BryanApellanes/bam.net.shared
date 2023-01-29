@@ -1,4 +1,4 @@
-using System;
+/*using System;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -7,7 +7,7 @@ using Bam.Net.Application;
 using Bam.Net.Data;
 using Bam.Net.Presentation.Handlebars;
 using Bam.Net.Services;
-using Bam.Net.Testing;
+//using Bam.Net.Testing;
 using Bam.Net.UserAccounts.Data;
 using Bam.Net.CommandLine;
 using Bam.Net.CoreServices;
@@ -255,4 +255,4 @@ namespace Bam.Shell
             return svcRegistry.Get<T>();
         }
     }
-}
+}*/

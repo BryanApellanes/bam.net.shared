@@ -41,8 +41,8 @@ namespace Bam.Net.Server
             _ignorePrefixes = new List<string>();
 
             AddRespondToPrefix(ResponderName);
-            BamServer bamServer = conf?.Server ?? BamServer.Current;
-            ApplicationServiceRegistry = bamServer.LoadApplicationServiceRegistryAsync()?.Result;
+            BamAppServer bamAppServer = conf?.AppServer ?? BamAppServer.Current;
+            ApplicationServiceRegistry = bamAppServer.LoadApplicationServiceRegistryAsync()?.Result;
         }
 
         public Responder(BamConf conf, ILogger logger)
@@ -154,6 +154,12 @@ namespace Bam.Net.Server
         {
             SendResponse(context, handler.Handle(), handler.Code);
         }
+
+        public static void SendResponse(IHttpContext context, int statusCode, object dynamicObjectHeaders)
+        {
+            SendResponse(context, new HttpStatusCodeHandler(statusCode, string.Empty), dynamicObjectHeaders);
+        }
+
         public static void SendResponse(IHttpContext context, HttpStatusCodeHandler handler, object dynamicObjectHeaders)
         {
             SendResponse(context, handler.Handle(), handler.Code, null, dynamicObjectHeaders.ToDictionary(pi => $"X-{pi.Name.PascalSplit("-")}", (o) => (string)o));

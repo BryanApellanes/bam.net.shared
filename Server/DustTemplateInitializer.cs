@@ -23,7 +23,7 @@ namespace Bam.Net.Server
     [Obsolete("This class is obsolete and will be deleted.  The concept of template initialization is retired.")]
     public class DustTemplateInitializer: TemplateInitializer
     {
-        public DustTemplateInitializer(BamServer server) : base(server) { }
+        public DustTemplateInitializer(BamAppServer appServer) : base(appServer) { }
 
         object _initializeLock = new object();
         public override void Initialize()
@@ -51,12 +51,12 @@ namespace Bam.Net.Server
 		public override void RenderAppTemplates()
 		{
 			//      App
-			Server.DaoResponder.AppDaoProxyRegistrations.Keys.Each((appName) =>
+			AppServer.DaoResponder.AppDaoProxyRegistrations.Keys.Each((appName) =>
 			{
-				if (Server.ContentResponder.AppContentResponders.ContainsKey(appName))
+				if (AppServer.ContentResponder.AppContentResponders.ContainsKey(appName))
 				{
-					AppTemplateRenderer appRenderer = new AppTemplateRenderer(Server.ContentResponder.AppContentResponders[appName]);
-					Server.DaoResponder.AppDaoProxyRegistrations[appName].Each((daoProxyReg) =>
+					AppTemplateRenderer appRenderer = new AppTemplateRenderer(AppServer.ContentResponder.AppContentResponders[appName]);
+					AppServer.DaoResponder.AppDaoProxyRegistrations[appName].Each((daoProxyReg) =>
 					{
 						OnInitializingAppDaoTemplates(appName, daoProxyReg);
 
@@ -76,9 +76,9 @@ namespace Bam.Net.Server
 			// get the types that need templates
 			//  from DaoResponder
 			//      Common
-			CommonTemplateRenderer commonRenderer = new CommonTemplateRenderer(Server.ContentResponder);
+			CommonTemplateRenderer commonRenderer = new CommonTemplateRenderer(AppServer.ContentResponder);
 
-			Server.DaoResponder.CommonDaoProxyRegistrations.Values.Each((daoProxyReg) =>
+			AppServer.DaoResponder.CommonDaoProxyRegistrations.Values.Each((daoProxyReg) =>
 			{
 				OnInitializingCommonDaoTemplates(daoProxyReg);
 

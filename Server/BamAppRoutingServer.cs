@@ -4,9 +4,9 @@ using Bam.Net.Logging;
 
 namespace Bam.Net.Server
 {
-    public class BamRoutingServer: BamServer
+    public class BamAppRoutingServer: BamAppServer
     {
-        public BamRoutingServer(BamConf conf) : base(conf)
+        public BamAppRoutingServer(BamConf conf) : base(conf)
         {
         }
 

@@ -18,45 +18,45 @@ namespace Bam.Net.Server
     public abstract class BamServerEventListener
     {
         // consider generating this file: see ...Server.Tests.ConsoleActions.ListServerEventsAndTypes
-        public virtual void Initializing(BamServer bryanServer) { }
+        public virtual void Initializing(BamAppServer bryanAppServer) { }
 
-        public virtual void Initialized(BamServer bryanServer) { }
+        public virtual void Initialized(BamAppServer bryanAppServer) { }
 
-        public virtual void SchemaInitializing(BamServer bryanServer, SchemaInitializer schemaInitializer) { }
+        public virtual void SchemaInitializing(BamAppServer bryanAppServer, SchemaInitializer schemaInitializer) { }
 
-        public virtual void SchemaInitialized(BamServer bryanServer, SchemaInitializer schemaInitializer) { }
+        public virtual void SchemaInitialized(BamAppServer bryanAppServer, SchemaInitializer schemaInitializer) { }
 
-        public virtual void SchemasInitializing(BamServer bryanServer) { }
+        public virtual void SchemasInitializing(BamAppServer bryanAppServer) { }
 
-        public virtual void SchemasInitialized(BamServer bryanServer) { }
+        public virtual void SchemasInitialized(BamAppServer bryanAppServer) { }
 
-        public virtual void LoadingConf(BamServer bryanServer, BamConf bryanConf) { }
+        public virtual void LoadingConf(BamAppServer bryanAppServer, BamConf bryanConf) { }
 
-        public virtual void LoadedConf(BamServer bryanServer, BamConf bryanConf) { }
+        public virtual void LoadedConf(BamAppServer bryanAppServer, BamConf bryanConf) { }
 
-        public virtual void CreatingApp(BamServer bryanServer, AppConf appConf) { }
+        public virtual void CreatingApp(BamAppServer bryanAppServer, AppConf appConf) { }
 
-        public virtual void CreatedApp(BamServer bryanServer, AppConf appConf) { }
+        public virtual void CreatedApp(BamAppServer bryanAppServer, AppConf appConf) { }
 
-        public virtual void Responded(BamServer bryanServer, IHttpResponder iResponder, IRequest iRequest) { }
+        public virtual void Responded(BamAppServer bryanAppServer, IHttpResponder iResponder, IRequest iRequest) { }
         
-        public virtual void NotResponded(BamServer bryanServer, IRequest iRequest) { }
+        public virtual void NotResponded(BamAppServer bryanAppServer, IRequest iRequest) { }
 
-        public virtual void ResponderAdded(BamServer bryanServer, IHttpResponder iResponder) { }
+        public virtual void ResponderAdded(BamAppServer bryanAppServer, IHttpResponder iResponder) { }
 
-        public virtual void SettingConf(BamServer bryanServer, BamConf bryanConf) { }
+        public virtual void SettingConf(BamAppServer bryanAppServer, BamConf bryanConf) { }
 
-        public virtual void SettedConf(BamServer bryanServer, BamConf bryanConf) { }
+        public virtual void SettedConf(BamAppServer bryanAppServer, BamConf bryanConf) { }
 
-        public virtual void SavedConf(BamServer bryanServer, BamConf bryanConf) { }
+        public virtual void SavedConf(BamAppServer bryanAppServer, BamConf bryanConf) { }
 
-        public virtual void Starting(BamServer bryanServer) { }
+        public virtual void Starting(BamAppServer bryanAppServer) { }
 
-        public virtual void Started(BamServer bryanServer) { }
+        public virtual void Started(BamAppServer bryanAppServer) { }
 
-        public virtual void Stopping(BamServer bryanServer) { }
+        public virtual void Stopping(BamAppServer bryanAppServer) { }
 
-        public virtual void Stopped(BamServer bryanServer) { }
+        public virtual void Stopped(BamAppServer bryanAppServer) { }
 
 
     }

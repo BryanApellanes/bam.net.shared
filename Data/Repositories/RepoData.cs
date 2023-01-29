@@ -73,7 +73,7 @@ namespace Bam.Net.Data.Repositories
             {
                 if (string.IsNullOrEmpty(_cuid))
                 {
-                    _cuid = NCuid.Cuid.Generate();
+                    _cuid = Bam.Net.Cuid.Generate();
                 }
                 return _cuid;
             }

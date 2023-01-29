@@ -10,15 +10,15 @@ using System.Threading.Tasks;
 namespace Bam.Net.Server
 {
     /// <summary>
-    /// BamServer where EnableDao is false
-    /// and EnableServiceProxy is true
+    /// BamServer where EnableDao is true
+    /// and EnableServiceProxy is false
     /// </summary>
-    public class BamServiceProxyServer: BamServer
+    public class BamAppDaoServer: BamAppServer
     {
-        public BamServiceProxyServer(BamConf conf)
+        public BamAppDaoServer(BamConf conf)
             : base(conf)
         {
-            this.EnableDao = false;
+            this.EnableDao = true;
             this.EnableServiceProxy = true;
         }
     }

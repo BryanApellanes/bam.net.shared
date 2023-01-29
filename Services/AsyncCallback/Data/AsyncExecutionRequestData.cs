@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Bam.Net.Data.Repositories;
-using NCuid;
 
 namespace Bam.Net.Services.AsyncCallback.Data
 {

@@ -254,9 +254,9 @@ namespace Bam.Net.CoreServices
         {
             Args.ThrowIfNull(AppConf, "AppConf");
             Args.ThrowIfNull(AppConf.BamConf, "AppConf.BamConf");
-            Args.ThrowIfNull(AppConf.BamConf.Server, "AppConf.BamConf.Server");
-            BamServer server = AppConf.BamConf.Server;
-            ITemplateManager renderer = server.GetAppTemplateRenderer(AppConf.Name);
+            Args.ThrowIfNull(AppConf.BamConf.AppServer, "AppConf.BamConf.Server");
+            BamAppServer appServer = AppConf.BamConf.AppServer;
+            ITemplateManager renderer = appServer.GetAppTemplateRenderer(AppConf.Name);
             renderer.Render(templateName, toRender, output);
         }
         

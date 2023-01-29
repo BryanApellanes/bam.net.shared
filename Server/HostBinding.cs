@@ -15,20 +15,25 @@ namespace Bam.Net.Server
     public class HostBinding
     {
         /// <summary>
-        /// Instanciate a HostBinding with the hostname of "localhost" and port set to 8080.
+        /// Instantiate a HostBinding with the hostname of "localhost" and port set to 8080.
         /// </summary>
         public HostBinding()
         {
             this.HostName = "localhost";
             this.Port = 8080;
+            this.Ssl = true;
         }
 
         public HostBinding(int port) : this("localhost", port)
         {
         }
 
+        public HostBinding(string hostName) : this(hostName, 8080)
+        {
+        }
+
         /// <summary>
-        /// Instanciate a HostBinding with the specified hostname and port.
+        /// Instantiate a HostBinding with the specified hostname and port.
         /// </summary>
         /// <param name="hostName"></param>
         /// <param name="port"></param>
@@ -36,6 +41,7 @@ namespace Bam.Net.Server
         {
             this.HostName = hostName;
             this.Port = port;
+            this.Ssl = true;
         }
 
         public string HostName { get; set; }
