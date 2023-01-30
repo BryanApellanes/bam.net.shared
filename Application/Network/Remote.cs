@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Bam.Net.Automation;
-using Bam.Net.Testing;
+//using Bam.Net.Testing;
 
 namespace Bam.Net.Application.Network
 {
