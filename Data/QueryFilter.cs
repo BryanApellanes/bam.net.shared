@@ -934,7 +934,7 @@ namespace Bam.Net.Data
         }
     }
 
-    public class QueryFilter<C> : QueryFilter where C : IFilterToken, new() 
+    public class QueryFilter<C> : QueryFilter, IQueryFilter<C> where C : IFilterToken, new() 
     {   
         public QueryFilter(): base()
         {
